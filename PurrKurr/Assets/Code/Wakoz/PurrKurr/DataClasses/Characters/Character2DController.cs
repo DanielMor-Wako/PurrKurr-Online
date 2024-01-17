@@ -448,9 +448,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             //await Task.Delay(TimeSpan.FromMilliseconds(150));
             Debug.Log("Started as damager -> Mag: " + _rigidbody.velocity.magnitude);
 
-            var damagees = new List<Collider2D>();
+            var damagees = new List<Collider2D>() { thrower.GetCollider() };
 
-            while (_rigidbody != null && _rigidbody.velocity.magnitude > 5 && Mathf.Abs(_rigidbody.velocity.x) > 2) {
+            while (_rigidbody != null && _rigidbody.velocity.magnitude > 1) {
                 go.SetActive(true);
                 Debug.Log(" as damager -> Mag: " + _rigidbody.velocity.magnitude);
 
@@ -480,6 +480,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                         var newPositionToSetOnFixedUpdate = closestFoePosition + (Vector2)dir.normalized * -(LegsRadius);
                         interactableBody.ApplyForce(dir * Velocity * 0.7f); // 0.7f is an impact damage decrease
                         // todo: damage decrease based on velocity?
+                        Debug.Log($"damage on {interactableBody.GetTransform().gameObject.name} by {thrower.GetTransform().gameObject.name}");
                         interactableBody.DealDamage(damage);
                         Debug.DrawLine(closestFoePosition, newPositionToSetOnFixedUpdate, Color.white, 3);
                     }

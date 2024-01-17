@@ -1,8 +1,6 @@
 using Code.Wakoz.PurrKurr.DataClasses.Characters;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
