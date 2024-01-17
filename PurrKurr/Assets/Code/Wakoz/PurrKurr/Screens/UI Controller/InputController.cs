@@ -26,13 +26,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
         private ActionInput _actionSingleTouchData;
 
         private AbilitiesLogic _abilitiesLogic;
-        //private InputLogic _inputLogic;
 
         protected override Task Initialize() {
 
             _movementSingleTouchData = _actionSingleTouchData = null;
             _abilitiesLogic = GetController<LogicController>().AbilitiesLogic;
-            //_inputLogic = GetController<LogicController>().InputLogic;
             RegisterEvents();
 
             return Task.CompletedTask;
