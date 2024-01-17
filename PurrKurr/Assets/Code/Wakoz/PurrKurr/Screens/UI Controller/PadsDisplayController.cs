@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Code.Wakoz.PurrKurr.DataClasses.Characters;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using UnityEngine;
-using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
 namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
     [DefaultExecutionOrder(12)]
@@ -128,7 +126,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
             var stateDependents = _model.RefreshStateDependentPads(state);
             foreach (var i in stateDependents) {
                 // todo: cache the related action input
-                var relatedAtionInput = new ActionInput(i, ActionTypeGroup.Action, Vector2.zero, Time.time, Vector2.zero, 0);
+                var relatedAtionInput = new ActionInput(i, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, Vector2.zero, 0);
                 OnPadClicked(relatedAtionInput);
             }
             

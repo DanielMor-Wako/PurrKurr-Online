@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.Logic.GameFlow;
-using System.Linq;
-using Unity.Mathematics;
 
 namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
     [DefaultExecutionOrder(11)]
@@ -28,13 +26,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
         private ActionInput _actionSingleTouchData;
 
         private AbilitiesLogic _abilitiesLogic;
-        private InputLogic _inputLogic;
+        //private InputLogic _inputLogic;
 
         protected override Task Initialize() {
 
             _movementSingleTouchData = _actionSingleTouchData = null;
             _abilitiesLogic = GetController<LogicController>().AbilitiesLogic;
-            _inputLogic = GetController<LogicController>().InputLogic;
+            //_inputLogic = GetController<LogicController>().InputLogic;
             RegisterEvents();
 
             return Task.CompletedTask;
