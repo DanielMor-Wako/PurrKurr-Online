@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags: []
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - Interactable
+  - Character
+  - Collider-Detection
+  - Collider-Damager
+  - Solid
+  - Platform
+  - Solid-Clingable
+  - Traversable
+  - Traversable-Clingable
+  - 
+  - Gas
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Back
+    uniqueID: 2441516941
+    locked: 0
+  - name: Back-Overlay
+    uniqueID: 2456947893
+    locked: 0
+  - name: Objects
+    uniqueID: 4138141397
+    locked: 0
+  - name: Rope
+    uniqueID: 3982045431
+    locked: 0
+  - name: Characters
+    uniqueID: 3643059491
+    locked: 0
+  - name: Items
+    uniqueID: 1378384525
+    locked: 0
+  - name: Front
+    uniqueID: 3506551023
+    locked: 0
+  - name: Front-Overlay
+    uniqueID: 1830143165
+    locked: 0
+  - name: Default
+    uniqueID: 0
+    locked: 0

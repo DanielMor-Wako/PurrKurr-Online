@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a21f613207740058211b4fdbecf76d4, type: 3}
+  m_Name: CatSiemeseBaseStats
+  m_EditorClassIdentifier: 
+  _animal: 0
+  _diet: 0
+  _data:
+    _maxLevel: 100
+    _healthMinToMax: {x: 5, y: 20}
+    _damageMinToMax: {x: 1, y: 5}
+    _pushbackForceMinToMax: {x: 35, y: 50}
+    _walkSpeedMinToMax: {x: 300, y: 500}
+    _runSpeedMinToMax: {x: 700, y: 1400}
+    _sprintSpeedMinToMax: {x: 1500, y: 2500}
+    _jumpForceMinToMax: {x: 40, y: 55}
+    _airborneSpeedMinToMax: {x: 2, y: 3}
+    _airborneMaxSpeedMinToMax: {x: 5, y: 10}
+    _multiTargetsDistanceBasevalues: {x: 4, y: 7}
+    _movementTypes: 00000000
+    _baseActions: 01000000
+    _baseAbilities: 01000000020000000500000007000000
+    _baseAttacks: 00000000
+    _baseBuffs: []
+    _baseAttackMoves:
+    - _elementName: Light Attack
+      _attackAbility: 0
+      _properties: 04000000
+      _characterStateCondition: 
+      _opponentStateCondition: 
+    - _elementName: Med Attack
+      _attackAbility: 1
+      _properties: 0100000008000000
+      _characterStateCondition: 05000000
+      _opponentStateCondition: 
+    - _elementName: Heavy Attack
+      _attackAbility: 2
+      _properties: 01000000020000000600000007000000
+      _characterStateCondition: 04000000
+      _opponentStateCondition: 03000000
+    - _elementName: Roll Attack
+      _attackAbility: 3
+      _properties: 01000000080000000b000000
+      _characterStateCondition: 0b000000
+      _opponentStateCondition: 03000000
+    - _elementName: Aerial Attack
+      _attackAbility: 4
+      _properties: 0b00000008000000
+      _characterStateCondition: 0c000000
+      _opponentStateCondition: 
+    - _elementName: Light Grab
+      _attackAbility: 5
+      _properties: 010000000200000003000000
+      _characterStateCondition: 03000000
+      _opponentStateCondition: 03000000
+    - _elementName: Med Grab
+      _attackAbility: 6
+      _properties: 01000000020000000d00000000000000
+      _characterStateCondition: 05000000
+      _opponentStateCondition: 03000000
+    - _elementName: Heavy Grab
+      _attackAbility: 7
+      _properties: 0000000001000000000000000a000000
+      _characterStateCondition: 04000000
+      _opponentStateCondition: 03000000
+    - _elementName: Aerial Grab
+      _attackAbility: 8
+      _properties: 01000000020000000c000000
+      _characterStateCondition: 
+      _opponentStateCondition: 0c000000
+    - _elementName: Light Block
+      _attackAbility: 8
+      _properties: 00000000
+      _characterStateCondition: 
+      _opponentStateCondition: 
+    _abilitiesPool:
+      _actionsPool: 0100000002000000030000000400000005000000060000000700000008000000
+      _abilitiesPool: 0100000002000000030000000400000005000000060000000700000008000000
+      _attackPool: 00000000010000000200000003000000040000000500000006000000070000000800000009000000
+      _buffsPool: []
+  _senses: 000000000100000002000000
+  _aggressivenessToOthersAnimals: 0.7
+  _aggressivenessToSameAnimals: 0.3

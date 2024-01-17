@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 066bf95faedc44f2bc6ed16f685b12fd, type: 3}
+  m_Name: AbilitiesData
+  m_EditorClassIdentifier: 
+  _padsConfig:
+  - name: N - Movement
+    _actionTypeGroup: 0
+    _actionType: 1
+    _padType: 1
+    _swipeDistanceType: 0
+    _alternativeStateForMovement: 
+  - name: A - Jump
+    _actionTypeGroup: 1
+    _actionType: 2
+    _padType: 1
+    _swipeDistanceType: 0
+    _alternativeStateForMovement: 02000000
+  - name: A - Attack
+    _actionTypeGroup: 1
+    _actionType: 3
+    _padType: 0
+    _swipeDistanceType: 0
+    _alternativeStateForMovement: 0100000002000000
+  - name: A - Block
+    _actionTypeGroup: 1
+    _actionType: 4
+    _padType: 1
+    _swipeDistanceType: 1
+    _alternativeStateForMovement: 
+  - name: A - Grab
+    _actionTypeGroup: 1
+    _actionType: 5
+    _padType: 0
+    _swipeDistanceType: 0
+    _alternativeStateForMovement: 
+  - name: A - Profectile
+    _actionTypeGroup: 1
+    _actionType: 6
+    _padType: 1
+    _swipeDistanceType: 0
+    _alternativeStateForMovement: 
+  - name: A - Rope
+    _actionTypeGroup: 1
+    _actionType: 7
+    _padType: 1
+    _swipeDistanceType: 0
+    _alternativeStateForMovement: 
+  - name: A - Supurr
+    _actionTypeGroup: 1
+    _actionType: 8
+    _padType: 0
+    _swipeDistanceType: 0
+    _alternativeStateForMovement: 
