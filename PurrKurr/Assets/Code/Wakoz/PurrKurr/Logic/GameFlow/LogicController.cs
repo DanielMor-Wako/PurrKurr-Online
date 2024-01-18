@@ -35,37 +35,24 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
             AbilitiesLogic = null;
         }
 
-        // todo: use generic to retrieve a casted logic ref
-        /*public bool TryGetLogicRef<T>(out SOData logicRef) where T : SOData {
+        /// <summary>
+        /// Trying to get a ref by casting a generic as return value
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="logicRef"></param>
+        /// <returns></returns>
+        public T TryGet<T>() where T : SOData {
 
             foreach (var logic in _logics) {
                 
-                if (logic != typeof(T)) {
+                if (logic.GetType() != typeof(T)) {
                     continue;
                 }
 
-                logicRef = logic as T;
-                return true;
+                return logic as T;
             }
 
-            logicRef = null;
-            return false;
-        }*/
-        
-        public bool TryGetLogicRef(SOData matchingData, out SOData logicRef) {
-
-            foreach (var pad in _logics) {
-                
-                if (pad != matchingData) {
-                    continue;
-                }
-
-                logicRef = pad;
-                return true;
-            }
-
-            logicRef = null;
-            return false;
+            return null;
         }
         
     }

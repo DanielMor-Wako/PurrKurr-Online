@@ -25,17 +25,17 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         [SerializeField] private CameraFollow _cam;
         [SerializeField] private Character2DController _hero;
-        //private Character2DState _characterState;
         private bool _heroInitialized;
-
-        private LayerMask _whatIsSolid;
-        private LayerMask _whatIsSurface;
-        private LayerMask _whatIsCharacter;
 
         private LogicController _logic;
         private InputController _input;
         private InputInterpreterLogic _inputInterpreterLogic; 
         private UIController _ui;
+
+        private LayerMask _whatIsSolid;
+        private LayerMask _whatIsSurface;
+        private LayerMask _whatIsCharacter;
+        private LayerMask _whatIsDamageableCharacter;
 
         private void UpdateStats(int level) {
             if (_hero == null) {
@@ -62,6 +62,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _whatIsSurface = _logic.GameplayLogic.GetSurfaces();
             _whatIsSolid = _logic.GameplayLogic.GetSolidSurfaces();
             _whatIsCharacter = _logic.GameplayLogic.GetDamageables();
+            _whatIsDamageableCharacter = _logic.GameplayLogic.GetDamageables();
 
             TryInitHero();
             
@@ -119,8 +120,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         }
 
         private void SetHeroLevel(int heroLevel) {
+
             if (heroLevel == 0) {
                 _hero.SetMinLevel();
+            
             } else {
               _hero.SetMaxLevel();  
             }
@@ -130,7 +133,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         public void SetHeroMaxLevel() => _hero.SetMaxLevel();
         
         protected override void Clean() {
+
             DeregisterInputEvents();
+
             if (_hero == null) {
                 return;
             }
@@ -388,7 +393,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         ApplyGrabOnFoeWithDelay(foe, null, foe.GetTransform().position);
                         ApplyForceOnFoeWithDelay(foe, attackStats, _hero.Stats.AttackDurationInMilliseconds);
                         attackerAsInteractable.SetAsGrabbing(null);
-                        ((Character2DController)foe)?.ActAsProjectileWhileThrown(attackStats.Damage, attackerAsInteractable);
+                        ApplyProjectileStateWhenThrown(foe, attackStats.Damage, attackerAsInteractable);
 
                     } else {
                         
@@ -438,6 +443,78 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
 
             return facingRightOrLeftTowardsPoint;
+        }
+
+        private async void ApplyProjectileStateWhenThrown(IInteractableBody grabbed, int damage, IInteractableBody thrower) {
+
+            Debug.Log("trying as damager -> damage: " + damage);
+
+            var _bodyDamager = ((Character2DController)grabbed);
+
+            if (damage == 0 || _bodyDamager == null) {
+                return;
+            }
+
+            _bodyDamager.SetProjectileState(true);
+
+            while (thrower != null && (grabbed.GetVelocity().magnitude < 1 || grabbed.IsGrabbed()) ) {
+                await Task.Delay(TimeSpan.FromMilliseconds(20));
+            }
+            if (thrower == null) {
+                return;
+            }
+
+            var grabbedVelocity = grabbed.GetVelocity();
+            Debug.Log("Started as damager -> Mag: " + grabbedVelocity.magnitude);
+
+            var damagees = new List<Collider2D>() { thrower.GetCollider() };
+
+            var legsPosition = grabbed.GetCenterPosition();
+            var grabbedColl = grabbed.GetCollider();
+            var legsRadius = ((CircleCollider2D)grabbedColl).radius;
+
+            while (grabbedVelocity.magnitude > 1) {
+
+                Debug.Log(" as damager -> Mag: " + grabbedVelocity.magnitude);
+                legsPosition = grabbed.GetCenterPosition();
+
+                var solidOutRadiusObjectsColliders =
+                Physics2D.OverlapCircleAll(legsPosition, legsRadius + 0.25f, _whatIsDamageableCharacter).
+                    Where(collz => collz.gameObject != grabbedColl.gameObject && collz.gameObject != thrower.GetTransform().gameObject && !damagees.Contains(collz)).ToArray();
+
+                foreach (var interactable in solidOutRadiusObjectsColliders)
+                {
+
+                    var damagee = interactable.GetComponent<IInteractable>();
+                    if (damagee == null)
+                    {
+                        continue;
+                    }
+
+                    var interactableBody = damagee.GetInteractable();
+                    if (interactableBody != null && !damagees.Contains(interactable)) {
+
+                        damagees.Add(interactable);
+
+                        var closestFoePosition = interactable.ClosestPoint(legsPosition);
+                        var dir = ((Vector3)closestFoePosition - legsPosition).normalized;
+                        var directionTowardsFoe = (closestFoePosition.x > legsPosition.x) ? 1 : -1;
+                        dir.x = directionTowardsFoe;
+                        var newPositionToSetOnFixedUpdate = closestFoePosition + (Vector2)dir.normalized * -(legsRadius);
+                        interactableBody.ApplyForce(dir * grabbedVelocity * 0.7f); // 0.7f is an impact damage decrease
+                        // todo: damage decrease based on velocity?
+                        Debug.Log($"damage on {interactableBody.GetTransform().gameObject.name} by {thrower.GetTransform().gameObject.name}");
+                        interactableBody.DealDamage(damage);
+                        Debug.DrawLine(closestFoePosition, newPositionToSetOnFixedUpdate, Color.white, 3);
+                    }
+                }
+
+                await Task.Delay(TimeSpan.FromMilliseconds(10));
+
+                grabbedVelocity = grabbed.GetVelocity();
+            }
+
+            _bodyDamager.SetProjectileState(false);
         }
 
         private bool ValidateAttackConditions(AttackBaseStats attack, Character2DState characterState, IInteractableBody interactable) {
@@ -559,8 +636,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             grabber.SetAsGrabbing(null);
             ApplyGrabOnFoeWithDelay(grabbed, null, grabbed.GetCenterPosition());
             ApplyForceOnFoeWithDelay(grabbed, attackStats);
-            ((Character2DController)grabbed)?.ActAsProjectileWhileThrown(attackStats.Damage, grabber);
-
+            ApplyProjectileStateWhenThrown(grabbed, attackStats.Damage, grabber);
         }
         
     }

@@ -48,8 +48,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars {
                 return false;
             }
 
-            Debug.Log("ui display has available character to set");
-
             _hero = character;
             _hero.OnStatsChanged += OnStatsChanged;
             

@@ -6153,9 +6153,17 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 7779578158065701831}
+    - target: {fileID: 1994613298156728289, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
+      propertyPath: m_Name
+      value: Input Controller
+      objectReference: {fileID: 0}
     - target: {fileID: 2842913602912303923, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: -949.08984
+      objectReference: {fileID: 0}
+    - target: {fileID: 3209651146488093076, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
+      propertyPath: m_Name
+      value: UI Pads
       objectReference: {fileID: 0}
     - target: {fileID: 3309210881301355664, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -6251,7 +6259,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6742107989765782703, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_Name
-      value: UI Controller
+      value: UI Controllers
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7024,7 +7032,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4466512658308471793, guid: 1b3c72c9522d634418d400a9a7ced68f, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

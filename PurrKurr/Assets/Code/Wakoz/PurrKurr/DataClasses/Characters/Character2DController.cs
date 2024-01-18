@@ -143,12 +143,15 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _whatIsSolid = _logic.GameplayLogic.GetSolidSurfaces();
             _whatIsDamageableCharacter = _logic.GameplayLogic.GetDamageables();
             _characterState = new Character2DState();
-            
+
+            // todo: check if get logic is more performant under benchmark
+            //_whatIsDamageableCharacter = _logic.TryGet<GameplayLogic>().GetDamageables();
+
             _motor = new JointMotor2D();
             _motor.maxMotorTorque = CharacterMaxMotorTorque;
 
             _senses.Init(_whatIsDamageableCharacter, _whatIsDamageable);
-            // todo: add the character upgrades to the stats 
+            
             _stats.InitUpgrades();
             SetMinLevel();
             OnUpdatedStats?.Invoke(null);
@@ -429,67 +432,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             UpdateAnimatorRigRotation();
 
         }
-
-        public async void ActAsProjectileWhileThrown(int damage, IInteractableBody thrower) {
-            Debug.Log("trying as damager -> damage: " + damage);
-            if (damage == 0 || _bodyDamager == null) {
-                return;
-            }
-
-            var go = _bodyDamager.gameObject;
-            go.SetActive(true);
-
-            while (thrower != null && (_rigidbody.velocity.magnitude < 1 || IsGrabbed()) ) {
-                await Task.Delay(TimeSpan.FromMilliseconds(20));
-            }
-            if (thrower == null) {
-                return;
-            }
-            //await Task.Delay(TimeSpan.FromMilliseconds(150));
-            Debug.Log("Started as damager -> Mag: " + _rigidbody.velocity.magnitude);
-
-            var damagees = new List<Collider2D>() { thrower.GetCollider() };
-
-            while (_rigidbody != null && _rigidbody.velocity.magnitude > 1) {
-                go.SetActive(true);
-                Debug.Log(" as damager -> Mag: " + _rigidbody.velocity.magnitude);
-
-                var solidOutRadiusObjectsColliders =
-                Physics2D.OverlapCircleAll(LegsPosition, LegsRadius + 0.25f, _whatIsDamageableCharacter).
-                    Where(collz => collz.gameObject != _legsCollider.gameObject && collz.gameObject != thrower.GetTransform().gameObject && !damagees.Contains(collz)).ToArray();
-
-                foreach (var interactable in solidOutRadiusObjectsColliders)
-                {
-
-                    var damagee = interactable.GetComponent<IInteractable>();
-                    if (damagee == null)
-                    {
-                        continue;
-                    }
-
-                    var interactableBody = damagee.GetInteractable();
-                    if (interactableBody != null && !damagees.Contains(interactable))
-                    {
-
-                        damagees.Add(interactable);
-
-                        var closestFoePosition = interactable.ClosestPoint(LegsPosition);
-                        var dir = ((Vector3)closestFoePosition - LegsPosition).normalized;
-                        var directionTowardsFoe = (closestFoePosition.x > LegsPosition.x) ? 1 : -1;
-                        dir.x = directionTowardsFoe;
-                        var newPositionToSetOnFixedUpdate = closestFoePosition + (Vector2)dir.normalized * -(LegsRadius);
-                        interactableBody.ApplyForce(dir * Velocity * 0.7f); // 0.7f is an impact damage decrease
-                        // todo: damage decrease based on velocity?
-                        Debug.Log($"damage on {interactableBody.GetTransform().gameObject.name} by {thrower.GetTransform().gameObject.name}");
-                        interactableBody.DealDamage(damage);
-                        Debug.DrawLine(closestFoePosition, newPositionToSetOnFixedUpdate, Color.white, 3);
-                    }
-                }
-
-                await Task.Delay(TimeSpan.FromMilliseconds(10));
-            }
-
-            go.SetActive(false);
+        
+        public void SetProjectileState(bool isActive) {
+            
+            _bodyDamager.gameObject.SetActive(isActive);
         }
 
         private async void SwitchRigidBodyType(RigidbodyType2D bodyType, float delayDuration = 0, bool resetVelocity = false) {
