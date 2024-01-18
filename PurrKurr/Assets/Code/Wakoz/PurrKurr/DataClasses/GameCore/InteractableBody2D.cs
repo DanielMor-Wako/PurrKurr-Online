@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
 
-    [DefaultExecutionOrder(14)]
+    [DefaultExecutionOrder(15)]
     public class InteractableBody2D : Controller, IInteractableBody {
 
         [SerializeField] private Rigidbody2D _rigidbody;

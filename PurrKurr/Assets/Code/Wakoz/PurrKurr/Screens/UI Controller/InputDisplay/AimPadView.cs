@@ -3,7 +3,7 @@ using Code.Wakoz.PurrKurr.Logic.GameFlow;
 using Code.Wakoz.PurrKurr.Views;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
+namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
     public class AimPadView : View<AimPadModel> {
 
         [SerializeField] private GameObject _radialGlowDir;

@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
+namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
     public class PadModel : Model {
 
-        public TouchPadConfig Config;
+        public UiPadData Config;
         public bool IsActive { get; private set; }
         public Vector2 AimStartPos { get; private set; }
         public Vector2 AimDir { get; private set; }
@@ -11,7 +11,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
         public int SymbolState { get; private set; }
         public float CooldownPercent { get; private set; }
 
-        public PadModel(TouchPadConfig config) {
+        public PadModel(UiPadData config) {
 
             Config = config;
         }

@@ -2,7 +2,7 @@
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
+namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
     public class ScreenInputEventTriggers : MonoBehaviour {
 
         public event Action<Definitions.ActionType> OnTouchPadDown;

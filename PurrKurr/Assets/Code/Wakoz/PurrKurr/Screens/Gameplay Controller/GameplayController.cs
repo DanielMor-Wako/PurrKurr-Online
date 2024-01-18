@@ -7,12 +7,14 @@ using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using Code.Wakoz.PurrKurr.Logic.GameFlow;
+using Code.Wakoz.PurrKurr.Screens.CameraComponents;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller;
+using Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
-    [DefaultExecutionOrder(13)]
+    [DefaultExecutionOrder(14)]
     public class GameplayController : SingleController {
         
         public event Action<ActionInput> OnTouchPadDown;
@@ -33,7 +35,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private LogicController _logic;
         private InputController _input;
         private InputInterpreterLogic _inputInterpreterLogic; 
-        private PadsDisplayController _uiDisplay;
+        private UIController _ui;
 
         private void UpdateStats(int level) {
             if (_hero == null) {
@@ -47,13 +49,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _cam ??= Camera.main.GetComponent<CameraFollow>();
             
             _input = SingleController.GetController<InputController>();
-            _uiDisplay ??= SingleController.GetController<PadsDisplayController>();
+            _ui ??= SingleController.GetController<UIController>();
             _logic = SingleController.GetController<LogicController>();
 
-            if (_uiDisplay.TryBindToCharacterController(this)) {
+            if (_ui.TryBindToCharacterController(this)) {
                 RegisterInputEvents();
             } else {
-                _uiDisplay = null;
+                _ui = null;
                 Debug.Log("Something went wrong, there is no active ref to PadsDisplayController");
             }
             
@@ -105,12 +107,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         [ContextMenu("Update Ui Display by Character Stats")]
         private void UpdateOrInitUiDisplayForCharacter(List<DisplayedableStatData> list = null) {
 
-            if (_uiDisplay != null) {
+            if (_ui != null) {
 
                 if (list != null) {
                     OnStatsChanged?.Invoke(list);
                 } else {
-                    _uiDisplay.Init(_hero);
+                    _ui.InitUiForCharacter(_hero);
                 }
                 
             }

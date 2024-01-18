@@ -5,7 +5,7 @@ using UnityEngine;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.Logic.GameFlow;
 
-namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
+namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
     [DefaultExecutionOrder(11)]
     public class InputController : SingleController {
 

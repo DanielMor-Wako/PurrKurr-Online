@@ -15,11 +15,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars {
         private void UpdateUIStats() {
             
             if (healthPercent != null) {
-                healthPercent.fillAmount = 1-Model.HealthPercent;
+                healthPercent.fillAmount = 1 - Model.HealthPercent;
             }
 
             if (timerPercent != null) {
-                timerPercent.fillAmount = Model.TimerPercent;
+                timerPercent.fillAmount = 1 - Model.TimerPercent;
             }
         }
     }

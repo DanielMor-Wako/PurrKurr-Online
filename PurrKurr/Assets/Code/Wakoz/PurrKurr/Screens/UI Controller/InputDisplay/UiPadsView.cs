@@ -2,8 +2,8 @@
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
-    public class PadsDisplayView : View<PadsDisplayModel> {
+namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
+    public class UiPadsView : View<UiPadsModel> {
 
         public PadView MovementPad;
         public PadView JumpPad;
@@ -22,7 +22,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
             InitializePads(Model.Config);
         }
         
-        private void InitializePads(TouchPadsConfig config) {
+        private void InitializePads(UiPadsData config) {
 
             if (config == null) {
                 Debug.LogError("missing pads data");
@@ -41,7 +41,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
             InitPad(SuppurrPad, config.SupurrPadConfig);
         }
 
-        private void InitPad(PadView view, TouchPadConfig config) {
+        private void InitPad(PadView view, UiPadData config) {
 
             if (config == null) {
                 Debug.LogError($"no config set for {view.name}");

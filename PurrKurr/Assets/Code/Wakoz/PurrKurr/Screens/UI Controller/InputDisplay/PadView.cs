@@ -3,7 +3,7 @@ using Code.Wakoz.PurrKurr.Views;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
+namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
     public class PadView : View<PadModel> {
 
         //[SerializeField] private bool HideFixedTouchPadWhenFlexibleIsActive = false;

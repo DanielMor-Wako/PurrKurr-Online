@@ -13,7 +13,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars {
         
         private UIBarsModel _model;
 
-        private GameplayController _playerInput;
+        private GameplayController _hero;
 
         protected override void Clean() {
 
@@ -29,17 +29,17 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars {
 
             // todo: check the hero abilities fir displaying the correct ui update, like Health -> hp, power, supurr etc...
 
-            _model = new UIBarsModel(hero.Stats.Health / hero.Stats.MaxHealth, 1);
+            _model = new UIBarsModel(hero.Stats.GetHealthPercentage(), 1);
 
             _view.SetModel(_model);
         }
-        public bool TryBindToCharacterController(GameplayController character) {
+        public bool TryBindToCharacter(GameplayController character) {
             return RegisterEvents(character);
         }
 
         private bool RegisterEvents(GameplayController character = null) {
 
-            if (_playerInput != null) {
+            if (_hero != null) {
                 return false;
             }
 
@@ -50,8 +50,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars {
 
             Debug.Log("ui display has available character to set");
 
-            _playerInput = character;
-            _playerInput.OnStatsChanged += OnStatsChanged;
+            _hero = character;
+            _hero.OnStatsChanged += OnStatsChanged;
             
             return true;
         }
@@ -80,13 +80,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars {
 
         private void DeregisterEvents() {
 
-            if (_playerInput == null) {
+            if (_hero == null) {
                 return;
             }
             
-            //_playerInput.OnStatsChanged -= OnStatsChanged;
+            _hero.OnStatsChanged -= OnStatsChanged;
 
-            _playerInput = null;
+            _hero = null;
         }
         
 

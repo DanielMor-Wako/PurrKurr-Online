@@ -6,15 +6,15 @@ using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.Logic.GameFlow;
 using Code.Wakoz.PurrKurr.DataClasses.Characters;
 
-namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
+namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
 
-    public class PadsDisplayModel : Model {
+    public class UiPadsModel : Model {
 
         public bool OnlyUpdateDirtyPadsDisplay { get; private set; }
         public bool OnlyUpdateViewWhenStateChanged { get; private set; }
         
         private readonly IEnumerable<Definitions.ActionType> _availableActions;
-        public TouchPadsConfig Config { get; private set; }
+        public UiPadsData Config { get; private set; }
         private readonly AbilitiesLogic _abilitiesLogic;
         private readonly InputLogic _inputLogic;
         private Character2DState _state;
@@ -44,7 +44,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
         private List<Definitions.ActionType> _downUpDependentsList;
         private List<Definitions.ActionType> _characterStateDependents;
 
-        public PadsDisplayModel(Character2DController hero,
+        public UiPadsModel(Character2DController hero,
             bool onlyUpdateDirtyPadsDisplay = false, bool onlyUpdateViewWhenStateChanged = false) {
 
             _inputLogic = SingleController.GetController<LogicController>().InputLogic;

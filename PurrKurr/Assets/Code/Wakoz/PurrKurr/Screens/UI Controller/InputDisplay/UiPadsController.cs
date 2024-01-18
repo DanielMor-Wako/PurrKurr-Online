@@ -4,36 +4,41 @@ using Code.Wakoz.PurrKurr.DataClasses.Characters;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
+using Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
+namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
     [DefaultExecutionOrder(12)]
-    public class PadsDisplayController : SingleController {
+    public class UiPadsController : SingleController {
 
         [SerializeField] private bool _onlyUpdateItemsThatHaveChanges = true;
         [SerializeField] private bool _onlyUpdateItemWhenStateChanged = true;
-        [SerializeField] private PadsDisplayView _view;
+        [SerializeField] private UiPadsView _view;
         [SerializeField] private bool _testScreenInputs;
         
-        private PadsDisplayModel _model;
+        private UiPadsModel _model;
         
         private InputController _screenInput;
         private GameplayController _playerInput;
 
         protected override Task Initialize() {
             
-            Init();//playerAbilities);
-
             if (_testScreenInputs) {
                 RegisterScreenEvents();
             }
             
             return Task.CompletedTask;
         }
+        
+        protected override void Clean() {
+            
+            DeregisterScreenEvents();
+            DeregisterCharacterEvents();
+        }
 
         public void Init(Character2DController hero = null) {
 
-            _model = new PadsDisplayModel(hero, _onlyUpdateItemsThatHaveChanges, _onlyUpdateItemWhenStateChanged);
+            _model = new UiPadsModel(hero, _onlyUpdateItemsThatHaveChanges, _onlyUpdateItemWhenStateChanged);
 
             if (hero?.Stats != null) {
                 
@@ -44,6 +49,27 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
 
             _view.SetModel(_model);
         }
+        
+        public bool TryBindToCharacter(GameplayController character) {
+
+            if (_playerInput != null) {
+                return false;
+            }
+
+            if (character == null) {
+                Debug.LogError("Touch display has no available character events for input");
+                return false;
+            }
+
+            if (_screenInput != null) {
+                DeregisterScreenEvents();
+            }
+
+            _playerInput = character;
+
+            return RegisterCharacterEvents(character);
+        }
+        
 
         private void DefineDependents(CharacterStats stats, 
             out List<Definitions.ActionType> downKeyDependents, out List<Definitions.ActionType> upKeyDependents, out List<Definitions.ActionType> characterStateDependents) {
@@ -84,38 +110,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
             }
         }
 
-        protected override void Clean() {
-            
-            DeregisterScreenEvents();
-            DeregisterCharacterEvents();
-        }
-
-        public bool TryBindToCharacterController(GameplayController character) {
-            return RegisterCharacterEvents(character);
-        }
-        
         private bool RegisterCharacterEvents(GameplayController character) {
-
-            if (_playerInput != null) {
-                return false;
-            }
-
-            if (character == null) {
-                Debug.LogError("Touch display has no available character events for input");
-                return false;
-            }
-
-            _playerInput = character;
 
             _playerInput.OnTouchPadDown += OnPadDown;
             _playerInput.OnTouchPadClick += OnPadClicked;
             _playerInput.OnTouchPadUp += OnPadUp;
             _playerInput.OnStateChanged += OnStateChanged;
-
-            // clean previous screen events to prevent duplicates
-            if (_screenInput != null) {
-                DeregisterScreenEvents();
-            }
             
             return true;
         }
@@ -255,5 +255,4 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
         #endregion
         
     }
-
 }

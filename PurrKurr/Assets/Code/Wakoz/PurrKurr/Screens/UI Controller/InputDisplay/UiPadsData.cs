@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
 
-namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
-    public class TouchPadsConfig {
+namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
+    public class UiPadsData {
         
-        public TouchPadConfig MovementPadConfig { get; private set; }
-        public TouchPadConfig JumpPadConfig { get; private set; }
-        public TouchPadConfig AttackPadConfig { get; private set; }
-        public TouchPadConfig BlockPadConfig { get; private set; }
-        public TouchPadConfig GrabPadConfig { get; private set; }
-        public TouchPadConfig ProjectilePad { get; private set; }
-        public TouchPadConfig RopePadConfig { get; private set; }
-        public TouchPadConfig SupurrPadConfig { get; private set; }
+        public UiPadData MovementPadConfig { get; private set; }
+        public UiPadData JumpPadConfig { get; private set; }
+        public UiPadData AttackPadConfig { get; private set; }
+        public UiPadData BlockPadConfig { get; private set; }
+        public UiPadData GrabPadConfig { get; private set; }
+        public UiPadData ProjectilePad { get; private set; }
+        public UiPadData RopePadConfig { get; private set; }
+        public UiPadData SupurrPadConfig { get; private set; }
 
-        public TouchPadsConfig(List<TouchPadConfig> configs)
-        {
+        public UiPadsData(List<UiPadData> configs) {
+
             foreach (var config in configs) {
                 switch (config.actionType) {
                     
@@ -61,14 +61,15 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
         }
 
         private void FillEmptyConfigAsUnavailable() {
-            MovementPadConfig ??= new TouchPadConfig(Definitions.ActionType.Movement);
-            JumpPadConfig ??= new TouchPadConfig(Definitions.ActionType.Jump);
-            AttackPadConfig ??= new TouchPadConfig(Definitions.ActionType.Attack);
-            BlockPadConfig ??= new TouchPadConfig(Definitions.ActionType.Block);
-            GrabPadConfig ??= new TouchPadConfig(Definitions.ActionType.Grab);
-            ProjectilePad ??= new TouchPadConfig(Definitions.ActionType.Projectile);
-            RopePadConfig ??= new TouchPadConfig(Definitions.ActionType.Rope);
-            SupurrPadConfig ??= new TouchPadConfig(Definitions.ActionType.Special);
+
+            MovementPadConfig ??= new UiPadData(Definitions.ActionType.Movement);
+            JumpPadConfig ??= new UiPadData(Definitions.ActionType.Jump);
+            AttackPadConfig ??= new UiPadData(Definitions.ActionType.Attack);
+            BlockPadConfig ??= new UiPadData(Definitions.ActionType.Block);
+            GrabPadConfig ??= new UiPadData(Definitions.ActionType.Grab);
+            ProjectilePad ??= new UiPadData(Definitions.ActionType.Projectile);
+            RopePadConfig ??= new UiPadData(Definitions.ActionType.Rope);
+            SupurrPadConfig ??= new UiPadData(Definitions.ActionType.Special);
         }
 
     }

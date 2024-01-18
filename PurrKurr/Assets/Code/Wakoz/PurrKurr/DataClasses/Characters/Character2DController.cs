@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
-    [DefaultExecutionOrder(14)]
+    [DefaultExecutionOrder(15)]
     public class Character2DController : Controller, IInteractableBody {
 
         public event Action<List<DisplayedableStatData>> OnUpdatedStats;

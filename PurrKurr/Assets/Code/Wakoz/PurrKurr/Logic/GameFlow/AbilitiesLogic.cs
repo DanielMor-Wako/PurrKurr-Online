@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
-using Code.Wakoz.PurrKurr.Screens.Ui_Controller;
+using Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
@@ -19,16 +19,16 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
             _actionPadsData = Data.GetActionPadsData();
         }
 
-        public TouchPadsConfig GetTouchPadsConfig(IEnumerable<Definitions.ActionType> padTypesToRetrieve) {
+        public UiPadsData GetTouchPadsConfig(IEnumerable<Definitions.ActionType> padTypesToRetrieve) {
 
             var actionPads = (from actionPad in padTypesToRetrieve
                 from actionPadData in _actionPadsData
                 where actionPadData.ActionType == actionPad
-                select new TouchPadConfig(actionPadData.ActionType,
+                select new UiPadData(actionPadData.ActionType,
                     true,
                     actionPadData.PadType == Definitions.PadType.Flexible)).ToList();
 
-            return new TouchPadsConfig(actionPads);
+            return new UiPadsData(actionPads);
         }
 
         public bool IsAimPadAvailableForActionOfType(Definitions.ActionType actionType) {
