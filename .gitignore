@@ -25,6 +25,10 @@ ExportedObj/
 *.opendb
 *.VC.db
 
+# Unity3D local user generated settings
+*.log
+*.dwlt
+
 # Unity3D generated meta files
 *.pidb.meta
 *.pdb.meta
