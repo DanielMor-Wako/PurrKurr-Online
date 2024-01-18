@@ -103,6 +103,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             Supurr = 2,
         }
 
+        public enum Character2DFacingRightType {
+            Auto = 0,
+            FixedLeft = 1,
+            FixedRight = 2,
+        }
+
         public enum CharacterState {
             Spawned,
             UninterruptibleAnimation,

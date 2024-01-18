@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
@@ -152,7 +153,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public bool TryGetAttack(Definitions.AttackAbility attackAbility, out AttackBaseStats attackStats) {
 
             attackStats = new AttackBaseStats();
-            return IsAttackAvailable(attackAbility) && GetAttackProperties(attackAbility, ref attackStats);
+
+            if (!IsAttackAvailable(attackAbility)) { 
+                return false;
+            }
+            
+            GetAttackProperties(attackAbility, ref attackStats);
+            Debug.Log("returned attackStats for " + attackAbility);
+            return true;
         }
 
         public bool GetAttackProperties(Definitions.AttackAbility attackAbility, ref AttackBaseStats attackProperties) {

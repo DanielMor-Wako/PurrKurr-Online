@@ -25,7 +25,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         [SerializeField] private CameraFollow _cam;
         [SerializeField] private Character2DController _hero;
-        private bool _heroInitialized;
+
+        private bool _heroInitialized = false;
+        private bool _gameRunning = false;
 
         private LogicController _logic;
         private InputController _input;
@@ -65,7 +67,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _whatIsDamageableCharacter = _logic.GameplayLogic.GetDamageables();
 
             TryInitHero();
-            
+
+            _gameRunning = true;
+
             return Task.CompletedTask;
         }
 
@@ -135,6 +139,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         protected override void Clean() {
 
             DeregisterInputEvents();
+
+            _gameRunning = false;
 
             if (_hero == null) {
                 return;
@@ -280,7 +286,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             var newFacingDirection = 0;
             var attackAbility = _logic.AbilitiesLogic.GetAttackAbility(_hero.GetNavigationDir(), actionType, _hero.State.CurrentState);
-            
+
             if (_hero.Stats.TryGetAttack(attackAbility, out var attackProperties)) {
 
                 SetSingleOrMultipleTargets(attacker.GetGrabbedTarget(), ref attackProperties, ref interactedColliders);
@@ -337,7 +343,19 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             var foeState = foe.GetCurrentState();
 
-            if (ValidateAttackConditions(attackProperties, attacker.State, foe)) {
+            var attackAvailable = ValidateAttackConditions(attackProperties, attacker.State, foe);
+            if (!attackAvailable) {
+                // todo: prevent from multi hit when altering attack
+                var alternativeAttackAvailable = ValidateAlternativeAttackConditions(ref attackAbility, ref attackProperties, attacker.State);
+                if (alternativeAttackAvailable) {
+                    attackAvailable = attacker.Stats.TryGetAttack(attackAbility, out var alternativeAttackProperties);
+                    if (attackAvailable) { attackProperties = alternativeAttackProperties; }
+                } else {
+                    Debug.Log($"no alternative attack for {attackAbility}");
+                }
+            }
+            
+            if (attackAvailable) {
 
                 facingRightOrLeftTowardsPoint = foe.GetCenterPosition().x > attacker.LegsPosition.x ? 1 : -1;
                 
@@ -473,9 +491,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             var grabbedColl = grabbed.GetCollider();
             var legsRadius = ((CircleCollider2D)grabbedColl).radius;
 
-            while (grabbedVelocity.magnitude > 1) {
+            while (_gameRunning && grabbedVelocity.magnitude > 1) {
 
-                Debug.Log(" as damager -> Mag: " + grabbedVelocity.magnitude);
+                //Debug.Log("as damager -> Mag: " + grabbedVelocity.magnitude);
                 legsPosition = grabbed.GetCenterPosition();
 
                 var solidOutRadiusObjectsColliders =
@@ -526,7 +544,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             foreach (var condition in attack.CharacterStateConditions) {
 
                 switch (condition) {
-                    case Definitions.CharacterState.Running when state != Definitions.CharacterState.Running:
+                    case Definitions.CharacterState.Running when !characterState.IsStateConsideredAsRunning():
                     case Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling when !(characterState.IsStateConsideredAsAerial()):
                     case Definitions.CharacterState.Grounded when !characterState.IsStateConsideredAsGrounded():
                     case Definitions.CharacterState.Crouching when state != Definitions.CharacterState.Crouching:
@@ -559,6 +577,35 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
 
             return true;
+        }
+
+        private bool ValidateAlternativeAttackConditions(ref Definitions.AttackAbility attackAbility, ref AttackBaseStats attack, Character2DState characterState) {
+
+            var state = characterState.CurrentState;
+            Debug.Log($"checking matching alternative Attack for {attackAbility}");
+            foreach (var condition in attack.CharacterStateConditions) {
+                Debug.Log($"checking condition {condition} is considered ? {characterState.Velocity.magnitude}");
+                switch (condition) {
+
+                    case Definitions.CharacterState.Running when !characterState.IsStateConsideredAsRunning():
+                        attackAbility = Definitions.AttackAbility.LightAttackAlsoDefaultAttack;
+                        return true;
+
+                    case var _ when condition is Definitions.CharacterState.StandingUp or Definitions.CharacterState.Crouching && characterState.IsStateConsideredAsAerial():
+                        if (attackAbility is Definitions.AttackAbility.MediumAttack or Definitions.AttackAbility.HeavyAttack) {
+                            attackAbility = Definitions.AttackAbility.AerialAttack;
+                            return true;
+
+                        } else if (attackAbility is Definitions.AttackAbility.MediumGrab or Definitions.AttackAbility.HeavyGrab) {
+                            attackAbility = Definitions.AttackAbility.AerialGrab;
+                            return true;
+                        }
+                        break;
+                }
+
+            }
+
+            return false;
         }
 
         private async void ApplyForceOnFoeWithDelay(IInteractableBody damageableBody, AttackStats attackStats, int delayInMilliseconds = 0) {

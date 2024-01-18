@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
-    
+namespace Code.Wakoz.PurrKurr.DataClasses.Characters
+{
+
     [RequireComponent(typeof(Collider2D))]
     public class CharacterSenses : MonoBehaviour {
 
@@ -35,5 +37,4 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private void OnTriggerExit2D(Collider2D coll) => _nearbyCharacters.Remove(coll);
 
     }
-
 }

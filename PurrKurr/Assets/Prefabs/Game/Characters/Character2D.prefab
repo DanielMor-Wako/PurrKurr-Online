@@ -126,6 +126,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2630243207334590754}
+  - component: {fileID: 1538035420728740240}
   m_Layer: 14
   m_Name: Animator
   m_TagString: Untagged
@@ -149,6 +150,20 @@ Transform:
   - {fileID: 3126293261744618087}
   m_Father: {fileID: 1430143296687424090}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1538035420728740240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 733992354867076685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2917c84bf05547d46815910db3f1d2f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  QuaterminionOffsetAngle: 180
+  _rigTrasform: {fileID: 3126293261744618087}
 --- !u!1 &1285822558650417320
 GameObject:
   m_ObjectHideFlags: 0
@@ -313,9 +328,8 @@ MonoBehaviour:
   _cling: {fileID: 6444996095843582384}
   _transformMover: {fileID: 1599996382888620125}
   _senses: {fileID: 3808448624113249814}
-  _body: {fileID: 2630243207334590754}
   _bodyDamager: {fileID: 5343545469360264959}
-  _animator: {fileID: 2630243207334590754}
+  _rigAnimator: {fileID: 1538035420728740240}
   QuaterminionOffsetAngle: 180
 --- !u!114 &1599996382888620125
 MonoBehaviour:

@@ -20,16 +20,15 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         [SerializeField] private CharacterStats _stats;
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private CircleCollider2D _legsCollider;
-        private Rigidbody2D _legsRigidBody;
         [SerializeField] private WheelJoint2D _legs;
         [SerializeField] private HingeJoint2D _cling;
         [SerializeField] private JointMotor2D _motor;
         [SerializeField] private TransformMover _transformMover;
         [SerializeField] private CharacterSenses _senses;
-        [SerializeField] private Transform _body;
         [SerializeField] private Transform _bodyDamager;
-        [SerializeField] private Transform _animator;
-        [SerializeField][Range(0,360)] private float QuaterminionOffsetAngle = 180;
+        [SerializeField] private Character2DRig _rigAnimator;
+
+        private Rigidbody2D _legsRigidBody;
 
         private Vector3 NewPositionToSetOnFixedUpdte;
         private Vector2 ForceDirToSetOnFixedUpdate;
@@ -128,11 +127,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private void UpdateStats(int level) {
 
             _stats.UpdateStats(level);
-            
-            if (_body != null) {
-                _body.localScale = new Vector3(_stats.BodySize, _stats.BodySize, 1);
-            }
 
+            if (_rigAnimator != null) {
+                _rigAnimator.UpdateBodyScale(_stats.BodySize);
+            }
         }
 
         protected override Task Initialize() {
@@ -153,6 +151,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _senses.Init(_whatIsDamageableCharacter, _whatIsDamageable);
             
             _stats.InitUpgrades();
+            _rigAnimator?.Init();
+
             SetMinLevel();
             OnUpdatedStats?.Invoke(null);
 
@@ -326,6 +326,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         
         public void FaceCharacterTowardsPoint(bool facingRight) {
             _characterState.SetFacingRight(facingRight);
+            _rigAnimator.SetFacingRight(facingRight);
         }
 
         public Collider2D GetCollider() => this != null ? _legsCollider ?? null : null;
@@ -435,6 +436,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         
         public void SetProjectileState(bool isActive) {
             
+            if (_bodyDamager == null) {
+                return;
+            }
+
             _bodyDamager.gameObject.SetActive(isActive);
         }
 
@@ -457,17 +462,21 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         private void UpdateAnimatorRigRotation() {
 
-            if (_animator == null) {
+            if (_rigAnimator == null) {
                 return;
             }
 
             var isAlive = Stats.Health > 0;
-            var offsetQuaternion = Quaternion.Euler(0f, 0f, isAlive ? QuaterminionOffsetAngle : 0);
-            var newRotation = Quaternion.Lerp(_animator.gameObject.transform.rotation,
+            _rigAnimator.UpdateRigRotation(isAlive, _characterState.ReturnForwardDirByTerrainQuaternion());
+
+            /*var isAlive = Stats.Health > 0;
+            var facingRightAngle = _characterState.IsFacingRight() ? 180 : 0;
+            var offsetQuaternion = Quaternion.Euler(0f, 0f, isAlive ? QuaterminionOffsetAngle + facingRightAngle : 0);
+            var newRotation = Quaternion.Lerp(_rigAnimator.gameObject.transform.rotation,
                 _characterState.ReturnForwardDirByTerrainQuaternion() * offsetQuaternion,
                 Time.deltaTime * 10f);
 
-            _animator.gameObject.transform.rotation = newRotation;
+            _rigAnimator.gameObject.transform.rotation = newRotation;*/
         }
 
         private void UpdateCharacterState() {

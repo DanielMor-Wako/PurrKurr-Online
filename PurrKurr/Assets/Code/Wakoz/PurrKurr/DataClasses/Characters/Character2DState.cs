@@ -313,8 +313,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
 
         public bool IsStateConsideredAsAerial(Definitions.CharacterState specificState) => specificState is Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling;
 
+        public bool IsStateConsideredAsRunning() => _currentState is Definitions.CharacterState.Running && (_velocity.magnitude > 25);
+
         public int GetFacingRightAsInt() => _facingRight ? 1 : -1;
-        
+
+        public bool IsFacingRight() => _facingRight;
+
         public void SetFacingRight(bool isFacingRight) {
             _facingRight = isFacingRight;
         }

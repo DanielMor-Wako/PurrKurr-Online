@@ -258,6 +258,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6620324264506981072}
+  - component: {fileID: 7174655915676347284}
   m_Layer: 14
   m_Name: Animator
   m_TagString: Untagged
@@ -281,6 +282,21 @@ Transform:
   - {fileID: 6485795667414535585}
   m_Father: {fileID: 3236827222920665835}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7174655915676347284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 339265425350640576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2917c84bf05547d46815910db3f1d2f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  QuaterminionOffsetAngle: 0
+  _rigTrasform: {fileID: 6485795667414535585}
+  _facingType: 2
 --- !u!1 &348951609708312295
 GameObject:
   m_ObjectHideFlags: 0
@@ -1125,10 +1141,8 @@ MonoBehaviour:
   _cling: {fileID: 3525642732723362180}
   _transformMover: {fileID: 2357775670195446914}
   _senses: {fileID: 3660742386881049053}
-  _body: {fileID: 1091843026443378303}
   _bodyDamager: {fileID: 0}
-  _animator: {fileID: 1091843026443378303}
-  QuaterminionOffsetAngle: 0
+  _rigAnimator: {fileID: 8916649488227521304}
 --- !u!114 &2357775670195446914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1951,10 +1965,8 @@ MonoBehaviour:
   _cling: {fileID: 6869944203213441617}
   _transformMover: {fileID: 5581913081289377731}
   _senses: {fileID: 2542582449450402763}
-  _body: {fileID: 1722739606484860357}
   _bodyDamager: {fileID: 0}
-  _animator: {fileID: 1722739606484860357}
-  QuaterminionOffsetAngle: 0
+  _rigAnimator: {fileID: 3304314731507889674}
 --- !u!114 &5581913081289377731
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2649,10 +2661,8 @@ MonoBehaviour:
   _cling: {fileID: 3925454879094188634}
   _transformMover: {fileID: 3864677404056224898}
   _senses: {fileID: 8708406535735642285}
-  _body: {fileID: 6620324264506981072}
   _bodyDamager: {fileID: 0}
-  _animator: {fileID: 6620324264506981072}
-  QuaterminionOffsetAngle: 0
+  _rigAnimator: {fileID: 7174655915676347284}
 --- !u!114 &3864677404056224898
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2751,6 +2761,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1722739606484860357}
+  - component: {fileID: 3304314731507889674}
   m_Layer: 14
   m_Name: Animator
   m_TagString: Untagged
@@ -2774,6 +2785,21 @@ Transform:
   - {fileID: 1859354666387484510}
   m_Father: {fileID: 9068848552757624866}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3304314731507889674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5499840056644531518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2917c84bf05547d46815910db3f1d2f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  QuaterminionOffsetAngle: 0
+  _rigTrasform: {fileID: 1859354666387484510}
+  _facingType: 2
 --- !u!1 &5506705764263556617
 GameObject:
   m_ObjectHideFlags: 0
@@ -5221,6 +5247,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1091843026443378303}
+  - component: {fileID: 8916649488227521304}
   m_Layer: 14
   m_Name: Animator
   m_TagString: Untagged
@@ -5244,6 +5271,21 @@ Transform:
   - {fileID: 4892908732213932660}
   m_Father: {fileID: 896679108507327595}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8916649488227521304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8447206696896633503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2917c84bf05547d46815910db3f1d2f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  QuaterminionOffsetAngle: 0
+  _rigTrasform: {fileID: 4892908732213932660}
+  _facingType: 2
 --- !u!1 &8680334930233756645
 GameObject:
   m_ObjectHideFlags: 0
@@ -6260,6 +6302,10 @@ PrefabInstance:
     - target: {fileID: 6742107989765782703, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_Name
       value: UI Controllers
+      objectReference: {fileID: 0}
+    - target: {fileID: 7371201212619044444, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -93.99997
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
