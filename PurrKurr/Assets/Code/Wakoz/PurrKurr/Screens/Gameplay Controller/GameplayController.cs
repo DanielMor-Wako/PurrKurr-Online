@@ -228,44 +228,49 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         }
 
         private void OnActionOngoing(ActionInput actionInput) {
-            
-            if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, false, false,
-                    out var moveSpeed, out var forceDirNavigation, out var navigationDir)) {
+
+            if (_hero.State.CanPerformAction()) {
+
+                if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, false, false,
+                        out var moveSpeed, out var forceDirNavigation, out var navigationDir)) {
                 
-                _hero.DoMove(moveSpeed);
-                _hero.SetForceDir(forceDirNavigation);
-                _hero.SetNavigationDir(navigationDir);
+                    _hero.DoMove(moveSpeed);
+                    _hero.SetForceDir(forceDirNavigation);
+                    _hero.SetNavigationDir(navigationDir);
+                }
+            
+                /*if (_inputInterpreterLogic.DiagnosePlayerInputAction(actionInput, false, false,
+                        out var isActionPerformed, out Vector2 forceDirAction, out Vector2 moveToPosition, out Collider2D interactedCollider)) {
+                
+                }*/
             }
-            
-            /*if (_inputInterpreterLogic.DiagnosePlayerInputAction(actionInput, false, false,
-                    out var isActionPerformed, out Vector2 forceDirAction, out Vector2 moveToPosition, out Collider2D interactedCollider)) {
-                
-            }*/
 
             OnTouchPadClick?.Invoke(actionInput);
         }
 
         private void OnActionEnded(ActionInput actionInput) {
-            
-            if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, false, true,
-                    out var moveSpeed, out Vector2 forceDirNavigation, out var navigationDir)) {
+
+            if (_hero.State.CanPerformAction()) {
+
+                if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, false, true,
+                        out var moveSpeed, out Vector2 forceDirNavigation, out var navigationDir)) {
                 
-                _hero.DoMove(moveSpeed);
-                _hero.SetForceDir(forceDirNavigation);
-                _hero.SetNavigationDir(Definitions.NavigationType.None);
-            }
-            
-            if (_inputInterpreterLogic.TryPerformInputAction(actionInput, false, true,
-                    out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedCollider)) {
-                
-                if (forceDir != Vector2.zero) {
-                    // might conflict with the DiagnosePlayerInputNavigation when the forceDir is already set by Navigation
-                    _hero.SetForceDir(forceDir, true);
+                    _hero.DoMove(moveSpeed);
+                    _hero.SetForceDir(forceDirNavigation);
+                    _hero.SetNavigationDir(Definitions.NavigationType.None);
                 }
-                _hero.SetNewPosition(moveToPosition);
+            
+                if (_inputInterpreterLogic.TryPerformInputAction(actionInput, false, true,
+                        out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedCollider)) {
+                
+                    if (forceDir != Vector2.zero) {
+                        // might conflict with the DiagnosePlayerInputNavigation when the forceDir is already set by Navigation
+                        _hero.SetForceDir(forceDir, true);
+                    }
+                    _hero.SetNewPosition(moveToPosition);
 
+                }
             }
-
             OnTouchPadUp?.Invoke(actionInput);
         }
 /*
