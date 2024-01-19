@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
