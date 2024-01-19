@@ -6929,6 +6929,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Character2D
       objectReference: {fileID: 0}
+    - target: {fileID: 4404013041396161231, guid: cfa9a85aae8076f4f842023340fa451a, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6444996095843582384, guid: cfa9a85aae8076f4f842023340fa451a, type: 3}
       propertyPath: m_ConnectedRigidBody
       value: 
