@@ -204,6 +204,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     }
                     
                 }
+            } else {
+                _hero.DoMove(0);
             }
             
             OnTouchPadDown?.Invoke(actionInput);
@@ -250,7 +252,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         private void OnActionEnded(ActionInput actionInput) {
 
-            if (_hero.State.CanPerformAction()) {
+            //if (_hero.State.CanPerformAction()) {
 
                 if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, false, true,
                         out var moveSpeed, out Vector2 forceDirNavigation, out var navigationDir)) {
@@ -270,7 +272,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     _hero.SetNewPosition(moveToPosition);
 
                 }
-            }
+            //}
             OnTouchPadUp?.Invoke(actionInput);
         }
 /*
