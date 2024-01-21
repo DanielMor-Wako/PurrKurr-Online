@@ -53,33 +53,33 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private Collider2D[] _solidObjectsColliders;
         private Collider2D[] _solidOutRadiusObjectsColliders;
 
-        public Collider2D[] NearbyCharacters() {
+        public Collider2D[] NearbyInteractables() {
  
-            var _nearbyCharacters = _senses.NearbyCharacters();
+            var _nearbyInteractions = _senses.NearbyInteractables();
 
-            if (_nearbyCharacters == null || _legsCollider == null) {
+            if (_nearbyInteractions == null || _legsCollider == null) {
                 return null;
             }
-            var potentialFoes = _nearbyCharacters.Where(potentialFoe => potentialFoe != _legsCollider);
-            List<Collider2D> validFoes = new();
+            var potentialInteractions = _nearbyInteractions.Where(potentialFoe => potentialFoe != _legsCollider);
+            List<Collider2D> validInteractables = new();
 
-            foreach (var potentialFoe in potentialFoes) {
+            foreach (var interaction in potentialInteractions) {
             
-                var foePosition = potentialFoe.transform.position;
-                var dirFromCharacterToFoe = (foePosition - LegsPosition).normalized;
+                var objPosition = interaction.transform.position;
+                var dirFromCharacterToFoe = (objPosition - LegsPosition).normalized;
 
                 var blockingObjectsInAttackDirection = Physics2D.Raycast(LegsPosition,
                     dirFromCharacterToFoe,
-                    Vector2.Distance(foePosition, LegsPosition), _whatIsSolid);
+                    Vector2.Distance(objPosition, LegsPosition), _whatIsSolid);
 
                 if (blockingObjectsInAttackDirection.collider != null) {
                     continue;
                 }
             
-                validFoes.Add(potentialFoe);
+                validInteractables.Add(interaction);
             }
         
-            return validFoes.ToArray();
+            return validInteractables.ToArray();
         }
 
 

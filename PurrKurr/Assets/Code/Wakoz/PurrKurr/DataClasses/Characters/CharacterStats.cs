@@ -107,43 +107,44 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             var percentage = GetLevelProgressAsPercent(level);
             
             Health =
-                Mathf.RoundToInt(CalculateStateWithinMinMax(percentage, _baseStats.Data.HealthBasevalues));
+                Mathf.RoundToInt(CalculateWithinMinMaxRange(percentage, _baseStats.Data.HealthBasevalues));
 
             MaxHealth = Health;
 
             Damage = 
-                Mathf.RoundToInt(CalculateStateWithinMinMax(percentage, _baseStats.Data.DamageBasevalues));
+                Mathf.RoundToInt(CalculateWithinMinMaxRange(percentage, _baseStats.Data.DamageBasevalues));
             
             PushbackForce = 
-                (CalculateStateWithinMinMax(percentage, _baseStats.Data.PushbackForceBasevalues));
+                (CalculateWithinMinMaxRange(percentage, _baseStats.Data.PushbackForceBasevalues));
             
             WalkSpeed =
-                (CalculateStateWithinMinMax(percentage, _baseStats.Data.WalkSpeedBasevalues));
+                (CalculateWithinMinMaxRange(percentage, _baseStats.Data.WalkSpeedBasevalues));
             
             RunSpeed =
-                (CalculateStateWithinMinMax(percentage, _baseStats.Data.RunSpeedBasevalues));
+                (CalculateWithinMinMaxRange(percentage, _baseStats.Data.RunSpeedBasevalues));
             
             SprintSpeed =
-                (CalculateStateWithinMinMax(percentage, _baseStats.Data.SprintSpeedBasevalues));
+                (CalculateWithinMinMaxRange(percentage, _baseStats.Data.SprintSpeedBasevalues));
 
             JumpForce =
-                (CalculateStateWithinMinMax(percentage, _baseStats.Data.JumpForceBasevalues));
+                (CalculateWithinMinMaxRange(percentage, _baseStats.Data.JumpForceBasevalues));
             
             AirborneSpeed =
-                (CalculateStateWithinMinMax(percentage, _baseStats.Data.airborneSpeedBasevalues));
+                (CalculateWithinMinMaxRange(percentage, _baseStats.Data.airborneSpeedBasevalues));
 
             AirborneMaxSpeed =
-                (CalculateStateWithinMinMax(percentage, _baseStats.Data.airborneMaxSpeedBasevalues));
+                (CalculateWithinMinMaxRange(percentage, _baseStats.Data.airborneMaxSpeedBasevalues));
 
             MultiTargetsDistance =
-                (CalculateStateWithinMinMax(percentage, _baseStats.Data.multiTargetsDistanceBasevalues));
+                (CalculateWithinMinMaxRange(percentage, _baseStats.Data.multiTargetsDistanceBasevalues));
 
             // todo: add the body size to the characterBaseStatsData
             var minBodySize = 0.7f;
             BodySize = (1 - minBodySize) * percentage + minBodySize;
         }
 
-        private float CalculateStateWithinMinMax(float percentage, Vector2 minMaxValue) {
+        private float CalculateWithinMinMaxRange(float percentage, Vector2 minMaxValue) {
+
             var minValue = minMaxValue[0];
             var maxValue = minMaxValue[1];
             return (minValue + (percentage * (maxValue-minValue)));

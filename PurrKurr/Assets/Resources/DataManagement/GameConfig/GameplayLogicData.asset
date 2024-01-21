@@ -30,3 +30,6 @@ MonoBehaviour:
   WhatIsTraversableClingable:
     serializedVersion: 2
     m_Bits: 32768
+  CharacterStatesConsideredAsGrounded: 0300000004000000050000000b00000006000000
+  CharacterStatesConsideredAsAerial: 0c0000000d000000
+  MinMagnitudeConsideredAsRunnin: 25

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters
 {
@@ -10,7 +9,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
 
         [SerializeField] private CircleCollider2D _senses;
 
-        private List<Collider2D> _nearbyCharacters = new();
+        private List<Collider2D> _nearbyInteractables = new();
 
         private LayerMask _whatIsDamageableCharacter;
         private LayerMask _whatIsDamageable;
@@ -23,18 +22,18 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
             _whatIsDamageable = whatIsDamageable;
         }
 
-        public Collider2D[] NearbyCharacters() {
+        public Collider2D[] NearbyInteractables() {
 
-            if (_nearbyCharacters == null) {
+            if (_nearbyInteractables == null) {
                 return null;
             }
 
-            return _nearbyCharacters.ToArray();
+            return _nearbyInteractables.ToArray();
         }
 
-        private void OnTriggerEnter2D(Collider2D coll) => _nearbyCharacters.Add(coll);
+        private void OnTriggerEnter2D(Collider2D coll) => _nearbyInteractables.Add(coll);
 
-        private void OnTriggerExit2D(Collider2D coll) => _nearbyCharacters.Remove(coll);
+        private void OnTriggerExit2D(Collider2D coll) => _nearbyInteractables.Remove(coll);
 
     }
 }

@@ -5,88 +5,99 @@ using Code.Wakoz.PurrKurr.Screens.Ui_Controller;
 using UnityEngine;
 using System.Linq;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
+
 // todo: move to a better namespace like player input
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
     public class InputInterpreterLogic {
 
-        private Character2DController _hero;
         private InputLogic _inputLogic;
         private GameplayLogic _gameplayLogic;
 
-        public InputInterpreterLogic(Character2DController hero, InputLogic inputLogic, GameplayLogic gameplayLogic) {
-            _hero = hero;
+        public InputInterpreterLogic(InputLogic inputLogic, GameplayLogic gameplayLogic) {
+
             _inputLogic = inputLogic;
             _gameplayLogic = gameplayLogic;
         }
 
-        public bool TryPerformInputNavigation(ActionInput actionInput, bool started, bool ended,
+        public bool TryPerformInputNavigation(ActionInput actionInput, bool started, bool ended, Character2DController character, 
             out float moveSpeed, out Vector2 forceDirToSetOnFixedUpdate, out Definitions.NavigationType navigationDir) {
             
             moveSpeed = 0;
             forceDirToSetOnFixedUpdate = Vector2.zero;
             navigationDir = Definitions.NavigationType.None;
-            
-            if (_hero == null || actionInput.ActionGroupType != Definitions.ActionTypeGroup.Navigation) {
+
+            if (character == null || actionInput.ActionGroupType != Definitions.ActionTypeGroup.Navigation) {
                 return false;
             }
+
+            var state = character.State;
+            var stats = character.Stats;
 
             navigationDir = _inputLogic.GetInputDirection(actionInput.NormalizedDirection);
             
             if (ended) {
-                _hero.State.SetCrouchOrStandingByUpDownInput(Definitions.NavigationType.None);
+                state.SetCrouchOrStandingByUpDownInput(Definitions.NavigationType.None);
                 return true;
             }
-            
-            _hero.State.SetCrouchOrStandingByUpDownInput(navigationDir);
-            
-            if ( (_hero.State.IsCeiling() || _hero.State.IsFrontWall()) && navigationDir != Definitions.NavigationType.None) {
-                // full charge towards walls when any nav pad is held
-                moveSpeed = -_hero.Stats.SprintSpeed * (_inputLogic.IsNavigationDirValidAsRight(navigationDir) ? 1 : -1);
+
+            state.SetCrouchOrStandingByUpDownInput(navigationDir);
+            var isGrabbing = state.IsGrabbing();
+
+            // full charge towards walls when any nav pad is held
+            if (!isGrabbing && (state.IsCeiling() || state.IsFrontWall()) && navigationDir != Definitions.NavigationType.None) {
+                if (navigationDir == Definitions.NavigationType.Up) {
+                    moveSpeed = -stats.SprintSpeed * state.GetFacingRightAsInt();
+                } else {
+                    moveSpeed = -stats.SprintSpeed * (_inputLogic.IsNavigationDirValidAsRight(navigationDir) ? 1 : -1);
+                }
                 return true;
             }
 
             switch (navigationDir) {
-                case Definitions.NavigationType.Right:
-                    moveSpeed = -GetHorizontalSpeedBySwipeDistance(actionInput.SwipeDistanceTraveledInPercentage);
+                case var _ when 
+                navigationDir == Definitions.NavigationType.UpLeft || isGrabbing && _inputLogic.IsNavigationDirValidAsLeft(navigationDir):
+                    moveSpeed = stats.WalkSpeed;
                     break;
 
-                case Definitions.NavigationType.DownRight:
-                    moveSpeed = -_hero.Stats.WalkSpeed;
-                    break;
-                
-                case Definitions.NavigationType.UpRight:
-                    moveSpeed = -_hero.Stats.WalkSpeed;
-                    break;
-
-                case Definitions.NavigationType.Left:
-                    moveSpeed = GetHorizontalSpeedBySwipeDistance(actionInput.SwipeDistanceTraveledInPercentage);
+                case var _ when 
+                navigationDir == Definitions.NavigationType.UpRight || isGrabbing && _inputLogic.IsNavigationDirValidAsRight(navigationDir):
+                    moveSpeed = -stats.WalkSpeed;
                     break;
 
                 case Definitions.NavigationType.DownLeft:
-                    moveSpeed = _hero.Stats.WalkSpeed;
+                    moveSpeed = stats.WalkSpeed;
                     break;
                 
-                case Definitions.NavigationType.UpLeft:
-                    moveSpeed = _hero.Stats.WalkSpeed;
+                case Definitions.NavigationType.DownRight:
+                    moveSpeed = -stats.WalkSpeed;
                     break;
+                
+                case Definitions.NavigationType.Right:
+                    moveSpeed = -actionInput.SwipeDistanceTraveledInPercentage * stats.SprintSpeed;
+                    break;
+
+                case Definitions.NavigationType.Left:
+                    moveSpeed = actionInput.SwipeDistanceTraveledInPercentage * stats.SprintSpeed;
+                    break;
+
             }
 
             // Air-borne movement
-            var rigidbodyVelocity = _hero.State.Velocity;
-            if (rigidbodyVelocity.y < -1f && _hero.State.CurrentState == Definitions.CharacterState.Falling) {
+            var rigidbodyVelocity = state.Velocity;
+            if (rigidbodyVelocity.y < -1f && state.CurrentState == Definitions.CharacterState.Falling) {
                 switch (navigationDir) {
                     
                     case Definitions.NavigationType.Right or Definitions.NavigationType.DownRight or Definitions.NavigationType.UpRight
-                        when (rigidbodyVelocity.x < _hero.Stats.AirborneMaxSpeed):
+                        when (rigidbodyVelocity.x < stats.AirborneMaxSpeed):
 
-                        forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x + _hero.Stats.AirborneSpeed, rigidbodyVelocity.y);
+                        forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x + stats.AirborneSpeed, rigidbodyVelocity.y);
                         moveSpeed = 0;
                         return true;
                     
                     case Definitions.NavigationType.Left or Definitions.NavigationType.DownLeft or Definitions.NavigationType.UpLeft
-                        when rigidbodyVelocity.x > -_hero.Stats.AirborneMaxSpeed:
+                        when rigidbodyVelocity.x > -stats.AirborneMaxSpeed:
                         
-                        forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x - _hero.Stats.AirborneSpeed, rigidbodyVelocity.y);
+                        forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x - stats.AirborneSpeed, rigidbodyVelocity.y);
                         return true;
                 }
             }
@@ -94,12 +105,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             return true;
         }
 
-        private float GetHorizontalSpeedBySwipeDistance(float swipeDistanceDone) {
-
-            return swipeDistanceDone * _hero.Stats.SprintSpeed;
-        }
-
-        public bool TryPerformInputAction(ActionInput actionInput, bool started, bool ended,
+        public bool TryPerformInputAction(ActionInput actionInput, bool started, bool ended, Character2DController character, 
             out bool isActionPerformed, out Vector2 forceDirToSetOnFixedUpdate, out Vector2 newPositionToSetOnFixedUpdate, out Collider2D[] closestColliders ) {
 
             isActionPerformed = false;
@@ -107,29 +113,32 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             newPositionToSetOnFixedUpdate = Vector2.zero;
             closestColliders = null;
             
-            if (_hero == null || actionInput.ActionGroupType != Definitions.ActionTypeGroup.Action) {
+            if (character == null || actionInput.ActionGroupType != Definitions.ActionTypeGroup.Action) {
                 return false;
             }
 
-            var heroAsInteractableBody = (IInteractableBody)_hero;
+            var state = character.State;
+            var stats = character.Stats;
+
+            var heroAsInteractableBody = (IInteractableBody)character;
             if (started && actionInput.ActionType is Definitions.ActionType.Attack or Definitions.ActionType.Grab
                 && heroAsInteractableBody.IsGrabbing()) {
 
-                closestColliders = new Collider2D[] { _hero.GetGrabbedTarget().GetCollider() };
-                forceDirToSetOnFixedUpdate = new Vector2(_hero.State.GetFacingRightAsInt(), 1) * _hero.Stats.PushbackForce;
+                closestColliders = new Collider2D[] { character.GetGrabbedTarget().GetCollider() };
+                forceDirToSetOnFixedUpdate = new Vector2(state.GetFacingRightAsInt(), 1) * stats.PushbackForce;
                 isActionPerformed = true;
                 return true;
             }
 
-            var rigidbodyVelocity = _hero.State.Velocity;
+            var rigidbodyVelocity = state.Velocity;
             
             switch (actionInput.ActionType) {
                 
                 case Definitions.ActionType.Jump:
-                    if (!ended && _hero.State.CanPerformJump(_gameplayLogic.IsStateConsideredAsGrounded(_hero.State.CurrentState))) {
+                    if (!ended && state.CanPerformJump(_gameplayLogic.IsStateConsideredAsGrounded(state.CurrentState))) {
                         isActionPerformed = true;
-                        forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x, _hero.Stats.JumpForce);
-                    } else if (ended && _hero.State.Velocity.y > 0 && _hero.State.CurrentState == Definitions.CharacterState.Jumping) {
+                        forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x, stats.JumpForce);
+                    } else if (ended && state.Velocity.y > 0 && state.CurrentState == Definitions.CharacterState.Jumping) {
                         if (!(forceDirToSetOnFixedUpdate != Vector2.zero)) {
                             forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x, 0);
                         } else {//if (forceDirToSetOnFixedUpdate != Vector2.zero) {
@@ -140,13 +149,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                 case Definitions.ActionType.Attack:
 
-                    var nearbyEnemies = _hero.NearbyCharacters();
+                    var nearbyEnemies = character.NearbyInteractables();
                     if (nearbyEnemies == null || nearbyEnemies.Length == 0) {
                         return false;
                     }
 
-                    closestColliders = nearbyEnemies.OrderBy(obj 
-                        => Vector2.Distance(obj.transform.position, _hero.LegsPosition)).ToArray();
+                    closestColliders = nearbyEnemies.OrderBy(obj => Vector2.Distance(obj.transform.position, character.LegsPosition)).ToArray();
 
                     if (closestColliders == null) {
                         return false;
@@ -156,17 +164,17 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                         isActionPerformed = true;
                         var closestColl = closestColliders.FirstOrDefault();
-                        var legsPosition = _hero.LegsPosition;
+                        var legsPosition = character.LegsPosition;
                         var closestFoePosition = closestColl.ClosestPoint(legsPosition);
                         var dir = ((Vector3)closestFoePosition - legsPosition);
                         var directionTowardsFoe = (closestColl.transform.position.x > legsPosition.x) ? 1 : -1;
                         if (dir == Vector3.zero) {
                             dir = new Vector3(directionTowardsFoe, 0, 0);
                         }
-                        newPositionToSetOnFixedUpdate = closestFoePosition + (Vector2)dir.normalized * -(_hero.LegsRadius);
+                        newPositionToSetOnFixedUpdate = closestFoePosition + (Vector2)dir.normalized * -(character.LegsRadius);
                         Debug.DrawLine(legsPosition, newPositionToSetOnFixedUpdate, Color.green, 3);
                         dir = closestFoePosition - newPositionToSetOnFixedUpdate;
-                        forceDirToSetOnFixedUpdate = dir.normalized * _hero.Stats.PushbackForce;
+                        forceDirToSetOnFixedUpdate = dir.normalized * stats.PushbackForce;
                         return true;
                     }
                     
@@ -181,12 +189,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         return false;
                     }
                     
-                    var nearbyGrabables = _hero.NearbyCharacters();
+                    var nearbyGrabables = character.NearbyInteractables();
                     if (nearbyGrabables == null || nearbyGrabables.Length == 0) {
                         return false;
                     }
 
-                    closestColliders = nearbyGrabables.OrderBy(obj => Vector3.Distance(obj.transform.position, _hero.LegsPosition)).ToArray();
+                    closestColliders = nearbyGrabables.OrderBy(obj => Vector3.Distance(obj.transform.position, character.LegsPosition)).ToArray();
 
                     closestColliders = new Collider2D[] { closestColliders.FirstOrDefault() };
 
@@ -197,14 +205,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     if (started) {
 
                         isActionPerformed = true;
-                        var legsPosition = _hero.LegsPosition;
+                        var legsPosition = character.LegsPosition;
                         var closestFoePosition = closestColliders.FirstOrDefault().ClosestPoint(legsPosition);
-                        var dir = Vector2.up;//((Vector3)closestFoePosition - _hero.LegsPosition);
+                        var dir = Vector2.up;//((Vector3)closestFoePosition - character.LegsPosition);
 
-                        newPositionToSetOnFixedUpdate = closestFoePosition;// + Vector2.up * (_hero.LegsRadius);
-                        Debug.DrawLine(_hero.LegsPosition, newPositionToSetOnFixedUpdate, Color.green, 3);
+                        newPositionToSetOnFixedUpdate = closestFoePosition;// + Vector2.up * (character.LegsRadius);
+                        Debug.DrawLine(character.LegsPosition, newPositionToSetOnFixedUpdate, Color.green, 3);
                         //dir = closestFoePosition - newPositionToSetOnFixedUpdate;
-                        forceDirToSetOnFixedUpdate = dir.normalized * _hero.Stats.PushbackForce;
+                        forceDirToSetOnFixedUpdate = dir.normalized * stats.PushbackForce;
                         
                         return true;
                     }

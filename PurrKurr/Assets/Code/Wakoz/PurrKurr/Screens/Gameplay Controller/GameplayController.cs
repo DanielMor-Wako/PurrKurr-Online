@@ -51,9 +51,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _cam ??= Camera.main.GetComponent<CameraFollow>();
             
             _input = SingleController.GetController<InputController>();
-            _ui ??= SingleController.GetController<UIController>();
             _logic = SingleController.GetController<LogicController>();
+            _inputInterpreterLogic = new InputInterpreterLogic(_logic.InputLogic, _logic.GameplayLogic);
 
+            _ui ??= SingleController.GetController<UIController>();
             if (_ui.TryBindToCharacterController(this)) {
                 RegisterInputEvents();
             } else {
@@ -97,7 +98,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
 
             _hero = hero;
-            _inputInterpreterLogic = new InputInterpreterLogic(_hero, _logic.InputLogic, _logic.GameplayLogic);
+            
             SetHeroLevel(0);
             _cam.SetMainHero(_hero, true);
 
@@ -174,16 +175,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             
             if (_hero.State.CanPerformAction()) {
 
-                if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, true, false,
+                if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, true, false, _hero,
                         out var moveSpeed, out Vector2 forceDirNavigation, out var navigationDir)) {
-                
+
                     // save for later to be called on tick?
                     _hero.DoMove(moveSpeed);
                     _hero.SetForceDir(forceDirNavigation); // used for airborne, probably more accurate after the diagnosis
                     _hero.SetNavigationDir(navigationDir);
                 }
             
-                if (_inputInterpreterLogic.TryPerformInputAction(actionInput, true, false,
+                if (_inputInterpreterLogic.TryPerformInputAction(actionInput, true, false, _hero,
                         out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedColliders)) {
 
                     if (isActionPerformed && interactedColliders != null) {
@@ -233,9 +234,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             if (_hero.State.CanPerformAction()) {
 
-                if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, false, false,
+                if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, false, false, _hero, 
                         out var moveSpeed, out var forceDirNavigation, out var navigationDir)) {
-                
+
                     _hero.DoMove(moveSpeed);
                     _hero.SetForceDir(forceDirNavigation);
                     _hero.SetNavigationDir(navigationDir);
@@ -254,7 +255,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             //if (_hero.State.CanPerformAction()) {
 
-                if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, false, true,
+                if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, false, true, _hero, 
                         out var moveSpeed, out Vector2 forceDirNavigation, out var navigationDir)) {
                 
                     _hero.DoMove(moveSpeed);
@@ -262,7 +263,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     _hero.SetNavigationDir(Definitions.NavigationType.None);
                 }
             
-                if (_inputInterpreterLogic.TryPerformInputAction(actionInput, false, true,
+                if (_inputInterpreterLogic.TryPerformInputAction(actionInput, false, true, _hero,
                         out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedCollider)) {
                 
                     if (forceDir != Vector2.zero) {
