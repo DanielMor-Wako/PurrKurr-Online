@@ -363,6 +363,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     Debug.Log($"no alternative attack for {attackAbility}");
                 }
             }
+            // ValidateOpponentConditions
             
             if (attackAvailable) {
 
@@ -547,7 +548,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private bool ValidateAttackConditions(AttackBaseStats attack, Character2DState characterState, IInteractableBody interactable) {
 
             var attackerState = characterState.CurrentState;
-            var opponentState = interactable.GetCurrentState();
             if (attack.Ability == Definitions.AttackAbility.RollAttack) { Debug.Log($"roll attack perfromed with {characterState.Velocity.magnitude}"); }
 
             foreach (var condition in attack.CharacterStateConditions) {
@@ -565,26 +565,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             }
             
-            foreach (var condition in attack.OpponentStateConditions) {
-//todo: replace the using of another character to analyze the opponent state, the is state grounded or jumping/falling should be determined by some game logic
-                switch (condition) {
-                    // todo: change this to check when a player is grounded but is considered flying type, so the state of the opponent is grounded when in midair and not falling
-                    case Definitions.CharacterState.Falling or Definitions.CharacterState.Jumping or Definitions.CharacterState.Grounded
-                        when attackerState is (Definitions.CharacterState.Falling or Definitions.CharacterState.Jumping or Definitions.CharacterState.Grounded) :
-                        return true;
-
-                    case Definitions.CharacterState.Running when opponentState != Definitions.CharacterState.Running:
-                    case Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling when !(_logic.GameplayLogic.IsStateConsideredAsAerial(opponentState)):
-                    case Definitions.CharacterState.Grounded when !_logic.GameplayLogic.IsStateConsideredAsGrounded(opponentState) && !interactable.IsGrabbed():
-                    case Definitions.CharacterState.Crouching when opponentState != Definitions.CharacterState.Crouching:
-                    case Definitions.CharacterState.StandingUp when opponentState != Definitions.CharacterState.StandingUp:
-                    case Definitions.CharacterState.Blocking when opponentState != Definitions.CharacterState.Blocking:
-                    case Definitions.CharacterState.Grabbing when opponentState != Definitions.CharacterState.Grabbing:
-                        return false;
-                }
-
-            }
-
             return true;
         }
 
@@ -615,6 +595,33 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
 
             return false;
+        }
+
+        private bool ValidateOpponentConditions(AttackBaseStats attack, Character2DState characterState, IInteractableBody interactable) {
+
+            var opponentState = interactable.GetCurrentState();
+            
+            foreach (var condition in attack.OpponentStateConditions) {
+                
+                switch (condition) {
+                    // todo: change this to check when a player is grounded but is considered flying type, so the state of the opponent is grounded when in midair and not falling
+                    case Definitions.CharacterState.Falling or Definitions.CharacterState.Jumping or Definitions.CharacterState.Grounded
+                        when opponentState is (Definitions.CharacterState.Falling or Definitions.CharacterState.Jumping or Definitions.CharacterState.Grounded) :
+                        return true;
+
+                    case Definitions.CharacterState.Running when opponentState != Definitions.CharacterState.Running:
+                    case Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling when !(_logic.GameplayLogic.IsStateConsideredAsAerial(opponentState)):
+                    case Definitions.CharacterState.Grounded when !_logic.GameplayLogic.IsStateConsideredAsGrounded(opponentState) && !interactable.IsGrabbed():
+                    case Definitions.CharacterState.Crouching when opponentState != Definitions.CharacterState.Crouching:
+                    case Definitions.CharacterState.StandingUp when opponentState != Definitions.CharacterState.StandingUp:
+                    case Definitions.CharacterState.Blocking when opponentState != Definitions.CharacterState.Blocking:
+                    case Definitions.CharacterState.Grabbing when opponentState != Definitions.CharacterState.Grabbing:
+                        return false;
+                }
+
+            }
+
+            return true;
         }
 
         private async void ApplyForceOnFoeWithDelay(IInteractableBody damageableBody, AttackStats attackStats, int delayInMilliseconds = 0) {
