@@ -11,10 +11,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         private Character2DController _hero;
         private InputLogic _inputLogic;
+        private GameplayLogic _gameplayLogic;
 
-        public InputInterpreterLogic(Character2DController hero, InputLogic inputLogic) {
+        public InputInterpreterLogic(Character2DController hero, InputLogic inputLogic, GameplayLogic gameplayLogic) {
             _hero = hero;
             _inputLogic = inputLogic;
+            _gameplayLogic = gameplayLogic;
         }
 
         public bool TryPerformInputNavigation(ActionInput actionInput, bool started, bool ended,
@@ -124,7 +126,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             switch (actionInput.ActionType) {
                 
                 case Definitions.ActionType.Jump:
-                    if (!ended && _hero.State.IsJumpingAllowed()) {
+                    if (!ended && _hero.State.CanPerformJump(_gameplayLogic.IsStateConsideredAsGrounded(_hero.State.CurrentState))) {
                         isActionPerformed = true;
                         forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x, _hero.Stats.JumpForce);
                     } else if (ended && _hero.State.Velocity.y > 0 && _hero.State.CurrentState == Definitions.CharacterState.Jumping) {

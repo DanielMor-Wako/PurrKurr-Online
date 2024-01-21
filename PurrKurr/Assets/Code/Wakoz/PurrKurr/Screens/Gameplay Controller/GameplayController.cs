@@ -97,7 +97,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
 
             _hero = hero;
-            _inputInterpreterLogic = new InputInterpreterLogic(_hero, _logic.InputLogic);
+            _inputInterpreterLogic = new InputInterpreterLogic(_hero, _logic.InputLogic, _logic.GameplayLogic);
             SetHeroLevel(0);
             _cam.SetMainHero(_hero, true);
 
@@ -544,19 +544,20 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         private bool ValidateAttackConditions(AttackBaseStats attack, Character2DState characterState, IInteractableBody interactable) {
 
-            var state = characterState.CurrentState;
+            var attackerState = characterState.CurrentState;
             var opponentState = interactable.GetCurrentState();
+            if (attack.Ability == Definitions.AttackAbility.RollAttack) { Debug.Log($"roll attack perfromed with {characterState.Velocity.magnitude}"); }
 
             foreach (var condition in attack.CharacterStateConditions) {
 
                 switch (condition) {
-                    case Definitions.CharacterState.Running when !characterState.IsStateConsideredAsRunning():
-                    case Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling when !(characterState.IsStateConsideredAsAerial()):
-                    case Definitions.CharacterState.Grounded when !characterState.IsStateConsideredAsGrounded():
-                    case Definitions.CharacterState.Crouching when state != Definitions.CharacterState.Crouching:
-                    case Definitions.CharacterState.StandingUp when state != Definitions.CharacterState.StandingUp:
-                    case Definitions.CharacterState.Blocking when state != Definitions.CharacterState.Blocking:
-                    case Definitions.CharacterState.Grabbing when state != Definitions.CharacterState.Grabbing:
+                    case Definitions.CharacterState.Running when !_logic.GameplayLogic.IsStateConsideredAsRunning(attackerState, characterState.Velocity.magnitude):
+                    case Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling when !(_logic.GameplayLogic.IsStateConsideredAsAerial(attackerState)):
+                    case Definitions.CharacterState.Grounded when !_logic.GameplayLogic.IsStateConsideredAsGrounded(attackerState):
+                    case Definitions.CharacterState.Crouching when attackerState != Definitions.CharacterState.Crouching:
+                    case Definitions.CharacterState.StandingUp when attackerState != Definitions.CharacterState.StandingUp:
+                    case Definitions.CharacterState.Blocking when attackerState != Definitions.CharacterState.Blocking:
+                    case Definitions.CharacterState.Grabbing when attackerState != Definitions.CharacterState.Grabbing:
                         return false;
                 }
 
@@ -567,12 +568,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 switch (condition) {
                     // todo: change this to check when a player is grounded but is considered flying type, so the state of the opponent is grounded when in midair and not falling
                     case Definitions.CharacterState.Falling or Definitions.CharacterState.Jumping or Definitions.CharacterState.Grounded
-                        when state is (Definitions.CharacterState.Falling or Definitions.CharacterState.Jumping or Definitions.CharacterState.Grounded) :
+                        when attackerState is (Definitions.CharacterState.Falling or Definitions.CharacterState.Jumping or Definitions.CharacterState.Grounded) :
                         return true;
 
                     case Definitions.CharacterState.Running when opponentState != Definitions.CharacterState.Running:
-                    case Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling when !(characterState.IsStateConsideredAsAerial(opponentState)):
-                    case Definitions.CharacterState.Grounded when !characterState.IsStateConsideredAsGrounded(opponentState) && !interactable.IsGrabbed():
+                    case Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling when !(_logic.GameplayLogic.IsStateConsideredAsAerial(opponentState)):
+                    case Definitions.CharacterState.Grounded when !_logic.GameplayLogic.IsStateConsideredAsGrounded(opponentState) && !interactable.IsGrabbed():
                     case Definitions.CharacterState.Crouching when opponentState != Definitions.CharacterState.Crouching:
                     case Definitions.CharacterState.StandingUp when opponentState != Definitions.CharacterState.StandingUp:
                     case Definitions.CharacterState.Blocking when opponentState != Definitions.CharacterState.Blocking:
@@ -590,14 +591,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             var state = characterState.CurrentState;
             Debug.Log($"checking matching alternative Attack for {attackAbility}");
             foreach (var condition in attack.CharacterStateConditions) {
-                Debug.Log($"checking condition {condition} is considered ? {characterState.Velocity.magnitude}");
+                //Debug.Log($"checking alt condition {condition} is considered ? {characterState.Velocity.magnitude}");
                 switch (condition) {
 
-                    case Definitions.CharacterState.Running when !characterState.IsStateConsideredAsRunning():
+                    case Definitions.CharacterState.Running when !_logic.GameplayLogic.IsStateConsideredAsRunning(characterState.CurrentState, characterState.Velocity.magnitude):
                         attackAbility = Definitions.AttackAbility.LightAttackAlsoDefaultAttack;
                         return true;
 
-                    case var _ when condition is Definitions.CharacterState.StandingUp or Definitions.CharacterState.Crouching && characterState.IsStateConsideredAsAerial():
+                    case var _ when condition is Definitions.CharacterState.StandingUp or Definitions.CharacterState.Crouching && _logic.GameplayLogic.IsStateConsideredAsAerial(characterState.CurrentState):
                         if (attackAbility is Definitions.AttackAbility.MediumAttack or Definitions.AttackAbility.HeavyAttack) {
                             attackAbility = Definitions.AttackAbility.AerialAttack;
                             return true;

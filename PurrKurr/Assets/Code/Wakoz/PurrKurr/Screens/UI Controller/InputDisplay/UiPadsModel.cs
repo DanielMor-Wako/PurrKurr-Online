@@ -17,6 +17,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
         public UiPadsData Config { get; private set; }
         private readonly AbilitiesLogic _abilitiesLogic;
         private readonly InputLogic _inputLogic;
+        private readonly GameplayLogic _gameplayLogic;
         private Character2DState _state;
 
         public bool IsMovementPad { get; private set; }
@@ -47,8 +48,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
         public UiPadsModel(Character2DController hero,
             bool onlyUpdateDirtyPadsDisplay = false, bool onlyUpdateViewWhenStateChanged = false) {
 
-            _inputLogic = SingleController.GetController<LogicController>().InputLogic;
-            _abilitiesLogic = SingleController.GetController<LogicController>().AbilitiesLogic;
+            var logic = SingleController.GetController<LogicController>();
+            _inputLogic = logic.InputLogic;
+            _abilitiesLogic = logic.AbilitiesLogic;
+            _gameplayLogic = logic.GameplayLogic;
 
             _state = hero?.State;
             var stats = hero?.Stats;
@@ -349,7 +352,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
                 => Definitions.ActionType.Block
             };
 
-        public bool IsAerialState() => _state != null ? _state.IsStateConsideredAsAerial() : false;
+        public bool IsAerialState() => _state != null ? _gameplayLogic.IsStateConsideredAsAerial(_state.CurrentState) : false;
     }
 
 }

@@ -10,6 +10,7 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
 
         protected override void Init() {}
 
+
         public LayerMask GetSolidSurfaces() => Data.GetSolidSurfaces();
 
         public LayerMask GetSurfaces() => Data.GetSurfaces();

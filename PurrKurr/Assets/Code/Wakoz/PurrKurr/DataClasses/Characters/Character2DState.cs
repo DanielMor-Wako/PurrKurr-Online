@@ -1,6 +1,5 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters
@@ -301,19 +300,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
 
 
         // todo: move all the consideredAs.... to gameplayLogic
-        public bool IsStateConsideredAsGrounded() => IsStateConsideredAsGrounded(CurrentState);
-
-        public bool IsStateConsideredAsGrounded(Definitions.CharacterState specificState) => specificState is
-            Definitions.CharacterState.Grounded or Definitions.CharacterState.Running or Definitions.CharacterState.StandingUp or 
-            Definitions.CharacterState.Crouching or Definitions.CharacterState.Attacking;
-
-        public bool IsStateConsideredAsAerial() => IsStateConsideredAsAerial(CurrentState);
-
-        public bool IsStateConsideredAsAerial(Definitions.CharacterState specificState) => specificState is Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling;
-
-        public bool IsStateConsideredAsRunning() => _currentState is Definitions.CharacterState.Running && (_velocity.magnitude > 20);
-
-
+        
         public int GetFacingRightAsInt() => _facingRight ? 1 : -1;
 
         public bool IsFacingRight() => _facingRight;
@@ -358,12 +345,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
 
         public void SetActiveCombatAbility(Definitions.ActionType combatAbility) => _combatAbility = combatAbility;
 
-        public bool IsJumpingAllowed() {
+        public bool CanPerformJump(bool isStateConsideredAsGrounded) {
 
             var isVerticalVelocityExceeding = Velocity.y < 5;
-            var isGroundedOrCayoteTime = (IsTouchingAnySurface() && IsStateConsideredAsGrounded() || IsCoyoteTime());
+            var isGroundedOrCayoteTime = (IsTouchingAnySurface() && isStateConsideredAsGrounded || IsCoyoteTime());
             return isVerticalVelocityExceeding && isGroundedOrCayoteTime && !IsJumping() && CurrentState != Definitions.CharacterState.Crouching;
-
         }
 
         public void SetAsGrabbed(IInteractableBody grabber) => _grabAnchor = grabber;
