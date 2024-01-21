@@ -124,8 +124,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public Character2DState State => _characterState;
         
-        private void UpdateStats(int level) {
+        private void UpdateStats(int level = -1) {
 
+            level = level == -1 ? _stats.CurrentLevel : level;
             _stats.UpdateStats(level);
 
             if (_rigAnimator != null) {
@@ -149,11 +150,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _motor.maxMotorTorque = CharacterMaxMotorTorque;
 
             _senses.Init(_whatIsDamageableCharacter, _whatIsDamageable);
-            
+
+            UpdateStats();
             _stats.InitUpgrades();
             _rigAnimator?.Init();
 
-            SetMinLevel();
             OnUpdatedStats?.Invoke(null);
 
             _anchor = gameObject.AddComponent<AnchorHandler>();

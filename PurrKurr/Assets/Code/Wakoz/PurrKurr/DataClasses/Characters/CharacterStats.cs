@@ -25,8 +25,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         [Header("Buffs")]
         [Tooltip("Base Buffs that the character have (unlocked + base)")]
         [SerializeField] private List<CharacterBuffStats> _buffs;
-        
+
         [Header("Stats")]
+        [SerializeField][Range(0 ,1)] float _currentLevel = 0;
         public int Health = 100;
         public int MaxHealth = 100;
         public int Damage = 2000;
@@ -91,6 +92,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             baseList = uniqueList;
         }
 
+        public int CurrentLevel => Mathf.FloorToInt(_currentLevel * MaxLevel);
+
         public int MaxLevel => _baseStats.Data.MaxLevel;
 
         public float GetLevelProgressAsPercent(int level) {
@@ -103,7 +106,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         }
         
         public void UpdateStats(int level) {
-            
+
+            _currentLevel = level;
+
             var percentage = GetLevelProgressAsPercent(level);
             
             Health =
@@ -150,7 +155,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             return (minValue + (percentage * (maxValue-minValue)));
         }
 
-        public bool TryGetAttack(Definitions.AttackAbility attackAbility, out AttackBaseStats attackStats) {
+        public bool TryGetAttack(ref Definitions.AttackAbility attackAbility, out AttackBaseStats attackStats) {
 
             attackStats = new AttackBaseStats();
 

@@ -24,7 +24,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         public event Action<List<DisplayedableStatData>> OnStatsChanged;
 
         [SerializeField] private CameraFollow _cam;
-        [SerializeField] private Character2DController _hero;
+        [SerializeField] private Character2DController _mainHero;
+        private Character2DController _hero;
 
         private bool _heroInitialized = false;
         private bool _gameRunning = false;
@@ -60,7 +61,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _whatIsCharacter = _logic.GameplayLogic.GetDamageables();
             _whatIsDamageableCharacter = _logic.GameplayLogic.GetDamageables();
 
-            TryInitHero();
+            TryInitHero(_mainHero);
 
             _gameRunning = true;
 
@@ -69,18 +70,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         [ContextMenu("Init Referenced Hero")]
         public void SetHeroAsReferenced() {
-            TryInitHero(_hero);
-            _ui.InitUiForCharacter(_hero);
+            TryInitHero(_mainHero);
+            _ui.InitUiForCharacter(_mainHero);
         }
         
         public void SetNewHero(Character2DController hero) {
             TryInitHero(hero);
         }
         
-        private bool TryInitHero(Character2DController hero = null) {
+        private bool TryInitHero(Character2DController hero) {
 
-            hero ??= _hero;
-            
             if (hero == null) {
                 return false;
             }
@@ -88,12 +87,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             if (_hero != null && _heroInitialized) {
                 _hero.OnStateChanged -= OnStateChanged;
                 _hero.OnUpdatedStats -= UpdateOrInitUiDisplayForCharacter;
-                _heroInitialized = false;
             }
-
-            _hero = hero;
             
-            SetHeroLevel(0);
+            _hero = hero;
+
             _cam.SetMainHero(_hero, true);
 
             _hero.OnStateChanged += OnStateChanged;
@@ -296,8 +293,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             var newFacingDirection = 0;
             var attackAbility = _logic.AbilitiesLogic.GetAttackAbility(_hero.GetNavigationDir(), actionType, _hero.State.CurrentState);
 
-            if (_hero.Stats.TryGetAttack(attackAbility, out var attackProperties)) {
+            if (_hero.Stats.TryGetAttack(ref attackAbility, out var attackProperties)) {
 
+                ValidateAttackCondition(ref attacker, ref attackAbility, ref attackProperties);
                 SetSingleOrMultipleTargets(attacker.GetGrabbedTarget(), ref attackProperties, ref interactedColliders);
                 _hero.FilterNearbyCharactersAroundHitPointByDistance(ref interactedColliders, moveToPosition, attacker.Stats.MultiTargetsDistance);
                 HitAvailableTargets(attacker, moveToPosition, interactedColliders, forceDirAction, ref newFacingDirection, ref attackAbility, ref attackProperties);
@@ -311,6 +309,25 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                 attacker.FaceCharacterTowardsPoint(newFacingDirection == 1);
                 attacker.SetNewPosition(moveToPosition);
+            }
+
+        }
+
+        private void ValidateAttackCondition(ref Character2DController attacker, ref Definitions.AttackAbility attackAbility, ref AttackBaseStats attackProperties) { 
+            
+            var attackAvailable = ValidateAttackConditions(attackProperties, attacker.State);
+
+            if (!attackAvailable) {
+
+                if (ValidateAlternativeAttackConditions(ref attackAbility, ref attackProperties, attacker.State)) {
+                    attackAvailable = attacker.Stats.TryGetAttack(ref attackAbility, out var alternativeAttackProperties);
+                    if (attackAvailable) {
+                        attackProperties = alternativeAttackProperties;
+                    }
+
+                } else {
+                    Debug.Log($"no alternative attack for {attackAbility}");
+                }
             }
 
         }
@@ -352,7 +369,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             var foeState = foe.GetCurrentState();
 
-            var attackAvailable = ValidateAttackConditions(attackProperties, attacker.State, foe);
+            /*var attackAvailable = ValidateAttackConditions(attackProperties, attacker.State);
             if (!attackAvailable) {
                 // todo: prevent from multi hit when altering attack
                 var alternativeAttackAvailable = ValidateAlternativeAttackConditions(ref attackAbility, ref attackProperties, attacker.State);
@@ -362,9 +379,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 } else {
                     Debug.Log($"no alternative attack for {attackAbility}");
                 }
-            }
+            }*/
             // ValidateOpponentConditions
-            
+            var attackAvailable = true;
             if (attackAvailable) {
 
                 facingRightOrLeftTowardsPoint = foe.GetCenterPosition().x > attacker.LegsPosition.x ? 1 : -1;
@@ -545,10 +562,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _bodyDamager.SetProjectileState(false);
         }
 
-        private bool ValidateAttackConditions(AttackBaseStats attack, Character2DState characterState, IInteractableBody interactable) {
+        private bool ValidateAttackConditions(AttackBaseStats attack, Character2DState characterState) {
 
             var attackerState = characterState.CurrentState;
-            if (attack.Ability == Definitions.AttackAbility.RollAttack) { Debug.Log($"roll attack perfromed with {characterState.Velocity.magnitude}"); }
+            if (attack.Ability == Definitions.AttackAbility.RollAttack) { Debug.Log($"roll attack data: {characterState.Velocity.magnitude}"); }
 
             foreach (var condition in attack.CharacterStateConditions) {
 
@@ -597,7 +614,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             return false;
         }
 
-        private bool ValidateOpponentConditions(AttackBaseStats attack, Character2DState characterState, IInteractableBody interactable) {
+        private bool ValidateOpponentConditions(AttackBaseStats attack, IInteractableBody interactable) {
 
             var opponentState = interactable.GetCurrentState();
             
