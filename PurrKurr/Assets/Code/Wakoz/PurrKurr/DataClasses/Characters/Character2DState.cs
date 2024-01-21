@@ -307,11 +307,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
             Definitions.CharacterState.Grounded or Definitions.CharacterState.Running or Definitions.CharacterState.StandingUp or 
             Definitions.CharacterState.Crouching or Definitions.CharacterState.Attacking;
 
-        public bool IsStateJumpingAndNotFalling() => IsStateJumpingAndNotFalling(CurrentState);
-
         public bool IsStateConsideredAsAerial() => IsStateConsideredAsAerial(CurrentState);
-
-        public bool IsStateJumpingAndNotFalling(Definitions.CharacterState specificState) => specificState is Definitions.CharacterState.Jumping;
 
         public bool IsStateConsideredAsAerial(Definitions.CharacterState specificState) => specificState is Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling;
 
@@ -329,23 +325,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
         public bool IsFrontWall() => _facingRight && _isRightWall || !_facingRight && _isLeftWall;
         public bool IsBackWallWall() => _facingRight && _isLeftWall || !_facingRight && _isRightWall;
 
-        public float ReturnForwardDirByTerrain() {
-
-            if (_closestSurfaceDir != Vector2.zero) {
-                return Mathf.Atan2(_closestSurfaceDir.y, _closestSurfaceDir.x) * Mathf.Rad2Deg + 90;
-            }
-
-            if (_farSurfaceDir != Vector2.zero) {
-                return Mathf.Atan2(_farSurfaceDir.y, _farSurfaceDir.x) * Mathf.Rad2Deg + 90;
-            }
-            
-            return Mathf.Atan2(_velocity.y, _velocity.x) * Mathf.Rad2Deg + 90;
-            
-        }
         
         public Quaternion ReturnForwardDirByTerrainQuaternion()  {
             
-            // todo: add specific angle to grabbed interactable
             if (IsGrabbed()) {
                 Quaternion surfaceQuaternion = Quaternion.LookRotation(Vector3.forward, Vector2.down);
                 return surfaceQuaternion;

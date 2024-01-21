@@ -127,7 +127,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     if (!ended && _hero.State.IsJumpingAllowed()) {
                         isActionPerformed = true;
                         forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x, _hero.Stats.JumpForce);
-                    } else if (ended && _hero.State.Velocity.y > 0 && _hero.State.IsStateJumpingAndNotFalling()) {
+                    } else if (ended && _hero.State.Velocity.y > 0 && _hero.State.CurrentState == Definitions.CharacterState.Jumping) {
                         if (!(forceDirToSetOnFixedUpdate != Vector2.zero)) {
                             forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x, 0);
                         } else {//if (forceDirToSetOnFixedUpdate != Vector2.zero) {

@@ -547,7 +547,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             var state = characterState.CurrentState;
             var opponentState = interactable.GetCurrentState();
 
-
             foreach (var condition in attack.CharacterStateConditions) {
 
                 switch (condition) {
