@@ -52,10 +52,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
         
         public bool TryBindToCharacter(GameplayController character) {
 
-            if (_playerInput != null) {
-                return false;
-            }
-
             if (character == null) {
                 Debug.LogError("Touch display has no available character events for input");
                 return false;
@@ -64,6 +60,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
             if (_screenInput != null) {
                 DeregisterScreenEvents();
             }
+
+            DeregisterCharacterEvents();
 
             _playerInput = character;
 
@@ -134,7 +132,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
 
         private void DeregisterCharacterEvents() {
 
-            if (_screenInput == null) {
+            if (_playerInput == null) {
                 return;
             }
             

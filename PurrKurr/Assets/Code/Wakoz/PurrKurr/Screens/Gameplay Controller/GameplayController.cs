@@ -39,13 +39,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private LayerMask _whatIsCharacter;
         private LayerMask _whatIsDamageableCharacter;
 
-        private void UpdateStats(int level) {
-            if (_hero == null) {
-                return;
-            }
-            _hero.Stats.UpdateStats(level);
-        }
-
         protected override Task Initialize() {
 
             _cam ??= Camera.main.GetComponent<CameraFollow>();
@@ -77,6 +70,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         [ContextMenu("Init Referenced Hero")]
         public void SetHeroAsReferenced() {
             TryInitHero(_hero);
+            _ui.InitUiForCharacter(_hero);
         }
         
         public void SetNewHero(Character2DController hero) {
@@ -137,6 +131,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         public void SetHeroMinLevel() => _hero.SetMinLevel();
         public void SetHeroMaxLevel() => _hero.SetMaxLevel();
         
+        private void UpdateStatsOnLevelUp(int level) {
+            if (_hero == null) {
+                return;
+            }
+            _hero.Stats.UpdateStats(level);
+        }
+
         protected override void Clean() {
 
             DeregisterInputEvents();

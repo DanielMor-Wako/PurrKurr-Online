@@ -1,5 +1,3 @@
-using Code.Wakoz.PurrKurr.DataClasses.Characters;
-
 namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars {
     public class UIBarsModel : Model {
 

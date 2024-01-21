@@ -27,7 +27,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars {
         
         public void Init(Character2DController hero = null) {
 
-            // todo: check the hero abilities fir displaying the correct ui update, like Health -> hp, power, supurr etc...
+            // todo: check the hero abilities for displaying the correct ui update, like Health -> hp, power, supurr etc...
 
             _model = new UIBarsModel(hero.Stats.GetHealthPercentage(), 1);
 
@@ -39,13 +39,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars {
 
         private bool RegisterEvents(GameplayController character = null) {
 
-            if (_hero != null) {
-                return false;
-            }
-
             if (character == null) {
                 Debug.LogWarning("ui display has no available character events for input");
                 return false;
+            }
+
+            if (_hero != null) {
+                _hero.OnStatsChanged -= OnStatsChanged;
             }
 
             _hero = character;
