@@ -12,7 +12,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         [SerializeField] private CharacterBaseStatsSO _baseStats;
         [SerializeField] private CharacterAbilitiesData _unlockedAbilities;
-        
+
+        [Header("Level")]
+        [Tooltip("The current level in percentage, affects stats and body size")]
+        [SerializeField][Range(0, 1)] float _levelPercent = 0;
         [Header("Actions")]
         [Tooltip("Actions that the character have (unlocked + base)")]
         [SerializeField] private List<Definitions.ActionType> _actions;
@@ -27,7 +30,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         [SerializeField] private List<CharacterBuffStats> _buffs;
 
         [Header("Stats")]
-        [SerializeField][Range(0 ,1)] float _currentLevel = 0;
+        [SerializeField] private float _currentLevel = 0;
         public int Health = 100;
         public int MaxHealth = 100;
         public int Damage = 2000;
@@ -92,7 +95,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             baseList = uniqueList;
         }
 
-        public int CurrentLevel => Mathf.FloorToInt(_currentLevel * MaxLevel);
+        public int GetCurrentLevel() => Mathf.FloorToInt(_levelPercent * MaxLevel);
 
         public int MaxLevel => _baseStats.Data.MaxLevel;
 

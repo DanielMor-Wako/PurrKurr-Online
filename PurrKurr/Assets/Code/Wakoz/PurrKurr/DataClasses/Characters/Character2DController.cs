@@ -126,7 +126,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         
         private void UpdateStats(int level = -1) {
 
-            level = level == -1 ? _stats.CurrentLevel : level;
+            level = level == -1 ? _stats.GetCurrentLevel() : level;
             _stats.UpdateStats(level);
 
             if (_rigAnimator != null) {

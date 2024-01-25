@@ -267,11 +267,19 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
         }
 
         public void SetCrouchOrStandingByUpDownInput(Definitions.NavigationType verticalInput) {
-            var isNotMoving = IsNotMoving() && _isGrounded;
+
+            var isNotMoving = IsNotMoving() && _isGrounded;//&& CurrentState != Definitions.CharacterState.Running;
             var isCrouchingKey = verticalInput is Definitions.NavigationType.Down or Definitions.NavigationType.DownLeft or Definitions.NavigationType.DownRight;
             var isStandingUpKey = verticalInput is Definitions.NavigationType.Up or Definitions.NavigationType.UpLeft or Definitions.NavigationType.UpRight;
-            _isCrouching = isNotMoving && isCrouchingKey;
-            _isStanding  = isNotMoving && isStandingUpKey;
+
+            var isCrouching = isNotMoving && isCrouchingKey;
+            var isStanding = isNotMoving && isStandingUpKey || IsGrabbing();
+
+            _isCrouching = isCrouching;
+            _isStanding = isStanding;
+            if (isStanding) { 
+                //Debug.Log("stationary?" + IsNotMoving() +" : "+ Velocity.magnitude);
+            }
         }
         
         public bool IsTouchingAnySurface() => _wasGrounded || _isGrounded || _wasRightWall || _isRightWall || _wasLeftWall || _isLeftWall || _wasCeiling || _isCeiling;
@@ -298,9 +306,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
 
         public bool IsGrounded() => _isGrounded;
 
+        public bool IsCrouching() => _isCrouching;
+
+        public bool IsStandingUp() => _isStanding;
 
         // todo: move all the consideredAs.... to gameplayLogic
-        
+
         public int GetFacingRightAsInt() => _facingRight ? 1 : -1;
 
         public bool IsFacingRight() => _facingRight;

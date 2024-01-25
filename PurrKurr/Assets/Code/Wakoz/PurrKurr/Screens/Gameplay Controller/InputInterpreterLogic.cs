@@ -53,22 +53,23 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 return true;
             }
 
+            bool isCrouchingState = state.CurrentState != Definitions.CharacterState.Running && state.IsCrouching();
+            bool isStandingState = (state.CurrentState != Definitions.CharacterState.Running && state.IsStandingUp() || isGrabbing);
+
             switch (navigationDir) {
-                case var _ when 
-                navigationDir == Definitions.NavigationType.UpLeft || isGrabbing && _inputLogic.IsNavigationDirValidAsLeft(navigationDir):
+                case var _ when isStandingState && _inputLogic.IsNavigationDirValidAsLeft(navigationDir):
                     moveSpeed = stats.WalkSpeed;
                     break;
 
-                case var _ when 
-                navigationDir == Definitions.NavigationType.UpRight || isGrabbing && _inputLogic.IsNavigationDirValidAsRight(navigationDir):
+                case var _ when isStandingState && _inputLogic.IsNavigationDirValidAsRight(navigationDir):
                     moveSpeed = -stats.WalkSpeed;
                     break;
 
-                case Definitions.NavigationType.DownLeft:
+                case var _ when isCrouchingState && navigationDir == Definitions.NavigationType.DownLeft:
                     moveSpeed = stats.WalkSpeed;
                     break;
                 
-                case Definitions.NavigationType.DownRight:
+                case var _ when isCrouchingState && navigationDir == Definitions.NavigationType.DownRight:
                     moveSpeed = -stats.WalkSpeed;
                     break;
                 
