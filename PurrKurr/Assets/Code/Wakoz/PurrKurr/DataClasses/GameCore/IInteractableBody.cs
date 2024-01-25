@@ -10,6 +10,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
         public abstract Definitions.CharacterState GetCurrentState();
         public abstract Vector3 GetCenterPosition();
         public abstract Vector2 GetVelocity();
+        public abstract float GetHpPercent();
         public abstract int DealDamage(int damage);
         public abstract void ApplyForce(Vector2 forceDir);
         public abstract void SetTargetPosition(Vector2 position);

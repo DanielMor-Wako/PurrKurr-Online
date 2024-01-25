@@ -36,7 +36,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
         public Vector3 GetCenterPosition() => transform.position;
 
         public Vector2 GetVelocity() => _rigidbody.velocity;
-
+        public float GetHpPercent() => 1;
         public int DealDamage(int damage) {
             // todo: deal damage?
             return 1;

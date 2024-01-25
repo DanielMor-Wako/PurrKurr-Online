@@ -49,11 +49,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
         public void UpdateRigRotation(bool isAlive, Quaternion terrainQuaternion) {
 
             var offsetQuaternion = Quaternion.Euler(0f, 0f, isAlive ? _facingRightAngle : 0);
-            var newRotation = Quaternion.Lerp(transform.rotation,
+            var newRotation = Quaternion.Lerp(_rigTrasform.rotation,
                 terrainQuaternion * offsetQuaternion,
                 Time.deltaTime * 10f);
 
-            transform.rotation = newRotation;
+            _rigTrasform.rotation = newRotation;
 
         }
 

@@ -347,9 +347,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         private void HitAvailableTargets(Character2DController attacker, Vector2 moveToPosition, Collider2D[] interactedColliders, Vector2 forceDirAction, ref int newFacingDirection, ref Definitions.AttackAbility attackAbility, ref AttackBaseStats attackProperties) {
 
-            AttackStats attackStats = new AttackStats(attacker.Stats.Damage, forceDirAction);
-
             foreach (var col in interactedColliders) {
+
+                var singleHitForceDir = ((Vector2)col.transform.position - moveToPosition).normalized * attacker.Stats.PushbackForce;
+                AttackStats attackStats = new AttackStats(attacker.Stats.Damage, forceDirAction);
                 var validAttack = TryPerformCombat(attacker, ref attackAbility, ref attackProperties, moveToPosition, col, attackStats);
                 newFacingDirection = newFacingDirection == 0 ? validAttack : newFacingDirection;
             }
@@ -369,19 +370,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             var foeState = foe.GetCurrentState();
 
-            /*var attackAvailable = ValidateAttackConditions(attackProperties, attacker.State);
-            if (!attackAvailable) {
-                // todo: prevent from multi hit when altering attack
-                var alternativeAttackAvailable = ValidateAlternativeAttackConditions(ref attackAbility, ref attackProperties, attacker.State);
-                if (alternativeAttackAvailable) {
-                    attackAvailable = attacker.Stats.TryGetAttack(attackAbility, out var alternativeAttackProperties);
-                    if (attackAvailable) { attackProperties = alternativeAttackProperties; }
-                } else {
-                    Debug.Log($"no alternative attack for {attackAbility}");
-                }
-            }*/
-            // ValidateOpponentConditions
-            var attackAvailable = true;
+            
+            // todo: ValidateOpponentConditions of health and change the moveToPosition accordingly in case a foe is already dead
+            var isAttackAction = _logic.AbilitiesLogic.IsAbilityAnAttack(attackAbility);
+            var foeValidState = !isAttackAction || isAttackAction && ValidateOpponentConditions(attackProperties, foe);
+            if (!foeValidState) {
+                Debug.LogWarning($"Invalid foe state {foe.GetTransform().gameObject.name}");
+            }
+            var attackAvailable = foeValidState;
             if (attackAvailable) {
 
                 facingRightOrLeftTowardsPoint = foe.GetCenterPosition().x > attacker.LegsPosition.x ? 1 : -1;
@@ -389,7 +385,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 var properties = attackProperties.Properties;
                 var isFoeBlocking = foeState == Definitions.CharacterState.Blocking;
 
-                if (_logic.AbilitiesLogic.IsAbilityAnAttack(attackAbility)) {
+                if (isAttackAction) {
                     
                     if (properties.Contains(Definitions.AttackProperty.PushBackOnHit) ||
                         properties.Contains(Definitions.AttackProperty.PushBackOnBlock) && isFoeBlocking) {
@@ -621,10 +617,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             foreach (var condition in attack.OpponentStateConditions) {
                 
                 switch (condition) {
+                    case Definitions.CharacterState.Alive when interactable.GetHpPercent() == 0:
+                        return false;
+
                     // todo: change this to check when a player is grounded but is considered flying type, so the state of the opponent is grounded when in midair and not falling
-                    case Definitions.CharacterState.Falling or Definitions.CharacterState.Jumping or Definitions.CharacterState.Grounded
+                    /*case Definitions.CharacterState.Falling or Definitions.CharacterState.Jumping or Definitions.CharacterState.Grounded
                         when opponentState is (Definitions.CharacterState.Falling or Definitions.CharacterState.Jumping or Definitions.CharacterState.Grounded) :
-                        return true;
+                        return true;*/
 
                     case Definitions.CharacterState.Running when opponentState != Definitions.CharacterState.Running:
                     case Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling when !(_logic.GameplayLogic.IsStateConsideredAsAerial(opponentState)):

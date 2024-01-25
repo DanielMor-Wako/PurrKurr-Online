@@ -110,7 +110,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
         }
 
         public enum CharacterState {
-            Spawned,
+            Alive,
             UninterruptibleAnimation,
             Dead,
             Grounded,

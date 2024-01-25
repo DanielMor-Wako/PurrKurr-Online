@@ -93,7 +93,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             Vector3 hitPoint = interactedCollider != null ? interactedCollider.transform.position : hitPosition;
 
-            var solidOutRadiusObjectsColliders =
+            /*var solidOutRadiusObjectsColliders =
                 Physics2D.OverlapCircleAll(hitPoint, LegsRadius + 0.2f, _whatIsSolid).
                     Where(collz => collz.gameObject != gameObject).ToArray();
 
@@ -102,7 +102,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             if (!isHitPointNearAnySurfaceAndAttackValidForMultiHit) {
                 interactedColliders = new Collider2D[] { interactedColliders.FirstOrDefault() };
                 return;
-            }
+            }*/
 
             var damageableColliders = interactedColliders.Where(
                 obj => Vector2.Distance(obj.transform.position, hitPosition) < distanceLimiter).OrderBy(obj
@@ -337,6 +337,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public Vector3 GetCenterPosition() => LegsPosition;
 
         public Vector2 GetVelocity() => State.Velocity;
+
+        public float GetHpPercent() => _stats.GetHealthPercentage();
 
         public int DealDamage(int damage) {
 

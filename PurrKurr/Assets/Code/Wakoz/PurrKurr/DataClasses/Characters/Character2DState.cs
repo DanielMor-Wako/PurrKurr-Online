@@ -336,7 +336,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
                 return surfaceQuaternion;
             }
 
-            if (_farSurfaceDir != Vector2.zero) {
+            if (HasAnySurfaceAround()) {
                 Quaternion surfaceQuaternion = Quaternion.LookRotation(Vector3.forward, _farSurfaceDir);
                 return surfaceQuaternion;
             }
@@ -345,6 +345,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
             return velocityQuaternion;
             
         }
+
+        public bool HasAnySurfaceAround() => _farSurfaceDir != Vector2.zero;
 
         public Vector2 Velocity => _velocity;
 
