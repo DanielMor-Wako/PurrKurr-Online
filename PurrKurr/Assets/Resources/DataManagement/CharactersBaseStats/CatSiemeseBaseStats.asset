@@ -23,7 +23,7 @@ MonoBehaviour:
     _runSpeedMinToMax: {x: 700, y: 1400}
     _sprintSpeedMinToMax: {x: 1500, y: 2500}
     _jumpForceMinToMax: {x: 40, y: 55}
-    _airborneSpeedMinToMax: {x: 2, y: 3}
+    _airborneSpeedMinToMax: {x: 5, y: 7}
     _airborneMaxSpeedMinToMax: {x: 5, y: 10}
     _multiTargetsDistanceBasevalues: {x: 4, y: 7}
     _movementTypes: 00000000
