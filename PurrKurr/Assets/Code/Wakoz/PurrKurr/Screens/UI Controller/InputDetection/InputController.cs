@@ -107,7 +107,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
                 OnTouchPadDown(_keyboardInputAction);
             }
 
-            if (Input.GetKeyUp(KeyCode.C) && previousInputAction != null) {
+            if (Input.GetKeyUp(KeyCode.C) && previousInputAction != null && _keyboardInputAction != null) {
                 OnTouchPadUp(_keyboardInputAction);
                 _keyboardInputAction = null;
 
@@ -116,7 +116,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
                 OnTouchPadDown(_keyboardInputAction);
             }
             
-            if (Input.GetKeyUp(KeyCode.V) && previousInputAction != null) {
+            if (Input.GetKeyUp(KeyCode.V) && previousInputAction != null && _keyboardInputAction != null) {
                 OnTouchPadUp(_keyboardInputAction);
                 _keyboardInputAction = null;
 
