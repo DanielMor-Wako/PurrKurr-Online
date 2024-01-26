@@ -42,7 +42,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
         public bool IsStateConsideredAsRunning(Definitions.CharacterState specificState, float magnitude) =>
             specificState is Definitions.CharacterState.Running && (magnitude > MinMagnitudeConsideredAsRunnin);
 
-        private bool IsStateIncludedInList(Definitions.CharacterState specificState, List<Definitions.CharacterState> statesList) {
+        // unoptimized search version
+        /*private bool IsStateIncludedInList(Definitions.CharacterState specificState, List<Definitions.CharacterState> statesList) {
             
             foreach (var state in statesList) {
                 if (state == specificState) { 
@@ -51,8 +52,31 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
             }
 
             return false;
-        }
+        }*/
 
+        // optimized search version - testing
+        private Dictionary<List<Definitions.CharacterState>, Dictionary<Definitions.CharacterState, bool>> stateCaches = new Dictionary<List<Definitions.CharacterState>, Dictionary<Definitions.CharacterState, bool>>();
+
+        private bool IsStateIncludedInList(Definitions.CharacterState specificState, List<Definitions.CharacterState> statesList) {
+            
+            if (!stateCaches.ContainsKey(statesList)) {
+                stateCaches[statesList] = new Dictionary<Definitions.CharacterState, bool>();
+            }
+
+            if (stateCaches[statesList].ContainsKey(specificState)) {
+                return stateCaches[statesList][specificState];
+            }
+
+            foreach (var state in statesList) {
+                if (state == specificState) {
+                    stateCaches[statesList][specificState] = true;
+                    return true;
+                }
+            }
+
+            stateCaches[statesList][specificState] = false;
+            return false;
+        }
     }
 
 }
