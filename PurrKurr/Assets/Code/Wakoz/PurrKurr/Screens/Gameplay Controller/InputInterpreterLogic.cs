@@ -60,24 +60,42 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             // Air-borne movement
             var rigidbodyVelocity = state.Velocity;
-            if (rigidbodyVelocity.y < -1f && state.CurrentState == Definitions.CharacterState.Falling || rigidbodyVelocity.y > 1 && state.IsJumping()) {
-                switch (navigationDir) {
-                    
-                    case Definitions.NavigationType.Right or Definitions.NavigationType.DownRight or Definitions.NavigationType.UpRight
-                        when (rigidbodyVelocity.x < stats.AirborneMaxSpeed):
+            var isNavRightDir = navigationDir is Definitions.NavigationType.Right or Definitions.NavigationType.DownRight or Definitions.NavigationType.UpRight;
+            var isNavLeftDir = navigationDir is Definitions.NavigationType.Left or Definitions.NavigationType.DownLeft or Definitions.NavigationType.UpLeft;
 
-                        forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x + stats.AirborneSpeed, rigidbodyVelocity.y);
-                        moveSpeed = 0;
-                        return true;
-                    
-                    case Definitions.NavigationType.Left or Definitions.NavigationType.DownLeft or Definitions.NavigationType.UpLeft
-                        when rigidbodyVelocity.x > -stats.AirborneMaxSpeed:
-                        
-                        forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x - stats.AirborneSpeed, rigidbodyVelocity.y);
-                        moveSpeed = 0;
-                        return true;
+
+            if (rigidbodyVelocity.y < -1f && state.CurrentState == Definitions.CharacterState.Falling ) {
+            //if (rigidbodyVelocity.y < -1f && !state.IsJumping() && _gameplayLogic.IsStateConsideredAsAerial(state.CurrentState)) {
+
+                if (isNavRightDir && (rigidbodyVelocity.x < stats.AirborneMaxSpeed)) {
+
+                    forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x + stats.AirborneSpeed, rigidbodyVelocity.y);
+
+                    return true;
+
+                } else if (isNavLeftDir && (rigidbodyVelocity.x > -stats.AirborneMaxSpeed)) {
+
+                    forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x - stats.AirborneSpeed, rigidbodyVelocity.y);
+                    moveSpeed = 0;
+                    return true;
                 }
 
+            /*} else if (state.IsJumping() && state.Velocity.y < 0.1f) {
+                
+                if (isNavRightDir && (rigidbodyVelocity.x < stats.AirborneMaxSpeed)) {
+
+                    forceDirToSetOnFixedUpdate = new Vector2(stats.AirborneMaxSpeed, rigidbodyVelocity.y);
+                    moveSpeed = 0;
+                    return true;
+                    
+                } else if (isNavLeftDir && (rigidbodyVelocity.x > -stats.AirborneMaxSpeed)) {
+
+                    forceDirToSetOnFixedUpdate = new Vector2(-stats.AirborneMaxSpeed, rigidbodyVelocity.y);
+                    moveSpeed = 0;
+                    return true;
+                }
+                return false;
+*/
             } else if (!state.IsCeiling() && (state.IsFrontWall() || state.IsGrounded())) { 
             
                 switch (navigationDir) {
