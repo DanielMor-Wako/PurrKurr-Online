@@ -192,8 +192,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     var isJump = isActionPerformed && actionInput.ActionType == Definitions.ActionType.Jump;
                     if (isJump && forceDir != Vector2.zero) {
                         _hero.SetJumping(Time.time + .2f);
-                        //_hero.SetForceDir(forceDir, true);
-                        AlterJumpDirBasedOnNavigationDirection(ref forceDir, ref navigationDir, _hero.Stats.JumpForce);
+                        AlterJumpDirBasedOnNavigationDirection(ref forceDir, _hero.State.NavigationDir, _hero.Stats.JumpForce);
                         _hero.SetForceDir(forceDir);
                         _hero.DoMove(0); // might conflict with the TryPerformInputNavigation when the moveSpeed is already set by Navigation
                     }
@@ -210,34 +209,48 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             OnTouchPadDown?.Invoke(actionInput);
         }
 
-        private void AlterJumpDirBasedOnNavigationDirection(ref Vector2 forceDir, ref Definitions.NavigationType navigationDir, float jumpForce) {
+        private void AlterJumpDirBasedOnNavigationDirection(ref Vector2 forceDir, Definitions.NavigationType navigationDir, float jumpForce) {
 
             var inputLogic = _logic.InputLogic;
 
             Debug.DrawRay(_hero.LegsPosition, forceDir, Color.gray, 3);
-            if (inputLogic.IsNavigationDirValidAsRight(navigationDir)) {
-                forceDir.x = jumpForce;
+            if (navigationDir == Definitions.NavigationType.Up) {
+                forceDir.x = _hero.State.GetFacingRightAsInt();
+                
+            } else if (inputLogic.IsNavigationDirValidAsRight(navigationDir)) {
+                forceDir.x = jumpForce * 0.5f;
 
             } else if (inputLogic.IsNavigationDirValidAsLeft(navigationDir)) {
-                forceDir.x = -jumpForce;
-            
+                forceDir.x = -jumpForce * 0.5f;
+
             } else {
-                forceDir.x = _hero.State.GetFacingRightAsInt();
+                forceDir.x = _hero.State.GetFacingRightAsInt() * jumpForce * 0.25f;
 
             }
             Debug.DrawRay(_hero.LegsPosition, forceDir, Color.magenta, 3);
         }
 
         private void OnActionOngoing(ActionInput actionInput) {
-
+            
             if (_hero.State.CanPerformAction()) {
 
                 if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, false, false, _hero, 
                         out var moveSpeed, out var forceDirNavigation, out var navigationDir)) {
-
+                    
                     _hero.DoMove(moveSpeed);
                     _hero.SetForceDir(forceDirNavigation);
                     _hero.SetNavigationDir(navigationDir);
+                    if (!_hero.State.IsAnimating() && navigationDir != Definitions.NavigationType.None) {
+                        
+                        bool? facingRight = _logic.InputLogic.IsNavigationDirValidAsRight(navigationDir) ? true :
+                            _logic.InputLogic.IsNavigationDirValidAsLeft(navigationDir) ? false : null;
+
+                        if (facingRight != null) {
+                            _hero.FaceCharacterTowardsPoint(facingRight == true);
+
+                        }
+                        
+                    }
                 }
             
                 /*if (_inputInterpreterLogic.DiagnosePlayerInputAction(actionInput, false, false,
@@ -291,14 +304,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private void CombatLogic(Character2DController attacker, Definitions.ActionType actionType, Vector2 moveToPosition, Collider2D[] interactedColliders, Vector2 forceDirAction) {
 
             var newFacingDirection = 0;
-            var attackAbility = _logic.AbilitiesLogic.GetAttackAbility(_hero.GetNavigationDir(), actionType, _hero.State.CurrentState);
+            var attackAbility = _logic.AbilitiesLogic.GetAttackAbility(attacker.GetNavigationDir(), actionType, attacker.State.CurrentState);
 
-            if (_hero.Stats.TryGetAttack(ref attackAbility, out var attackProperties)) {
+            if (attacker.Stats.TryGetAttack(ref attackAbility, out var attackProperties)) {
 
                 ValidateAttackCondition(ref attacker, ref attackAbility, ref attackProperties);
-                SetSingleOrMultipleTargets(attacker.GetGrabbedTarget(), ref attackProperties, ref interactedColliders);
-                _hero.FilterNearbyCharactersAroundHitPointByDistance(ref interactedColliders, moveToPosition, attacker.Stats.MultiTargetsDistance);
-                HitAvailableTargets(attacker, moveToPosition, interactedColliders, forceDirAction, ref newFacingDirection, ref attackAbility, ref attackProperties);
+                GetAvailableTargets(ref attacker, ref attackProperties, moveToPosition, ref interactedColliders, out var interactableBodies);
+                HitTargets(attacker, ref moveToPosition, ref interactableBodies, forceDirAction, ref newFacingDirection, ref attackAbility, ref attackProperties);
             
             } else {
                 Debug.LogWarning($"Attack Ability {attackAbility} is missing from attack moves");
@@ -332,50 +344,86 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         }
 
-        private void SetSingleOrMultipleTargets(IInteractableBody grabbedTarget, ref AttackBaseStats attackProperties, ref Collider2D[] targets) {
+        private void GetAvailableTargets(ref Character2DController attacker, ref AttackBaseStats attackProperties, Vector2 moveToPosition, ref Collider2D[] interactedColliders, out IInteractableBody[] interactableBodies) {
+
+            interactableBodies = new IInteractableBody[] { };
+            SetSingleOrMultipleTargets(attacker.GetGrabbedTarget(), ref interactedColliders, ref interactableBodies );
             
-            if (attackProperties.Properties.Count == 0 || !attackProperties.Properties.Contains(Definitions.AttackProperty.MultiTargetOnSurfaceHit)) {
-                
-                if (grabbedTarget != null) {
-                    targets = new Collider2D[] { grabbedTarget.GetCollider() };
-                } else {
-                    targets = new Collider2D[] { targets.FirstOrDefault() };
-                }
-                return;
+            var canAttackMultiTarget = attackProperties.Properties.Count > 0 && attackProperties.Properties.Contains(Definitions.AttackProperty.MultiTargetOnSurfaceHit);
+            if (canAttackMultiTarget && interactedColliders.Length > 1) {
+                attacker.FilterNearbyCharactersAroundHitPointByDistance(ref interactableBodies, moveToPosition, attacker.Stats.MultiTargetsDistance);
             }
+
         }
 
-        private void HitAvailableTargets(Character2DController attacker, Vector2 moveToPosition, Collider2D[] interactedColliders, Vector2 forceDirAction, ref int newFacingDirection, ref Definitions.AttackAbility attackAbility, ref AttackBaseStats attackProperties) {
+        private void SetSingleOrMultipleTargets(IInteractableBody grabbedTarget, ref Collider2D[] interactedColliders, ref IInteractableBody[] targets) {
+            
+            if (grabbedTarget != null) {
+                targets = new IInteractableBody[] { grabbedTarget };
+                return;
+            }
+
+            var targetsList = new List<IInteractableBody>();
 
             foreach (var col in interactedColliders) {
 
-                var singleHitForceDir = ((Vector2)col.transform.position - moveToPosition).normalized * attacker.Stats.PushbackForce;
-                AttackStats attackStats = new AttackStats(attacker.Stats.Damage, forceDirAction);
+                var interactable = col.GetComponent<IInteractable>();
+
+                var interactableBody = interactable?.GetInteractable();
+
+                if (interactableBody == null) {
+                    continue;
+                }
+
+                targetsList.Add(interactableBody);
+            }
+
+            targets = targetsList.ToArray();
+            return;
+        }
+
+        private void HitTargets(Character2DController attacker, ref Vector2 moveToPosition, ref IInteractableBody[] interactedColliders, Vector2 forceDirAction, ref int newFacingDirection, ref Definitions.AttackAbility attackAbility, ref AttackBaseStats attackProperties) {
+
+            var canMultiHit = attackProperties.Properties.Count > 0 && attackProperties.Properties.Contains(Definitions.AttackProperty.MultiTargetOnSurfaceHit);
+
+            foreach (var col in interactedColliders) {
+
+                AttackStats attackStats = new AttackStats(attacker.Stats.Damage,
+                    interactedColliders.Length < 2 ? forceDirAction : GetSingleHitForceDir(attacker.Stats.PushbackForce, col.GetCenterPosition(), moveToPosition));
+               
                 var validAttack = TryPerformCombat(attacker, ref attackAbility, ref attackProperties, moveToPosition, col, attackStats);
                 newFacingDirection = newFacingDirection == 0 ? validAttack : newFacingDirection;
+                
+                if (validAttack != 0) {
+                    if (!canMultiHit) {
+                        break;
+                    }
+                    moveToPosition = col.GetCenterPosition();
+                } 
             }
         }
 
-        private int TryPerformCombat(Character2DController attacker, ref Definitions.AttackAbility attackAbility, ref AttackBaseStats attackProperties, Vector2 moveToPosition, Collider2D interactedCollider, AttackStats attackStats) {
+        private static Vector2 GetSingleHitForceDir(float pushbackForce, Vector2 startPosition, Vector2 endPosition) {
+            return (startPosition - endPosition).normalized * pushbackForce;
+        }
 
-            var damageable = interactedCollider.GetComponent<IInteractable>();
-
-            var foe = damageable?.GetInteractable();
+        private int TryPerformCombat(Character2DController attacker, ref Definitions.AttackAbility attackAbility, ref AttackBaseStats attackProperties, Vector2 moveToPosition, IInteractableBody interactedCollider, AttackStats attackStats) {
 
             var facingRightOrLeftTowardsPoint = 0;
 
-            if (foe == null) {
+            if (interactedCollider == null) {
                 return facingRightOrLeftTowardsPoint;
             }
 
+            var foe = interactedCollider;
             var foeState = foe.GetCurrentState();
-
             
             // todo: ValidateOpponentConditions of health and change the moveToPosition accordingly in case a foe is already dead
             var isAttackAction = _logic.AbilitiesLogic.IsAbilityAnAttack(attackAbility);
             var foeValidState = !isAttackAction || isAttackAction && ValidateOpponentConditions(attackProperties, foe);
             if (!foeValidState) {
                 Debug.LogWarning($"Invalid foe state {foe.GetTransform().gameObject.name}");
+                return facingRightOrLeftTowardsPoint;
             }
             var attackAvailable = foeValidState;
             if (attackAvailable) {
@@ -390,7 +438,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     if (properties.Contains(Definitions.AttackProperty.PushBackOnHit) ||
                         properties.Contains(Definitions.AttackProperty.PushBackOnBlock) && isFoeBlocking) {
 
-                        ApplyForceOnFoeWithDelay(foe, attackStats, (_hero.Stats.AttackDurationInMilliseconds) );
+                        ApplyForceOnFoeWithDelay(foe, attackStats, (attacker.Stats.AttackDurationInMilliseconds) );
 
                     } else if (properties.Contains(Definitions.AttackProperty.PushUpOnHit) ||
                                 properties.Contains(Definitions.AttackProperty.PushUpOnBlock) && isFoeBlocking) {
@@ -402,7 +450,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                         attackStats.ForceDir.x *= 0.05f;
 
-                        ApplyForceOnFoeWithDelay(foe, attackStats, (_hero.Stats.AttackDurationInMilliseconds));
+                        ApplyForceOnFoeWithDelay(foe, attackStats, (attacker.Stats.AttackDurationInMilliseconds));
 
                     } else if (properties.Contains(Definitions.AttackProperty.PushDiagonalOnHit) ||
                                 properties.Contains(Definitions.AttackProperty.PushDiagonalOnBlock) && isFoeBlocking) {
@@ -415,7 +463,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         }
                         attackStats.ForceDir.x *= 0.5f;
 
-                        ApplyForceOnFoeWithDelay(foe, attackStats, (_hero.Stats.AttackDurationInMilliseconds));
+                        ApplyForceOnFoeWithDelay(foe, attackStats, (attacker.Stats.AttackDurationInMilliseconds));
 
                     }
                         
@@ -432,7 +480,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     if (isThrowingGrabbedFoe) {
 
                         ApplyGrabOnFoeWithDelay(foe, null, foe.GetTransform().position);
-                        ApplyForceOnFoeWithDelay(foe, attackStats, _hero.Stats.AttackDurationInMilliseconds);
+                        ApplyForceOnFoeWithDelay(foe, attackStats, attacker.Stats.AttackDurationInMilliseconds);
                         attackerAsInteractable.SetAsGrabbing(null);
                         ApplyProjectileStateWhenThrown(foe, attackStats.Damage, attackerAsInteractable);
 
@@ -441,7 +489,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         foe.SetTargetPosition(endPosition);
 
                         _cam.RemoveFromTargetList(foe.GetTransform());
-                        ApplyGrabOnFoeWithDelay(foe, attacker, endPosition, _hero.Stats.AttackDurationInMilliseconds);
+                        ApplyGrabOnFoeWithDelay(foe, attacker, endPosition, attacker.Stats.AttackDurationInMilliseconds);
                         attackerAsInteractable.SetAsGrabbing(foe);
                         Debug.DrawRay(moveToPosition, Vector2.up * 10, Color.grey, 4);
                         Debug.DrawRay(endPosition, Vector2.up * 10, Color.yellow, 4);

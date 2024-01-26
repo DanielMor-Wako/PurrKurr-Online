@@ -83,7 +83,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         }
 
 
-        public void FilterNearbyCharactersAroundHitPointByDistance(ref Collider2D[] interactedColliders, Vector2 hitPosition, float distanceLimiter = 0.5f) {
+        public void FilterNearbyCharactersAroundHitPointByDistance(ref IInteractableBody[] interactedColliders, Vector2 hitPosition, float distanceLimiter = 0.5f) {
 
             if (interactedColliders.Length < 2) {
                 return;
@@ -91,7 +91,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             var interactedCollider = interactedColliders.FirstOrDefault();
 
-            Vector3 hitPoint = interactedCollider != null ? interactedCollider.transform.position : hitPosition;
+            Vector3 hitPoint = interactedCollider != null ? interactedCollider.GetCenterPosition() : hitPosition;
 
             /*var solidOutRadiusObjectsColliders =
                 Physics2D.OverlapCircleAll(hitPoint, LegsRadius + 0.2f, _whatIsSolid).
@@ -105,8 +105,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             }*/
 
             var damageableColliders = interactedColliders.Where(
-                obj => Vector2.Distance(obj.transform.position, hitPosition) < distanceLimiter).OrderBy(obj
-                        => Vector2.Distance(obj.transform.position, hitPosition)).ToArray();
+                obj => Vector2.Distance(obj.GetCenterPosition(), hitPosition) < distanceLimiter).OrderBy(obj
+                        => Vector2.Distance(obj.GetCenterPosition(), hitPosition)).ToArray();
             
             interactedColliders = damageableColliders;
         }
