@@ -9,7 +9,7 @@ namespace Code.Wakoz.PurrKurr {
         
         private static readonly Dictionary<System.Type, Controller> _instances = new();
 
-        // Victor: Refactor code to include a cancellation source that can stop the initialization when the object was destroyed
+        // todo: include a cancellation source that can stop the initialization when the object is destroyed
         protected override async void Awake() {
 
              //Debug.Log("Awake on controller " + name + " : " + GetType().Name + " : " + GetInstanceID());
@@ -59,7 +59,6 @@ namespace Code.Wakoz.PurrKurr {
         /// </summary>
         public static T GetController<T>() where T : SingleController {
             return _instances[typeof(T)] as T;
-            // Usage Example: SingleController.GetController<ExampleController>()
         }
 
         protected async Task BlockForAction(Func<Task> action) {

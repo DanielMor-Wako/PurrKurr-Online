@@ -5,10 +5,13 @@ using UnityEngine;
 namespace Code.Wakoz.PurrKurr.Screens.Init {
     public class InitController : MonoBehaviour {
         
-        [SerializeField] private bool _destroyInitPhaseOnLoad = true;
+        [SerializeField] private bool _destroyScriptOnLoad = true;
 
         [SerializeField] private bool _keepGameObjectOnDestroy = true;
-        
+
+        [Tooltip("When value is above 0, it overrides the target frame rate. Otherwise, uses the Default value")]
+        [SerializeField][Min(0)] private int _testTargetFrameRate = 0;
+
         private const int DEFAULT_TARGET_FRAME_RATE = 60;
         
         private void Awake() {
@@ -22,7 +25,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Init {
 
         private void SetTargtFrameRate() {
             
-            Application.targetFrameRate = DEFAULT_TARGET_FRAME_RATE;
+            Application.targetFrameRate = _testTargetFrameRate > 0 ? _testTargetFrameRate : DEFAULT_TARGET_FRAME_RATE;
         }
 
         private static void SetScreenOrientation() {
@@ -41,7 +44,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Init {
 
         private void Start() {
             
-            if (_destroyInitPhaseOnLoad) {
+            if (_destroyScriptOnLoad) {
 
                 if (_keepGameObjectOnDestroy) {
                     Destroy(this);
