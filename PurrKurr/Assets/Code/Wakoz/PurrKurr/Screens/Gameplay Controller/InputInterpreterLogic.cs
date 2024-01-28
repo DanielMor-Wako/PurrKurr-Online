@@ -50,7 +50,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     moveSpeed = -stats.SprintSpeed * state.GetFacingRightAsInt();
                     return true;
                 } else if (navigationDir != Definitions.NavigationType.Up && navigationDir != Definitions.NavigationType.Down) {
-                    moveSpeed = -stats.SprintSpeed * (_inputLogic.IsNavigationDirValidAsRight(navigationDir) ? 1 : -1);
+                    moveSpeed = actionInput.SwipeDistanceTraveledInPercentage * -stats.SprintSpeed * (_inputLogic.IsNavigationDirValidAsRight(navigationDir) ? 1 : -1);
                     return true;
                 }
             }
@@ -80,22 +80,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     return true;
                 }
 
-            /*} else if (state.IsJumping() && state.Velocity.y < 0.1f) {
-                
-                if (isNavRightDir && (rigidbodyVelocity.x < stats.AirborneMaxSpeed)) {
-
-                    forceDirToSetOnFixedUpdate = new Vector2(stats.AirborneMaxSpeed, rigidbodyVelocity.y);
-                    moveSpeed = 0;
-                    return true;
-                    
-                } else if (isNavLeftDir && (rigidbodyVelocity.x > -stats.AirborneMaxSpeed)) {
-
-                    forceDirToSetOnFixedUpdate = new Vector2(-stats.AirborneMaxSpeed, rigidbodyVelocity.y);
-                    moveSpeed = 0;
-                    return true;
-                }
-                return false;
-*/
             } else if (!state.IsCeiling() && (state.IsFrontWall() || state.IsGrounded())) { 
             
                 switch (navigationDir) {
@@ -160,9 +144,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             switch (actionInput.ActionType) {
                 
                 case Definitions.ActionType.Jump:
+
                     if (!ended && state.CanPerformJump(_gameplayLogic.IsStateConsideredAsGrounded(state.CurrentState))) {
                         isActionPerformed = true;
                         forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x, stats.JumpForce);
+
                     } else if (ended && state.Velocity.y > 0 && state.CurrentState == Definitions.CharacterState.Jumping) {
                         if (!(forceDirToSetOnFixedUpdate != Vector2.zero)) {
                             forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x, 0);
