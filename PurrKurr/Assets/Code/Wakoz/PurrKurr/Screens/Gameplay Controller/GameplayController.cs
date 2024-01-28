@@ -79,7 +79,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 if (character == null) {
                     continue;
                 }
-                character.SetSpriteOrder(character == _hero ? 2 : character.Stats.GetHealthPercentage() > 0 ? 1 : 0);
+                var isAlive = character.Stats.GetHealthPercentage() > 0;
+                character.SetSpriteOrder(character == _hero ? 2 : isAlive ? 1 : 0);
             }
         }
 
@@ -201,7 +202,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         private void OnActionStarted(ActionInput actionInput) {
             
-            if (_hero.State.CanPerformAction()) {
+            if (_hero.State.CanPerformAction() && _hero.Stats.GetHealthPercentage() > 0) {
 
                 if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, true, false, _hero,
                         out var moveSpeed, out Vector2 forceDirNavigation, out var navigationDir)) {
@@ -241,7 +242,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         
         private void OnActionOngoing(ActionInput actionInput) {
             
-            if (_hero.State.CanPerformAction()) {
+            if (_hero.State.CanPerformAction() && _hero.Stats.GetHealthPercentage() > 0) {
 
                 if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, false, false, _hero, 
                         out var moveSpeed, out var forceDirNavigation, out var navigationDir)) {
@@ -436,7 +437,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 if (validAttack != 0 && newFacingDirection == 0) {
                     
                     newFacingDirection = validAttack;
-                    moveToPosition = col is Character2DController ? col.GetCenterPosition() : moveToPosition;
+                    moveToPosition = col is Character2DController && !col.IsGrabbed() ? col.GetCenterPosition() : moveToPosition;
 
                     if (!canMultiHit) {
                         break;

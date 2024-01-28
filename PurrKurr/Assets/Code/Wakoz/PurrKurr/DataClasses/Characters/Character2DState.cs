@@ -1,5 +1,6 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
+using System;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters

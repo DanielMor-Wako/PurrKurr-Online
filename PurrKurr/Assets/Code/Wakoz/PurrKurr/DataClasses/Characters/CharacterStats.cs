@@ -47,7 +47,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public int AttackDurationInMilliseconds = 150;
         
         private float _levelInterval;
-        
+        private float _healthPercentage;
+
         public CharacterStats(CharacterAbilitiesData unlockedAbilities) {
             
             _levelInterval = 1f / _baseStats.Data.MaxLevel;
@@ -111,6 +112,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public void UpdateStats(int level) {
 
             _currentLevel = level;
+
+            _healthPercentage = 1;
 
             var percentage = GetLevelProgressAsPercent(level);
             
@@ -186,7 +189,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public bool IsAttackAvailable(Definitions.AttackAbility attackAbility) 
             => _attacks.Any(attackMove => attackMove == attackAbility);
 
-        public float GetHealthPercentage() => (float)Health / MaxHealth;
+        public float GetHealthPercentage() => _healthPercentage;
+
+        public void UpdateHealth(int health) {
+
+            Health = health;
+            _healthPercentage = (float)Health / MaxHealth;
+        }
     }
 
 }

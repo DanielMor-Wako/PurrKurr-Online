@@ -345,8 +345,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public int DealDamage(int damage) {
 
-            var newHealthPoint = Mathf.Clamp(Stats.Health - damage, 0, Stats.MaxHealth);
-            Stats.Health = newHealthPoint;
+            var newHealthPoint = Mathf.Clamp(_stats.Health - damage, 0, Stats.MaxHealth);
+            _stats.UpdateHealth(newHealthPoint);
 
             if (newHealthPoint != 0) {
                 //Debug.Log("HP " + Stats.Health);
