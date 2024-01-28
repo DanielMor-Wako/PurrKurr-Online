@@ -27,6 +27,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         [SerializeField] private CharacterSenses _senses;
         [SerializeField] private Transform _bodyDamager;
         [SerializeField] private Character2DRig _rigAnimator;
+        private SpriteRenderer _sprite;
 
         private Rigidbody2D _legsRigidBody;
 
@@ -128,10 +129,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             level = level == -1 ? _stats.GetCurrentLevel() : level;
             _stats.UpdateStats(level);
+            OnUpdatedStats?.Invoke(null);
 
             if (_rigAnimator != null) {
                 _rigAnimator.UpdateBodyScale(_stats.BodySize);
             }
+
         }
 
         protected override Task Initialize() {
@@ -346,14 +349,25 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             Stats.Health = newHealthPoint;
 
             if (newHealthPoint != 0) {
-                Debug.Log("HP " + Stats.Health);
+                //Debug.Log("HP " + Stats.Health);
             } else {
-                //Debug.Log("Dead"); 
+                //Debug.Log("Dead");
+                SetSpriteOrder(0);
             }
 
             OnUpdatedStats?.Invoke(new List<DisplayedableStatData>() { new DisplayedableStatData(Definitions.CharacterDisplayableStat.Health , Stats.GetHealthPercentage()) });
 
             return newHealthPoint;
+        }
+
+        public void SetSpriteOrder(int orderLayer) {
+
+            _sprite ??= _rigAnimator.GetComponentInChildren<SpriteRenderer>();
+            
+            if (_sprite != null) {
+                _sprite.sortingOrder = orderLayer;
+            }
+           
         }
 
         public void ApplyForce(Vector2 forceDir) {
