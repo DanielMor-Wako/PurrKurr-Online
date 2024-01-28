@@ -10,6 +10,7 @@ using Code.Wakoz.PurrKurr.Logic.GameFlow;
 using Code.Wakoz.PurrKurr.Screens.CameraComponents;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection;
+using Code.Wakoz.Utils.Extensions;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
@@ -24,9 +25,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         public event Action<List<DisplayedableStatData>> OnStatsChanged;
 
         [SerializeField] private CameraFollow _cam;
+        [SerializeField] private List<Character2DController> _heroes;
         [SerializeField] private Character2DController _mainHero;
         private Character2DController _hero;
 
+        private bool _firstTimeInitialized = false;
         private bool _heroInitialized = false;
         private bool _gameRunning = false;
 
@@ -63,17 +66,30 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             TryInitHero(_mainHero);
 
+            RefreshSpritesOrder();
+
             _gameRunning = true;
 
             return Task.CompletedTask;
+        }
+
+        private void RefreshSpritesOrder() {
+            
+            foreach(var character in _heroes) {
+                if (character == null) {
+                    continue;
+                }
+                character.SetSpriteOrder(character == _hero ? 2 : character.Stats.GetHealthPercentage() > 0 ? 1 : 0);
+            }
         }
 
         [ContextMenu("Init Referenced Hero")]
         public void SetHeroAsReferenced() {
             TryInitHero(_mainHero);
             _ui.InitUiForCharacter(_mainHero);
+            RefreshSpritesOrder();
         }
-        
+
         public void SetNewHero(Character2DController hero) {
             TryInitHero(hero);
         }
@@ -96,6 +112,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _hero.OnStateChanged += OnStateChanged;
             _hero.OnUpdatedStats += UpdateOrInitUiDisplayForCharacter;
 
+            _firstTimeInitialized = true;
+
             _heroInitialized = true;
 
             return true;
@@ -112,6 +130,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     _ui.InitUiForCharacter(_hero);
                 }
                 
+                if (!_firstTimeInitialized) { return; }
+                _firstTimeInitialized = false;
+                RefreshSpritesOrder();
             }
         }
 
@@ -124,10 +145,19 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
               _hero.SetMaxLevel();  
             }
         }
-        
-        public void SetHeroMinLevel() => _hero.SetMinLevel();
+
+        public void SetHeroMinLevel() {
+            _hero.SetMinLevel();
+        }
         public void SetHeroMaxLevel() => _hero.SetMaxLevel();
-        
+        public void RandomizeHero() {
+            if (_heroes == null) { return; }
+            _mainHero = HelperFunctions.Random(_heroes);
+            SetHeroAsReferenced();
+        }
+        public void SetTimeScaleMin() => Time.timeScale = 0.5f;
+        public void SetTimeScaleMax() => Time.timeScale = 1f;
+
         private void UpdateStatsOnLevelUp(int level) {
             if (_hero == null) {
                 return;
@@ -208,28 +238,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             
             OnTouchPadDown?.Invoke(actionInput);
         }
-
-        private void AlterJumpDirBasedOnNavigationDirection(ref Vector2 forceDir, Definitions.NavigationType navigationDir, float jumpForce) {
-
-            var inputLogic = _logic.InputLogic;
-
-            Debug.DrawRay(_hero.LegsPosition, forceDir, Color.gray, 3);
-            if (navigationDir == Definitions.NavigationType.Up) {
-                forceDir.x = _hero.State.GetFacingRightAsInt();
-                
-            } else if (inputLogic.IsNavigationDirValidAsRight(navigationDir)) {
-                forceDir.x = jumpForce * 0.5f;
-
-            } else if (inputLogic.IsNavigationDirValidAsLeft(navigationDir)) {
-                forceDir.x = -jumpForce * 0.5f;
-
-            } else {
-                forceDir.x = _hero.State.GetFacingRightAsInt() * jumpForce * 0.25f;
-
-            }
-            Debug.DrawRay(_hero.LegsPosition, forceDir, Color.magenta, 3);
-        }
-
+        
         private void OnActionOngoing(ActionInput actionInput) {
             
             if (_hero.State.CanPerformAction()) {
@@ -287,6 +296,37 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             //}
             OnTouchPadUp?.Invoke(actionInput);
         }
+
+        private void AlterJumpDirBasedOnNavigationDirection(ref Vector2 forceDir, Definitions.NavigationType navigationDir, float jumpForce) {
+
+            var inputLogic = _logic.InputLogic;
+
+            Debug.DrawRay(_hero.LegsPosition, forceDir, Color.gray, 3);
+            if (navigationDir == Definitions.NavigationType.Up) {
+                forceDir.x = _hero.State.GetFacingRightAsInt();
+                
+            } else if (inputLogic.IsNavigationDirValidAsRight(navigationDir)) {
+                forceDir.x = jumpForce * 0.5f;
+
+            } else if (inputLogic.IsNavigationDirValidAsLeft(navigationDir)) {
+                forceDir.x = -jumpForce * 0.5f;
+
+            } else {
+                forceDir.x = _hero.State.GetFacingRightAsInt() * jumpForce * 0.25f;
+
+            }
+            Debug.DrawRay(_hero.LegsPosition, forceDir, Color.magenta, 3);
+        }
+
+        private void AlterThrowDirBasedOnNavigationDirection(ref Vector2 throwDir, Definitions.NavigationType navigationDir, float pushbackForce) {
+
+            Debug.DrawRay(_hero.LegsPosition, throwDir, Color.gray, 3);
+            if (!_logic.InputLogic.IsNavigationDirValidAsUp(navigationDir)) {
+                throwDir = AlterDirectionToMaxForce(throwDir);
+            }
+            Debug.DrawRay(_hero.LegsPosition, throwDir, Color.magenta, 3);
+        }
+
 /*
         private void Update() {
 
@@ -392,13 +432,15 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     interactedColliders.Length < 2 ? forceDirAction : GetSingleHitForceDir(attacker.Stats.PushbackForce, col.GetCenterPosition(), moveToPosition));
                
                 var validAttack = TryPerformCombat(attacker, ref attackAbility, ref attackProperties, moveToPosition, col, attackStats);
-                newFacingDirection = newFacingDirection == 0 ? validAttack : newFacingDirection;
                 
-                if (validAttack != 0) {
+                if (validAttack != 0 && newFacingDirection == 0) {
+                    
+                    newFacingDirection = validAttack;
+                    moveToPosition = col is Character2DController ? col.GetCenterPosition() : moveToPosition;
+
                     if (!canMultiHit) {
                         break;
                     }
-                    moveToPosition = col.GetCenterPosition();
                 } 
             }
         }
@@ -470,7 +512,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 } else if (_logic.AbilitiesLogic.IsAbilityAGrab(attackAbility)) {
 
                     //var abovePosition = new Vector3(moveToPosition.x, moveToPosition.y + attacker.LegsRadius, 0);
-                    var isGroundSmash =properties.Contains(Definitions.AttackProperty.GrabToGroundSmash) ||
+                    var isGroundSmash = properties.Contains(Definitions.AttackProperty.GrabToGroundSmash) ||
                         foe.GetCurrentState() is Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling;
                     var grabPointOffset = (isGroundSmash) ? Vector2.down : Vector2.up;
                     var endPosition = moveToPosition + grabPointOffset * (attacker.LegsRadius);
@@ -479,6 +521,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     var isThrowingGrabbedFoe = attackerAsInteractable.IsGrabbing() && foe.IsGrabbed();
                     if (isThrowingGrabbedFoe) {
 
+                        AlterThrowDirBasedOnNavigationDirection(ref attackStats.ForceDir, attacker.State.NavigationDir, attacker.Stats.PushbackForce);
                         ApplyGrabOnFoeWithDelay(foe, null, foe.GetTransform().position);
                         ApplyForceOnFoeWithDelay(foe, attackStats, attacker.Stats.AttackDurationInMilliseconds);
                         attackerAsInteractable.SetAsGrabbing(null);
@@ -538,7 +581,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             Debug.Log("trying as damager -> damage: " + damage);
 
-            var _bodyDamager = ((Character2DController)grabbed);
+            var _bodyDamager = (grabbed as Character2DController);
 
             if (damage == 0 || _bodyDamager == null) {
                 return;
@@ -665,14 +708,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             foreach (var condition in attack.OpponentStateConditions) {
                 
                 switch (condition) {
-                    case Definitions.CharacterState.Alive when interactable.GetHpPercent() == 0:
-                        return false;
-
                     // todo: change this to check when a player is grounded but is considered flying type, so the state of the opponent is grounded when in midair and not falling
                     /*case Definitions.CharacterState.Falling or Definitions.CharacterState.Jumping or Definitions.CharacterState.Grounded
                         when opponentState is (Definitions.CharacterState.Falling or Definitions.CharacterState.Jumping or Definitions.CharacterState.Grounded) :
                         return true;*/
-
+                    
+                    case Definitions.CharacterState.Alive when interactable.GetHpPercent() == 0:
                     case Definitions.CharacterState.Running when opponentState != Definitions.CharacterState.Running:
                     case Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling when !(_logic.GameplayLogic.IsStateConsideredAsAerial(opponentState)):
                     case Definitions.CharacterState.Grounded when !_logic.GameplayLogic.IsStateConsideredAsGrounded(opponentState) && !interactable.IsGrabbed():
@@ -708,9 +749,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 forceDirAction.x *= 0.5f;
             }*/
 
-            var modifiedHealth = damageableBody.DealDamage(attackStats.Damage);
-            var modifiedForce = modifiedHealth > 0 ? attackStats.ForceDir : AlterDirectionToMaxForce(attackStats.ForceDir);
-            damageableBody.ApplyForce(modifiedForce);
+            damageableBody.DealDamage(attackStats.Damage);
+            damageableBody.ApplyForce(attackStats.ForceDir);
             
             Debug.DrawRay(damageableBody.GetCenterPosition(), attackStats.ForceDir, Color.red, 4);
 
