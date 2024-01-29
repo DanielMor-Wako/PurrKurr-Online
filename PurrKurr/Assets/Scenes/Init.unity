@@ -131,26 +131,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 244033517719008093, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 110
-      objectReference: {fileID: 0}
-    - target: {fileID: 462248441991102385, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_fontSize
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 462248441991102385, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_fontSizeBase
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 462248441991102385, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_enableAutoSizing
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 462248441991102385, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_VerticalAlignment
-      value: 512
-      objectReference: {fileID: 0}
     - target: {fileID: 2799550585489752909, guid: b366cfe60150f62429657356265f8bcf, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -190,10 +170,6 @@ PrefabInstance:
     - target: {fileID: 4516066770478748345, guid: b366cfe60150f62429657356265f8bcf, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4517671159501424965, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_Creator
-      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4858388428518946629, guid: b366cfe60150f62429657356265f8bcf, type: 3}
       propertyPath: m_AnchorMax.y
@@ -260,62 +236,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5874099241279929237, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5874099241279929237, guid: b366cfe60150f62429657356265f8bcf, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5874099241279929237, guid: b366cfe60150f62429657356265f8bcf, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6304578747840205706, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_text
-      value: 'T1
-
-'
-      objectReference: {fileID: 0}
-    - target: {fileID: 6304578747840205706, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_fontSize
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 6304578747840205706, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_fontSizeBase
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 6304578747840205706, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_enableAutoSizing
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6304578747840205706, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_VerticalAlignment
-      value: 512
-      objectReference: {fileID: 0}
-    - target: {fileID: 6924000666157850223, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 110
-      objectReference: {fileID: 0}
-    - target: {fileID: 7574503957525413258, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_text
-      value: T.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7574503957525413258, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_fontSize
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 7574503957525413258, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_fontSizeBase
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 7574503957525413258, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_enableAutoSizing
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7574503957525413258, guid: b366cfe60150f62429657356265f8bcf, type: 3}
-      propertyPath: m_VerticalAlignment
-      value: 512
       objectReference: {fileID: 0}
     - target: {fileID: 8576424720713098732, guid: b366cfe60150f62429657356265f8bcf, type: 3}
       propertyPath: m_AnchorMax.y
