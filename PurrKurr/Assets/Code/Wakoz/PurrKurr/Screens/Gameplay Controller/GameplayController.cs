@@ -156,7 +156,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _mainHero = HelperFunctions.Random(_heroes);
             SetHeroAsReferenced();
         }
-        public void SetTimeScaleMin() => Time.timeScale = 0.5f;
+        public void SetTimeScaleMin() => Time.timeScale = 0.25f;
+        public void SetTimeScaleHalf() => Time.timeScale = 0.5f;
+        public void SetTimeScaleTwoQuaters() => Time.timeScale = 0.75f;
         public void SetTimeScaleMax() => Time.timeScale = 1f;
 
         private void UpdateStatsOnLevelUp(int level) {
@@ -743,8 +745,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         }
 
         private async void ApplyForceOnFoeWithDelay(IInteractableBody damageableBody, AttackStats attackStats, int delayInMilliseconds = 0) {
-            
-            _cam.AddToTargetList(damageableBody.GetTransform());
+
+            var ifDamageableIsGrabbedThenIgnoreAddToTargetsList = damageableBody.IsGrabbed();
+            if (!ifDamageableIsGrabbedThenIgnoreAddToTargetsList) {
+                _cam.AddToTargetList(damageableBody.GetTransform());
+            }
             //foeRigidBody.constraints = RigidbodyConstraints2D.FreezeAll;
             
             if (delayInMilliseconds > 0) {
@@ -767,10 +772,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             
             Debug.DrawRay(damageableBody.GetCenterPosition(), attackStats.ForceDir, Color.red, 4);
 
-            var distanceFromAttacker = Vector2.Distance(damageableBody.GetCenterPosition(), _hero.LegsPosition);
-            while ( distanceFromAttacker < 15 ) {
-                await Task.Delay((1000));
-                distanceFromAttacker = Vector2.Distance(damageableBody.GetCenterPosition(), _hero.LegsPosition);
+            var distanceFromAttacker = damageableBody.GetCenterPosition() - _hero.LegsPosition;
+            while (Mathf.Abs(distanceFromAttacker.x) < 15 && Mathf.Abs(distanceFromAttacker.y) < 8
+                 && (_hero.Velocity.magnitude <= 20 || _hero.Velocity.magnitude > 20 && distanceFromAttacker.magnitude > 200 && Mathf.Sign(_hero.Velocity.y) == Mathf.Sign(distanceFromAttacker.y)) ) {
+                await Task.Delay((500));
+                distanceFromAttacker = damageableBody.GetCenterPosition() - _hero.LegsPosition;
             }
 
             if (damageableBody != null) {

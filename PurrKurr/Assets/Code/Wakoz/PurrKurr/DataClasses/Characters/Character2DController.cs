@@ -33,9 +33,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         private Vector3 NewPositionToSetOnFixedUpdte;
         private Vector2 ForceDirToSetOnFixedUpdate;
-        
-        private bool SetForceOnFixedUpdate;
-        private bool SetPositionOnFixedUpdate;
 
         private LayerMask _whatIsSolid;
         private LayerMask _whatIsSurface;
@@ -170,157 +167,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         }
 
-        /*
-        private void DiagnoseInputNavigation(ActionInput actionInput, bool ended) {
-
-            if (actionInput.ActionGroupType != Definitions.ActionTypeGroup.Navigation) { 
-                return;
-            }
-
-            if (ended) {
-                DoMove(0);
-                return;
-            }
-
-            var movementDir = _logic.InputLogic.GetInputDirection(actionInput.NormalizedDirection);
-
-            switch (movementDir) {
-                case Definitions.NavigationType.Right:
-                    DoMove(-_stats.RunSpeed);
-                    break;
-
-                case Definitions.NavigationType.DownRight:
-                    DoMove(-_stats.SprintSpeed);
-                    break;
-
-                case Definitions.NavigationType.Left:
-                    DoMove(_stats.RunSpeed);
-                    break;
-
-                case Definitions.NavigationType.DownLeft:
-                    DoMove(_stats.SprintSpeed);
-                    break;
-                
-                default:
-                    DoMove(0);
-                    break;
-            }
-
-            if (movementDir == Definitions.NavigationType.None) {
-                return;
-            }
-            
-            // Air-borne movement
-            var rigidbodyVelocity = _rigidbody.velocity;
-            
-            if (_characterState.State == Definitions.CharacterState.Falling && rigidbodyVelocity.y < -1f) {
-                switch (movementDir) {
-                    
-                    case Definitions.NavigationType.Right or Definitions.NavigationType.DownRight
-                        when (rigidbodyVelocity.x < _stats.AirborneMaxSpeed):
-                        
-                        SetForceOnFixedUpdate = true;
-                        ForceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x + _stats.AirborneSpeed, rigidbodyVelocity.y);
-                        DoMove(0);
-                        
-                        break;
-                    
-                    case Definitions.NavigationType.Left or Definitions.NavigationType.DownLeft
-                        when rigidbodyVelocity.x > -_stats.AirborneMaxSpeed:
-                        
-                        SetForceOnFixedUpdate = true;
-                        ForceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x - _stats.AirborneSpeed, rigidbodyVelocity.y);
-                        DoMove(0);
-
-                        break;
-                }
-                
-            }
-        }
-
-        private void DiagnoseInputAction(ActionInput actionInput, bool started, bool ended) {
-
-            if (actionInput.ActionGroupType != Definitions.ActionTypeGroup.Action) {
-                return;
-            }
-
-            switch (actionInput.ActionType) {
-                case Definitions.ActionType.Jump:
-                    if (!ended && IsGrounded() && !_characterState.IsJumping()) {
-                        _characterState.SetJumping(Time.time + .2f);
-                        //SetPositionOnFixedUpdate = true;
-                        SetForceOnFixedUpdate = true;
-                        ForceDirToSetOnFixedUpdate = new Vector2(_rigidbody.velocity.x, _stats.JumpForce);
-                    } else if (ended && _rigidbody.velocity.y > 0 && _characterState.ConsideredAsJumpingAndNotFalling()) {
-                        
-                        if (!SetForceOnFixedUpdate) {
-                            SetForceOnFixedUpdate = true;
-                            ForceDirToSetOnFixedUpdate = new Vector2(_rigidbody.velocity.x, 0);
-                        } else if (SetForceOnFixedUpdate) {
-                            SetForceOnFixedUpdate = false;
-                        }
-                    }
-                    break;
-
-                case Definitions.ActionType.Attack:
-                    if (_nearbyCharacters == null || _nearbyCharacters.Length < 2) {
-                        return;
-                    }
-
-                    Collider2D closestFoeColl = null;
-                    foreach (var potentialFoe in _nearbyCharacters) {
-                        if (potentialFoe == null || potentialFoe == _legsCollider) {
-                            continue;
-                        }
-
-                        if (closestFoeColl == null || ((potentialFoe.transform.position - _legsCollider.transform.position).magnitude < (closestFoeColl.transform.position - _legsCollider.transform.position).magnitude)) {
-                            closestFoeColl = potentialFoe;
-                        }
-                    }
-
-                    if (closestFoeColl == null || SetForceOnFixedUpdate) {
-                        return;
-                    }
-                    
-                    if (started && !SetForceOnFixedUpdate) {
-                        //NewFoePositionToSetOnFixedUpdte = closestFoeColl.transform.position;
-                        var dir = (NewPositionToSetOnFixedUpdte - _legsCollider.transform.position);
-                        Debug.DrawLine(_legsCollider.transform.position, NewPositionToSetOnFixedUpdte, Color.green, 4);
-                        ForceDirToSetOnFixedUpdate = dir.normalized * 15;
-                        SetForceOnFixedUpdate = true;
-                        var foeRigidBody = closestFoeColl.GetComponent<Rigidbody2D>();
-                        if (foeRigidBody != null) {
-                            foeRigidBody.velocity = ForceDirToSetOnFixedUpdate;
-                            Debug.DrawRay(NewPositionToSetOnFixedUpdte, ForceDirToSetOnFixedUpdate, Color.red, 7);
-                        }
-                    }
-                    
-                    break;
-
-                case Definitions.ActionType.Block:
-                    break;
-
-                case Definitions.ActionType.Grab:
-                    break;
-
-                case Definitions.ActionType.Projectile:
-                    break;
-
-                case Definitions.ActionType.Rope:
-                    break;
-
-                case Definitions.ActionType.Special:
-                    break;
-
-                //default:
-                    //throw new ArgumentOutOfRangeException();
-            }
-        }
-        */
-
         private float GetPlayerLegsHeight() => _legs.anchor.y;
 
         public void DoMove(float speed) {
+
             if (speed != 0) {
                 FaceCharacterTowardsPoint(speed < 0);
             }
@@ -329,6 +179,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         }
         
         public void FaceCharacterTowardsPoint(bool facingRight) {
+
             _characterState.SetFacingRight(facingRight);
             _rigAnimator.SetFacingRight(facingRight);
         }
@@ -410,8 +261,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             } else if (ForceDirToSetOnFixedUpdate == Vector2.zero) {
                 ForceDirToSetOnFixedUpdate = newForceDir;
             }
-            
-            SetForceOnFixedUpdate = newForceDir != Vector2.zero;
+
         }
 
         public void SetNewPosition(Vector2 newPosition) {
@@ -444,7 +294,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 _transformMover.EndMove();
                 _rigidbody.velocity = ForceDirToSetOnFixedUpdate;
                 ForceDirToSetOnFixedUpdate = Vector2.zero;
-                SetForceOnFixedUpdate = false;
             }
             
             UpdateAnimatorRigRotation();
@@ -485,15 +334,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             var isAlive = Stats.Health > 0;
             _rigAnimator.UpdateRigRotation(isAlive, _characterState.ReturnForwardDirByTerrainQuaternion());
-
-            /*var isAlive = Stats.Health > 0;
-            var facingRightAngle = _characterState.IsFacingRight() ? 180 : 0;
-            var offsetQuaternion = Quaternion.Euler(0f, 0f, isAlive ? QuaterminionOffsetAngle + facingRightAngle : 0);
-            var newRotation = Quaternion.Lerp(_rigAnimator.gameObject.transform.rotation,
-                _characterState.ReturnForwardDirByTerrainQuaternion() * offsetQuaternion,
-                Time.deltaTime * 10f);
-
-            _rigAnimator.gameObject.transform.rotation = newRotation;*/
         }
 
         private void UpdateCharacterState() {
@@ -560,7 +400,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 OnStateChanged?.Invoke(_characterState);
 
                 if (_characterState.CurrentState == Definitions.CharacterState.Landed) {
-                    SetForceOnFixedUpdate = true;
                     ForceDirToSetOnFixedUpdate = new Vector2(_rigidbody.velocity.x, 0);
                     DoMove(0);
                 }

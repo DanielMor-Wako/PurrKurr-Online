@@ -13,10 +13,9 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
         [SerializeField] private Transform CameraFocusPrefab;
         [SerializeField] private Transform cameraFocus;
         public List<Transform> targets;
-        private bool isFocusPointActive = false;
 
         public float XMaxOffsetWhenLookingForward = 5f;
-        public float XMinVelocityToLookForward = 10f;
+        public float XMaxVelocityToLookForwardByScreenSize = 4f;
         public float YMaxOffsetWhenCloseCenter = 2.2f;
         public float YMinZoomToAddOffset = 4f;
         [Min(0)] public float MinVelocityToSetFallingYOffset = 10;
@@ -30,6 +29,8 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
         [SerializeField] [Range(0.05f, 2f)] private float adjustFocusSpeed = 0.1f;
 
         public float smoothTime = 0.3f;
+        public float MinScreenVelocityForXCenterSmoothing = 5f;
+        public float XBackToCenterSmoothing = 2f;
         public float minZoom = 30f;
         public float maxZoom = 9f;
         public float singleObjectZoom = 7f;
@@ -40,14 +41,20 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
         private Vector3 centerPoint;
         private Vector3 newPosition;
         private bool _isFreeFalling;
+        private bool _isTopEdge, _isBottomEdge, _isLeftEdge, _isRightEdge;
         private List<Transform> _previousTargets = new();
         private float _zoom;
         private float _newZoom;
         const int camFixedZPosition = -10;
-    
+        private float _screenHeight, _screenWidth;
+
+
         private void Start()  {
         
             cam ??= GetComponent<Camera>();
+            _screenHeight = Screen.height;
+            _screenWidth = Screen.width;
+            XMaxVelocityToLookForwardByScreenSize = _screenHeight * 1.5f; // multi by 1.5f so the player can can reach half the screen on each size
         }
 
         private void Update() {
@@ -61,10 +68,26 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
                 cameraFocus.transform.position = isFreeFallingHitPoint;
             }
 
+            UpdateScreenEdge();
+
             UpdateScreenOffset();
             //SwitchSingleTargetToTheClosetGround(_isFreeFalling);
             Move();
             Zoom();
+        }
+
+        private void UpdateScreenEdge() {
+
+            if (_isFreeFalling) {
+                _isTopEdge = _isBottomEdge =_isLeftEdge = _isRightEdge = false;
+            }
+
+            Vector3 screenPosition = cam.WorldToScreenPoint(mainTarget.transform.position);
+
+            _isTopEdge = screenPosition.y >= 0.8f * _screenHeight;
+            _isBottomEdge = screenPosition.y <= 0.2f * _screenHeight;
+            _isLeftEdge = screenPosition.x <= 0.3f * _screenWidth;
+            _isRightEdge = screenPosition.x >= 0.7f * _screenWidth;
         }
 
         private void FixedUpdate() {
@@ -74,6 +97,9 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
 
             SwitchSingleTargetToTheClosetGround(_isFreeFalling);
             //Zoom();
+
+            _screenWidth = Screen.width;
+            _screenHeight = Screen.height;
         }
 
         private bool SingleTargetIsMainTarget() =>
@@ -83,9 +109,9 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
 
             //RecalculateYOffsetByMaxZoom();
         
-            UpdateScreenOffsetVertical(_isFreeFalling);
-        
-            RecalculateXOffsetBySpeed();
+            UpdateScreenOffsetVertical();
+            UpdateScreenOffsetHorizontal();
+            
         }
 
 
@@ -101,29 +127,55 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
             FollowCameraFocusAsTarget(pos, 0.35f);
         }*/
 
+        private void UpdateScreenOffsetHorizontal() {
+
+            if (targets.Count > 1 && AreTargetsCloseOnVertical()) {
+                offset.x = 0;
+
+            } else {
+                RecalculateXOffsetBySpeed();
+            }
+            
+        }
+
         void RecalculateXOffsetBySpeed() {
 
-            if (targets.Count > 1) {
-                offset.x = 0f;
-                return;
-            }
-
+            var facingRight = mainTarget.State.IsFacingRight();
+            var heroFacingToHorizon = facingRight && _isLeftEdge || !facingRight && _isRightEdge;//&& velocity.magnitude < 10
 
             // the larger x speed is applied, the larger x offset is
-            if (Mathf.Abs(mainTarget.Velocity.x) > XMinVelocityToLookForward) //&& !target.State.State == Definitions.CharacterState.StandingUp)
+            if (targets.Count < 2 && Mathf.Abs(mainTarget.Velocity.x) > 0.1f) //&& !target.State.State == Definitions.CharacterState.StandingUp)
             {
-                float percentage = (mainTarget.Velocity.x) / (mainTarget.Stats.SprintSpeed);
-                offset.x = XMaxOffsetWhenLookingForward * percentage;
+                var percentage = 0f;
+                if (heroFacingToHorizon) {
 
+                    percentage = _isLeftEdge ? -1f : _isRightEdge ? 1f : 0f;
+                } else {
+
+                    percentage = ((float)mainTarget.Velocity.x) / (10); // 10 as the min velocity for any player to be considered as run
+                    percentage = Mathf.Clamp(percentage, -1, 1);
+                    //Debug.Log(percentage);
+
+                }
+
+                offset.x = 10 * percentage; // 10 is the max distance to move the offset forward
             }
+             
         }
     
-        private void UpdateScreenOffsetVertical(bool isFreeFalling) {
+        private void UpdateScreenOffsetVertical() {
 
-            if (isFreeFalling && SingleTargetIsMainTarget()) {
+            var singleTarget = SingleTargetIsMainTarget();
+            if (_isFreeFalling && singleTarget) {
                 offset.y = FallingYOffset;
 
-            } else if (areTargetsCloseOnVertical()) {
+            } else if (_isTopEdge && singleTarget) {
+                offset.y = YMinZoomToAddOffset * 2.5f;
+
+            } else if (_isBottomEdge && singleTarget) {
+                offset.y = -YMinZoomToAddOffset;
+
+            } else if (AreTargetsCloseOnVertical()) {
                 offset.y = YMinZoomToAddOffset;
         
             } else {
@@ -131,7 +183,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
             }
         }
 
-        private bool areTargetsCloseOnVertical() {
+        private bool AreTargetsCloseOnVertical() {
         
             if (_newZoom <= maxYDistanceToResetYOffset) {
                 return true;
@@ -180,7 +232,9 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
             newPosition = centerPoint + offset;
             newPosition.z = camFixedZPosition;
 
-            transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, smoothTime);
+            var smoothing = Mathf.Abs(velocity.magnitude) < MinScreenVelocityForXCenterSmoothing && Mathf.Abs(mainTarget.Velocity.magnitude) < 20f ? XBackToCenterSmoothing : smoothTime;
+
+            transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, smoothing);
         }
 
         void Zoom() {
