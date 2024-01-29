@@ -211,12 +211,15 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     _hero.DoMove(moveSpeed);
                     _hero.SetForceDir(forceDirNavigation); // used for airborne, probably more accurate after the diagnosis
                     _hero.SetNavigationDir(navigationDir);
+                    if (_hero.IsGrabbed()) {
+                        FaceCharacterTowardsPointByNavigationDir(navigationDir);
+                    }
                 }
             
                 if (_inputInterpreterLogic.TryPerformInputAction(actionInput, true, false, _hero,
                         out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedColliders)) {
 
-                    if (isActionPerformed && interactedColliders != null) {
+                    if (isActionPerformed && interactedColliders != null && !_hero.State.IsGrabbed()) {
                         CombatLogic(_hero, actionInput.ActionType, moveToPosition, interactedColliders, forceDir);
                     }
 
@@ -239,7 +242,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             
             OnTouchPadDown?.Invoke(actionInput);
         }
-        
+
+        private void FaceCharacterTowardsPointByNavigationDir(Definitions.NavigationType navigationDir) {
+
+            if (_logic.InputLogic.IsNavigationDirValidAsRight(navigationDir)) {
+                _hero.FaceCharacterTowardsPoint(true);
+            } else if (_logic.InputLogic.IsNavigationDirValidAsLeft(navigationDir)) {
+                _hero.FaceCharacterTowardsPoint(false);
+            }
+        }
+
         private void OnActionOngoing(ActionInput actionInput) {
             
             if (_hero.State.CanPerformAction() && _hero.Stats.GetHealthPercentage() > 0) {

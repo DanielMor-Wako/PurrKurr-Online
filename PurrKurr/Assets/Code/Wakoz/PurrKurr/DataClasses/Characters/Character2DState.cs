@@ -38,7 +38,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
         private bool _isStanding;
         private Vector2 _velocity;
         private Definitions.NavigationType _navigationDirection;
-        private IInteractableBody _grabAnchor;
+        private IInteractableBody _grabberAnchor;
+        private IInteractableBody _grabbedAnchor;
 
         private const float _cayoteTimeDuration = 0.2f;
 
@@ -294,7 +295,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
         public bool IsAnimating() => Time.time < _isAnimating;
 
         public bool CanPerformAction() =>
-            !IsAnimating() &&
+            !IsAnimating() && 
             _currentState is Definitions.CharacterState.Crouching or Definitions.CharacterState.StandingUp or
                 Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling or
                 Definitions.CharacterState.AerialJumping or Definitions.CharacterState.Grabbing or
@@ -366,15 +367,15 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
             return isVerticalVelocityExceeding && isGroundedOrCayoteTime && !IsJumping() && CurrentState != Definitions.CharacterState.Crouching;
         }
 
-        public void SetAsGrabbed(IInteractableBody grabber) => _grabAnchor = grabber;
+        public void SetAsGrabbed(IInteractableBody grabber) => _grabberAnchor = grabber;
 
-        public bool IsGrabbed() => _grabAnchor != null;
+        public bool IsGrabbed() => _grabberAnchor != null;
 
-        public void SetAsGrabbing(IInteractableBody grabbedBody) => _grabAnchor = grabbedBody;
+        public void SetAsGrabbing(IInteractableBody grabbedBody) => _grabbedAnchor = grabbedBody;
 
-        public bool IsGrabbing() => _grabAnchor != null;
+        public bool IsGrabbing() => _grabbedAnchor != null;
 
-        public IInteractableBody GetGrabbedTarget() => _grabAnchor;
+        public IInteractableBody GetGrabbedTarget() => _grabbedAnchor;
 
     }
 }
