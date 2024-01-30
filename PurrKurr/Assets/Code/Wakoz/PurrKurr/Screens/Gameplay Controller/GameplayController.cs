@@ -156,9 +156,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _mainHero = HelperFunctions.Random(_heroes);
             SetHeroAsReferenced();
         }
-        public void SetTimeScaleMin() => Time.timeScale = 0.25f;
+        public void SetTimeScaleMin() => Time.timeScale = 0.3f;
         public void SetTimeScaleHalf() => Time.timeScale = 0.5f;
-        public void SetTimeScaleTwoQuaters() => Time.timeScale = 0.75f;
+        public void SetTimeScaleTwoQuaters() => Time.timeScale = 0.8f;
         public void SetTimeScaleMax() => Time.timeScale = 1f;
 
         private void UpdateStatsOnLevelUp(int level) {
@@ -451,7 +451,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 if (validAttack != 0 && newFacingDirection == 0) {
                     
                     newFacingDirection = validAttack;
-                    moveToPosition = col is Character2DController && !col.IsGrabbed() ? col.GetCenterPosition() : moveToPosition;
+                    moveToPosition = !col.IsGrabbed() ? col.GetCenterPosition() : moveToPosition;
 
                     if (!canMultiHit) {
                         break;
