@@ -166,7 +166,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     }
 
                     closestColliders = nearbyEnemies.OrderBy(obj => Vector2.Distance(obj.transform.position, character.LegsPosition)).ToArray();
-
+                    
                     if (closestColliders == null) {
                         return false;
                     }
