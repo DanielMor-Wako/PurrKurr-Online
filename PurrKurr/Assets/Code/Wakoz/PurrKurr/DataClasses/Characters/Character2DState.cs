@@ -40,8 +40,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
         private Definitions.NavigationType _navigationDirection;
         private IInteractableBody _grabberAnchor;
         private IInteractableBody _grabbedAnchor;
-
-        private const float _cayoteTimeDuration = 0.2f;
+        private IInteractableBody _latestInteraction;
+        private const float _cayoteTimeDuration = 0.4f;
 
         public void SetState(Definitions.CharacterState newState) {
             _currentState = newState;
@@ -377,5 +377,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
 
         public IInteractableBody GetGrabbedTarget() => _grabbedAnchor;
 
+        public void MarkLatestInteraction(IInteractableBody latestInteraction) => _latestInteraction = latestInteraction;
+        public IInteractableBody GetLatestInteraction() => _latestInteraction;
     }
 }

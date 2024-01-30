@@ -205,7 +205,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private void OnActionStarted(ActionInput actionInput) {
             
             if (_hero.State.CanPerformAction() && _hero.Stats.GetHealthPercentage() > 0) {
-
+                
                 if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, true, false, _hero,
                         out var moveSpeed, out Vector2 forceDirNavigation, out var navigationDir)) {
 
@@ -243,15 +243,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
             
             OnTouchPadDown?.Invoke(actionInput);
-        }
-
-        private void FaceCharacterTowardsPointByNavigationDir(Definitions.NavigationType navigationDir) {
-
-            if (_logic.InputLogic.IsNavigationDirValidAsRight(navigationDir)) {
-                _hero.FaceCharacterTowardsPoint(true);
-            } else if (_logic.InputLogic.IsNavigationDirValidAsLeft(navigationDir)) {
-                _hero.FaceCharacterTowardsPoint(false);
-            }
         }
 
         private void OnActionOngoing(ActionInput actionInput) {
@@ -310,6 +301,15 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 }
             //}
             OnTouchPadUp?.Invoke(actionInput);
+        }
+
+        private void FaceCharacterTowardsPointByNavigationDir(Definitions.NavigationType navigationDir) {
+
+            if (_logic.InputLogic.IsNavigationDirValidAsRight(navigationDir)) {
+                _hero.FaceCharacterTowardsPoint(true);
+            } else if (_logic.InputLogic.IsNavigationDirValidAsLeft(navigationDir)) {
+                _hero.FaceCharacterTowardsPoint(false);
+            }
         }
 
         private void AlterJumpDirBasedOnNavigationDirection(ref Vector2 forceDir, Definitions.NavigationType navigationDir, float jumpForce) {
@@ -402,7 +402,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private void GetAvailableTargets(ref Character2DController attacker, ref AttackBaseStats attackProperties, Vector2 moveToPosition, ref Collider2D[] interactedColliders, out IInteractableBody[] interactableBodies) {
 
             interactableBodies = new IInteractableBody[] { };
-            SetSingleOrMultipleTargets(attacker.GetGrabbedTarget(), ref interactedColliders, ref interactableBodies );
+            SetSingleOrMultipleTargets(attacker, ref interactedColliders, ref interactableBodies );
             
             var canAttackMultiTarget = attackProperties.Properties.Count > 0 && attackProperties.Properties.Contains(Definitions.AttackProperty.MultiTargetOnSurfaceHit);
             if (canAttackMultiTarget && interactedColliders.Length > 1) {
@@ -411,12 +411,17 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         }
 
-        private void SetSingleOrMultipleTargets(IInteractableBody grabbedTarget, ref Collider2D[] interactedColliders, ref IInteractableBody[] targets) {
+        private void SetSingleOrMultipleTargets(Character2DController attacker, ref Collider2D[] interactedColliders, ref IInteractableBody[] targets) {
             
+            var grabbedTarget = attacker.GetGrabbedTarget();
             if (grabbedTarget != null) {
                 targets = new IInteractableBody[] { grabbedTarget };
                 return;
             }
+
+            var latestInteraction = attacker.State.GetLatestInteraction();
+            var latestInteractionAvailable = latestInteraction != null;
+            bool latestInteractionIsInTargetsList = false;
 
             var targetsList = new List<IInteractableBody>();
 
@@ -429,8 +434,15 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 if (interactableBody == null) {
                     continue;
                 }
+                
+                latestInteractionIsInTargetsList = latestInteractionIsInTargetsList ? true : 
+                    latestInteractionAvailable && interactableBody == latestInteraction;
 
                 targetsList.Add(interactableBody);
+            }
+            
+            if (latestInteractionAvailable && latestInteractionIsInTargetsList && targetsList.Take(2).Contains(latestInteraction)) {
+                targetsList = targetsList.OrderBy(item => item != latestInteraction).ToList();
             }
 
             targets = targetsList.ToArray();
@@ -440,6 +452,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private void HitTargets(Character2DController attacker, ref Vector2 moveToPosition, ref IInteractableBody[] interactedColliders, Vector2 forceDirAction, ref int newFacingDirection, ref Definitions.AttackAbility attackAbility, ref AttackBaseStats attackProperties) {
 
             var canMultiHit = attackProperties.Properties.Count > 0 && attackProperties.Properties.Contains(Definitions.AttackProperty.MultiTargetOnSurfaceHit);
+            IInteractableBody latestInteraction = null;
 
             foreach (var col in interactedColliders) {
 
@@ -452,12 +465,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     
                     newFacingDirection = validAttack;
                     moveToPosition = !col.IsGrabbed() ? col.GetCenterPosition() : moveToPosition;
+                    latestInteraction = col;
 
                     if (!canMultiHit) {
                         break;
                     }
                 } 
             }
+
+            if (latestInteraction != null && latestInteraction.GetHpPercent() <= 0) { latestInteraction = null; }
+            attacker.State.MarkLatestInteraction(latestInteraction);
         }
 
         private static Vector2 GetSingleHitForceDir(float pushbackForce, Vector2 startPosition, Vector2 endPosition) {

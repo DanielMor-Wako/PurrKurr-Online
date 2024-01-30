@@ -54,7 +54,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public Collider2D[] NearbyInteractables() {
  
             var _nearbyInteractions = _senses.NearbyInteractables();
-
+            
             if (_nearbyInteractions == null || _legsCollider == null) {
                 return null;
             }
@@ -76,7 +76,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             
                 validInteractables.Add(interaction);
             }
-        
+
             return validInteractables.ToArray();
         }
 
