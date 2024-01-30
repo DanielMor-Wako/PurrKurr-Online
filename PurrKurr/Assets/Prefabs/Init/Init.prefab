@@ -6278,10 +6278,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 739120429229760473, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -726.6301
-      objectReference: {fileID: 0}
     - target: {fileID: 1790101876217085917, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -6318,10 +6314,6 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1916745089048627728}
-    - target: {fileID: 3336267653023118956, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SetTimeScaleHalf
-      objectReference: {fileID: 0}
     - target: {fileID: 3355604091668540396, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -6411,29 +6403,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3448970258676705080, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
-      propertyPath: m_AnchoredPosition.y
+      propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3644249280296795696, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
-      propertyPath: m_Name
-      value: Menu Btn (TimeScale 1)
+    - target: {fileID: 3448970258676705080, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4558369245966484110, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1916745089048627728}
-    - target: {fileID: 5197960551665696835, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
-      propertyPath: m_fontSize
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 5197960551665696835, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
-      propertyPath: m_fontSizeBase
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 5545063358032302014, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
-      propertyPath: m_Name
-      value: Menu Btn (TimeScale0.5)
-      objectReference: {fileID: 0}
     - target: {fileID: 5657367151651930100, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -6477,10 +6457,6 @@ PrefabInstance:
     - target: {fileID: 7084338323789826700, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7600501571068317291, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -585
       objectReference: {fileID: 0}
     - target: {fileID: 7805624695384743593, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
