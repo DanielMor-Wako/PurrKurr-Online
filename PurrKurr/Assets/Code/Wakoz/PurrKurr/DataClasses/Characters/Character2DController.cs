@@ -333,7 +333,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             }
 
             var isAlive = Stats.Health > 0;
-            _rigAnimator.UpdateRigRotation(isAlive, _characterState.ReturnForwardDirByTerrainQuaternion());
+            
+            var terrainQuaternion = _characterState.ReturnForwardDirByTerrainQuaternion();
+            if (_characterState.IsJumping()) {
+                // aditional 50 to the jump direction, so character will start into rotation when jum[ing to create the flip effect. 50 is pretty random, 90 will turn the flip to obselete
+                terrainQuaternion *= Quaternion.AngleAxis(_characterState.GetFacingRightAsInt() * 50, new Vector3(0, 0, 1));
+            }
+            
+            _rigAnimator.UpdateRigRotation(isAlive, terrainQuaternion);
         }
 
         private void UpdateCharacterState() {
@@ -406,7 +413,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             }
         }
 
-        public void SetJumping(float time) => _characterState.SetJumping(time);
+        public void SetJumping(float time) {
+
+            _characterState.SetJumping(time);
+        }
         
         public Vector3 IsFreeFalling(float distanceToCheckWhenFreeFalling) {
 
