@@ -104,7 +104,10 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
 
         private bool SingleTargetIsMainTarget() =>
             targets.Count == 1 && targets[0] != null && targets[0] == mainTarget.transform;
-        
+
+        private bool SingleTargetIsCameraFocus() =>
+            targets.Count == 1 && targets[0] != null && targets[0] == cameraFocus.transform;
+
         private void UpdateScreenOffset() {
 
             //RecalculateYOffsetByMaxZoom();
@@ -129,7 +132,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
 
         private void UpdateScreenOffsetHorizontal() {
 
-            if (targets.Count > 1 && AreTargetsCloseOnVertical()) {
+            if (targets.Count > 1 && AreTargetsCloseOnVertical() || SingleTargetIsCameraFocus()) {
                 offset.x = 0;
 
             } else {
