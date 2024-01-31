@@ -42,21 +42,21 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             state.SetCrouchOrStandingByUpDownInput(navigationDir);
             var isGrabbing = state.IsGrabbing();
+            var isCrouchingState = state.CurrentState != Definitions.CharacterState.Running && state.IsCrouching();
+            var isStandingState = (state.CurrentState != Definitions.CharacterState.Running && state.IsStandingUp() || isGrabbing);
 
             // full charge towards walls when any nav pad is held
             //if (!isGrabbing && (state.IsCeiling() || state.IsFrontWall()) && navigationDir != Definitions.NavigationType.None) {
-            if (!isGrabbing && state.HasAnySurfaceAround() && navigationDir != Definitions.NavigationType.None) {
+            if (!isGrabbing && !isCrouchingState && !isStandingState && state.HasAnySurfaceAround() && navigationDir != Definitions.NavigationType.None) {
+                
                 if (navigationDir == Definitions.NavigationType.Up && (state.IsCeiling() || state.IsFrontWall())) {
                     moveSpeed = -stats.SprintSpeed * state.GetFacingRightAsInt();
                     return true;
-                } else if (navigationDir != Definitions.NavigationType.Up && navigationDir != Definitions.NavigationType.Down) {
+                } else if (navigationDir is not (Definitions.NavigationType.Up or Definitions.NavigationType.Down or Definitions.NavigationType.DownRight or Definitions.NavigationType.DownLeft)) {
                     moveSpeed = actionInput.SwipeDistanceTraveledInPercentage * -stats.SprintSpeed * (_inputLogic.IsNavigationDirValidAsRight(navigationDir) ? 1 : -1);
                     return true;
                 }
             }
-
-            bool isCrouchingState = state.CurrentState != Definitions.CharacterState.Running && state.IsCrouching();
-            bool isStandingState = (state.CurrentState != Definitions.CharacterState.Running && state.IsStandingUp() || isGrabbing);
 
             // Air-borne movement
             var rigidbodyVelocity = state.Velocity;
@@ -138,8 +138,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 isActionPerformed = true;
                 return true;
             }
-
-            var rigidbodyVelocity = state.Velocity;
             
             switch (actionInput.ActionType) {
                 
@@ -147,11 +145,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                     if (!ended && state.CanPerformJump(_gameplayLogic.IsStateConsideredAsGrounded(state.CurrentState))) {
                         isActionPerformed = true;
-                        forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x, stats.JumpForce);
+                        forceDirToSetOnFixedUpdate = new Vector2(0, stats.JumpForce);
 
                     } else if (ended && state.Velocity.y > 0 && state.CurrentState == Definitions.CharacterState.Jumping) {
                         if (!(forceDirToSetOnFixedUpdate != Vector2.zero)) {
-                            forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x, 0);
+                            forceDirToSetOnFixedUpdate = new Vector2(state.Velocity.x, 0);
                         } else {//if (forceDirToSetOnFixedUpdate != Vector2.zero) {
                             forceDirToSetOnFixedUpdate = Vector2.zero;
                         }
