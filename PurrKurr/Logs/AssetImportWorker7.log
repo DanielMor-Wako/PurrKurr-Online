@@ -15,7 +15,7 @@ C:/Users/Daniel/Documents/GitHub/PurrKurr/PurrKurr
 -logFile
 Logs/AssetImportWorker7.log
 -srvPort
-55722
+59091
 Successfully changed project path to: C:/Users/Daniel/Documents/GitHub/PurrKurr/PurrKurr
 C:/Users/Daniel/Documents/GitHub/PurrKurr/PurrKurr
 [UnityMemory] Configuration Parameters - Can be set up in boot.config
@@ -49,12 +49,12 @@ C:/Users/Daniel/Documents/GitHub/PurrKurr/PurrKurr
     "memorysetup-temp-allocator-size-cloud-worker=32768"
     "memorysetup-temp-allocator-size-gi-baking-worker=262144"
     "memorysetup-temp-allocator-size-gfx=262144"
-Player connection [19192] Host "[IP] 10.100.102.24 [Port] 0 [Flags] 2 [Guid] 233305917 [EditorId] 233305917 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-TFK1IOO) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined multi-casting on [225.0.0.222:54997]...
+Player connection [27308] Host "[IP] 10.100.102.24 [Port] 0 [Flags] 2 [Guid] 845308776 [EditorId] 845308776 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-TFK1IOO) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined multi-casting on [225.0.0.222:54997]...
 
-Player connection [19192] Host "[IP] 10.100.102.24 [Port] 0 [Flags] 2 [Guid] 233305917 [EditorId] 233305917 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-TFK1IOO) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined alternative multi-casting on [225.0.0.222:34997]...
+Player connection [27308] Host "[IP] 10.100.102.24 [Port] 0 [Flags] 2 [Guid] 845308776 [EditorId] 845308776 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-TFK1IOO) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined alternative multi-casting on [225.0.0.222:34997]...
 
 [Physics::Module] Initialized MultithreadedJobDispatcher with 7 workers.
-Refreshing native plugins compatible for Editor in 16.04 ms, found 1 plugins.
+Refreshing native plugins compatible for Editor in 16.67 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 2022.3.14f1 (eff2de9070d8)
 [Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2022.3.14f1/Editor/Data/Resources/UnitySubsystems
@@ -70,47 +70,47 @@ Initialize mono
 Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2022.3.14f1/Editor/Data/Managed'
 Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2022.3.14f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
 Mono config path = 'C:/Program Files/Unity/Hub/Editor/2022.3.14f1/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56736
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56972
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: C:/Program Files/Unity/Hub/Editor/2022.3.14f1/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
 Register platform support module: C:/Program Files/Unity/Hub/Editor/2022.3.14f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.022047 seconds.
-- Loaded All Assemblies, in  0.548 seconds
+Registered in 0.032131 seconds.
+- Loaded All Assemblies, in  0.776 seconds
 Native extension for WindowsStandalone target not found
 Native extension for Android target not found
-Android Extension - Scanning For ADB Devices 354 ms
+Android Extension - Scanning For ADB Devices 541 ms
 Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  0.811 seconds
-Domain Reload Profiling: 1355ms
-	BeginReloadAssembly (166ms)
+- Finished resetting the current domain, in  1.183 seconds
+Domain Reload Profiling: 1954ms
+	BeginReloadAssembly (240ms)
 		ExecutionOrderSort (0ms)
 		DisableScriptedObjects (0ms)
 		BackupInstance (0ms)
 		ReleaseScriptingObjects (0ms)
 		CreateAndSetChildDomain (1ms)
-	RebuildCommonClasses (49ms)
-	RebuildNativeTypeToScriptingClass (15ms)
-	initialDomainReloadingComplete (101ms)
-	LoadAllAssembliesAndSetupDomain (214ms)
-		LoadAssemblies (162ms)
+	RebuildCommonClasses (70ms)
+	RebuildNativeTypeToScriptingClass (33ms)
+	initialDomainReloadingComplete (142ms)
+	LoadAllAssembliesAndSetupDomain (284ms)
+		LoadAssemblies (236ms)
 		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (210ms)
-			TypeCache.Refresh (209ms)
-				TypeCache.ScanAssembly (190ms)
-			ScanForSourceGeneratedMonoScriptInfo (0ms)
+		AnalyzeDomain (279ms)
+			TypeCache.Refresh (276ms)
+				TypeCache.ScanAssembly (251ms)
+			ScanForSourceGeneratedMonoScriptInfo (1ms)
 			ResolveRequiredComponents (1ms)
-	FinalizeReload (811ms)
+	FinalizeReload (1184ms)
 		ReleaseScriptCaches (0ms)
 		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (728ms)
+		SetupLoadedEditorAssemblies (1069ms)
 			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (520ms)
-			SetLoadedEditorAssemblies (5ms)
+			InitializePlatformSupportModulesInManaged (773ms)
+			SetLoadedEditorAssemblies (8ms)
 			RefreshPlugins (0ms)
-			BeforeProcessingInitializeOnLoad (3ms)
-			ProcessInitializeOnLoadAttributes (133ms)
-			ProcessInitializeOnLoadMethodAttributes (66ms)
+			BeforeProcessingInitializeOnLoad (5ms)
+			ProcessInitializeOnLoadAttributes (184ms)
+			ProcessInitializeOnLoadMethodAttributes (99ms)
 			AfterProcessingInitializeOnLoad (0ms)
 			EditorAssembliesLoaded (0ms)
 		ExecutionOrderSort2 (0ms)
@@ -118,390 +118,237 @@ Domain Reload Profiling: 1355ms
 ========================================================================
 Worker process is ready to serve import requests
 Begin MonoManager ReloadAssembly
-- Loaded All Assemblies, in  0.779 seconds
-Refreshing native plugins compatible for Editor in 4.43 ms, found 1 plugins.
+- Loaded All Assemblies, in  1.044 seconds
+Refreshing native plugins compatible for Editor in 5.78 ms, found 1 plugins.
 Native extension for WindowsStandalone target not found
 Native extension for Android target not found
 Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  0.761 seconds
-Domain Reload Profiling: 1534ms
-	BeginReloadAssembly (218ms)
+- Finished resetting the current domain, in  0.969 seconds
+Domain Reload Profiling: 2004ms
+	BeginReloadAssembly (310ms)
 		ExecutionOrderSort (0ms)
-		DisableScriptedObjects (8ms)
+		DisableScriptedObjects (12ms)
 		BackupInstance (0ms)
 		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (35ms)
-	RebuildCommonClasses (45ms)
-	RebuildNativeTypeToScriptingClass (14ms)
-	initialDomainReloadingComplete (60ms)
-	LoadAllAssembliesAndSetupDomain (434ms)
-		LoadAssemblies (415ms)
+		CreateAndSetChildDomain (46ms)
+	RebuildCommonClasses (62ms)
+	RebuildNativeTypeToScriptingClass (19ms)
+	initialDomainReloadingComplete (85ms)
+	LoadAllAssembliesAndSetupDomain (557ms)
+		LoadAssemblies (541ms)
 		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (148ms)
-			TypeCache.Refresh (114ms)
-				TypeCache.ScanAssembly (94ms)
-			ScanForSourceGeneratedMonoScriptInfo (28ms)
-			ResolveRequiredComponents (5ms)
-	FinalizeReload (762ms)
-		ReleaseScriptCaches (0ms)
-		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (514ms)
-			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (40ms)
-			SetLoadedEditorAssemblies (6ms)
-			RefreshPlugins (0ms)
-			BeforeProcessingInitializeOnLoad (149ms)
-			ProcessInitializeOnLoadAttributes (237ms)
-			ProcessInitializeOnLoadMethodAttributes (66ms)
-			AfterProcessingInitializeOnLoad (17ms)
-			EditorAssembliesLoaded (0ms)
-		ExecutionOrderSort2 (0ms)
-		AwakeInstancesAfterBackupRestoration (11ms)
-Launched and connected shader compiler UnityShaderCompiler.exe after 0.05 seconds
-Refreshing native plugins compatible for Editor in 4.73 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2263 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 46 unused Assets / (54.7 KB). Loaded Objects now: 2741.
-Memory consumption went from 121.1 MB to 121.0 MB.
-Total: 6.985800 ms (FindLiveObjects: 0.375400 ms CreateObjectMapping: 0.257200 ms MarkObjects: 6.103200 ms  DeleteObjects: 0.248600 ms)
-
-AssetImportParameters requested are different than current active one (requested -> active):
-  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
-  custom:scripting/monoscript/fileName/UiPadsController.cs: 7162b2b012b17078b0e0178c1d91e2a2 -> 23fe6d1c9d179a5257f889dafb53e526
-  custom:scripting/monoscript/fileName/TouchPadConfig.cs: ed191168aeb2fbfb8e2dd9af06e23bda -> 3342a9642cf34865def4e919a00f85e7
-  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
-  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
-  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
-  custom:scripting/monoscript/fileName/UiPadsModel.cs: 36718721265060d9e6ce382f037fd2fc -> b3d98ceddcef5716c815448c0cb0c82c
-  custom:scripting/monoscript/fileName/PadView.cs: 71574aab23bea163dd5f8fb95ae93135 -> 663b0adfffe5ea12d649833ea7e636df
-  custom:video-codec-MediaFoundation-h265: 746d11721c4dcdbdad8f713fa42b33f4 -> 
-  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
-  custom:scripting/monoscript/fileName/PadsDisplayView.cs: ee590bff12c55ef5d608e35a9fa35295 -> 
-  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
-  custom:scripting/monoscript/fileName/PadModel.cs: b7a2f4a469134c57a9ada598e7c4047e -> 92e7f93d4c2fd9366d23ee7d4efa5e0f
-  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
-  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-  custom:scripting/monoscript/fileName/ScreenInputEventTriggers.cs: 1f71b971646d465f97add8a8d3d3769b -> 5dfd53be2188cea0b302aedc7ed82e16
-  custom:scripting/monoscript/fileName/TouchPadsConfig.cs: dc742737fd0b299aa63537cda0d60e10 -> d4922b4c06d55de803bd03482fe12c14
-  custom:CustomObjectIndexerAttribute: 756ad292c208cfabdd7b50bc23989ffe -> 
-  custom:scripting/monoscript/fileName/InputController.cs: c92f57d18f539ec135cde29a5e14424a -> 8c99597a27a622a71b8e5db48f4c9e50
-  custom:scripting/monoscript/fileName/AimPadModel.cs: ee135e59504231780277e4d325b5545e -> b1977c802013a338ffd4188a46bb18cb
-  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
-  custom:scripting/monoscript/fileName/PadsDisplayModel.cs: a65292ff51910f64cde90f70b01a25d2 -> 
-  custom:scripting/monoscript/fileName/AimPadView.cs: dd2a6ebbbad0a4fbc4f12ec021846759 -> dd6e58be9159023faa22295e916a15c6
-  custom:scripting/monoscript/fileName/UiPadsView.cs: f68db92e8b77ca1da2b4a41eb487bdbb -> 96457de267ddfdb955ec290513b3caa5
-  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
-  custom:scripting/monoscript/fileName/PadsDisplayController.cs: 9c06b8deda5d8a55c0d26821e08489d4 -> 
-========================================================================
-Received Prepare
-Begin MonoManager ReloadAssembly
-- Loaded All Assemblies, in  1.303 seconds
-Refreshing native plugins compatible for Editor in 9.06 ms, found 1 plugins.
-Native extension for WindowsStandalone target not found
-Native extension for Android target not found
-Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  2.176 seconds
-Domain Reload Profiling: 3466ms
-	BeginReloadAssembly (453ms)
-		ExecutionOrderSort (16ms)
-		DisableScriptedObjects (41ms)
-		BackupInstance (0ms)
-		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (60ms)
-	RebuildCommonClasses (86ms)
-	RebuildNativeTypeToScriptingClass (36ms)
-	initialDomainReloadingComplete (88ms)
-	LoadAllAssembliesAndSetupDomain (625ms)
-		LoadAssemblies (793ms)
-		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (76ms)
-			TypeCache.Refresh (22ms)
-				TypeCache.ScanAssembly (5ms)
-			ScanForSourceGeneratedMonoScriptInfo (39ms)
-			ResolveRequiredComponents (14ms)
-	FinalizeReload (2177ms)
-		ReleaseScriptCaches (0ms)
-		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (969ms)
-			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (106ms)
-			SetLoadedEditorAssemblies (13ms)
-			RefreshPlugins (0ms)
-			BeforeProcessingInitializeOnLoad (344ms)
-			ProcessInitializeOnLoadAttributes (393ms)
-			ProcessInitializeOnLoadMethodAttributes (90ms)
-			AfterProcessingInitializeOnLoad (22ms)
-			EditorAssembliesLoaded (0ms)
-		ExecutionOrderSort2 (0ms)
-		AwakeInstancesAfterBackupRestoration (31ms)
-Refreshing native plugins compatible for Editor in 14.62 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2208 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 21 unused Assets / (29.0 KB). Loaded Objects now: 2746.
-Memory consumption went from 109.7 MB to 109.6 MB.
-Total: 10.092500 ms (FindLiveObjects: 1.018200 ms CreateObjectMapping: 1.583100 ms MarkObjects: 7.392100 ms  DeleteObjects: 0.097400 ms)
-
-Prepare: number of updated asset objects reloaded= 0
-AssetImportParameters requested are different than current active one (requested -> active):
-  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
-  custom:scripting/monoscript/fileName/UiPadsController.cs: 7162b2b012b17078b0e0178c1d91e2a2 -> 23fe6d1c9d179a5257f889dafb53e526
-  custom:scripting/monoscript/fileName/TouchPadConfig.cs: ed191168aeb2fbfb8e2dd9af06e23bda -> 3342a9642cf34865def4e919a00f85e7
-  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
-  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
-  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
-  custom:scripting/monoscript/fileName/UiPadsModel.cs: 36718721265060d9e6ce382f037fd2fc -> b3d98ceddcef5716c815448c0cb0c82c
-  custom:scripting/monoscript/fileName/PadView.cs: 71574aab23bea163dd5f8fb95ae93135 -> 663b0adfffe5ea12d649833ea7e636df
-  custom:video-codec-MediaFoundation-h265: 746d11721c4dcdbdad8f713fa42b33f4 -> 
-  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
-  custom:scripting/monoscript/fileName/PadsDisplayView.cs: ee590bff12c55ef5d608e35a9fa35295 -> 
-  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
-  custom:scripting/monoscript/fileName/PadModel.cs: b7a2f4a469134c57a9ada598e7c4047e -> 92e7f93d4c2fd9366d23ee7d4efa5e0f
-  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
-  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-  custom:scripting/monoscript/fileName/ScreenInputEventTriggers.cs: 1f71b971646d465f97add8a8d3d3769b -> 5dfd53be2188cea0b302aedc7ed82e16
-  custom:scripting/monoscript/fileName/TouchPadsConfig.cs: dc742737fd0b299aa63537cda0d60e10 -> d4922b4c06d55de803bd03482fe12c14
-  custom:CustomObjectIndexerAttribute: 756ad292c208cfabdd7b50bc23989ffe -> 
-  custom:scripting/monoscript/fileName/InputController.cs: c92f57d18f539ec135cde29a5e14424a -> 8c99597a27a622a71b8e5db48f4c9e50
-  custom:scripting/monoscript/fileName/AimPadModel.cs: ee135e59504231780277e4d325b5545e -> b1977c802013a338ffd4188a46bb18cb
-  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
-  custom:scripting/monoscript/fileName/PadsDisplayModel.cs: a65292ff51910f64cde90f70b01a25d2 -> 
-  custom:scripting/monoscript/fileName/AimPadView.cs: dd2a6ebbbad0a4fbc4f12ec021846759 -> dd6e58be9159023faa22295e916a15c6
-  custom:scripting/monoscript/fileName/UiPadsView.cs: f68db92e8b77ca1da2b4a41eb487bdbb -> 96457de267ddfdb955ec290513b3caa5
-  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
-  custom:scripting/monoscript/fileName/PadsDisplayController.cs: 9c06b8deda5d8a55c0d26821e08489d4 -> 
-========================================================================
-Received Prepare
-Begin MonoManager ReloadAssembly
-- Loaded All Assemblies, in  0.953 seconds
-Refreshing native plugins compatible for Editor in 7.39 ms, found 1 plugins.
-Native extension for WindowsStandalone target not found
-Native extension for Android target not found
-Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  1.432 seconds
-Domain Reload Profiling: 2375ms
-	BeginReloadAssembly (325ms)
-		ExecutionOrderSort (0ms)
-		DisableScriptedObjects (29ms)
-		BackupInstance (0ms)
-		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (41ms)
-	RebuildCommonClasses (69ms)
-	RebuildNativeTypeToScriptingClass (31ms)
-	initialDomainReloadingComplete (62ms)
-	LoadAllAssembliesAndSetupDomain (454ms)
-		LoadAssemblies (585ms)
-		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (72ms)
-			TypeCache.Refresh (24ms)
-				TypeCache.ScanAssembly (5ms)
-			ScanForSourceGeneratedMonoScriptInfo (35ms)
-			ResolveRequiredComponents (12ms)
-	FinalizeReload (1433ms)
-		ReleaseScriptCaches (0ms)
-		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (627ms)
-			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (55ms)
-			SetLoadedEditorAssemblies (8ms)
-			RefreshPlugins (0ms)
-			BeforeProcessingInitializeOnLoad (182ms)
-			ProcessInitializeOnLoadAttributes (288ms)
-			ProcessInitializeOnLoadMethodAttributes (71ms)
-			AfterProcessingInitializeOnLoad (22ms)
-			EditorAssembliesLoaded (0ms)
-		ExecutionOrderSort2 (0ms)
-		AwakeInstancesAfterBackupRestoration (26ms)
-Refreshing native plugins compatible for Editor in 8.49 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2208 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 21 unused Assets / (29.1 KB). Loaded Objects now: 2750.
-Memory consumption went from 111.6 MB to 111.6 MB.
-Total: 7.980800 ms (FindLiveObjects: 0.633000 ms CreateObjectMapping: 0.227600 ms MarkObjects: 7.036800 ms  DeleteObjects: 0.081600 ms)
-
-Prepare: number of updated asset objects reloaded= 0
-AssetImportParameters requested are different than current active one (requested -> active):
-  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
-  custom:scripting/monoscript/fileName/UiPadsController.cs: 7162b2b012b17078b0e0178c1d91e2a2 -> 23fe6d1c9d179a5257f889dafb53e526
-  custom:scripting/monoscript/fileName/TouchPadConfig.cs: ed191168aeb2fbfb8e2dd9af06e23bda -> 3342a9642cf34865def4e919a00f85e7
-  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
-  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
-  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
-  custom:scripting/monoscript/fileName/UiPadsModel.cs: 36718721265060d9e6ce382f037fd2fc -> b3d98ceddcef5716c815448c0cb0c82c
-  custom:scripting/monoscript/fileName/PadView.cs: 71574aab23bea163dd5f8fb95ae93135 -> 663b0adfffe5ea12d649833ea7e636df
-  custom:video-codec-MediaFoundation-h265: 746d11721c4dcdbdad8f713fa42b33f4 -> 
-  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
-  custom:scripting/monoscript/fileName/PadsDisplayView.cs: ee590bff12c55ef5d608e35a9fa35295 -> 
-  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
-  custom:scripting/monoscript/fileName/PadModel.cs: b7a2f4a469134c57a9ada598e7c4047e -> 92e7f93d4c2fd9366d23ee7d4efa5e0f
-  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
-  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-  custom:scripting/monoscript/fileName/ScreenInputEventTriggers.cs: 1f71b971646d465f97add8a8d3d3769b -> 5dfd53be2188cea0b302aedc7ed82e16
-  custom:scripting/monoscript/fileName/TouchPadsConfig.cs: dc742737fd0b299aa63537cda0d60e10 -> d4922b4c06d55de803bd03482fe12c14
-  custom:CustomObjectIndexerAttribute: 756ad292c208cfabdd7b50bc23989ffe -> 
-  custom:scripting/monoscript/fileName/InputController.cs: c92f57d18f539ec135cde29a5e14424a -> 8c99597a27a622a71b8e5db48f4c9e50
-  custom:scripting/monoscript/fileName/AimPadModel.cs: ee135e59504231780277e4d325b5545e -> b1977c802013a338ffd4188a46bb18cb
-  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
-  custom:scripting/monoscript/fileName/PadsDisplayModel.cs: a65292ff51910f64cde90f70b01a25d2 -> 
-  custom:scripting/monoscript/fileName/AimPadView.cs: dd2a6ebbbad0a4fbc4f12ec021846759 -> dd6e58be9159023faa22295e916a15c6
-  custom:scripting/monoscript/fileName/UiPadsView.cs: f68db92e8b77ca1da2b4a41eb487bdbb -> 96457de267ddfdb955ec290513b3caa5
-  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
-  custom:scripting/monoscript/fileName/PadsDisplayController.cs: 9c06b8deda5d8a55c0d26821e08489d4 -> 
-========================================================================
-Received Prepare
-Begin MonoManager ReloadAssembly
-- Loaded All Assemblies, in  0.908 seconds
-Refreshing native plugins compatible for Editor in 5.85 ms, found 1 plugins.
-Native extension for WindowsStandalone target not found
-Native extension for Android target not found
-Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  1.452 seconds
-Domain Reload Profiling: 2350ms
-	BeginReloadAssembly (331ms)
-		ExecutionOrderSort (0ms)
-		DisableScriptedObjects (32ms)
-		BackupInstance (0ms)
-		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (50ms)
-	RebuildCommonClasses (80ms)
-	RebuildNativeTypeToScriptingClass (22ms)
-	initialDomainReloadingComplete (61ms)
-	LoadAllAssembliesAndSetupDomain (404ms)
-		LoadAssemblies (555ms)
-		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (46ms)
-			TypeCache.Refresh (18ms)
-				TypeCache.ScanAssembly (3ms)
-			ScanForSourceGeneratedMonoScriptInfo (20ms)
+		AnalyzeDomain (201ms)
+			TypeCache.Refresh (159ms)
+				TypeCache.ScanAssembly (131ms)
+			ScanForSourceGeneratedMonoScriptInfo (34ms)
 			ResolveRequiredComponents (7ms)
-	FinalizeReload (1453ms)
+	FinalizeReload (970ms)
 		ReleaseScriptCaches (0ms)
 		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (624ms)
+		SetupLoadedEditorAssemblies (642ms)
 			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (65ms)
+			InitializePlatformSupportModulesInManaged (56ms)
 			SetLoadedEditorAssemblies (7ms)
 			RefreshPlugins (0ms)
-			BeforeProcessingInitializeOnLoad (183ms)
-			ProcessInitializeOnLoadAttributes (278ms)
-			ProcessInitializeOnLoadMethodAttributes (71ms)
-			AfterProcessingInitializeOnLoad (20ms)
+			BeforeProcessingInitializeOnLoad (181ms)
+			ProcessInitializeOnLoadAttributes (303ms)
+			ProcessInitializeOnLoadMethodAttributes (74ms)
+			AfterProcessingInitializeOnLoad (21ms)
 			EditorAssembliesLoaded (0ms)
 		ExecutionOrderSort2 (0ms)
-		AwakeInstancesAfterBackupRestoration (32ms)
-Refreshing native plugins compatible for Editor in 6.07 ms, found 1 plugins.
+		AwakeInstancesAfterBackupRestoration (14ms)
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.07 seconds
+Refreshing native plugins compatible for Editor in 6.96 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2208 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 21 unused Assets / (29.0 KB). Loaded Objects now: 2754.
-Memory consumption went from 113.6 MB to 113.5 MB.
-Total: 6.847000 ms (FindLiveObjects: 0.325400 ms CreateObjectMapping: 0.359700 ms MarkObjects: 6.103500 ms  DeleteObjects: 0.056800 ms)
+Unloading 2265 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 46 unused Assets / (54.6 KB). Loaded Objects now: 2743.
+Memory consumption went from 121.2 MB to 121.1 MB.
+Total: 5.537700 ms (FindLiveObjects: 0.272800 ms CreateObjectMapping: 0.146100 ms MarkObjects: 4.881000 ms  DeleteObjects: 0.235900 ms)
 
-Prepare: number of updated asset objects reloaded= 0
 AssetImportParameters requested are different than current active one (requested -> active):
   custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
-  custom:scripting/monoscript/fileName/UiPadsController.cs: 7162b2b012b17078b0e0178c1d91e2a2 -> 23fe6d1c9d179a5257f889dafb53e526
-  custom:scripting/monoscript/fileName/TouchPadConfig.cs: ed191168aeb2fbfb8e2dd9af06e23bda -> 3342a9642cf34865def4e919a00f85e7
   custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
   custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
   custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
-  custom:scripting/monoscript/fileName/UiPadsModel.cs: 36718721265060d9e6ce382f037fd2fc -> b3d98ceddcef5716c815448c0cb0c82c
-  custom:scripting/monoscript/fileName/PadView.cs: 71574aab23bea163dd5f8fb95ae93135 -> 663b0adfffe5ea12d649833ea7e636df
   custom:video-codec-MediaFoundation-h265: 746d11721c4dcdbdad8f713fa42b33f4 -> 
   custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
-  custom:scripting/monoscript/fileName/PadsDisplayView.cs: ee590bff12c55ef5d608e35a9fa35295 -> 
   custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
-  custom:scripting/monoscript/fileName/PadModel.cs: b7a2f4a469134c57a9ada598e7c4047e -> 92e7f93d4c2fd9366d23ee7d4efa5e0f
   custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
   custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-  custom:scripting/monoscript/fileName/ScreenInputEventTriggers.cs: 1f71b971646d465f97add8a8d3d3769b -> 5dfd53be2188cea0b302aedc7ed82e16
-  custom:scripting/monoscript/fileName/TouchPadsConfig.cs: dc742737fd0b299aa63537cda0d60e10 -> d4922b4c06d55de803bd03482fe12c14
   custom:CustomObjectIndexerAttribute: 756ad292c208cfabdd7b50bc23989ffe -> 
-  custom:scripting/monoscript/fileName/InputController.cs: c92f57d18f539ec135cde29a5e14424a -> 8c99597a27a622a71b8e5db48f4c9e50
-  custom:scripting/monoscript/fileName/AimPadModel.cs: ee135e59504231780277e4d325b5545e -> b1977c802013a338ffd4188a46bb18cb
   custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
-  custom:scripting/monoscript/fileName/PadsDisplayModel.cs: a65292ff51910f64cde90f70b01a25d2 -> 
-  custom:scripting/monoscript/fileName/AimPadView.cs: dd2a6ebbbad0a4fbc4f12ec021846759 -> dd6e58be9159023faa22295e916a15c6
-  custom:scripting/monoscript/fileName/UiPadsView.cs: f68db92e8b77ca1da2b4a41eb487bdbb -> 96457de267ddfdb955ec290513b3caa5
   custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
   custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
-  custom:scripting/monoscript/fileName/PadsDisplayController.cs: 9c06b8deda5d8a55c0d26821e08489d4 -> 
 ========================================================================
-Received Prepare
-Begin MonoManager ReloadAssembly
-- Loaded All Assemblies, in  0.963 seconds
-Refreshing native plugins compatible for Editor in 5.74 ms, found 1 plugins.
-Native extension for WindowsStandalone target not found
-Native extension for Android target not found
-Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  1.554 seconds
-Domain Reload Profiling: 2505ms
-	BeginReloadAssembly (308ms)
-		ExecutionOrderSort (0ms)
-		DisableScriptedObjects (25ms)
-		BackupInstance (0ms)
-		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (50ms)
-	RebuildCommonClasses (66ms)
-	RebuildNativeTypeToScriptingClass (28ms)
-	initialDomainReloadingComplete (65ms)
-	LoadAllAssembliesAndSetupDomain (482ms)
-		LoadAssemblies (617ms)
-		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (43ms)
-			TypeCache.Refresh (14ms)
-				TypeCache.ScanAssembly (2ms)
-			ScanForSourceGeneratedMonoScriptInfo (21ms)
-			ResolveRequiredComponents (7ms)
-	FinalizeReload (1555ms)
-		ReleaseScriptCaches (0ms)
-		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (631ms)
-			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (54ms)
-			SetLoadedEditorAssemblies (7ms)
-			RefreshPlugins (0ms)
-			BeforeProcessingInitializeOnLoad (170ms)
-			ProcessInitializeOnLoadAttributes (293ms)
-			ProcessInitializeOnLoadMethodAttributes (87ms)
-			AfterProcessingInitializeOnLoad (20ms)
-			EditorAssembliesLoaded (0ms)
-		ExecutionOrderSort2 (0ms)
-		AwakeInstancesAfterBackupRestoration (27ms)
-Refreshing native plugins compatible for Editor in 8.72 ms, found 1 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 2208 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 21 unused Assets / (29.0 KB). Loaded Objects now: 2758.
-Memory consumption went from 115.5 MB to 115.5 MB.
-Total: 7.046400 ms (FindLiveObjects: 0.372600 ms CreateObjectMapping: 0.390300 ms MarkObjects: 6.207500 ms  DeleteObjects: 0.074700 ms)
-
-Prepare: number of updated asset objects reloaded= 0
-AssetImportParameters requested are different than current active one (requested -> active):
-  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
-  custom:scripting/monoscript/fileName/UiPadsController.cs: 7162b2b012b17078b0e0178c1d91e2a2 -> 23fe6d1c9d179a5257f889dafb53e526
-  custom:scripting/monoscript/fileName/TouchPadConfig.cs: ed191168aeb2fbfb8e2dd9af06e23bda -> 3342a9642cf34865def4e919a00f85e7
-  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
-  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
-  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
-  custom:scripting/monoscript/fileName/UiPadsModel.cs: 36718721265060d9e6ce382f037fd2fc -> b3d98ceddcef5716c815448c0cb0c82c
-  custom:scripting/monoscript/fileName/PadView.cs: 71574aab23bea163dd5f8fb95ae93135 -> 663b0adfffe5ea12d649833ea7e636df
-  custom:video-codec-MediaFoundation-h265: 746d11721c4dcdbdad8f713fa42b33f4 -> 
-  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
-  custom:scripting/monoscript/fileName/PadsDisplayView.cs: ee590bff12c55ef5d608e35a9fa35295 -> 
-  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
-  custom:scripting/monoscript/fileName/PadModel.cs: b7a2f4a469134c57a9ada598e7c4047e -> 92e7f93d4c2fd9366d23ee7d4efa5e0f
-  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
-  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-  custom:scripting/monoscript/fileName/ScreenInputEventTriggers.cs: 1f71b971646d465f97add8a8d3d3769b -> 5dfd53be2188cea0b302aedc7ed82e16
-  custom:scripting/monoscript/fileName/TouchPadsConfig.cs: dc742737fd0b299aa63537cda0d60e10 -> d4922b4c06d55de803bd03482fe12c14
-  custom:CustomObjectIndexerAttribute: 756ad292c208cfabdd7b50bc23989ffe -> 
-  custom:scripting/monoscript/fileName/InputController.cs: c92f57d18f539ec135cde29a5e14424a -> 8c99597a27a622a71b8e5db48f4c9e50
-  custom:scripting/monoscript/fileName/AimPadModel.cs: ee135e59504231780277e4d325b5545e -> b1977c802013a338ffd4188a46bb18cb
-  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
-  custom:scripting/monoscript/fileName/PadsDisplayModel.cs: a65292ff51910f64cde90f70b01a25d2 -> 
-  custom:scripting/monoscript/fileName/AimPadView.cs: dd2a6ebbbad0a4fbc4f12ec021846759 -> dd6e58be9159023faa22295e916a15c6
-  custom:scripting/monoscript/fileName/UiPadsView.cs: f68db92e8b77ca1da2b4a41eb487bdbb -> 96457de267ddfdb955ec290513b3caa5
-  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
-  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
-  custom:scripting/monoscript/fileName/PadsDisplayController.cs: 9c06b8deda5d8a55c0d26821e08489d4 -> 
+Received Import Request.
+  Time since last request: 1726138.019601 seconds.
+  path: Assets/Graphics/Art/Common/Patterns/pattern_shady.png
+  artifactKey: Guid(b0d0d5296ddc2c4458efa3d33499a8e4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Patterns/pattern_shady.png using Guid(b0d0d5296ddc2c4458efa3d33499a8e4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '86dec6e59c4ef297c0ac300fe0b29d84') in 0.210751 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 282.805773 seconds.
+  path: Assets/Graphics/Art/Common/Joystick/Pinkish_Bar_fill.png
+  artifactKey: Guid(349b12025a63d6e43b344a682956c61d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Joystick/Pinkish_Bar_fill.png using Guid(349b12025a63d6e43b344a682956c61d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5c2926523b77c88851c9b8b1a52879ad') in 0.083395 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000042 seconds.
+  path: Assets/Graphics/Art/Common/Bars/Pixel.jpg
+  artifactKey: Guid(ec407faeb9c589449b0d538502f31b56) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Bars/Pixel.jpg using Guid(ec407faeb9c589449b0d538502f31b56) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '34ce2607c4e6d4a44af29d6ffee62d8d') in 0.075405 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000034 seconds.
+  path: Assets/Graphics/Art/Common/Icons/8bit/pixel_apple.png
+  artifactKey: Guid(0c5e41516e37f8245be1f90f96d87fb2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Icons/8bit/pixel_apple.png using Guid(0c5e41516e37f8245be1f90f96d87fb2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1954c077b86f264a674c680c0fd2d98e') in 0.074852 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 128.221599 seconds.
+  path: Assets/Graphics/Art/Common/Icons/8bit/pixel_mushroom.png
+  artifactKey: Guid(51e5a6f60aba83d4e848983d0babeb89) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Icons/8bit/pixel_mushroom.png using Guid(51e5a6f60aba83d4e848983d0babeb89) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b758bc611fbbacc8fe6c6867cad86d6c') in 0.072728 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000035 seconds.
+  path: Assets/Graphics/Art/Common/Icons/8bit/pixel_skull.png
+  artifactKey: Guid(466a5e5b2a5d2144a9a4eaa643559866) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Icons/8bit/pixel_skull.png using Guid(466a5e5b2a5d2144a9a4eaa643559866) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '34a5d28abdc40994962eb055e9016b49') in 0.090202 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000031 seconds.
+  path: Assets/Graphics/Art/Common/Icons/8bit/pixel_star.png
+  artifactKey: Guid(c92ab6efc63350d4481084d116e0e490) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Icons/8bit/pixel_star.png using Guid(c92ab6efc63350d4481084d116e0e490) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8dc4bbda296066d8f948c25c391938d9') in 0.054513 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.372048 seconds.
+  path: Assets/Graphics/Art/Common/Joystick/Pointer Silver frame.png
+  artifactKey: Guid(6123f3119453cc949b1806fe62a92e7c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Joystick/Pointer Silver frame.png using Guid(6123f3119453cc949b1806fe62a92e7c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2c6d0c42e13e7e11a5e403029814e599') in 0.078131 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.602896 seconds.
+  path: Assets/Graphics/Art/Common/Popup/Popup.png
+  artifactKey: Guid(be566b6232cbf854fb7ba15c5af994f0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Popup/Popup.png using Guid(be566b6232cbf854fb7ba15c5af994f0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd510eba86ed4ca3eeca2b95418ea58ba') in 0.061635 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/Graphics/Art/Common/Icons/Symbols/Profile.png
+  artifactKey: Guid(563af80f7ab31e34e8ffaf2750fb0402) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Icons/Symbols/Profile.png using Guid(563af80f7ab31e34e8ffaf2750fb0402) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'efc86ad89f89a5636b84f70f878485a0') in 0.062686 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000044 seconds.
+  path: Assets/Graphics/Art/Common/Joystick/PP_Bar_fill.png
+  artifactKey: Guid(5a53100ead06d5e4fbee02e621320a27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Joystick/PP_Bar_fill.png using Guid(5a53100ead06d5e4fbee02e621320a27) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ecc976d7a4ad1359d649f02b1b5c6153') in 0.075063 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.251072 seconds.
+  path: Assets/Graphics/Art/Common/Profile/profile_diamond_blue_fill.png
+  artifactKey: Guid(0ddcde4722de2154795d130394a7ed33) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Profile/profile_diamond_blue_fill.png using Guid(0ddcde4722de2154795d130394a7ed33) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1394e103aea4308c7212a3ee555cc434') in 0.069821 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/Graphics/Art/Common/Profile/profile_diamond_hp_fill.png
+  artifactKey: Guid(5f3669463c1f1a441a53d93760b98696) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Profile/profile_diamond_hp_fill.png using Guid(5f3669463c1f1a441a53d93760b98696) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ce9adc211c5faea8e3f996d5c82268c4') in 0.062881 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.317057 seconds.
+  path: Assets/Graphics/Art/Common/Profile/profile_diamond_yellow_fill.png
+  artifactKey: Guid(1a4437211c57ab749ad13f79493d24a4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Profile/profile_diamond_yellow_fill.png using Guid(1a4437211c57ab749ad13f79493d24a4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c5536fa4475772f74770aab05d27852c') in 0.065977 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000297 seconds.
+  path: Assets/Graphics/Art/Common/Joystick/Purple_Bar_fill.png
+  artifactKey: Guid(65cf7663c36e47b46b48f9cbe7657e6e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Joystick/Purple_Bar_fill.png using Guid(65cf7663c36e47b46b48f9cbe7657e6e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ce859323333c2d70d3209a99e4138706') in 0.075113 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 6.519269 seconds.
+  path: Assets/Graphics/Art/Common/Icons/Protraits/Other/reaper_01.png
+  artifactKey: Guid(f6100a92de6ea0a40a468ffaa3cffff7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Icons/Protraits/Other/reaper_01.png using Guid(f6100a92de6ea0a40a468ffaa3cffff7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '96cac2833cf37aa86ceb15f790f76143') in 0.073747 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.676292 seconds.
+  path: Assets/Graphics/Art/Common/Icons/Outlined-Shapes/shape_01.png
+  artifactKey: Guid(79270cd8bb8956f40983cd548502dc0e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Icons/Outlined-Shapes/shape_01.png using Guid(79270cd8bb8956f40983cd548502dc0e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '118225e3ac8aa84b20daf6b1e69499fa') in 0.072901 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.382977 seconds.
+  path: Assets/Graphics/Art/Common/Icons/Outlined-Shapes/shape_04.png
+  artifactKey: Guid(57946b17d96709b4dbd0a56091a337de) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Icons/Outlined-Shapes/shape_04.png using Guid(57946b17d96709b4dbd0a56091a337de) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e63f0fd91c8d1e53a4f6807e7fb163b7') in 0.069898 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Graphics/Art/Common/Icons/Outlined-Shapes/shape_09.png
+  artifactKey: Guid(245b28c4c577dd34f88b0e40dcb25c97) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Icons/Outlined-Shapes/shape_09.png using Guid(245b28c4c577dd34f88b0e40dcb25c97) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9078dce47ecc9afb01415d478917a0a4') in 0.083174 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.281390 seconds.
+  path: Assets/Graphics/Art/Common/Icons/Outlined-Shapes/shape_012.png
+  artifactKey: Guid(c82426a9287a4b24a9a17f9ce32d483e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Icons/Outlined-Shapes/shape_012.png using Guid(c82426a9287a4b24a9a17f9ce32d483e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '330829969bd6048f0232bfbe1d5aa12d') in 0.145239 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000030 seconds.
+  path: Assets/Graphics/Art/Common/Icons/Protraits/Animals/shark_01.png
+  artifactKey: Guid(b9e5ca99f2f7e0548916e54b4a7b3cbd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Graphics/Art/Common/Icons/Protraits/Animals/shark_01.png using Guid(b9e5ca99f2f7e0548916e54b4a7b3cbd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f242e57a25b7f5e050561d9cba1b169c') in 0.107749 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+Editor requested this worker to shutdown with reason: Scaling down because of idle timeout
+TcpMessagingSession - receive error: operation aborted. errorcode: 995, details: The I/O operation has been aborted because of either a thread exit or an application request.
+AssetImportWorker is now disconnected from the server
+Process exiting
+Exiting without the bug reporter. Application will terminate with return code 0

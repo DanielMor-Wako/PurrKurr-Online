@@ -116,6 +116,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public void SetMaxLevel() => UpdateStats(_stats.MaxLevel);
 
+        public void Revive() => UpdateStats();
+
         public Vector2 Velocity => _rigidbody.velocity;
 
         public CharacterStats Stats => _stats;

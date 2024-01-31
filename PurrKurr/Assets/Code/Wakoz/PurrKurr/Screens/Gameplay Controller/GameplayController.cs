@@ -73,15 +73,36 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             return Task.CompletedTask;
         }
 
-        private void RefreshSpritesOrder() {
-            
-            foreach(var character in _heroes) {
+        private void ReviveAllHeroes() {
+
+            foreach (var character in _heroes) {
+                
                 if (character == null) {
                     continue;
                 }
-                var isAlive = character.Stats.GetHealthPercentage() > 0;
-                character.SetSpriteOrder(character == _hero ? 2 : isAlive ? 1 : 0);
+                
+                character.Revive();
+
+                RefreshSpriteOrder(character);
             }
+        }
+
+        private void RefreshSpritesOrder() {
+            
+            foreach(var character in _heroes) {
+
+                if (character == null) {
+                    continue;
+                }
+
+                RefreshSpriteOrder(character);
+            }
+        }
+
+        private void RefreshSpriteOrder(Character2DController character) {
+
+            var isAlive = character.Stats.GetHealthPercentage() > 0;
+            character.SetSpriteOrder(character == _hero ? 2 : isAlive ? 1 : 0);
         }
 
         [ContextMenu("Init Referenced Hero")]
@@ -151,6 +172,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _hero.SetMinLevel();
         }
         public void SetHeroMaxLevel() => _hero.SetMaxLevel();
+        public void ReviveHeroes() => ReviveAllHeroes();
         public void RandomizeHero() {
             if (_heroes == null) { return; }
             _mainHero = HelperFunctions.Random(_heroes);
@@ -315,19 +337,23 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private void AlterJumpDirBasedOnNavigationDirection(ref Vector2 forceDir, Definitions.NavigationType navigationDir, float jumpForce) {
 
             var inputLogic = _logic.InputLogic;
-
+            forceDir.x = 0;
             Debug.DrawRay(_hero.LegsPosition, forceDir, Color.gray, 3);
             if (navigationDir == Definitions.NavigationType.Up) {
-                forceDir.x = _hero.State.GetFacingRightAsInt();
-                
-            } else if (inputLogic.IsNavigationDirValidAsRight(navigationDir)) {
-                forceDir.x = jumpForce * 0.5f;
+                //forceDir.x = _hero.State.GetFacingRightAsInt();
+                forceDir = HelperFunctions.RotateVector(forceDir, _hero.State.GetFacingRightAsInt() * -5);
 
-            } else if (inputLogic.IsNavigationDirValidAsLeft(navigationDir)) {
-                forceDir.x = -jumpForce * 0.5f;
+            /*} else if (inputLogic.IsNavigationDirValidAsRight(navigationDir)) {
+                //forceDir.x = jumpForce * 0.5f;
+                forceDir = HelperFunctions.RotateVector(forceDir, _hero.State.GetFacingRightAsInt() * -30);
 
+            } else if (inputLogic.IsNavigationDirValidAsLeft(navigationDir) && !inputLogic.IsNavigationDirValidAsUp(navigationDir)) {
+                //forceDir.x = -jumpForce * 0.5f;
+                forceDir = HelperFunctions.RotateVector(forceDir, _hero.State.GetFacingRightAsInt() * -30);
+            */
             } else {
-                forceDir.x = _hero.State.GetFacingRightAsInt() * jumpForce * 0.25f;
+                //forceDir.x = _hero.State.GetFacingRightAsInt() * jumpForce * 0.25f;
+                forceDir = HelperFunctions.RotateVector(forceDir, _hero.State.GetFacingRightAsInt() * -18);
 
             }
             Debug.DrawRay(_hero.LegsPosition, forceDir, Color.magenta, 3);
@@ -508,8 +534,18 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 var isFoeBlocking = foeState == Definitions.CharacterState.Blocking;
 
                 if (isAttackAction) {
-                    
-                    if (properties.Contains(Definitions.AttackProperty.PushBackOnHit) ||
+
+                    if (foe.GetCurrentState() is Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling &&
+                        (properties.Contains(Definitions.AttackProperty.PushDownOnHit) ||
+                        properties.Contains(Definitions.AttackProperty.PushDownOnBlock) && isFoeBlocking)) {
+
+                        attackStats.ForceDir.y = - Mathf.Abs(attackStats.ForceDir.y);
+                        ApplyForceOnFoeWithDelay(foe, attackStats, (attacker.Stats.AttackDurationInMilliseconds) );
+
+                        // todo: make the aerial attack turn into grab to groundsmash, and turn aerial grab into throwing the opponent
+                        // ApplyProjectileStateWhenThrown(foe, attackStats.Damage, interactedCollider);
+
+                    } else if (properties.Contains(Definitions.AttackProperty.PushBackOnHit) ||
                         properties.Contains(Definitions.AttackProperty.PushBackOnBlock) && isFoeBlocking) {
 
                         ApplyForceOnFoeWithDelay(foe, attackStats, (attacker.Stats.AttackDurationInMilliseconds) );
