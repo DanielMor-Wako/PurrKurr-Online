@@ -81,11 +81,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             MultiTargetOnSurfaceHit = 11,
             GrabToGroundSmash = 12,
             GrabAndPickUp = 13,
-            ApplyPoisonOnHit = 14,
-            ApplyPoisonOnBlock = 15,
-            ApplyBleedOnHit = 16,
-            ApplyBleedOnBlock = 17,
-            CriticalChanceOnHit = 18,
+            PushDownOnHit = 14,
+            PushDownOnBlock = 15,
+            ApplyPoisonOnHit = 16,
+            ApplyPoisonOnBlock = 17,
+            ApplyBleedOnHit = 18,
+            ApplyBleedOnBlock = 19,
+            CriticalChanceOnHit = 20,
         }
         
         public enum CharacterBuff {
