@@ -44,6 +44,20 @@ namespace Code.Wakoz.Utils.Extensions {
             return true;
         }
 
+        public static Vector2 RotateVector(this Vector2 originalVector, float rotationAngleDegrees) {
+
+            // Convert the rotation angle to radians
+            float rotationAngleRadians = rotationAngleDegrees * (float)Math.PI / 180;
+
+            float cos = (float)Math.Cos(rotationAngleRadians);
+            float sin = (float)Math.Sin(rotationAngleRadians);
+
+            float newX = originalVector.x * cos - originalVector.y * sin;
+            float newY = originalVector.x * sin + originalVector.y * cos;
+
+            return new Vector2(newX, newY);
+        }
+
         public static bool IsNullOrEmpty<T>(this ICollection<T> collection) {
             return collection == null || collection.Count == 0;
         }
