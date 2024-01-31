@@ -72,9 +72,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
 
             var previousInputNav = _keyboardInputNav;
             var x = Input.GetAxisRaw("Horizontal");
-            var y = Input.GetAxis("Vertical");
+            var y = Input.GetAxisRaw("Vertical");
 
-            if (x == 0 && previousInputNav != null) {
+            if (x == 0 && y == 0 && previousInputNav != null) {
                 OnTouchPadUp(_keyboardInputNav);
                 _keyboardInputNav = null;
 
