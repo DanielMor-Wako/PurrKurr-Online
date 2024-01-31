@@ -54,7 +54,7 @@ MonoBehaviour:
       _opponentStateCondition: 0300000000000000
     - _elementName: Aerial Attack
       _attackAbility: 4
-      _properties: 0b00000008000000
+      _properties: 0b0000000e00000008000000
       _characterStateCondition: 0c000000
       _opponentStateCondition: 00000000
     - _elementName: Light Grab
