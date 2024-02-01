@@ -10,11 +10,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller
     [DefaultExecutionOrder(13)]
     public class UIController : SingleController {
 
+        private UIMenuController _menuController;
         private UiPadsController _padsController;
         private UIBarsController _barsController;
 
         protected override Task Initialize() {
 
+            _menuController ??= SingleController.GetController<UIMenuController>();
             _padsController ??= SingleController.GetController<UiPadsController>();
             _barsController ??= SingleController.GetController<UIBarsController>();
 
@@ -37,6 +39,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller
 
             return isPadsInitialized && isBarsInitialized;
         }
-        
+
+        public void ToggleMenu() => _menuController?.Toggle();
     }
 }
