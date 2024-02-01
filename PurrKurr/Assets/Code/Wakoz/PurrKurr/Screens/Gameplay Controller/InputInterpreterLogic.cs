@@ -39,7 +39,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 state.SetCrouchOrStandingByUpDownInput(Definitions.NavigationType.None);
                 return true;
             }
-
+            
             state.SetCrouchOrStandingByUpDownInput(navigationDir);
             var isGrabbing = state.IsGrabbing();
             var isCrouchingState = state.CurrentState != Definitions.CharacterState.Running && state.IsCrouching();
@@ -64,8 +64,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             var isNavLeftDir = navigationDir is Definitions.NavigationType.Left or Definitions.NavigationType.DownLeft or Definitions.NavigationType.UpLeft;
 
 
-            if (rigidbodyVelocity.y < -1f && state.CurrentState == Definitions.CharacterState.Falling ) {
-            //if (rigidbodyVelocity.y < -1f && !state.IsJumping() && _gameplayLogic.IsStateConsideredAsAerial(state.CurrentState)) {
+            if (rigidbodyVelocity.y < -1f && state.CurrentState == Definitions.CharacterState.Falling) {
+                //if (rigidbodyVelocity.y < -1f && !state.IsJumping() && _gameplayLogic.IsStateConsideredAsAerial(state.CurrentState)) {
 
                 if (isNavRightDir && (rigidbodyVelocity.x < stats.AirborneMaxSpeed)) {
 
@@ -80,8 +80,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     return true;
                 }
 
-            } else if (!state.IsCeiling() && (state.IsFrontWall() || state.IsGrounded()) && state.CanMoveOnSurface()) { 
-            
+            } else if (!state.IsCeiling() &&
+                (state.IsTouchingAnySurface() && state.CanMoveOnSurface() || state.IsBackWall() || state.IsFrontWall() && state.Velocity.magnitude < 0.2f)) {
+
+                // case where user has landed on wall, check for ground beneath and mark as landed
+                // todo: move the special case when -> if (state.IsFrontWall() && state.Velocity.magnitude < 0.2f && !state.CanMoveOnSurface()) { }
+
                 switch (navigationDir) {
                     case var _ when isStandingState && _inputLogic.IsNavigationDirValidAsLeft(navigationDir):
                         moveSpeed = stats.WalkSpeed;
@@ -181,7 +185,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             dir = new Vector3(directionTowardsFoe, 0, 0);
                         }
                         newPositionToSetOnFixedUpdate = closestFoePosition + (Vector2)dir.normalized * -(character.LegsRadius);
-                        Debug.DrawLine(legsPosition, newPositionToSetOnFixedUpdate, Color.green, 3);
+                        Debug.DrawLine(legsPosition, newPositionToSetOnFixedUpdate, Color.green, 3); // todo: move drawline to gameplaycontroller
                         dir = closestFoePosition - newPositionToSetOnFixedUpdate;
                         forceDirToSetOnFixedUpdate = dir.normalized * stats.PushbackForce;
                         return true;
@@ -219,7 +223,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         var dir = Vector2.up;//((Vector3)closestFoePosition - character.LegsPosition);
 
                         newPositionToSetOnFixedUpdate = closestFoePosition;// + Vector2.up * (character.LegsRadius);
-                        Debug.DrawLine(character.LegsPosition, newPositionToSetOnFixedUpdate, Color.green, 3);
+                        Debug.DrawLine(character.LegsPosition, newPositionToSetOnFixedUpdate, Color.green, 3); // todo: move drawline to gameplaycontroller
                         //dir = closestFoePosition - newPositionToSetOnFixedUpdate;
                         forceDirToSetOnFixedUpdate = dir.normalized * stats.PushbackForce;
                         
