@@ -79,12 +79,24 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
                 _keyboardInputNav = null;
 
             } else if (x != 0 || y != 0) {
-                _keyboardInputNav = new ActionInput(Definitions.ActionType.Movement, Definitions.ActionTypeGroup.Navigation, Vector2.zero, Time.time, new Vector2(0, 0));
+
+                var hasInputNavStarted = false;
+                if (_keyboardInputNav == null) {
+                    _keyboardInputNav = new ActionInput(Definitions.ActionType.Movement, Definitions.ActionTypeGroup.Navigation, Vector2.zero, Time.time, new Vector2(0, 0));
+                    hasInputNavStarted = true;
+                }
+
                 var newX = _keyboardInputNav.StartPosition.x + (x != 0 ? Mathf.Sign(x) * 10 : 0);
                 var newY = _keyboardInputNav.StartPosition.y + (y != 0 ? Mathf.Sign(y) * 10 : 0);
-                var endPosition = new Vector2(newX , newY);
+                var endPosition = new Vector2(newX, newY);
                 _keyboardInputNav.UpdateSwipe(endPosition, Time.time);
-                OnTouchPadDown(_keyboardInputNav);
+
+                if (hasInputNavStarted) {
+                    OnTouchPadDown(_keyboardInputNav);
+                } else {
+                    OnTouchPadClick(_keyboardInputNav);
+                }
+
             }
 
             var previousInputAction = _keyboardInputAction;
@@ -96,6 +108,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
             } else if (Input.GetKeyDown(KeyCode.Space)) {
                 _keyboardInputAction = new ActionInput(Definitions.ActionType.Jump, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
                 OnTouchPadDown(_keyboardInputAction);
+
+            } else if (Input.GetKey(KeyCode.Space)) {
+                _keyboardInputAction = new ActionInput(Definitions.ActionType.Jump, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
+                OnTouchPadClick(_keyboardInputAction);
             }
 
             if (Input.GetKeyUp(KeyCode.X) && previousInputAction != null) {
@@ -105,6 +121,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
             } else if (Input.GetKeyDown(KeyCode.X)) {
                 _keyboardInputAction = new ActionInput(Definitions.ActionType.Attack, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
                 OnTouchPadDown(_keyboardInputAction);
+
+            } else if (Input.GetKey(KeyCode.X)) {
+                _keyboardInputAction = new ActionInput(Definitions.ActionType.Attack, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
+                OnTouchPadClick(_keyboardInputAction);
             }
 
             if (Input.GetKeyUp(KeyCode.C) && previousInputAction != null && _keyboardInputAction != null) {
@@ -114,8 +134,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
             } else if (Input.GetKeyDown(KeyCode.C)) {
                 _keyboardInputAction = new ActionInput(Definitions.ActionType.Block, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
                 OnTouchPadDown(_keyboardInputAction);
+
+            } else if (Input.GetKey(KeyCode.C)) {
+                _keyboardInputAction = new ActionInput(Definitions.ActionType.Block, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
+                OnTouchPadClick(_keyboardInputAction);
             }
-            
+
             if (Input.GetKeyUp(KeyCode.V) && previousInputAction != null && _keyboardInputAction != null) {
                 OnTouchPadUp(_keyboardInputAction);
                 _keyboardInputAction = null;
@@ -123,6 +147,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
             } else if (Input.GetKeyDown(KeyCode.V)) {
                 _keyboardInputAction = new ActionInput(Definitions.ActionType.Grab, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
                 OnTouchPadDown(_keyboardInputAction);
+            
+            } else if (Input.GetKey(KeyCode.V)) {
+                _keyboardInputAction = new ActionInput(Definitions.ActionType.Grab, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
+                OnTouchPadClick(_keyboardInputAction);
             }
         }
 #endif
