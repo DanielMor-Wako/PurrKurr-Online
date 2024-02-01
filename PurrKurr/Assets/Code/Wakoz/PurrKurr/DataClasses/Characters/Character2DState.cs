@@ -45,6 +45,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private IInteractableBody _latestInteraction;
         private const float _cayoteTimeDuration = 0.4f;
 
+        public void SetAsLanded() {
+            _hasLanded = true;
+            _hasGroundBeneathByRayCast = true;
+        }
+
         public void SetState(Definitions.CharacterState newState) {
             _currentState = newState;
         }
@@ -258,17 +263,21 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             // todo: add the UninterruptibleAnimation
             if (_currentState == Definitions.CharacterState.InterruptibleAnimation && _combatAbility == Definitions.ActionType.Empty && !IsInterraptibleAnimation()) {
                 SetState(Definitions.CharacterState.Grounded);
-                _hasLanded = true;
+                SetAsLanded();
                 return;
             }
 
             if (!_hasLanded && _currentState is Definitions.CharacterState.Falling or Definitions.CharacterState.Jumping && (!_wasGrounded && _isGrounded || ( IsFrontWall() || IsBackWall() ) && _hasGroundBeneathByRayCast)) {
                 SetState(Definitions.CharacterState.Landed);
-                _hasLanded = true;
+                SetAsLanded();
                 return;
             }
 
-            if (_hasLanded && (_isGrounded || IsTouchingAnySurface())) {
+            if ( (_hasGroundBeneathByRayCast || _hasLanded) && (_isGrounded || IsTouchingAnySurface())) {
+
+                if (!_hasLanded && _hasGroundBeneathByRayCast) {
+                    SetAsLanded();
+                }
 
                 if (_isCrouching) {
                     SetState(Definitions.CharacterState.Crouching);
@@ -280,6 +289,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                     SetState(Definitions.CharacterState.Running);
                     return;
                 } else if (_wasGrounded && _isGrounded /*&& _currentState == Definitions.CharacterState.Landed*/) {
+                    SetState(Definitions.CharacterState.Grounded);
+                    return;
+                } else if (!_wasGrounded && !_isGrounded && IsFrontWall() && _hasLanded && _velocity.magnitude < 0.1f) {
                     SetState(Definitions.CharacterState.Grounded);
                     return;
                 }
@@ -316,9 +328,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public void SetCrouchOrStandingByUpDownInput(Definitions.NavigationType verticalInput) {
 
-            var isNotMoving = IsNotMoving() && _isGrounded;//&& CurrentState != Definitions.CharacterState.Running;
+            var isNotMoving = IsNotMoving() && (IsTouchingAnySurface());//&& CurrentState != Definitions.CharacterState.Running;
             var isCrouchingKey = verticalInput is Definitions.NavigationType.Down or Definitions.NavigationType.DownLeft or Definitions.NavigationType.DownRight;
-            var isStandingUpKey = verticalInput is Definitions.NavigationType.Up or Definitions.NavigationType.UpLeft or Definitions.NavigationType.UpRight;
+            var isStandingUpKey = verticalInput is Definitions.NavigationType.Up or Definitions.NavigationType.UpLeft or Definitions.NavigationType.UpRight
+                 && !_wasCeiling && !_isCeiling;
 
             var isCrouching = isNotMoving && isCrouchingKey;
             var isStanding = isNotMoving && isStandingUpKey || IsGrabbing();
@@ -349,7 +362,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 Definitions.CharacterState.Grounded or Definitions.CharacterState.Landed or
                 Definitions.CharacterState.Running or Definitions.CharacterState.AirGliding or 
                 Definitions.CharacterState.WallClimbing or Definitions.CharacterState.RopeClinging or
-                Definitions.CharacterState.TraversalRunning or Definitions.CharacterState.WallClinging;
+                Definitions.CharacterState.TraversalRunning or Definitions.CharacterState.WallClinging or 
+                Definitions.CharacterState.Alive;
         
         public bool IsJumping() => Time.time < _jumpingEndTime;
 
@@ -411,7 +425,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             var isVerticalVelocityExceeding = Velocity.y < 10;
 
-            var isGroundedOrCayoteTime = (IsTouchingAnySurface() && isStateConsideredAsGrounded || IsCoyoteTime());
+            var isGroundedOrCayoteTime = (IsTouchingAnySurface() && isStateConsideredAsGrounded || IsCoyoteTime() || _hasLanded);
             return isVerticalVelocityExceeding && isGroundedOrCayoteTime && !IsJumping() && CurrentState != Definitions.CharacterState.Crouching;
         }
 
