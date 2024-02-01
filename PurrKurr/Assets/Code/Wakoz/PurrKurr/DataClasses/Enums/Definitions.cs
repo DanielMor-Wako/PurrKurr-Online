@@ -122,7 +122,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             Grabbing,
             Grabbed,
             Blocking,
-            Dodging,
+            InterruptibleAnimation,
             Running, // bodySlam DashAttack
             Jumping,
             Falling,
@@ -138,6 +138,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             AimingProjectile,
             Stunned,
             Landed,
+            Dodging
         }
 
         public enum CollectableTypes {
