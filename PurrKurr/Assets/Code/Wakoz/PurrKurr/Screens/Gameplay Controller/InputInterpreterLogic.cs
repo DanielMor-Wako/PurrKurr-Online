@@ -47,7 +47,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             // full charge towards walls when any nav pad is held
             //if (!isGrabbing && (state.IsCeiling() || state.IsFrontWall()) && navigationDir != Definitions.NavigationType.None) {
-            if (!isGrabbing && !isCrouchingState && !isStandingState && state.HasAnySurfaceAround() && navigationDir != Definitions.NavigationType.None) {
+            if (!isGrabbing && !isCrouchingState && !isStandingState && state.HasAnySurfaceAround() && navigationDir != Definitions.NavigationType.None && state.CanPerformContinousRunning()) {
                 
                 if (navigationDir == Definitions.NavigationType.Up && (state.IsCeiling() || state.IsFrontWall())) {
                     moveSpeed = -stats.SprintSpeed * state.GetFacingRightAsInt();
@@ -80,7 +80,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     return true;
                 }
 
-            } else if (!state.IsCeiling() && (state.IsFrontWall() || state.IsGrounded())) { 
+            } else if (!state.IsCeiling() && (state.IsFrontWall() || state.IsGrounded()) && state.CanMoveOnSurface()) { 
             
                 switch (navigationDir) {
                     case var _ when isStandingState && _inputLogic.IsNavigationDirValidAsLeft(navigationDir):
