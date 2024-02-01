@@ -9,6 +9,7 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
 using Code.Wakoz.Utils.GraphicUtils.TransformUtils;
 using UnityEngine;
 using Code.Wakoz.Utils.Extensions;
+using Code.Wakoz.PurrKurr.Screens.Init;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
@@ -48,6 +49,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private AnchorHandler _anchor;
 
         private LogicController _logic;
+        private DebugController _debug;
         
         private Collider2D[] _solidObjectsColliders;
         private Collider2D[] _solidOutRadiusObjectsColliders;
@@ -142,6 +144,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         protected override Task Initialize() {
 
             _logic = SingleController.GetController<LogicController>();
+            _debug = SingleController.GetController<DebugController>();
 
             _whatIsSurface = _logic.GameplayLogic.GetSurfaces();
             _whatIsSolid = _logic.GameplayLogic.GetSolidSurfaces();
@@ -205,9 +208,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _stats.UpdateHealth(newHealthPoint);
 
             if (newHealthPoint != 0) {
-                //Debug.Log("HP " + Stats.Health);
+                //_debug.Log("HP " + Stats.Health);
             } else {
-                //Debug.Log("Dead");
+                //_debug.Log("Dead");
                 SetSpriteOrder(0);
             }
 
@@ -401,14 +404,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 }
             }
 
-            //Debug.DrawRay(hitPoint, collDir * 5, Color.white, 1f);
-            //Debug.Log("dir "+ collDir+", go = "+i.name);
-            var hasGroundBeneathByRayCast = false;
-            if (!_characterState.IsGrounded() && (collDir != Vector2.zero || outerRadiusCollDir != Vector2.zero)) {
-
+            //_debug.DrawRay(hitPoint, collDir * 5, Color.white, 1f);
+            //_debug.Log("dir "+ collDir+", go = "+i.name);
+            var hasGroundBeneathByRayCast = _characterState.IsGrounded();
+            if (!hasGroundBeneathByRayCast && (collDir != Vector2.zero || outerRadiusCollDir != Vector2.zero)) {
+                
                 var downwardAndSlightForwardDir = HelperFunctions.RotateVector(-(Vector2.up) * 5, _characterState.GetFacingRightAsInt() * 3);
                 hasGroundBeneathByRayCast = Physics2D.Raycast(legsPosition, downwardAndSlightForwardDir, 5, _whatIsSolid);
-                Debug.DrawRay(legsPosition, downwardAndSlightForwardDir, hasGroundBeneathByRayCast ? Color.yellow : Color.grey, 2);
+                _debug.DrawRay(legsPosition, downwardAndSlightForwardDir, hasGroundBeneathByRayCast ? Color.yellow : Color.grey, 2);
+                if (hasGroundBeneathByRayCast && !_characterState.CanMoveOnSurface()) {
+                    _characterState.SetAsLanded();
+                }
             }
             
             _characterState.DiagnoseState(hitPoint, collDir, outerRadiusCollDir, _rigidbody.velocity, hasGroundBeneathByRayCast);
@@ -434,32 +440,32 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public Vector3 IsFreeFalling(float distanceToCheckWhenFreeFalling) {
 
             if (State.CurrentState is not (Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling or Definitions.CharacterState.Landed) || Velocity.y > 0 || State.IsTouchingAnySurface()) {
-                //Debug.LogWarning("Is not free falling because state is "+State.State);
+                //_debug.LogWarning("Is not free falling because state is "+State.State);
                 return Vector3.zero;
             }
             
             var hit = FreeFallRayCast(LegsPosition,  Velocity.normalized, distanceToCheckWhenFreeFalling);
-            //Debug.DrawRay(legsPosition, Velocity.normalized, Color.black, 3);
+            //_debug.DrawRay(legsPosition, Velocity.normalized, Color.black, 3);
             if (hit.collider != null) {
-                //Debug.DrawLine(legsPosition, hit.point, Color.white, 2);
+                //_debug.DrawLine(legsPosition, hit.point, Color.white, 2);
                 return hit.point;
             }
 
             var newAngleToCheck = Velocity;
             newAngleToCheck.y -= 10;
             hit = FreeFallRayCast(LegsPosition, newAngleToCheck , distanceToCheckWhenFreeFalling);
-            //Debug.DrawRay(legsPosition, newAngleToCheck, Color.magenta, 3);
+            //_debug.DrawRay(legsPosition, newAngleToCheck, Color.magenta, 3);
             if (hit.collider != null) {
-                //Debug.DrawLine(legsPosition, hit.point, Color.white, 2);
+                //_debug.DrawLine(legsPosition, hit.point, Color.white, 2);
                 return hit.point;
             }
             
             newAngleToCheck = Velocity;
             newAngleToCheck.y -= 10*2;
             hit = FreeFallRayCast(LegsPosition, newAngleToCheck , distanceToCheckWhenFreeFalling);
-            //Debug.DrawRay(legsPosition, newAngleToCheck, Color.cyan, 3);
+            //_debug.DrawRay(legsPosition, newAngleToCheck, Color.cyan, 3);
             if (hit.collider != null) {
-                //Debug.DrawLine(legsPosition, hit.point, Color.white, 2);
+                //_debug.DrawLine(legsPosition, hit.point, Color.white, 2);
                 return hit.point;
             }
             
