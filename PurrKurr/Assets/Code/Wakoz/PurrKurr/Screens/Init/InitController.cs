@@ -23,6 +23,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Init {
 #endif
         }
 
+        public void SetTimeScaleMin() => Time.timeScale = 0.3f;
+        public void SetTimeScaleLow() => Time.timeScale = 0.6f;
+        public void SetTimeScaleMed() => Time.timeScale = 0.8f;
+        public void SetTimeScaleHigh() => Time.timeScale = 0.9f;
+        public void SetTimeScaleMax() => Time.timeScale = 1f;
+
+
         private void SetTargtFrameRate() {
             
             Application.targetFrameRate = _testTargetFrameRate > 0 ? _testTargetFrameRate : DEFAULT_TARGET_FRAME_RATE;
