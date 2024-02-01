@@ -8,6 +8,7 @@ using Code.Wakoz.PurrKurr.Logic.GameFlow;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
 using Code.Wakoz.Utils.GraphicUtils.TransformUtils;
 using UnityEngine;
+using Code.Wakoz.Utils.Extensions;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
@@ -114,6 +115,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         
         public void SetMinLevel() => UpdateStats(0);
 
+        public void SetLevel(int level) => UpdateStats(level);
+
         public void SetMaxLevel() => UpdateStats(_stats.MaxLevel);
 
         public void Revive() => UpdateStats();
@@ -174,13 +177,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public void DoMove(float speed) {
 
             if (speed != 0) {
-                FaceCharacterTowardsPoint(speed < 0);
+                FlipCharacterTowardsPoint(speed < 0);
             }
             _motor.motorSpeed = speed;
             _legs.motor = _motor;
         }
         
-        public void FaceCharacterTowardsPoint(bool facingRight) {
+        public void FlipCharacterTowardsPoint(bool facingRight) {
 
             _characterState.SetFacingRight(facingRight);
             _rigAnimator.SetFacingRight(facingRight);
@@ -287,7 +290,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 SwitchRigidBodyType(RigidbodyType2D.Kinematic, 0, true);
                 _transformMover.MoveToPosition(this.transform, NewPositionToSetOnFixedUpdte, 0.15f); // 0.15f is the fastest combat turn
                 SwitchRigidBodyType(RigidbodyType2D.Dynamic, 0.15f, true);
-                _characterState.SetAnimating(Time.time + (Stats.AttackDurationInMilliseconds * 0.001f));
+                _characterState.SetMoveAnimation(Time.time + (Stats.AttackDurationInMilliseconds * 0.001f));
                 NewPositionToSetOnFixedUpdte = Vector3.zero;
                 
             } else if (ForceDirToSetOnFixedUpdate != Vector2.zero) {
@@ -397,10 +400,18 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                     }
                 }
             }
-            
+
             //Debug.DrawRay(hitPoint, collDir * 5, Color.white, 1f);
             //Debug.Log("dir "+ collDir+", go = "+i.name);
-            _characterState.DiagnoseState(hitPoint, collDir, outerRadiusCollDir, _rigidbody.velocity);
+            var hasGroundBeneathByRayCast = false;
+            if (!_characterState.IsGrounded() && (collDir != Vector2.zero || outerRadiusCollDir != Vector2.zero)) {
+
+                var downwardAndSlightForwardDir = HelperFunctions.RotateVector(-(Vector2.up) * 5, _characterState.GetFacingRightAsInt() * 3);
+                hasGroundBeneathByRayCast = Physics2D.Raycast(legsPosition, downwardAndSlightForwardDir, 5, _whatIsSolid);
+                Debug.DrawRay(legsPosition, downwardAndSlightForwardDir, hasGroundBeneathByRayCast ? Color.yellow : Color.grey, 2);
+            }
+            
+            _characterState.DiagnoseState(hitPoint, collDir, outerRadiusCollDir, _rigidbody.velocity, hasGroundBeneathByRayCast);
 
             var shouldCallStateChange = prevState != _characterState.CurrentState ;// || _characterState.CurrentState == Definitions.CharacterState.Grounded;
             
@@ -408,7 +419,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
                 OnStateChanged?.Invoke(_characterState);
 
-                if (_characterState.CurrentState == Definitions.CharacterState.Landed) {
+                if (_characterState.CurrentState == Definitions.CharacterState.Landed && ForceDirToSetOnFixedUpdate != Vector2.zero) {
                     ForceDirToSetOnFixedUpdate = new Vector2(_rigidbody.velocity.x, 0);
                     DoMove(0);
                 }
