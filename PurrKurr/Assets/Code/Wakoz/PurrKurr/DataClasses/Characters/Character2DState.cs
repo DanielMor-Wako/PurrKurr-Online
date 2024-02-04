@@ -242,13 +242,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                     if (_combatAbility == Definitions.ActionType.Attack) {
                         SetState(Definitions.CharacterState.Attacking);
                         return;
-                    } else if (_combatAbility == Definitions.ActionType.Block) {
-                        SetState(Definitions.CharacterState.Blocking);
-                        return;
                     } else if (_combatAbility == Definitions.ActionType.Grab) {
                         SetState(Definitions.CharacterState.Grabbing);
                         return;
                     }
+
+                } else if (_combatAbility == Definitions.ActionType.Block) {
+                    SetState(Definitions.CharacterState.Blocking);
+                    return;
 
                 } else if (!IsMoveAnimation() && IsInterraptibleAnimation()) {
                     SetState(Definitions.CharacterState.InterruptibleAnimation);
@@ -364,7 +365,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 Definitions.CharacterState.Running or Definitions.CharacterState.AirGliding or 
                 Definitions.CharacterState.WallClimbing or Definitions.CharacterState.RopeClinging or
                 Definitions.CharacterState.TraversalRunning or Definitions.CharacterState.WallClinging or 
-                Definitions.CharacterState.Alive;
+                Definitions.CharacterState.Alive or Definitions.CharacterState.Blocking;
         
         public bool IsJumping() => Time.time < _jumpingEndTime;
 

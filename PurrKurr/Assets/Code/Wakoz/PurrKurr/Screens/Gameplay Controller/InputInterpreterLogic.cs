@@ -42,12 +42,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             
             state.SetCrouchOrStandingByUpDownInput(navigationDir);
             var isGrabbing = state.IsGrabbing();
-            var isCrouchingState = state.CurrentState != Definitions.CharacterState.Running && state.IsCrouchingAndNotFallingNearWall() ;
-            var isStandingState = (state.CurrentState != Definitions.CharacterState.Running && state.IsStandingUp() || isGrabbing);
+            var isInvalidState = state.CurrentState is Definitions.CharacterState.Blocking;
+            var isCrouchingState = !isInvalidState && state.CurrentState != Definitions.CharacterState.Running && state.IsCrouchingAndNotFallingNearWall();
+            var isStandingState = !isInvalidState && state.CurrentState != Definitions.CharacterState.Running && (state.IsStandingUp() || isGrabbing);
 
             // full charge towards walls when any nav pad is held
             //if (!isGrabbing && (state.IsCeiling() || state.IsFrontWall()) && navigationDir != Definitions.NavigationType.None) {
-            if (!isGrabbing && !isCrouchingState && !isStandingState && state.HasAnySurfaceAround() && navigationDir != Definitions.NavigationType.None && state.CanPerformContinousRunning()) {
+            if (!isInvalidState && !isGrabbing && !isCrouchingState && !isStandingState && state.HasAnySurfaceAround() && navigationDir != Definitions.NavigationType.None && state.CanPerformContinousRunning()) {
 
                 if ( (state.IsCeiling() || state.IsFrontWall()) && _inputLogic.IsNavigationDirValidAsUp(navigationDir)
                     || _gameplayLogic.IsStateConsideredAsRunning(state.CurrentState, state.Velocity.magnitude) && state.IsBackWall() 
@@ -85,7 +86,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     return true;
                 }
 
-            } else if (!state.IsCeiling() &&
+            } else if (!isInvalidState && !state.IsCeiling() &&
                 (state.IsTouchingAnySurface() && state.CanMoveOnSurface() || state.IsBackWall() || state.IsFrontWall() && state.Velocity.magnitude < 0.2f)) {
 
                 // case where user has landed on wall, check for ground beneath and mark as landed
@@ -193,7 +194,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     break;
 
                 case Definitions.ActionType.Block:
-                    break;
+
+                    if (ended || started) {
+                        isActionPerformed = true;
+                        return true;
+                    }
+
+                    return false;
 
                 case Definitions.ActionType.Grab:
                     

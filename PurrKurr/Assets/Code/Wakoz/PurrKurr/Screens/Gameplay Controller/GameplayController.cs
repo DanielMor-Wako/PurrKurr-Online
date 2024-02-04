@@ -250,6 +250,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 if (_inputInterpreterLogic.TryPerformInputAction(actionInput, true, false, _hero,
                         out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedColliders)) {
 
+                    if (isActionPerformed && actionInput.ActionType == ActionType.Block) {
+                        Debug.Log("blocking");
+                    }
+
                     if (isActionPerformed && interactedColliders != null && !_hero.State.IsGrabbed()) {
                         CombatLogic(_hero, actionInput.ActionType, moveToPosition, interactedColliders, forceDir);
                     }
@@ -322,6 +326,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             if (_inputInterpreterLogic.TryPerformInputAction(actionInput, false, true, _hero,
                     out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedCollider)) {
+
+                if (isActionPerformed && actionInput.ActionType is ActionType.Block && _hero.State.CurrentState is CharacterState.Blocking) {
+                    _hero.State.SetActiveCombatAbility(ActionType.Empty);
+                    // todo: get dodge direction from inputAction and set as jump with active dodge time
+                }
 
                 if (forceDir != Vector2.zero) {
                     // might conflict with the DiagnosePlayerInputNavigation when the forceDir is already set by Navigation
