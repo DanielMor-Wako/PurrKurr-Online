@@ -27,6 +27,8 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
         public bool IsStateConsideredAsRunning(Definitions.CharacterState specificState, float magnitude) =>
             Data.IsStateConsideredAsRunning(specificState, magnitude);
 
+        public bool IsVelocityConsideredAsRunning(float magnitude) => Data.IsVelocityConsideredAsRunning(magnitude);
+
     }
 
 }
