@@ -40,7 +40,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
         }
 
         public bool IsStateConsideredAsRunning(Definitions.CharacterState specificState, float magnitude) =>
-            specificState is Definitions.CharacterState.Running && (magnitude > MinMagnitudeConsideredAsRunnin);
+            specificState is Definitions.CharacterState.Running && IsVelocityConsideredAsRunning(magnitude);
+
+        public bool IsVelocityConsideredAsRunning(float magnitude) => magnitude > MinMagnitudeConsideredAsRunnin;
 
         // unoptimized search version
         /*private bool IsStateIncludedInList(Definitions.CharacterState specificState, List<Definitions.CharacterState> statesList) {
