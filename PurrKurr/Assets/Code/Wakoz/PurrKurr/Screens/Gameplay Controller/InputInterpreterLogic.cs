@@ -42,26 +42,31 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             
             state.SetCrouchOrStandingByUpDownInput(navigationDir);
             var isGrabbing = state.IsGrabbing();
-            var isCrouchingState = state.CurrentState != Definitions.CharacterState.Running && state.IsCrouching();
+            var isCrouchingState = state.CurrentState != Definitions.CharacterState.Running && state.IsCrouchingAndNotFallingNearWall() ;
             var isStandingState = (state.CurrentState != Definitions.CharacterState.Running && state.IsStandingUp() || isGrabbing);
 
             // full charge towards walls when any nav pad is held
             //if (!isGrabbing && (state.IsCeiling() || state.IsFrontWall()) && navigationDir != Definitions.NavigationType.None) {
             if (!isGrabbing && !isCrouchingState && !isStandingState && state.HasAnySurfaceAround() && navigationDir != Definitions.NavigationType.None && state.CanPerformContinousRunning()) {
-                
-                if (navigationDir == Definitions.NavigationType.Up && (state.IsCeiling() || state.IsFrontWall())) {
+
+                if ( (state.IsCeiling() || state.IsFrontWall()) && _inputLogic.IsNavigationDirValidAsUp(navigationDir)
+                    || _gameplayLogic.IsStateConsideredAsRunning(state.CurrentState, state.Velocity.magnitude) && state.IsBackWall() 
+                    && ( state.IsFacingRight() && _inputLogic.IsNavigationDirValidAsLeft(navigationDir) || !state.IsFacingRight() && _inputLogic.IsNavigationDirValidAsRight(navigationDir))
+                    ) {
                     moveSpeed = -stats.SprintSpeed * state.GetFacingRightAsInt();
+                    
                     return true;
                 } else if (navigationDir is not (Definitions.NavigationType.Up or Definitions.NavigationType.Down or Definitions.NavigationType.DownRight or Definitions.NavigationType.DownLeft)) {
                     moveSpeed = actionInput.SwipeDistanceTraveledInPercentage * -stats.SprintSpeed * (_inputLogic.IsNavigationDirValidAsRight(navigationDir) ? 1 : -1);
+                    
                     return true;
                 }
             }
 
             // Air-borne movement
             var rigidbodyVelocity = state.Velocity;
-            var isNavRightDir = navigationDir is Definitions.NavigationType.Right or Definitions.NavigationType.DownRight or Definitions.NavigationType.UpRight;
-            var isNavLeftDir = navigationDir is Definitions.NavigationType.Left or Definitions.NavigationType.DownLeft or Definitions.NavigationType.UpLeft;
+            var isNavRightDir = _inputLogic.IsNavigationDirValidAsRight(navigationDir);
+            var isNavLeftDir = _inputLogic.IsNavigationDirValidAsLeft(navigationDir);
 
 
             if (rigidbodyVelocity.y < -1f && state.CurrentState == Definitions.CharacterState.Falling) {
@@ -162,14 +167,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                 case Definitions.ActionType.Attack:
 
-                    var nearbyEnemies = character.NearbyInteractables();
-                    if (nearbyEnemies == null || nearbyEnemies.Length == 0) {
-                        return false;
-                    }
-
-                    closestColliders = nearbyEnemies.OrderBy(obj => Vector2.Distance(obj.transform.position, character.LegsPosition)).ToArray();
-                    
-                    if (closestColliders == null) {
+                    closestColliders = character.NearbyInteractables();
+                    if (closestColliders == null || closestColliders.Length == 0) {
                         return false;
                     }
                     
@@ -207,9 +206,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         return false;
                     }
 
-                    closestColliders = nearbyGrabables.OrderBy(obj => Vector3.Distance(obj.transform.position, character.LegsPosition)).ToArray();
-
-                    closestColliders = new Collider2D[] { closestColliders.FirstOrDefault() };
+                    closestColliders = new Collider2D[] { nearbyGrabables.FirstOrDefault() };
 
                     if (closestColliders == null) {
                         return false;
