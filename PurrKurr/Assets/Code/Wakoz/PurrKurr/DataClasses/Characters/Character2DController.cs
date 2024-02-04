@@ -10,6 +10,7 @@ using Code.Wakoz.Utils.GraphicUtils.TransformUtils;
 using UnityEngine;
 using Code.Wakoz.Utils.Extensions;
 using Code.Wakoz.PurrKurr.Screens.Init;
+using UnityEngine.TextCore.Text;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
@@ -61,13 +62,19 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             if (_nearbyInteractions == null || _legsCollider == null) {
                 return null;
             }
-            var potentialInteractions = _nearbyInteractions.Where(potentialFoe => potentialFoe != _legsCollider);
+
+            var potentialInteractions =
+                _nearbyInteractions.Where(potentialFoe => potentialFoe != _legsCollider).
+                OrderBy(obj => Vector2.Distance(obj.transform.position, LegsPosition)).ToArray();
+
             List<Collider2D> validInteractables = new();
+            int validInteractablesInfrontOfCharacter = 0;
 
             foreach (var interaction in potentialInteractions) {
             
                 var objPosition = interaction.transform.position;
                 var dirFromCharacterToFoe = (objPosition - LegsPosition).normalized;
+                var isFacingTowardsFoe = dirFromCharacterToFoe.x > 0 == _characterState.IsFacingRight();
 
                 var blockingObjectsInAttackDirection = Physics2D.Raycast(LegsPosition,
                     dirFromCharacterToFoe,
@@ -76,8 +83,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 if (blockingObjectsInAttackDirection.collider != null) {
                     continue;
                 }
-            
-                validInteractables.Add(interaction);
+
+                if (isFacingTowardsFoe) {
+                    validInteractables.Insert(validInteractablesInfrontOfCharacter, interaction);
+                    validInteractablesInfrontOfCharacter ++;
+                } else {
+                    validInteractables.Add(interaction);
+                }
+                
             }
 
             return validInteractables.ToArray();
@@ -165,7 +178,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             OnUpdatedStats?.Invoke(null);
 
-            _anchor = gameObject.AddComponent<AnchorHandler>();
+            _anchor ??= gameObject.AddComponent<AnchorHandler>();
             _cling.connectedBody = SingleController.GetController<AnchorsController>().GetAnchorRigidbody(_anchor);
             
             return Task.CompletedTask;
@@ -291,7 +304,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             if (NewPositionToSetOnFixedUpdte != Vector3.zero) {
 
                 SwitchRigidBodyType(RigidbodyType2D.Kinematic, 0, true);
-                _transformMover.MoveToPosition(this.transform, NewPositionToSetOnFixedUpdte, 0.15f); // 0.15f is the fastest combat turn
+                _transformMover.MoveToPosition(transform, NewPositionToSetOnFixedUpdte, 0.15f); // 0.15f is the fastest combat turn
                 SwitchRigidBodyType(RigidbodyType2D.Dynamic, 0.15f, true);
                 _characterState.SetMoveAnimation(Time.time + (Stats.AttackDurationInMilliseconds * 0.001f));
                 NewPositionToSetOnFixedUpdte = Vector3.zero;
@@ -409,9 +422,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             var hasGroundBeneathByRayCast = _characterState.IsGrounded();
             if (!hasGroundBeneathByRayCast && (collDir != Vector2.zero || outerRadiusCollDir != Vector2.zero)) {
                 
-                var downwardAndSlightForwardDir = HelperFunctions.RotateVector(-(Vector2.up) * 5, _characterState.GetFacingRightAsInt() * 3);
-                hasGroundBeneathByRayCast = Physics2D.Raycast(legsPosition, downwardAndSlightForwardDir, 5, _whatIsSolid);
-                _debug.DrawRay(legsPosition, downwardAndSlightForwardDir, hasGroundBeneathByRayCast ? Color.yellow : Color.grey, 2);
+                var downwardAndSlightForwardDir = HelperFunctions.RotateVector(-(Vector2.up) * 4, _characterState.GetFacingRightAsInt() * 9);
+                hasGroundBeneathByRayCast = Physics2D.Raycast(legsPosition, downwardAndSlightForwardDir, 4, _whatIsSolid);
+                //_debug.DrawRay(legsPosition, downwardAndSlightForwardDir, hasGroundBeneathByRayCast ? Color.yellow : Color.grey, hasGroundBeneathByRayCast ? 2 : 1);
                 if (hasGroundBeneathByRayCast && !_characterState.CanMoveOnSurface()) {
                     _characterState.SetAsLanded();
                 }
