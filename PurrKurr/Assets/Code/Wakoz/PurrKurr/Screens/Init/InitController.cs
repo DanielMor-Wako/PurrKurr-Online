@@ -23,10 +23,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Init {
 #endif
         }
 
-        public void SetTimeScaleMin() => Time.timeScale = 0.3f;
-        public void SetTimeScaleLow() => Time.timeScale = 0.6f;
-        public void SetTimeScaleMed() => Time.timeScale = 0.8f;
-        public void SetTimeScaleHigh() => Time.timeScale = 0.9f;
+        public void SetTimeScaleMin() => Time.timeScale = 0.1f;
+        public void SetTimeScaleLow() => Time.timeScale = 0.25f;
+        public void SetTimeScaleMed() => Time.timeScale = 0.5f;
+        public void SetTimeScaleHigh() => Time.timeScale = 0.75f;
         public void SetTimeScaleMax() => Time.timeScale = 1f;
 
 
