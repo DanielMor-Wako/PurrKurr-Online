@@ -328,13 +328,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public void SetCrouchOrStandingByUpDownInput(Definitions.NavigationType verticalInput) {
 
-            var isNotMoving = IsNotMoving() && (IsTouchingAnySurface());//&& CurrentState != Definitions.CharacterState.Running;
+            var isNotMoving = IsNotMoving();//&& CurrentState != Definitions.CharacterState.Running;
+            var isOnAnySurface = _hasGroundBeneathByRayCast && IsTouchingAnySurface();
             var isCrouchingKey = verticalInput is Definitions.NavigationType.Down or Definitions.NavigationType.DownLeft or Definitions.NavigationType.DownRight;
             var isStandingUpKey = verticalInput is Definitions.NavigationType.Up or Definitions.NavigationType.UpLeft or Definitions.NavigationType.UpRight
                  && !_wasCeiling && !_isCeiling;
 
-            var isCrouching = isNotMoving && isCrouchingKey;
-            var isStanding = isNotMoving && isStandingUpKey || IsGrabbing();
+            var isCrouching = isNotMoving && isOnAnySurface && isCrouchingKey;
+            var isStanding = isNotMoving && isOnAnySurface && isStandingUpKey || IsGrabbing();
 
             _isCrouching = isCrouching;
             _isStanding = isStanding;
@@ -371,6 +372,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public bool IsCrouching() => _isCrouching;
 
+        public bool IsCrouchingAndNotFallingNearWall() => _isCrouching && (_hasGroundBeneathByRayCast && (_isGrounded || _isLeftWall || _isRightWall) );
+
         public bool IsStandingUp() => _isStanding;
 
         // todo: move all the consideredAs.... to gameplayLogic
@@ -379,9 +382,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public bool IsFacingRight() => _facingRight;
 
-        public void SetFacingRight(bool isFacingRight) {
-            _facingRight = isFacingRight;
-        }
+        public void SetFacingRight(bool isFacingRight) => _facingRight = isFacingRight;
 
         public bool IsFrontWall() => _facingRight && _isRightWall || !_facingRight && _isLeftWall;
         public bool IsBackWall() => _facingRight && _isLeftWall || !_facingRight && _isRightWall;
