@@ -95,6 +95,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
 
             if (hasAimPad) {
                 
+                // todo: check why the z is always negative although it is set as 0
                 var newPos = _cam.ScreenToWorldPoint(Model.AimStartPos);
                 newPos.z = 0;
                 _aimPadRectTransform.position = newPos;
