@@ -195,8 +195,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                 case Definitions.ActionType.Block:
 
-                    if (ended || started) {
+                    if (started) {
                         isActionPerformed = true;
+                        return true;
+                    }
+
+                    if (ended) {
+                        isActionPerformed = true;
+                        // todo: get dodge direction from inputAction and set as jump with active dodge time
+                        character.TryGetDodgeDirection(actionInput.NormalizedDirection * 5, ref newPositionToSetOnFixedUpdate);
+
                         return true;
                     }
 
