@@ -28,8 +28,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         [SerializeField] private JointMotor2D _motor;
         [SerializeField] private TransformMover _transformMover;
         [SerializeField] private CharacterSenses _senses;
-        [SerializeField] private Transform _bodyDamager;
         [SerializeField] private Character2DRig _rigAnimator;
+        [SerializeField] private Transform _bodyDamager;
+        [SerializeField] private ParticleSystem _dodgeEffect;
         private SpriteRenderer _sprite;
 
         private Rigidbody2D _legsRigidBody;
@@ -123,6 +124,46 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                         => Vector2.Distance(obj.GetCenterPosition(), hitPosition)).ToArray();
             
             interactedColliders = damageableColliders;
+        }
+
+        public void TryGetDodgeDirection(Vector2 dodgeDirection, ref Vector2 endPosition) {
+
+            var isPerformingDodge = dodgeDirection != Vector2.zero;
+            if (!isPerformingDodge) {
+                return;
+            }
+
+            var potentialEndPosition = (Vector2)LegsPosition + dodgeDirection;
+
+            // Calculate the perpendicular vector to the dodgeDirection
+            var perpendicularDirection = new Vector2(-dodgeDirection.y, dodgeDirection.x).normalized;
+
+            // Perform raycasts from the edges of the collider to detect obstacles in the dodge path
+            var checkDistance = (dodgeDirection + dodgeDirection.normalized * LegsRadius).magnitude;
+            var perpendicularDistance = perpendicularDirection * (LegsRadius / 2);
+            var hitLeft = Physics2D.Raycast((Vector2)LegsPosition - perpendicularDistance, dodgeDirection, checkDistance, _whatIsSolid);
+            var hitRight = Physics2D.Raycast((Vector2)LegsPosition + perpendicularDistance, dodgeDirection, checkDistance, _whatIsSolid);
+
+            if (hitLeft.collider != null) { _debug.DrawLine((Vector2)LegsPosition - perpendicularDistance, hitLeft.point, Color.grey, 2); }
+            if (hitRight.collider != null) { _debug.DrawLine((Vector2)LegsPosition + perpendicularDistance, hitRight.point, Color.grey, 2); }
+
+            if (hitLeft.collider != null || hitRight.collider != null) {
+                // Adjust the end position to avoid the collider
+                var hasLeftHit = hitLeft.collider != null;
+                var hasRightHit = hitRight.collider != null;
+                // Get the higer point out of the two hits if possible, if not then gets the original hit
+                var higherHit =
+                    hasLeftHit && hasRightHit ? hitLeft.point.y > hitLeft.point.y ? hitLeft.point : hitRight.point :
+                    hasLeftHit ? hitLeft.point : hitRight.point;
+                endPosition = (higherHit) - dodgeDirection.normalized * (LegsRadius);
+
+            } else {
+                // If no obstacles are found in the raycasts, set the end position to the potential end position
+                endPosition = potentialEndPosition;
+            }
+
+            _debug.DrawLine(LegsPosition, endPosition, Color.green, 2);
+
         }
 
         public Vector3 LegsPosition => _legsCollider.transform.position;
@@ -330,6 +371,16 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _bodyDamager.gameObject.SetActive(isActive);
         }
 
+        public void SetDodgeEffect(bool isActive) {
+
+            if (_dodgeEffect == null) {
+                return;
+            }
+
+            var emission = _dodgeEffect.emission;
+            emission.enabled = isActive;
+        }
+
         private async void SwitchRigidBodyType(RigidbodyType2D bodyType, float delayDuration = 0, bool resetVelocity = false) {
 
             if (delayDuration > 0) {
@@ -424,7 +475,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 
                 var downwardAndSlightForwardDir = HelperFunctions.RotateVector(-(Vector2.up) * 4, _characterState.GetFacingRightAsInt() * 9);
                 hasGroundBeneathByRayCast = Physics2D.Raycast(legsPosition, downwardAndSlightForwardDir, 4, _whatIsSolid);
-                //_debug.DrawRay(legsPosition, downwardAndSlightForwardDir, hasGroundBeneathByRayCast ? Color.yellow : Color.grey, hasGroundBeneathByRayCast ? 2 : 1);
+                _debug.DrawRay(legsPosition, downwardAndSlightForwardDir, hasGroundBeneathByRayCast ? Color.yellow : Color.grey, hasGroundBeneathByRayCast ? 2 : 1);
                 if (hasGroundBeneathByRayCast && !_characterState.CanMoveOnSurface()) {
                     _characterState.SetAsLanded();
                 }
