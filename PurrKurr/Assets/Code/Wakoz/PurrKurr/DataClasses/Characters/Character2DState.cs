@@ -43,7 +43,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private IInteractableBody _grabberAnchor;
         private IInteractableBody _grabbedAnchor;
         private IInteractableBody _latestInteraction;
-        private const float _cayoteTimeDuration = 0.4f;
+        private const float _cayoteTimeDuration = 0.2f;
 
         public void SetAsLanded() {
             _hasLanded = true;
