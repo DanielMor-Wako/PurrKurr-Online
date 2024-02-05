@@ -20,6 +20,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
         private readonly Dictionary<int, ActionInput> _keyboardInputs = new();
         private ActionInput _keyboardInputNav;
         private ActionInput _keyboardInputAction;
+        [Header("Keyboard input - pads position")]
+        [Tooltip("For input action, Using transforms to set the starting position on the screen")]
+        [SerializeField] private RectTransform MovementDefaultStartPosForKeyboard;
+        [Tooltip("For input movement, Using transforms to set the starting position on the screen")]
+        [SerializeField] private RectTransform ActionDefaultStartPosForKeyboard;
 #endif
 
         private ActionInput _movementSingleTouchData;
@@ -67,6 +72,19 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
             UpdateTouchPad(_actionSingleTouchData);
         }
 
+        public Rect GetScreenCoordinates(RectTransform uiElement) {
+
+            var cam = Camera.main;
+
+            var screenPos1 = cam.WorldToScreenPoint(uiElement.position);
+            var screenPos2 = cam.WorldToScreenPoint(uiElement.position + new Vector3(uiElement.rect.width, uiElement.rect.height, 0));
+
+            // Calculate the screen space rectangle
+            var result = new Rect(screenPos1.x, screenPos1.y, screenPos2.x - screenPos1.x, screenPos2.y - screenPos1.y);
+
+            return result;
+        }
+
 #if UNITY_EDITOR
         private void UpdateKeyboardInputs() {
 
@@ -82,7 +100,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
 
                 var hasInputNavStarted = false;
                 if (_keyboardInputNav == null) {
-                    _keyboardInputNav = new ActionInput(Definitions.ActionType.Movement, Definitions.ActionTypeGroup.Navigation, Vector2.zero, Time.time, new Vector2(0, 0));
+                    _keyboardInputNav = new ActionInput(Definitions.ActionType.Movement, Definitions.ActionTypeGroup.Navigation, GetScreenCoordinates(MovementDefaultStartPosForKeyboard).position, Time.time, new Vector2(0, 0));
                     hasInputNavStarted = true;
                 }
 
@@ -132,11 +150,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
                 _keyboardInputAction = null;
 
             } else if (Input.GetKeyDown(KeyCode.C)) {
-                _keyboardInputAction = new ActionInput(Definitions.ActionType.Block, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
+                _keyboardInputAction = new ActionInput(Definitions.ActionType.Grab, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
                 OnTouchPadDown(_keyboardInputAction);
 
             } else if (Input.GetKey(KeyCode.C)) {
-                _keyboardInputAction = new ActionInput(Definitions.ActionType.Block, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
+                _keyboardInputAction = new ActionInput(Definitions.ActionType.Grab, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
                 OnTouchPadClick(_keyboardInputAction);
             }
 
@@ -145,13 +163,18 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
                 _keyboardInputAction = null;
 
             } else if (Input.GetKeyDown(KeyCode.V)) {
-                _keyboardInputAction = new ActionInput(Definitions.ActionType.Grab, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
+                _keyboardInputAction = new ActionInput(Definitions.ActionType.Block, Definitions.ActionTypeGroup.Action, GetScreenCoordinates(ActionDefaultStartPosForKeyboard).position, Time.time, new Vector2(0, 0));
                 OnTouchPadDown(_keyboardInputAction);
-            
+
             } else if (Input.GetKey(KeyCode.V)) {
-                _keyboardInputAction = new ActionInput(Definitions.ActionType.Grab, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
+                var newX = _keyboardInputAction.StartPosition.x + (x != 0 ? Mathf.Sign(x) * 10 : 0);
+                var newY = _keyboardInputAction.StartPosition.y + (y != 0 ? Mathf.Sign(y) * 10 : 0);
+                var endPosition = new Vector2(newX, newY);
+                _keyboardInputAction.UpdateSwipe(endPosition, Time.time);
+
                 OnTouchPadClick(_keyboardInputAction);
             }
+
         }
 #endif
 
