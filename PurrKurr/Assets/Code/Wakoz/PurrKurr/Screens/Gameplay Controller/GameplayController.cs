@@ -328,8 +328,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedCollider)) {
 
                 if (isActionPerformed && actionInput.ActionType is ActionType.Block && _hero.State.CurrentState is CharacterState.Blocking) {
+                    
                     _hero.State.SetActiveCombatAbility(ActionType.Empty);
-                    // todo: get dodge direction from inputAction and set as jump with active dodge time
+                    // _hero.DoMove(0);
+                    if (actionInput.NormalizedDirection != Vector2.zero) {
+                        ApplyDodgeEffect(_hero);
+                    }
                 }
 
                 if (forceDir != Vector2.zero) {
@@ -703,6 +707,15 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
 
             return facingRightOrLeftTowardsPoint;
+        }
+
+        private async void ApplyDodgeEffect(Character2DController character) {
+
+            character.SetDodgeEffect(true);
+
+            await Task.Delay(TimeSpan.FromSeconds(0.15)); // 0.15f is the fastest combat turn
+
+            character.SetDodgeEffect(false);
         }
 
         private async void ApplyProjectileStateWhenThrown(IInteractableBody grabbed, int damage, IInteractableBody thrower) {
