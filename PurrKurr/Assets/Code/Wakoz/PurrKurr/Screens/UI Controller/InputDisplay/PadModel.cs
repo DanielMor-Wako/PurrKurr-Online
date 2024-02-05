@@ -47,7 +47,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
                 return;
             }
 
-            /*if (Config.actionType == DataClasses.Enums.Definitions.ActionType.Grab) {
+            /*if (Config.actionType == DataClasses.Enums.Definitions.ActionType.Block) {
                 Debug.Log($"{Config.actionType} is updating, state: hasChanges? {hasChanges} , SelectiveUpdate? {onlyUpdateViewIfChangesExist}");
                 Debug.Log(changesLog);
             }*/
