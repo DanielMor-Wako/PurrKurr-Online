@@ -6,8 +6,6 @@ using UnityEngine.UI;
 namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
     public class PadView : View<PadModel> {
 
-        //[SerializeField] private bool HideFixedTouchPadWhenFlexibleIsActive = false;
-        //[SerializeField] private bool AllowRepositionOnClick = false;
         private Camera _cam;
         
         [Header("Settings")]
