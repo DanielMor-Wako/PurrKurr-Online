@@ -251,6 +251,18 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                     SetState(Definitions.CharacterState.Blocking);
                     return;
 
+                } else if (_combatAbility == Definitions.ActionType.Projectile) {
+                    SetState(Definitions.CharacterState.AimingProjectile);
+                    return;
+
+                } else if (_combatAbility == Definitions.ActionType.Rope) {
+                    SetState(Definitions.CharacterState.AimingRope);
+                    return;
+
+                } else if (_combatAbility == Definitions.ActionType.Special) {
+                    SetState(Definitions.CharacterState.InterruptibleAnimation);
+                    return;
+
                 } else if (!IsMoveAnimation() && IsInterraptibleAnimation()) {
                     SetState(Definitions.CharacterState.InterruptibleAnimation);
                     return;
@@ -365,7 +377,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 Definitions.CharacterState.Running or Definitions.CharacterState.AirGliding or 
                 Definitions.CharacterState.WallClimbing or Definitions.CharacterState.RopeClinging or
                 Definitions.CharacterState.TraversalRunning or Definitions.CharacterState.WallClinging or 
-                Definitions.CharacterState.Alive or Definitions.CharacterState.Blocking;
+                Definitions.CharacterState.Alive or Definitions.CharacterState.Blocking or
+                Definitions.CharacterState.AimingRope or Definitions.CharacterState.AimingProjectile or 
+                Definitions.CharacterState.InterruptibleAnimation;
         
         public bool IsJumping() => Time.time < _jumpingEndTime;
 
