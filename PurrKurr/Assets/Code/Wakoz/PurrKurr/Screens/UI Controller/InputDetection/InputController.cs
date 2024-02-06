@@ -72,20 +72,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
             UpdateTouchPad(_actionSingleTouchData);
         }
 
-        public Rect GetScreenCoordinates(RectTransform uiElement) {
-
-            var cam = Camera.main;
-
-            var screenPos1 = cam.WorldToScreenPoint(uiElement.position);
-            var screenPos2 = cam.WorldToScreenPoint(uiElement.position + new Vector3(uiElement.rect.width, uiElement.rect.height, 0));
-
-            // Calculate the screen space rectangle
-            var result = new Rect(screenPos1.x, screenPos1.y, screenPos2.x - screenPos1.x, screenPos2.y - screenPos1.y);
-
-            return result;
-        }
-
 #if UNITY_EDITOR
+
+        private const KeyCode JumpKey = KeyCode.Space;
+        private const KeyCode SpecialKey = KeyCode.LeftShift;
+        private const KeyCode AttackKey = KeyCode.X;
+        private const KeyCode GrabKey = KeyCode.C;
+        private const KeyCode BlockKey = KeyCode.V;
+        private const KeyCode ProjectileKey = KeyCode.Z;
+        private const KeyCode RopeKey = KeyCode.F;
+
         private void UpdateKeyboardInputs() {
 
             var previousInputNav = _keyboardInputNav;
@@ -117,64 +113,108 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
 
             }
 
+
             var previousInputAction = _keyboardInputAction;
+            var isActionKeyReleased = Input.GetKeyUp(JumpKey) || Input.GetKeyUp(SpecialKey) || Input.GetKeyUp(AttackKey) || Input.GetKeyUp(GrabKey) || Input.GetKeyUp(BlockKey) || Input.GetKeyUp(ProjectileKey) || Input.GetKeyUp(RopeKey);
 
-            if (Input.GetKeyUp(KeyCode.Space) && previousInputAction != null) {
+            if (isActionKeyReleased && previousInputAction != null) {
                 OnTouchPadUp(_keyboardInputAction);
                 _keyboardInputAction = null;
+            }
 
-            } else if (Input.GetKeyDown(KeyCode.Space)) {
+            var isNewActionAvailable = _keyboardInputAction == null;
+
+            if (Input.GetKeyDown(JumpKey) && isNewActionAvailable) {
                 _keyboardInputAction = new ActionInput(Definitions.ActionType.Jump, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
                 OnTouchPadDown(_keyboardInputAction);
 
-            } else if (Input.GetKey(KeyCode.Space)) {
-                _keyboardInputAction = new ActionInput(Definitions.ActionType.Jump, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
+            } else if (Input.GetKey(JumpKey) && !isNewActionAvailable) {
+                _keyboardInputAction ??= new ActionInput(Definitions.ActionType.Jump, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
                 OnTouchPadClick(_keyboardInputAction);
             }
 
-            if (Input.GetKeyUp(KeyCode.X) && previousInputAction != null) {
-                OnTouchPadUp(_keyboardInputAction);
-                _keyboardInputAction = null;
+            if (Input.GetKeyDown(SpecialKey) && isNewActionAvailable) {
+                _keyboardInputAction = new ActionInput(Definitions.ActionType.Special, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
+                OnTouchPadDown(_keyboardInputAction);
 
-            } else if (Input.GetKeyDown(KeyCode.X)) {
+            } else if (Input.GetKey(SpecialKey) && !isNewActionAvailable) {
+                _keyboardInputAction ??= new ActionInput(Definitions.ActionType.Special, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
+                OnTouchPadClick(_keyboardInputAction);
+            }
+
+            if (Input.GetKeyDown(AttackKey) && isNewActionAvailable) {
                 _keyboardInputAction = new ActionInput(Definitions.ActionType.Attack, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
                 OnTouchPadDown(_keyboardInputAction);
 
-            } else if (Input.GetKey(KeyCode.X)) {
-                _keyboardInputAction = new ActionInput(Definitions.ActionType.Attack, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
+            } else if (Input.GetKey(AttackKey) && !isNewActionAvailable) {
+                _keyboardInputAction ??= new ActionInput(Definitions.ActionType.Attack, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
                 OnTouchPadClick(_keyboardInputAction);
             }
 
-            if (Input.GetKeyUp(KeyCode.C) && previousInputAction != null && _keyboardInputAction != null) {
-                OnTouchPadUp(_keyboardInputAction);
-                _keyboardInputAction = null;
-
-            } else if (Input.GetKeyDown(KeyCode.C)) {
+            if (Input.GetKeyDown(GrabKey) && isNewActionAvailable) {
                 _keyboardInputAction = new ActionInput(Definitions.ActionType.Grab, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
                 OnTouchPadDown(_keyboardInputAction);
 
-            } else if (Input.GetKey(KeyCode.C)) {
-                _keyboardInputAction = new ActionInput(Definitions.ActionType.Grab, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
+            } else if (Input.GetKey(GrabKey) && !isNewActionAvailable) {
+                _keyboardInputAction ??= new ActionInput(Definitions.ActionType.Grab, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
                 OnTouchPadClick(_keyboardInputAction);
             }
 
-            if (Input.GetKeyUp(KeyCode.V) && previousInputAction != null && _keyboardInputAction != null) {
-                OnTouchPadUp(_keyboardInputAction);
-                _keyboardInputAction = null;
-
-            } else if (Input.GetKeyDown(KeyCode.V)) {
+            if (Input.GetKeyDown(BlockKey) && isNewActionAvailable) {
                 _keyboardInputAction = new ActionInput(Definitions.ActionType.Block, Definitions.ActionTypeGroup.Action, GetScreenCoordinates(ActionDefaultStartPosForKeyboard).position, Time.time, new Vector2(0, 0));
                 OnTouchPadDown(_keyboardInputAction);
 
-            } else if (Input.GetKey(KeyCode.V)) {
-                var newX = _keyboardInputAction.StartPosition.x + (x != 0 ? Mathf.Sign(x) * 10 : 0);
-                var newY = _keyboardInputAction.StartPosition.y + (y != 0 ? Mathf.Sign(y) * 10 : 0);
-                var endPosition = new Vector2(newX, newY);
-                _keyboardInputAction.UpdateSwipe(endPosition, Time.time);
+            } else if (Input.GetKey(BlockKey) && !isNewActionAvailable) {
+                _keyboardInputAction ??= new ActionInput(Definitions.ActionType.Block, Definitions.ActionTypeGroup.Action, GetScreenCoordinates(ActionDefaultStartPosForKeyboard).position, Time.time, new Vector2(0, 0));
+                UpdateKeyboardInputActionByInputNav(x, y);
 
                 OnTouchPadClick(_keyboardInputAction);
             }
 
+            if (Input.GetKeyDown(ProjectileKey) && isNewActionAvailable) {
+                _keyboardInputAction = new ActionInput(Definitions.ActionType.Projectile, Definitions.ActionTypeGroup.Action, GetScreenCoordinates(ActionDefaultStartPosForKeyboard).position, Time.time, new Vector2(0, 0));
+                OnTouchPadDown(_keyboardInputAction);
+
+            } else if (Input.GetKey(ProjectileKey) && !isNewActionAvailable) {
+                _keyboardInputAction ??= new ActionInput(Definitions.ActionType.Projectile, Definitions.ActionTypeGroup.Action, GetScreenCoordinates(ActionDefaultStartPosForKeyboard).position, Time.time, new Vector2(0, 0));
+                UpdateKeyboardInputActionByInputNav(x, y);
+
+                OnTouchPadClick(_keyboardInputAction);
+            }
+            
+            if (Input.GetKeyDown(RopeKey) && isNewActionAvailable) {
+                _keyboardInputAction = new ActionInput(Definitions.ActionType.Rope, Definitions.ActionTypeGroup.Action, GetScreenCoordinates(ActionDefaultStartPosForKeyboard).position, Time.time, new Vector2(0, 0));
+                OnTouchPadDown(_keyboardInputAction);
+
+            } else if (Input.GetKey(RopeKey) && !isNewActionAvailable) {
+                _keyboardInputAction ??= new ActionInput(Definitions.ActionType.Rope, Definitions.ActionTypeGroup.Action, GetScreenCoordinates(ActionDefaultStartPosForKeyboard).position, Time.time, new Vector2(0, 0));
+                UpdateKeyboardInputActionByInputNav(x, y);
+
+                OnTouchPadClick(_keyboardInputAction);
+            }
+
+        }
+
+        private void UpdateKeyboardInputActionByInputNav(float x, float y) {
+            var newX = _keyboardInputAction.StartPosition.x + (x != 0 ? Mathf.Sign(x) * 10 : 0);
+            var newY = _keyboardInputAction.StartPosition.y + (y != 0 ? Mathf.Sign(y) * 10 : 0);
+            var endPosition = new Vector2(newX, newY);
+            _keyboardInputAction.UpdateSwipe(endPosition, Time.time);
+        }
+
+        Camera cam;
+
+        private Rect GetScreenCoordinates(RectTransform uiElement) {
+
+            cam ??= Camera.main;
+
+            var screenPos1 = cam.WorldToScreenPoint(uiElement.position);
+            var screenPos2 = cam.WorldToScreenPoint(uiElement.position + new Vector3(uiElement.rect.width, uiElement.rect.height, 0));
+
+            // Calculate the screen space rectangle
+            var result = new Rect(screenPos1.x, screenPos1.y, screenPos2.x - screenPos1.x, screenPos2.y - screenPos1.y);
+
+            return result;
         }
 #endif
 
