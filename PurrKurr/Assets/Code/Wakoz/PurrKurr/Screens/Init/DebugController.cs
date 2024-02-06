@@ -14,72 +14,57 @@ namespace Code.Wakoz.PurrKurr.Screens.Init {
 
         protected override Task Initialize() {
 
-            DisableAllWhenOutOfEditor();
-
-            return Task.CompletedTask;
-        }
-
-        private void DisableAllWhenOutOfEditor() {
-
+            // Disable All When Out Of Editor;
 #if !UNITY_EDITOR
             LogEnabled = false;
             DrawEnabled = false;
 #endif
+            return Task.CompletedTask;
         }
 
         public void Log(string msg) {
 
-#if UNITY_EDITOR      
             if (!LogEnabled) {
                 return;
             }
 
             Debug.Log(msg);
-#endif
         }
-        
+
         public void LogWarning(string msg) {
 
-#if UNITY_EDITOR      
             if (!DrawEnabled) {
                 return;
             }
 
             Debug.LogWarning(msg);
-#endif
         }
-        
+
         public void LogError(string msg) {
 
-#if UNITY_EDITOR      
             if (!DrawEnabled) {
                 return;
             }
 
             Debug.LogError(msg);
-#endif
         }
 
         public void DrawRay(Vector3 start, Vector2 dir, Color color, int duration) {
 
-#if UNITY_EDITOR
             if (!DrawEnabled) {
                 return;
             }
 
             Debug.DrawRay(start, dir, color, duration);
-#endif
         }
 
         public void DrawLine(Vector2 start, Vector2 end, Color color, int duration) {
 
-#if UNITY_EDITOR      
             if (!DrawEnabled) {
                 return;
             }
 
             Debug.DrawLine(start, end, color, duration);
-#endif
         }
 
     }
