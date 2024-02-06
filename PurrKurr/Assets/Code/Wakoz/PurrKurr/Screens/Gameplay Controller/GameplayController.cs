@@ -249,24 +249,22 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             
                 if (_inputInterpreterLogic.TryPerformInputAction(actionInput, true, false, _hero,
                         out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedColliders)) {
-
-                    if (isActionPerformed && actionInput.ActionType == ActionType.Block) {
-                        Debug.Log("blocking");
-                    }
-
-                    if (isActionPerformed && interactedColliders != null && !_hero.State.IsGrabbed()) {
-                        CombatLogic(_hero, actionInput.ActionType, moveToPosition, interactedColliders, forceDir);
-                    }
-
-                    var isJump = isActionPerformed && actionInput.ActionType == ActionType.Jump;
-                    if (isJump && forceDir != Vector2.zero) {
-                        _hero.SetJumping(Time.time + .2f);
-                        AlterJumpDirByNavigationDirection(ref forceDir, _hero.State.NavigationDir, _hero.Stats.JumpForce);
-                        _hero.SetForceDir(forceDir);
-                        _hero.DoMove(0); // might conflict with the TryPerformInputNavigation when the moveSpeed is already set by Navigation
-                    }
-
+                    
                     if (isActionPerformed) {
+
+                        if (interactedColliders != null && !_hero.State.IsGrabbed()) {
+                            CombatLogic(_hero, actionInput.ActionType, moveToPosition, interactedColliders, forceDir);
+
+                        } else if (actionInput.ActionType is ActionType.Special) {
+                            ApplySpecialAction(_hero, true);
+
+                        } else if (actionInput.ActionType == ActionType.Jump && forceDir != Vector2.zero) {
+                            _hero.SetJumping(Time.time + .2f);
+                            AlterJumpDirByNavigationDirection(ref forceDir, _hero.State.NavigationDir, _hero.Stats.JumpForce);
+                            _hero.SetForceDir(forceDir);
+                            _hero.DoMove(0); // might conflict with the TryPerformInputNavigation when the moveSpeed is already set by Navigation
+                        }
+                    
                         _hero.State.SetActiveCombatAbility(actionInput.ActionType);
                     }
 
@@ -304,13 +302,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         }
                     }
                 }
-            
-                /*if (_inputInterpreterLogic.DiagnosePlayerInputAction(actionInput, false, false,
-                        out var isActionPerformed, out Vector2 forceDirAction, out Vector2 moveToPosition, out Collider2D interactedCollider)) {
-                
+
+                /*if (_inputInterpreterLogic.TryPerformInputAction(actionInput, false, false, _hero,
+                    out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedCollider)) {
+
                 }*/
             }
-
+            
             OnTouchPadClick?.Invoke(actionInput);
         }
 
@@ -327,12 +325,34 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             if (_inputInterpreterLogic.TryPerformInputAction(actionInput, false, true, _hero,
                     out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedCollider)) {
 
-                if (isActionPerformed && actionInput.ActionType is ActionType.Block && _hero.State.CurrentState is CharacterState.Blocking) {
-                    
-                    _hero.State.SetActiveCombatAbility(ActionType.Empty);
-                    // _hero.DoMove(0);
-                    if (actionInput.NormalizedDirection != Vector2.zero) {
-                        ApplyDodgeEffect(_hero);
+                if (isActionPerformed) {
+
+                    var isBlockingEnded = actionInput.ActionType is ActionType.Block && _hero.State.CurrentState is CharacterState.Blocking;
+                    var isProjectilingEnded = actionInput.ActionType is ActionType.Projectile && _hero.State.CurrentState is CharacterState.AimingProjectile;
+                    var isRopingEnded = actionInput.ActionType is ActionType.Rope && _hero.State.CurrentState is CharacterState.AimingRope;
+                    var isSpecial = actionInput.ActionType is ActionType.Special && _hero.State.CurrentState is CharacterState.InterruptibleAnimation;
+
+                    if (isBlockingEnded || isProjectilingEnded || isRopingEnded || isSpecial) {
+
+                        _hero.State.SetActiveCombatAbility(ActionType.Empty);
+
+                        if (isSpecial) {
+                            // do somthing when special action ended?
+                            ApplySpecialAction(_hero, false);
+
+                        } else if (actionInput.NormalizedDirection != Vector2.zero) {
+
+                            if (isBlockingEnded) {
+                                ApplyDodgeEffect(_hero);
+
+                            } else if (isProjectilingEnded) {
+                                // apply projectile
+
+                            } else if (isRopingEnded) {
+                                // apply rope
+
+                            }
+                        }
                     }
                 }
 
@@ -340,6 +360,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     // might conflict with the DiagnosePlayerInputNavigation when the forceDir is already set by Navigation
                     _hero.SetForceDir(forceDir, true);
                 }
+
                 _hero.SetNewPosition(moveToPosition);
 
             }
@@ -709,11 +730,32 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             return facingRightOrLeftTowardsPoint;
         }
 
+        private bool _chargingSuper = false;
+        private async void ApplySpecialAction(Character2DController character, bool isActive) {
+
+            _chargingSuper = isActive;
+
+            while (_chargingSuper && character != null && character.Stats.GetHealthPercentage() < 1) {
+
+                // revive 1 hp when character is not moving
+                if (character.State.IsNotMoving()) {
+                    character.DealDamage(-1);
+                }
+
+                await Task.Delay(TimeSpan.FromMilliseconds(500));
+            }
+
+        }
+
         private async void ApplyDodgeEffect(Character2DController character) {
 
             character.SetDodgeEffect(true);
+            var timeInGame = 0.15;
 
-            await Task.Delay(TimeSpan.FromSeconds(0.15)); // 0.15f is the fastest combat turn
+            while (timeInGame > 0 && Time.deltaTime > 0) {
+                await Task.Delay((int)(Time.deltaTime * 1000));
+                timeInGame -= Time.deltaTime;
+            }
 
             character.SetDodgeEffect(false);
         }

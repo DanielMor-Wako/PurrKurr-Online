@@ -42,7 +42,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             
             state.SetCrouchOrStandingByUpDownInput(navigationDir);
             var isGrabbing = state.IsGrabbing();
-            var isInvalidState = state.CurrentState is Definitions.CharacterState.Blocking;
+            var isInvalidState = state.CurrentState is Definitions.CharacterState.Blocking or Definitions.CharacterState.AimingRope or Definitions.CharacterState.AimingProjectile;
             var isCrouchingState = !isInvalidState && state.CurrentState != Definitions.CharacterState.Running && state.IsCrouchingAndNotFallingNearWall();
             var isStandingState = !isInvalidState && state.CurrentState != Definitions.CharacterState.Running && (state.IsStandingUp() || isGrabbing);
 
@@ -245,13 +245,22 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     break;
 
                 case Definitions.ActionType.Projectile:
-                    break;
+
+                    isActionPerformed = started || ended;
+
+                    return isActionPerformed;
 
                 case Definitions.ActionType.Rope:
-                    break;
+
+                    isActionPerformed = started || ended;
+
+                    return isActionPerformed;
 
                 case Definitions.ActionType.Special:
-                    break;
+
+                    isActionPerformed = started || ended;
+
+                    return isActionPerformed;
 
                 //default:
                     //throw new ArgumentOutOfRangeException();
