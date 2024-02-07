@@ -2,8 +2,7 @@
 using System;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.Characters
-{
+namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
     public class Character2DRig : MonoBehaviour {
 
         [SerializeField][Range(0, 360)] private float QuaterminionOffsetAngle = 180;

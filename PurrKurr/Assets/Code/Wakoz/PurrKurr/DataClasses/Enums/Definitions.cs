@@ -141,6 +141,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             Dodging
         }
 
+        public enum Effect2DType {
+            Regen = 0,
+            Hit = 1,
+            Dodge = 2,
+        }
+
         public enum CollectableTypes {
             RealMoney = 0,
             Gold = 1,

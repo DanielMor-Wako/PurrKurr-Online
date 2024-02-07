@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Code.Wakoz.PurrKurr.DataClasses.Characters;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using Code.Wakoz.PurrKurr.Logic.GameFlow;
 using Code.Wakoz.PurrKurr.Screens.CameraComponents;
@@ -43,6 +44,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private InputInterpreterLogic _inputInterpreterLogic; 
         private UIController _ui;
         private GameplayLogic _gameplayLogic;
+        private EffectsController _effects;
 
         private DebugController _debug;
 
@@ -343,7 +345,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         } else if (actionInput.NormalizedDirection != Vector2.zero) {
 
                             if (isBlockingEnded) {
-                                ApplyDodgeEffect(_hero);
+                                ApplyEffectForDuration(_hero, Effect2DType.Dodge);
 
                             } else if (isProjectilingEnded) {
                                 // apply projectile
@@ -740,6 +742,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 // revive 1 hp when character is not moving
                 if (character.State.IsNotMoving()) {
                     character.DealDamage(-1);
+                    ApplyEffectForDuration(_hero, Effect2DType.Regen);
                 }
 
                 await Task.Delay(TimeSpan.FromMilliseconds(500));
@@ -747,18 +750,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         }
 
-        private async void ApplyDodgeEffect(Character2DController character) {
-
-            character.SetDodgeEffect(true);
-            var timeInGame = 0.15;
-
-            while (timeInGame > 0 && Time.deltaTime > 0) {
-                await Task.Delay((int)(Time.deltaTime * 1000));
-                timeInGame -= Time.deltaTime;
+        private void ApplyEffectForDuration(Character2DController character, Effect2DType effectType) {
+            
+            var effectData = character.GetEffectData(effectType);
+            if (effectData == null) {
+                return;
             }
-
-            character.SetDodgeEffect(false);
+            _effects ??= GetController<EffectsController>();
+            _effects?.PlayEffect(effectData,  character.transform);
         }
+
 
         private async void ApplyProjectileStateWhenThrown(IInteractableBody grabbed, int damage, IInteractableBody thrower) {
 
@@ -938,6 +939,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             damageableBody.DealDamage(attackStats.Damage);
             damageableBody.ApplyForce(attackStats.ForceDir);
+
+            var damageableCharacter = damageableBody as Character2DController;
+            if (damageableCharacter != null) {
+                ApplyEffectForDuration((Character2DController)damageableBody, Effect2DType.Hit);
+            }
 
             _debug.DrawRay(damageableBody.GetCenterPosition(), attackStats.ForceDir, Color.red, 4);
 

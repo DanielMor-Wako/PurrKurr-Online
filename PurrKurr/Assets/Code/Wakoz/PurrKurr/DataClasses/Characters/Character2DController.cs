@@ -10,7 +10,6 @@ using Code.Wakoz.Utils.GraphicUtils.TransformUtils;
 using UnityEngine;
 using Code.Wakoz.Utils.Extensions;
 using Code.Wakoz.PurrKurr.Screens.Init;
-using UnityEngine.TextCore.Text;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
@@ -21,6 +20,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public event Action<Character2DState> OnStateChanged;
 
         [SerializeField] private CharacterStats _stats;
+        [SerializeField] private Character2DEffects _effects;
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private CircleCollider2D _legsCollider;
         [SerializeField] private WheelJoint2D _legs;
@@ -30,7 +30,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         [SerializeField] private CharacterSenses _senses;
         [SerializeField] private Character2DRig _rigAnimator;
         [SerializeField] private Transform _bodyDamager;
-        [SerializeField] private ParticleSystem _dodgeEffect;
         private SpriteRenderer _sprite;
 
         private Rigidbody2D _legsRigidBody;
@@ -371,14 +370,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _bodyDamager.gameObject.SetActive(isActive);
         }
 
-        public void SetDodgeEffect(bool isActive) {
+        public EffectData GetEffectData(Definitions.Effect2DType effect) {
 
-            if (_dodgeEffect == null) {
-                return;
+            if (_effects == null) {
+                return null;
             }
 
-            var emission = _dodgeEffect.emission;
-            emission.enabled = isActive;
+            return _effects.GetDataByType(effect);
         }
 
         private async void SwitchRigidBodyType(RigidbodyType2D bodyType, float delayDuration = 0, bool resetVelocity = false) {
