@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,12 +11,16 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
 
         // Wait 1 second after emission ends and before turning off the gameobject to allow particles to die
         // todo: add and get this value from the EffectData
-        const float DelayBeforeGameObjectIsDeactivated = 2f;
-
+        [SerializeField] private float DelayBeforeGameObjectIsDeactivated = 1f;
+        [SerializeField] private int MaxPoolCount = 5;
         private Dictionary<Transform, List<EffectData>> activeEffects = new Dictionary<Transform, List<EffectData>>();
         private Dictionary<ParticleSystem, ObjectPool<ParticleSystem>> particleSystemPools = new Dictionary<ParticleSystem, ObjectPool<ParticleSystem>>();
 
+        private static List<GameObject> _effectsLayers;
+
         protected override Task Initialize() {
+
+            _effectsLayers = new List<GameObject>();
 
             return Task.CompletedTask;
         }
@@ -27,7 +30,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
         }
 
         public void PlayEffect(EffectData effectData, Transform assignedObject) {
-            Debug.Log($"playing effect {effectData.EffectType} on {assignedObject.name}");
+            
             if (!activeEffects.ContainsKey(assignedObject)) {
                 activeEffects.Add(assignedObject, new List<EffectData> { effectData });
 
@@ -45,23 +48,27 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
         }
 
         private IEnumerator PlayEffectAndReturn(EffectData effect, Transform assignedObject) {
-            
+
             float duration = effect.DurationInSeconds;
-            var particleSystem = GetEffectInstance(effect.Effect); // Get an instance of the effect
-            particleSystem?.gameObject.SetActive(true);
-            bool trackPosition = effect.TrackPosition;
+            var particleSystem = GetEffectInstance(effect.Effect);
+            if (particleSystem == null) {
+                DeactivateEffect(assignedObject, effect.Effect);
+                yield break;
+            }
 
             if (assignedObject != null) {
                 particleSystem.transform.position = assignedObject.transform.position;
             }
 
+            particleSystem.gameObject.SetActive(true);
             SetEmission(particleSystem, true);
             var endTime = Time.time + duration;
 
             while (Time.time < endTime && assignedObject != null) {
-                if (trackPosition) {
+                if (effect.TrackPosition) {
                     particleSystem.transform.position = assignedObject.transform.position;
                 }
+
                 yield return new WaitForFixedUpdate();
             }
 
@@ -71,22 +78,35 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
 
             DeactivateGameObjectWhenEmissionIsOff(particleSystem, effect.Effect);
 
+            DeactivateEffect(assignedObject, effect.Effect);
+        }
+
+        private void DeactivateEffect(Transform assignedObject, ParticleSystem particleSystem) {
+
+            if (assignedObject == null || particleSystem == null) {
+                return;
+            }
+
             if (activeEffects.ContainsKey(assignedObject)) {
                 activeEffects[assignedObject].RemoveAll(effectData => effectData.Effect == particleSystem);
                 if (activeEffects[assignedObject].Count == 0) {
                     activeEffects.Remove(assignedObject);
                 }
             }
+
         }
 
         private ParticleSystem GetEffectInstance(ParticleSystem effect) {
 
             if (!particleSystemPools.ContainsKey(effect)) {
-                particleSystemPools[effect] = new ObjectPool<ParticleSystem>(() => Instantiate(effect));
+
+                var container = new GameObject($"{effect.name}");
+                container.transform.SetParent(transform, false);
+                _effectsLayers.Add(container);
+                particleSystemPools[effect] = new ObjectPool<ParticleSystem>(() => Instantiate(effect, container.transform), null, null, null, true, 0, MaxPoolCount);
             }
 
             return particleSystemPools[effect].Get();
-
         }
 
         private void DeactivateGameObjectWhenEmissionIsOff(ParticleSystem instance, ParticleSystem particleSystem) {
@@ -95,8 +115,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
                 return;
             }
 
+            particleSystemPools[particleSystem].Release(instance);
             instance.gameObject.SetActive(false);
-            particleSystemPools[particleSystem].Release(instance); // Release the ParticleSystem instance back to the pool
         }
 
         public void CleanUp() {
@@ -109,6 +129,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
                     }
                 }
             }*/
+
+            foreach (var effectsLayer in _effectsLayers) {
+                if (effectsLayer != null) {
+                    Destroy(effectsLayer);
+                }
+            }
 
             activeEffects.Clear();
         }

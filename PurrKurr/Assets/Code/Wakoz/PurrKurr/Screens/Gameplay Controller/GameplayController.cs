@@ -756,8 +756,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             if (effectData == null) {
                 return;
             }
+
             _effects ??= GetController<EffectsController>();
-            _effects?.PlayEffect(effectData,  character.transform);
+            _effects?.PlayEffect(effectData, character.transform);
         }
 
 
