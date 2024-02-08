@@ -822,6 +822,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         // todo: damage decrease based on velocity?
                         _debug.Log($"damage on {interactableBody.GetTransform().gameObject.name} by {thrower.GetTransform().gameObject.name}");
                         interactableBody.DealDamage(damage);
+                        if (interactableBody is Character2DController) {
+                            ApplyEffectForDuration((Character2DController)interactableBody, Effect2DType.RangeHit);
+                        }
 
                         _debug.DrawLine(closestFoePosition, newPositionToSetOnFixedUpdate, Color.white, 3);
                     }
@@ -932,18 +935,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 return;
             }
             //foeRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
-            /*if (forceDirAction.normalized.y < -0.2f && Mathf.Abs(damageableBody.GetVelocity().y) < 1) {
-                // when the force to apply is downwards and the enemy is grounded? 
-                forceDirAction.y *= -0.5f;
-                forceDirAction.x *= 0.5f;
-            }*/
-
+            
             damageableBody.DealDamage(attackStats.Damage);
             damageableBody.ApplyForce(attackStats.ForceDir);
 
             var damageableCharacter = damageableBody as Character2DController;
             if (damageableCharacter != null) {
-                ApplyEffectForDuration((Character2DController)damageableBody, Effect2DType.Hit);
+                ApplyEffectForDuration((Character2DController)damageableBody, Effect2DType.MalleeHit);
             }
 
             _debug.DrawRay(damageableBody.GetCenterPosition(), attackStats.ForceDir, Color.red, 4);

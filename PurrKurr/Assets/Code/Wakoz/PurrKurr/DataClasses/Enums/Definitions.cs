@@ -143,8 +143,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
 
         public enum Effect2DType {
             Regen = 0,
-            Hit = 1,
+            MalleeHit = 1,
             Dodge = 2,
+            RangeHit = 3,
         }
 
         public enum CollectableTypes {
