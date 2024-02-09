@@ -125,6 +125,52 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             interactedColliders = damageableColliders;
         }
 
+        public bool TryGetProjectileDirection(Vector2 dir, ref Vector2 endPosition, ref Quaternion rotation) {
+
+            var result = false;
+
+            var distance = 9;
+            if (RaycastAgainstSolid(dir, distance, out var hitPosition)) {
+                result = true;
+            }
+
+            // Create a rotation using the calculated angle by Atan2
+            var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90;
+            rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+            return result;
+        }
+
+        public bool TryGetRopeDirection(Vector2 dir, ref Vector2 endPosition, ref Quaternion rotation, out Vector2 cursorPosition) {
+
+            var result = false;
+
+            var distance = 12;
+            if (RaycastAgainstSolid(dir, distance, out var hitPosition)) {
+                endPosition = hitPosition;
+                result = true;
+            }
+
+            rotation = Quaternion.identity;
+
+            cursorPosition = (Vector2)LegsPosition + dir.normalized * 6;
+
+            return result;
+        }
+
+        private bool RaycastAgainstSolid(Vector2 dir, int distance, out Vector2 endPosition) {
+
+            var TargetDir = dir.normalized * distance;
+            var TargetPoint = (Vector2)LegsPosition + TargetDir;
+            var hit = Physics2D.Raycast((Vector2)LegsPosition, dir, TargetDir.magnitude, _whatIsSolid);
+
+            var hitFound = hit.collider != null;
+
+            endPosition = hitFound ? hit.collider.ClosestPoint(hit.point) : TargetPoint;
+            _debug.DrawLine((Vector2)LegsPosition, endPosition, hitFound ? Color.green : Color.grey, 2);
+            return hitFound;
+        }
+
         public void TryGetDodgeDirection(Vector2 dodgeDirection, ref Vector2 endPosition) {
 
             var isPerformingDodge = dodgeDirection != Vector2.zero;
