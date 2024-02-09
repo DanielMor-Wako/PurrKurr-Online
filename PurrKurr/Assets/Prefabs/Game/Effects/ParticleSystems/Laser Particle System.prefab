@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5238734424296603927}
   - component: {fileID: 3829525252411850434}
   - component: {fileID: 4452416107898667403}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Laser Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}

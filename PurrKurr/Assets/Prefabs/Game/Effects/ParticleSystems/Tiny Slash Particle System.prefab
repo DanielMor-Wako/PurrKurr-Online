@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7055397011530523293}
   - component: {fileID: 5428539897869433435}
   - component: {fileID: 3079657918105935503}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Tiny Slash Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}

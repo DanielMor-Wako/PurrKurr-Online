@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 101457796602790000}
   - component: {fileID: 7550632468330195466}
   - component: {fileID: 6551075573587489835}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Implode Smooth Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}

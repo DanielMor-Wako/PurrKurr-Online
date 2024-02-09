@@ -274,8 +274,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             AlterJumpDirByNavigationDirection(ref forceDir, _hero.State.NavigationDir, _hero.Stats.JumpForce);
                             _hero.SetForceDir(forceDir);
                             _hero.DoMove(0); // might conflict with the TryPerformInputNavigation when the moveSpeed is already set by Navigation
+                        
+                        } else if (actionInput.ActionType == ActionType.Block) {
+                            ApplyEffectForDuration(_hero, Effect2DType.BlockActive);
                         }
-                    
+
                         _hero.State.SetActiveCombatAbility(actionInput.ActionType);
                     }
 
@@ -355,7 +358,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         } else if (actionInput.NormalizedDirection != Vector2.zero) {
 
                             if (isBlockingEnded) {
-                                ApplyEffectForDuration(_hero, Effect2DType.Dodge);
+                                ApplyEffectForDuration(_hero, Effect2DType.DodgeActive, new List<Effect2DType>() { Effect2DType.BlockActive });
 
                             } else {
 
@@ -767,7 +770,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 // revive 1 hp when character is not moving
                 if (character.State.IsNotMoving()) {
                     character.DealDamage(-1);
-                    ApplyEffectForDuration(_hero, Effect2DType.Regen);
+                    ApplyEffectForDuration(_hero, Effect2DType.GainHp);
                 }
 
                 await Task.Delay(TimeSpan.FromMilliseconds(500));
@@ -835,7 +838,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         }
 
-        private void ApplyEffectForDuration(Character2DController character, Effect2DType effectType) {
+        private void ApplyEffectForDuration(Character2DController character, Effect2DType effectType, List<Effect2DType> stopWhenAnyEffectStarts = null) {
             
             var effectData = character.GetEffectData(effectType);
             if (effectData == null) {
@@ -843,7 +846,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
 
             _effects ??= GetController<EffectsController>();
-            _effects?.PlayEffect(effectData, character.transform);
+            _effects?.PlayEffect(effectData, character.transform, stopWhenAnyEffectStarts);
         }
 
 
@@ -908,7 +911,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         _debug.Log($"damage on {interactableBody.GetTransform().gameObject.name} by {thrower.GetTransform().gameObject.name}");
                         interactableBody.DealDamage(damage);
                         if (interactableBody is Character2DController) {
-                            ApplyEffectForDuration((Character2DController)interactableBody, Effect2DType.RangeHit);
+                            ApplyEffectForDuration((Character2DController)interactableBody, Effect2DType.ImpactMed);
                         }
 
                         _debug.DrawLine(closestFoePosition, newPositionToSetOnFixedUpdate, Color.white, 3);
@@ -1026,7 +1029,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             var damageableCharacter = damageableBody as Character2DController;
             if (damageableCharacter != null) {
-                ApplyEffectForDuration((Character2DController)damageableBody, Effect2DType.MalleeHit);
+                ApplyEffectForDuration((Character2DController)damageableBody, Effect2DType.ImpactLight);
             }
 
             _debug.DrawRay(damageableBody.GetCenterPosition(), attackStats.ForceDir, Color.red, 4);

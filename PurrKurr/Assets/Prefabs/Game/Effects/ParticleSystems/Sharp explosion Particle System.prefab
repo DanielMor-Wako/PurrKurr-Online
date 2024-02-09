@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1321378351072974375}
   - component: {fileID: 7897207429301655970}
   - component: {fileID: 8375256288001157686}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Sharp explosion Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}

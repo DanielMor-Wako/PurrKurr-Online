@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7935313308926550182}
   - component: {fileID: 61335678050391551}
   - component: {fileID: 8639523611191358649}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Old FIlm Raindrop Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}

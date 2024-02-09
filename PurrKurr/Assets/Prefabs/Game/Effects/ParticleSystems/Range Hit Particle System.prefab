@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6734155935693795933}
   - component: {fileID: 4267568921397314677}
   - component: {fileID: 4023604777396937863}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Range Hit Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -740,7 +740,7 @@ ParticleSystem:
     m_UseMeshMaterialIndex: 0
     m_UseMeshColors: 1
     alignToDirection: 0
-    m_Texture: {fileID: 2800000, guid: 57946b17d96709b4dbd0a56091a337de, type: 3}
+    m_Texture: {fileID: 2800000, guid: 1f41e0fbe06ce644aa839ce7e2066d22, type: 3}
     m_TextureClipChannel: 3
     m_TextureClipThreshold: 0
     m_TextureUVChannel: 0
@@ -1309,7 +1309,7 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 0.23529412}
-        key1: {r: 1, g: 1, b: 1, a: 0.05490196}
+        key1: {r: 0, g: 0, b: 0, a: 0.05490196}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}

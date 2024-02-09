@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8677569851023932565}
   - component: {fileID: 8245524914785121369}
   - component: {fileID: 3696259694056889715}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Electrified Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}

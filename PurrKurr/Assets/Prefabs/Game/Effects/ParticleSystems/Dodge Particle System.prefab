@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8361782174989236252}
   - component: {fileID: 5688961944117140958}
   - component: {fileID: 7836759016656430083}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Dodge Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}

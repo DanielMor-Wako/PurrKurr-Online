@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8324836011024969733}
   - component: {fileID: 6472957397738513270}
   - component: {fileID: 1129083220139414300}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Star Twinke Sharp Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}

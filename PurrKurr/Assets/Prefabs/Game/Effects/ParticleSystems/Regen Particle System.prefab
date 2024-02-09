@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7830682649987922194}
   - component: {fileID: 1203877100513155449}
   - component: {fileID: 1817030406109258118}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Regen Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}

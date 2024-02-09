@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
+using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
 
@@ -29,7 +31,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
             CleanUp();
         }
 
-        public void PlayEffect(EffectData effectData, Transform assignedObject) {
+        public void PlayEffect(EffectData effectData, Transform assignedObject, List<Effect2DType> stopWhenAnyEffectStarts) {
             
             if (!activeEffects.ContainsKey(assignedObject)) {
                 activeEffects.Add(assignedObject, new List<EffectData> { effectData });
@@ -38,7 +40,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
                 activeEffects[assignedObject].Add(effectData);
             }
 
-            StartCoroutine(PlayEffectAndReturn(effectData, assignedObject));
+            StartCoroutine(PlayEffectAndReturn(effectData, assignedObject, stopWhenAnyEffectStarts)); 
         }
 
         private void SetEmission(ParticleSystem particleSystem, bool isEnabled) {
@@ -47,7 +49,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
             emission.enabled = isEnabled;
         }
 
-        private IEnumerator PlayEffectAndReturn(EffectData effect, Transform assignedObject) {
+        private IEnumerator PlayEffectAndReturn(EffectData effect, Transform assignedObject, List<Effect2DType> effectsThatKillTheProcess) {
 
             float duration = effect.DurationInSeconds;
             var particleSystem = GetEffectInstance(effect.Effect);
@@ -64,7 +66,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
             SetEmission(particleSystem, true);
             var endTime = Time.time + duration;
 
-            while (Time.time < endTime && assignedObject != null) {
+            var hasProcessKillers = effectsThatKillTheProcess != null;
+
+            while (Time.time < endTime && assignedObject != null &&
+                (!hasProcessKillers || hasProcessKillers && !IsEffectTypePlayedForAssignedObject(assignedObject, effectsThatKillTheProcess))) {
+                
                 if (effect.TrackPosition) {
                     particleSystem.transform.position = assignedObject.transform.position;
                 }
@@ -117,6 +123,39 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
 
             particleSystemPools[particleSystem].Release(instance);
             instance.gameObject.SetActive(false);
+        }
+
+        private bool IsEffectTypePlayedForAssignedObject(Transform assignedObject, List<Effect2DType> effectsThatKillTheProcess) {
+
+            // todo: check why the all effects stop
+            return false;
+
+            if (effectsThatKillTheProcess == null) {
+                return false;
+            }
+
+            foreach (var kvp in activeEffects) {
+
+                if (kvp.Key != assignedObject) {
+                    continue;
+                }
+
+                foreach (var effectData in kvp.Value) {
+
+                    if (effectData == null || effectData.Effect == null) {
+                        continue;
+                    }
+
+                    if (effectsThatKillTheProcess.Contains(effectData.EffectType)) {
+                        Debug.Log($"effect {effectData.EffectType} was killed early for {assignedObject.name}");
+                        return true;
+                        //effectData.Effect.gameObject.SetActive(false);
+                        //particleSystemPools[effectData.Effect].Release(effectData.Effect); // Release the ParticleSystem instance back to the pool
+                    }
+                }
+            }
+
+            return false;
         }
 
         public void CleanUp() {
