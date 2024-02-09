@@ -78,7 +78,7 @@ MonoBehaviour:
       _characterStateCondition: 
       _opponentStateCondition: 0c00000000000000
     - _elementName: Light Block
-      _attackAbility: 8
+      _attackAbility: 9
       _properties: 00000000
       _characterStateCondition: 
       _opponentStateCondition: 
