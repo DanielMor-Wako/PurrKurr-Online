@@ -136,6 +136,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             AirGliding,
             AimingRope,
             AimingProjectile,
+            AimingJump,
             Stunned,
             Landed,
             Dodging

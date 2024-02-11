@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
     [System.Serializable]
-    public class Character2DState {
+    public sealed class Character2DState {
 
         public Definitions.CharacterState CurrentState => _currentState;
         private Definitions.CharacterState _currentState;
@@ -263,6 +263,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                     SetState(Definitions.CharacterState.InterruptibleAnimation);
                     return;
 
+                } else if (_combatAbility == Definitions.ActionType.Jump) {
+                    SetState(Definitions.CharacterState.AimingJump);
+                    return;
+
                 } else if (!IsMoveAnimation() && IsInterraptibleAnimation()) {
                     SetState(Definitions.CharacterState.InterruptibleAnimation);
                     return;
@@ -379,7 +383,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 Definitions.CharacterState.TraversalRunning or Definitions.CharacterState.WallClinging or 
                 Definitions.CharacterState.Alive or Definitions.CharacterState.Blocking or
                 Definitions.CharacterState.AimingRope or Definitions.CharacterState.AimingProjectile or 
-                Definitions.CharacterState.InterruptibleAnimation;
+                Definitions.CharacterState.InterruptibleAnimation or Definitions.CharacterState.AimingJump;
         
         public bool IsJumping() => Time.time < _jumpingEndTime;
 

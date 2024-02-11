@@ -125,6 +125,23 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             interactedColliders = damageableColliders;
         }
 
+        public bool TryGetRopeDirection(Vector2 dir, ref Vector2 endPosition, ref Quaternion rotation, out Vector2 cursorPosition) {
+
+            var result = false;
+
+            var distance = 12;
+            if (RaycastAgainstSolid(dir, distance, out var hitPosition)) {
+                endPosition = hitPosition;
+                result = true;
+            }
+
+            rotation = Quaternion.identity;
+
+            cursorPosition = (Vector2)LegsPosition + dir.normalized * 6;
+
+            return result;
+        }
+
         public bool TryGetProjectileDirection(Vector2 dir, ref Vector2 endPosition, ref Quaternion rotation) {
 
             var result = false;
@@ -141,21 +158,61 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             return result;
         }
 
-        public bool TryGetRopeDirection(Vector2 dir, ref Vector2 endPosition, ref Quaternion rotation, out Vector2 cursorPosition) {
+        public bool TryGetJumpTrajectory(Vector2 dir, ref Vector2 endPosition, ref Vector3[] linePoints) {
 
-            var result = false;
+            //calculate the points new path for aiming and charging jump
+            List<Vector3> points = new List<Vector3>();
 
-            var distance = 12;
-            if (RaycastAgainstSolid(dir, distance, out var hitPosition)) {
-                endPosition = hitPosition;
-                result = true;
+            float xcomponent = dir.normalized.x;
+            float ycomponent = dir.normalized.y;
+            //float force = (nCounter - (maxTimeToEndCharging - Time.time)) * (maxForce - minForce) + minForce;
+            float force = _stats.JumpForce * 0.25f;
+            //force = Mathf.Clamp(force, minForce, maxForce);
+            Vector2 jumpDir = new Vector2(xcomponent, ycomponent);
+            Vector2 u = jumpDir * (force);
+            Vector2 g = new Vector2(0f, -10f);
+            Vector2 p1 = LegsPosition;
+            points.Add(p1);
+
+            Vector2 s, p2;
+            RaycastHit2D fhit;
+
+            var hasObjectBlockingTrajectory = false;
+
+            //for (float t = 0; t < 2f; t += 0.02f) {
+            for (float t = 0; t < 0.35f; t += 0.015f) {
+                s = (u * t) + (0.5f * g * t * t);
+                p2 = p1 + s;
+
+                fhit = Physics2D.Raycast(p1, u, Vector2.Distance(p1, p2), _whatIsSolid);
+                if (fhit.collider != null) {
+                    //Debug.DrawLine(p1, fhit.point, Color.red, 0.2f);
+                    Debug.DrawLine(fhit.point, p2, Color.green, 1f);
+                    hasObjectBlockingTrajectory = true;
+                    //m_AimingFocusPos = fhit.point;
+                    t = 0.35f; // to end the 'for' loop
+                } else {
+                    Debug.DrawLine(p1, p2, Color.red, 2f); //0.2f);
+                    
+                    //m_AimingFocusPos = p1;
+                }
+
+                points.Add(p2);
+                p1 = p2;
+                u = u + (g * t);
+
             }
 
-            rotation = Quaternion.identity;
+            linePoints = new Vector3[points.Count];
+            for (int i = 0; i < points.Count; i++) {
+                linePoints[i] = new Vector3(points[i][0], points[i][1], 0);
+            }
 
-            cursorPosition = (Vector2)LegsPosition + dir.normalized * 6;
+            // Create a rotation using the calculated angle by Atan2
+            //var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90;
+            //linePoints = Quaternion.AngleAxis(angle, Vector3.forward);
 
-            return result;
+            return hasObjectBlockingTrajectory;
         }
 
         private bool RaycastAgainstSolid(Vector2 dir, int distance, out Vector2 endPosition) {

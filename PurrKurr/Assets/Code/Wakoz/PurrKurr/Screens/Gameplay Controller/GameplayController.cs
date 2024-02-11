@@ -19,7 +19,7 @@ using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
     [DefaultExecutionOrder(14)]
-    public class GameplayController : SingleController {
+    public sealed class GameplayController : SingleController {
         
         private const float attackCooldownDuration = 0.25f;
         private const float _MinVelocityForFlip = 5;
@@ -262,12 +262,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             ApplySpecialAction(_hero, true);
 
                         } else if (actionInput.ActionType is ActionType.Rope or ActionType.Projectile) {
-                            ApplyAimingAction(_hero, actionInput, true);
+                            ApplyAimingAction(_hero, actionInput);
 
                         } else if (actionInput.ActionType is ActionType.Jump && _hero.State.CurrentState == CharacterState.Crouching) {
                             var lookupPointTowardFrontAndUp = HelperFunctions.RotateVector(new Vector2(0, _hero.Stats.JumpForce), _hero.State.GetFacingRightAsInt() * -45);
                             actionInput.UpdateSwipe(actionInput.StartPosition + lookupPointTowardFrontAndUp, Time.time); 
-                            ApplyAimingAction(_hero, actionInput, true);
+                            ApplyAimingAction(_hero, actionInput);
 
                         } else if (actionInput.ActionType == ActionType.Jump && forceDir != Vector2.zero) {
                             _hero.SetJumping(Time.time + .2f);
@@ -344,7 +344,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     var isBlockingEnded = actionInput.ActionType is ActionType.Block && _hero.State.CurrentState is CharacterState.Blocking;
                     var isProjectilingEnded = actionInput.ActionType is ActionType.Projectile && _hero.State.CurrentState is CharacterState.AimingProjectile;
                     var isRopingEnded = actionInput.ActionType is ActionType.Rope && _hero.State.CurrentState is CharacterState.AimingRope;
-                    var isJumpAimEnded = actionInput.ActionType is ActionType.Jump && _hero.State.CurrentState is CharacterState.Crouching;
+                    var isJumpAimEnded = actionInput.ActionType is ActionType.Jump && _hero.State.CurrentState is CharacterState.AimingJump;
                     var isSpecial = actionInput.ActionType is ActionType.Special && _hero.State.CurrentState is CharacterState.InterruptibleAnimation;
 
                     if (isBlockingEnded || isProjectilingEnded || isRopingEnded || isJumpAimEnded || isSpecial) {
@@ -358,7 +358,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         } else if (actionInput.NormalizedDirection != Vector2.zero) {
 
                             if (isBlockingEnded) {
-                                ApplyEffectForDuration(_hero, Effect2DType.DodgeActive, new List<Effect2DType>() { Effect2DType.BlockActive });
+                                ApplyEffectForDuration(_hero, Effect2DType.DodgeActive);
 
                             } else {
 
@@ -782,7 +782,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private bool IsAiming() => Time.time < _aimingEndTime;
         private void SetAiming(float durationInMilliseconds) => _aimingEndTime = Time.time + durationInMilliseconds;
         private void StopAiming() => SetAiming(0);
-        private async void ApplyAimingAction(Character2DController character, ActionInput actionInput, bool isActive) {
+        private async void ApplyAimingAction(Character2DController character, ActionInput actionInput) {
 
             var actionType = actionInput.ActionType;
 
@@ -808,6 +808,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 Vector2 newPos = Vector2.zero;
                 Quaternion rotation = Quaternion.identity;
                 hasAimDir = actionInput.NormalizedDirection != Vector2.zero;
+                Vector3[] linePoints = null;
 
                 if (isRope) {
                     hasHitData = _hero.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPos);
@@ -819,12 +820,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                 } else if (isJumpAim) {
                     // todo: get the points for the trajectory
-                    hasHitData = true;
+                    linePoints = new Vector3[] { Vector3.zero, Vector2.one };
+                    var forceDir = actionInput.NormalizedDirection * _hero.Stats.JumpForce;
+                    hasHitData = _hero.TryGetJumpTrajectory(forceDir, ref newPos, ref linePoints);
                     newPos = _hero.LegsPosition;
                 }
 
                 if (hasAimDir) {
-                    _gameplayUtils.ActivateUtil(actionType, newPos, rotation, hasHitData);
+                    _gameplayUtils.ActivateUtil(actionType, newPos, rotation, hasHitData, linePoints);
                 
                 } else {
                     _gameplayUtils.DeactivateUtil(actionType);

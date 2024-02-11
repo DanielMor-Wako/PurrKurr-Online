@@ -130,6 +130,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
 
             } else if (Input.GetKey(JumpKey) && !isNewActionAvailable) {
                 _keyboardInputAction ??= new ActionInput(Definitions.ActionType.Jump, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, new Vector2(0, 0));
+                UpdateKeyboardInputActionByInputNav(x, y);
+
                 OnTouchPadClick(_keyboardInputAction);
             }
 

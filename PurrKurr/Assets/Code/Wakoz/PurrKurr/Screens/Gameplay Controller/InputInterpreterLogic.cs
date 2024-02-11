@@ -8,7 +8,7 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore;
 
 // todo: move to a better namespace like player input
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
-    public class InputInterpreterLogic {
+    public sealed class InputInterpreterLogic {
 
         private InputLogic _inputLogic;
         private GameplayLogic _gameplayLogic;
@@ -42,7 +42,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             
             state.SetCrouchOrStandingByUpDownInput(navigationDir);
             var isGrabbing = state.IsGrabbing();
-            var isInvalidState = state.CurrentState is Definitions.CharacterState.Blocking or Definitions.CharacterState.AimingRope or Definitions.CharacterState.AimingProjectile;
+            var isInvalidState = state.CurrentState is Definitions.CharacterState.Blocking or Definitions.CharacterState.AimingRope or Definitions.CharacterState.AimingProjectile or Definitions.CharacterState.AimingJump;
             var isCrouchingState = !isInvalidState && state.CurrentState != Definitions.CharacterState.Running && state.IsCrouchingAndNotFallingNearWall();
             var isStandingState = !isInvalidState && state.CurrentState != Definitions.CharacterState.Running && (state.IsStandingUp() || isGrabbing);
 
@@ -163,6 +163,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         } else {//if (forceDirToSetOnFixedUpdate != Vector2.zero) {
                             forceDirToSetOnFixedUpdate = Vector2.zero;
                         }
+                    } else if ((started && character.State.CurrentState == Definitions.CharacterState.Crouching && state.IsCrouchingAndNotFallingNearWall() || ended && character.State.CurrentState == Definitions.CharacterState.AimingJump)) {
+                        isActionPerformed = true;
                     }
                     return true;
 
