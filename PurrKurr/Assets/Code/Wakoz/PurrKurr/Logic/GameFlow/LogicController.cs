@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
 
     [DefaultExecutionOrder(10)]
-    public class LogicController : SingleController {
+    public sealed class LogicController : SingleController {
 
         public InputLogic InputLogic;
         public AbilitiesLogic AbilitiesLogic;

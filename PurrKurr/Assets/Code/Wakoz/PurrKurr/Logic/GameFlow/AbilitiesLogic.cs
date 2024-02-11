@@ -6,7 +6,7 @@ using Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
-    public class AbilitiesLogic : SOData<AbilitiesDataSO> {
+    public sealed class AbilitiesLogic : SOData<AbilitiesDataSO> {
         public AbilitiesLogic(string assetName) : base(assetName) { }
         
         private InputLogic _inputLogic;

@@ -3,8 +3,7 @@ using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
-
-    public class GameplayLogic : SOData<GameplayLogicSO> {
+    public sealed class GameplayLogic : SOData<GameplayLogicSO> {
 
         public GameplayLogic(string assetName) : base(assetName) { }
 

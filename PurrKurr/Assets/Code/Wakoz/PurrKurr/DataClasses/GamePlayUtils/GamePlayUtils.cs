@@ -6,11 +6,11 @@ using UnityEngine;
 namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
 
     [DefaultExecutionOrder(12)]
-    public class GamePlayUtils : SingleController {
+    public sealed class GamePlayUtils : SingleController {
 
         [SerializeField] private MultiStateView _cursor;
         [SerializeField] private MultiStateView _angle;
-        [SerializeField] private Transform _trajectory;
+        [SerializeField] private LineRenderer _trajectory;
 
         protected override void Clean() { }
 
@@ -18,13 +18,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
             return Task.CompletedTask;
         }
 
-        public void ActivateUtil(Definitions.ActionType actionType, Vector2 position, Quaternion quaternion, bool hasHitData) => 
-            UpdateUtilByActionType(actionType, true, position, quaternion, hasHitData);
+        public void ActivateUtil(Definitions.ActionType actionType, Vector2 position, Quaternion quaternion, bool hasHitData, Vector3[] linePoints) => 
+            UpdateUtilByActionType(actionType, true, position, quaternion, hasHitData, linePoints);
 
         public void DeactivateUtil(Definitions.ActionType actionType) =>
             UpdateUtilByActionType(actionType, false, Vector2.zero, Quaternion.identity);
 
-        private void UpdateUtilByActionType(Definitions.ActionType actionType, bool isActive, Vector2 position, Quaternion quaternion, bool hasHitData = false) {
+        private void UpdateUtilByActionType(Definitions.ActionType actionType, bool isActive, Vector2 position, Quaternion quaternion, bool hasHitData = false, Vector3[] linePoints = null) {
             
             switch (actionType) {
 
@@ -39,7 +39,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
                     break;
 
                 case Definitions.ActionType.Jump:
-                    UpdateUtil(_trajectory, isActive, position, quaternion);
+                    UpdateUtil(_trajectory?.transform, isActive, position, quaternion);
+                    if (linePoints != null && _trajectory != null) {
+                        _trajectory.positionCount = linePoints.Length;
+                        _trajectory.SetPositions(linePoints);
+                    }
                     break;
 
                 default:
