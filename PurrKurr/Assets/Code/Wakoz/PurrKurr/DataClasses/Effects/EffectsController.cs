@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,7 +8,7 @@ using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
 
     [DefaultExecutionOrder(12)]
-    public class EffectsController : SingleController {
+    public sealed class EffectsController : SingleController {
 
         // Wait 1 second after emission ends and before turning off the gameobject to allow particles to die
         // todo: add and get this value from the EffectData
@@ -47,6 +46,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
             
             var emission = particleSystem.emission;
             emission.enabled = isEnabled;
+
+            if (isEnabled) {
+                particleSystem.Play();
+            } else {
+                particleSystem.Stop();
+            }
+
         }
 
         private IEnumerator PlayEffectAndReturn(EffectData effect, Transform assignedObject, List<Effect2DType> effectsThatKillTheProcess) {
@@ -80,7 +86,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
 
             SetEmission(particleSystem, false);
 
-            yield return new WaitForSeconds(effect.DurationInSeconds + DelayBeforeGameObjectIsDeactivated);
+            var wasKilledEarly = hasProcessKillers && Time.time < endTime;
+
+            yield return new WaitForSeconds(effect.DurationInSeconds);
+
+            if (!wasKilledEarly) {
+                yield return new WaitForSeconds(DelayBeforeGameObjectIsDeactivated);
+            }
 
             DeactivateGameObjectWhenEmissionIsOff(particleSystem, effect.Effect);
 
@@ -109,10 +121,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
                 var container = new GameObject($"{effect.name}");
                 container.transform.SetParent(transform, false);
                 _effectsLayers.Add(container);
-                particleSystemPools[effect] = new ObjectPool<ParticleSystem>(() => Instantiate(effect, container.transform), null, null, null, true, 0, MaxPoolCount);
+                particleSystemPools[effect] = new ObjectPool<ParticleSystem>(() => Instantiate(effect, container.transform));
             }
 
-            return particleSystemPools[effect].Get();
+            if (particleSystemPools[effect].CountAll <= MaxPoolCount || particleSystemPools[effect].CountInactive > 0) {
+                return particleSystemPools[effect].Get();
+            }
+
+            return null;
         }
 
         private void DeactivateGameObjectWhenEmissionIsOff(ParticleSystem instance, ParticleSystem particleSystem) {
@@ -127,8 +143,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
 
         private bool IsEffectTypePlayedForAssignedObject(Transform assignedObject, List<Effect2DType> effectsThatKillTheProcess) {
 
-            // todo: check why the all effects stop
-            return false;
+            ParticleSystem particleSystemInstance;
 
             if (effectsThatKillTheProcess == null) {
                 return false;
@@ -147,10 +162,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
                     }
 
                     if (effectsThatKillTheProcess.Contains(effectData.EffectType)) {
-                        Debug.Log($"effect {effectData.EffectType} was killed early for {assignedObject.name}");
-                        return true;
+                        Debug.Log($"effect {effectData.EffectType} was active and marked to kill process on assigned {assignedObject.name}");
+                        // get the active instance for the assignedObject from a list and validate that gameobject.activeSelf is false
                         //effectData.Effect.gameObject.SetActive(false);
                         //particleSystemPools[effectData.Effect].Release(effectData.Effect); // Release the ParticleSystem instance back to the pool
+                        return true;
                     }
                 }
             }
