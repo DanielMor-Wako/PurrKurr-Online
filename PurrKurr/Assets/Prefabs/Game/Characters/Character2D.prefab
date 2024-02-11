@@ -339,7 +339,7 @@ MonoBehaviour:
       EffectType: 10
       Effect: {fileID: 5688961944117140958, guid: 11cb6a908d1d01042863baa5d26aadd2, type: 3}
       TrackPosition: 1
-    - DurationInSeconds: 2
+    - DurationInSeconds: 0.1
       EffectType: 9
       Effect: {fileID: 4736606775567916809, guid: d1977b2085bd6104caf3c2db15a2c39a, type: 3}
       TrackPosition: 1
