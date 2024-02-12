@@ -10,6 +10,7 @@ using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using Code.Wakoz.PurrKurr.Logic.GameFlow;
 using Code.Wakoz.PurrKurr.Screens.CameraComponents;
 using Code.Wakoz.PurrKurr.Screens.Init;
+using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection;
 using Code.Wakoz.Utils.Extensions;
@@ -31,7 +32,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         public event Action<List<DisplayedableStatData>> OnStatsChanged;
 
         [SerializeField] private CameraFollow _cam;
-        [SerializeField] private List<Character2DController> _heroes;
         [SerializeField] private Character2DController _mainHero;
         private Character2DController _hero;
 
@@ -46,7 +46,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private GameplayLogic _gameplayLogic;
         private GamePlayUtils _gameplayUtils;
         private EffectsController _effects;
-
+        private InteractablesController _interactables;
         private DebugController _debug;
 
         private LayerMask _whatIsSolid;
@@ -62,6 +62,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _logic = SingleController.GetController<LogicController>();
             _inputInterpreterLogic = new InputInterpreterLogic(_logic.InputLogic, _logic.GameplayLogic);
             _gameplayLogic = _logic.GameplayLogic;
+            _interactables = GetController<InteractablesController>();
             _debug = SingleController.GetController<DebugController>();
 
             _ui ??= SingleController.GetController<UIController>();
@@ -77,6 +78,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _whatIsCharacter = _gameplayLogic.GetDamageables();
             _whatIsDamageableCharacter = _gameplayLogic.GetDamageables();
 
+            InitInteractable();
+
             TryInitHero(_mainHero);
 
             RefreshSpritesOrder();
@@ -86,7 +89,19 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             return Task.CompletedTask;
         }
 
+        private void InitInteractable() {
+
+            // tood: call levelController to set the pools for interactables and init the the instances in the level
+            _interactables.CreateObjectPool(_interactables._projectiles.FirstOrDefault(), 0, 5, "Projectiles");
+        }
+
         private void ReviveAllHeroes() {
+
+            var _heroes = _interactables._heroes;
+
+            if (_heroes == null) {
+                return;
+            }
 
             foreach (var character in _heroes) {
                 
@@ -103,8 +118,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         }
 
         private void RefreshSpritesOrder() {
-            
-            foreach(var character in _heroes) {
+
+            var _heroes = _interactables._heroes;
+
+            if (_heroes == null) {
+                return;
+            }
+
+            foreach (var character in _heroes) {
 
                 if (character == null) {
                     continue;
@@ -188,7 +209,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         public void SetHeroMaxLevel() => _hero.SetMaxLevel();
         public void ReviveHeroes() => ReviveAllHeroes();
         public void RandomizeHero() {
-            if (_heroes == null) { return; }
+
+            var _heroes = _interactables._heroes;
+
+            if (_heroes == null) {
+                return;
+            }
+
             _mainHero = HelperFunctions.Random(_heroes);
             SetHeroAsReferenced();
         }
@@ -265,8 +292,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             ApplyAimingAction(_hero, actionInput);
 
                         } else if (actionInput.ActionType is ActionType.Jump && _hero.State.CurrentState == CharacterState.Crouching) {
-                            var lookupPointTowardFrontAndUp = HelperFunctions.RotateVector(new Vector2(0, _hero.Stats.JumpForce), _hero.State.GetFacingRightAsInt() * -45);
-                            actionInput.UpdateSwipe(actionInput.StartPosition + lookupPointTowardFrontAndUp, Time.time); 
                             ApplyAimingAction(_hero, actionInput);
 
                         } else if (actionInput.ActionType == ActionType.Jump && forceDir != Vector2.zero) {
@@ -274,7 +299,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             AlterJumpDirByNavigationDirection(ref forceDir, _hero.State.NavigationDir, _hero.Stats.JumpForce);
                             _hero.SetForceDir(forceDir);
                             _hero.DoMove(0); // might conflict with the TryPerformInputNavigation when the moveSpeed is already set by Navigation
-                        
+                            ApplyEffectForDuration(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
+
                         } else if (actionInput.ActionType == ActionType.Block) {
                             ApplyEffectForDuration(_hero, Effect2DType.BlockActive);
                         }
@@ -364,24 +390,27 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                                 Vector2 newPos = Vector2.zero;
                                 Quaternion rotation = Quaternion.identity;
+                                float distancePercentReached = 1f;
 
                                 if (isProjectilingEnded) {
-                                    // apply projectile
-                                    _hero.TryGetProjectileDirection(actionInput.NormalizedDirection, ref newPos, ref rotation);
+                                    ShootProjectile(actionInput, ref newPos, ref rotation, ref distancePercentReached);
 
                                 } else if (isRopingEnded) {
                                     // apply rope
-                                    _hero.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPosition);
+                                    _hero.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPosition, ref distancePercentReached);
                                     
                                 } else if (isJumpAimEnded) {
                                     // apply jump aim in trajectory dir
-
+                                    _hero.SetJumping(Time.time + .2f);
+                                    forceDir = actionInput.NormalizedDirection * _hero.Stats.JumpForce;
+                                    ApplyEffectForDuration(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
+                                    //_hero.DoMove(0); // dont think its needed 
                                 }
                             }
                         }
 
                         if (isProjectilingEnded || isRopingEnded || isJumpAimEnded) {
-                            StopAiming();
+                            _hero.State.StopAiming();
                         }
                     }
                 }
@@ -391,11 +420,28 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     _hero.SetForceDir(forceDir, true);
                 }
 
-                _hero.SetNewPosition(moveToPosition);
+                _hero.SetTargetPosition(moveToPosition);
 
             }
 
             OnTouchPadUp?.Invoke(actionInput);
+        }
+
+        private void ShootProjectile(ActionInput actionInput, ref Vector2 newPos, ref Quaternion rotation, ref float distancePercentReached) {
+
+            _hero.TryGetProjectileDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, ref distancePercentReached);
+
+            var projectile = _interactables.GetInstance<Projectile2D>();
+            if (projectile == null) {
+                return;
+            }
+
+            projectile.transform.SetPositionAndRotation(_hero.LegsPosition, rotation);
+            projectile.SetTargetPosition(newPos, distancePercentReached);
+            ApplyEffectForDuration(_hero, Effect2DType.DustCloud);
+            //ApplyEffectForDuration(_hero, Effect2DType.TrailInAir); // todo: other trails for fire ice etc
+            ApplyProjectileStateWhenThrown(projectile, _hero.Stats.Damage, _hero, () =>_interactables.ReleaseInstance(projectile));
+
         }
 
         private bool CanPerformActionAlive() => _hero.State.CanPerformAction() && _hero.Stats.GetHealthPercentage() > 0;
@@ -474,7 +520,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             if (isNewFacingDirectionSetAndCharacterIsFacingAnything) {
 
                 attacker.FlipCharacterTowardsPoint(newFacingDirection == 1);
-                attacker.SetNewPosition(moveToPosition);
+                attacker.SetTargetPosition(moveToPosition);
             }
 
         }
@@ -778,19 +824,20 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         }
 
-        private float _aimingEndTime;
-        private bool IsAiming() => Time.time < _aimingEndTime;
-        private void SetAiming(float durationInMilliseconds) => _aimingEndTime = Time.time + durationInMilliseconds;
-        private void StopAiming() => SetAiming(0);
+        
         private async void ApplyAimingAction(Character2DController character, ActionInput actionInput) {
 
             var actionType = actionInput.ActionType;
 
+            var state = character.State;
+
             var isRope = actionType is ActionType.Rope;
             var isProjectile = actionType is ActionType.Projectile;
             var isJumpAim = actionType is ActionType.Jump;
+            
             var validAimingAction = isRope || isProjectile || isJumpAim;
-            if (!validAimingAction || validAimingAction && IsAiming()) {
+
+            if (!validAimingAction || validAimingAction && state.IsAiming()) {
                 return;
             }
 
@@ -799,27 +846,28 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 return;
             }
 
-            SetAiming(10f);
-            bool hasAimDir = false;
-            bool hasHitData = false;
+            state.SetAiming(10f);
 
-            while (IsAiming() && character != null ) {// || (character.State.CurrentState is CharacterState.AimingRope or CharacterState.AimingProjectile)) {
+            Vector2 newPos = Vector2.zero;
+            float distancePercentReached = 1;
+            Quaternion rotation = Quaternion.identity;
+            Vector3[] linePoints = null;
 
-                Vector2 newPos = Vector2.zero;
-                Quaternion rotation = Quaternion.identity;
+            bool hasAimDir, hasHitData = false;
+            
+            while (state.IsAiming() && character != null ) {
+
                 hasAimDir = actionInput.NormalizedDirection != Vector2.zero;
-                Vector3[] linePoints = null;
 
                 if (isRope) {
-                    hasHitData = _hero.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPos);
+                    hasHitData = _hero.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPos, ref distancePercentReached);
                     newPos = cursorPos;
 
                 } else if (isProjectile) {
-                    hasHitData = _hero.TryGetProjectileDirection(actionInput.NormalizedDirection, ref newPos, ref rotation);
+                    hasHitData = _hero.TryGetProjectileDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, ref distancePercentReached);
                     newPos = _hero.LegsPosition;
 
                 } else if (isJumpAim) {
-                    // todo: get the points for the trajectory
                     linePoints = new Vector3[] { Vector3.zero, Vector2.one };
                     var forceDir = actionInput.NormalizedDirection * _hero.Stats.JumpForce;
                     hasHitData = _hero.TryGetJumpTrajectory(forceDir, ref newPos, ref linePoints);
@@ -828,7 +876,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                 if (hasAimDir) {
                     _gameplayUtils.ActivateUtil(actionType, newPos, rotation, hasHitData, linePoints);
-                
+
                 } else {
                     _gameplayUtils.DeactivateUtil(actionType);
 
@@ -842,6 +890,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         }
 
         private void ApplyEffectForDuration(Character2DController character, Effect2DType effectType, List<Effect2DType> stopWhenAnyEffectStarts = null) {
+            ApplyEffectForDuration(character, effectType, Quaternion.identity, stopWhenAnyEffectStarts);
+        }
+
+        private void ApplyEffectForDuration(Character2DController character, Effect2DType effectType, Quaternion initialRotation, List<Effect2DType> stopWhenAnyEffectStarts = null) {
             
             var effectData = character.GetEffectData(effectType);
             if (effectData == null) {
@@ -849,23 +901,23 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
 
             _effects ??= GetController<EffectsController>();
-            _effects?.PlayEffect(effectData, character.transform, stopWhenAnyEffectStarts);
+            _effects?.PlayEffect(effectData, character.transform, initialRotation, stopWhenAnyEffectStarts);
         }
 
 
-        private async void ApplyProjectileStateWhenThrown(IInteractableBody grabbed, int damage, IInteractableBody thrower) {
+        private async void ApplyProjectileStateWhenThrown(IInteractableBody grabbed, int damage, IInteractableBody thrower, Func<Task> actionOnEnd = null) {
 
             _debug.Log("trying as damager -> damage: " + damage);
 
             var _bodyDamager = (grabbed as Character2DController);
 
-            if (damage == 0 || _bodyDamager == null) {
+            if (damage == 0) {
                 return;
             }
 
-            _bodyDamager.SetProjectileState(true);
+            _bodyDamager?.SetProjectileState(true);
 
-            while (thrower != null && (grabbed.GetVelocity().magnitude < 1 || grabbed.IsGrabbed()) ) {
+            while (thrower != null && grabbed != null && (grabbed.GetVelocity().magnitude < 1 || grabbed.IsGrabbed()) ) {
                 await Task.Delay(TimeSpan.FromMilliseconds(20));
             }
             if (thrower == null) {
@@ -905,7 +957,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         damagees.Add(interactable);
 
                         var closestFoePosition = interactable.ClosestPoint(legsPosition);
-                        var dir = ((Vector3)closestFoePosition - legsPosition).normalized;
+                        //var dir = ((Vector3)closestFoePosition - legsPosition).normalized;
+                        var dir = Vector2.up;
                         var directionTowardsFoe = (closestFoePosition.x > legsPosition.x) ? 1 : -1;
                         dir.x = directionTowardsFoe;
                         var newPositionToSetOnFixedUpdate = closestFoePosition + (Vector2)dir.normalized * -(legsRadius);
@@ -926,7 +979,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 grabbedVelocity = grabbed.GetVelocity();
             }
 
-            _bodyDamager.SetProjectileState(false);
+            _bodyDamager?.SetProjectileState(false);
+
+            if (actionOnEnd == null) {
+                return;
+            }
+
+            try {
+                await actionOnEnd();
+            }
+            finally { }
         }
 
         private bool ValidateAttackConditions(AttackBaseStats attack, Character2DState characterState) {
