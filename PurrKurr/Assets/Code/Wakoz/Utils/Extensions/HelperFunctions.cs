@@ -58,6 +58,14 @@ namespace Code.Wakoz.Utils.Extensions {
             return new Vector2(newX, newY);
         }
 
+        public static float PercentReachedBetweenPoints(Vector3 startVector, Vector3 endVector, Vector3 targetVector) {
+
+            // Returns float that represents the percentage reached between two vectors by a third vector 
+            var distanceStartToEnd = (endVector - startVector).magnitude;
+            var distanceStartToTarget = (targetVector - startVector).magnitude;
+            return Mathf.Clamp01(distanceStartToTarget / distanceStartToEnd);
+        }
+
         public static bool IsNullOrEmpty<T>(this ICollection<T> collection) {
             return collection == null || collection.Count == 0;
         }
