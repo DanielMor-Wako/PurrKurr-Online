@@ -30,7 +30,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
             CleanUp();
         }
 
-        public void PlayEffect(EffectData effectData, Transform assignedObject, List<Effect2DType> stopWhenAnyEffectStarts) {
+        public void PlayEffect(EffectData effectData, Transform assignedObject, Quaternion initialRotation, List<Effect2DType> stopWhenAnyEffectStarts) {
             
             if (!activeEffects.ContainsKey(assignedObject)) {
                 activeEffects.Add(assignedObject, new List<EffectData> { effectData });
@@ -39,7 +39,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
                 activeEffects[assignedObject].Add(effectData);
             }
 
-            StartCoroutine(PlayEffectAndReturn(effectData, assignedObject, stopWhenAnyEffectStarts)); 
+            StartCoroutine(PlayEffectAndReturn(effectData, assignedObject, initialRotation, stopWhenAnyEffectStarts)); 
         }
 
         private void SetEmission(ParticleSystem particleSystem, bool isEnabled) {
@@ -55,7 +55,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
 
         }
 
-        private IEnumerator PlayEffectAndReturn(EffectData effect, Transform assignedObject, List<Effect2DType> effectsThatKillTheProcess) {
+        private IEnumerator PlayEffectAndReturn(EffectData effect, Transform assignedObject, Quaternion _initialRotation, List<Effect2DType> effectsThatKillTheProcess) {
 
             float duration = effect.DurationInSeconds;
             var particleSystem = GetEffectInstance(effect.Effect);
@@ -65,7 +65,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
             }
 
             if (assignedObject != null) {
-                particleSystem.transform.position = assignedObject.transform.position;
+                if (_initialRotation == null) {
+                    _initialRotation = Quaternion.identity;
+                }
+                particleSystem.transform.SetPositionAndRotation(assignedObject.transform.position, _initialRotation);
             }
 
             particleSystem.gameObject.SetActive(true);

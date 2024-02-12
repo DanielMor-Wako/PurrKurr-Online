@@ -164,15 +164,16 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             ReflectDamage = 18,
             JumpActive = 19,
             ChargingJump = 20,
-            Landed = 21,
-            DetectedInteractible = 21,
-            Resisted = 22,
-            Stunned = 23,
+            DustCloud = 21,
+            Landed = 22,
+            Resisted = 23,
             Bleeding = 24,
-            Poisoned = 25,
-            Electrified = 26,
-            IceFreeze = 27,
             FireBurn = 28,
+            Poisoned = 25,
+            IceFreeze = 26,
+            Electrified = 27,
+            Stunned = 28,
+            DetectedInteractible = 29,
         }
 
         public enum CollectableTypes {

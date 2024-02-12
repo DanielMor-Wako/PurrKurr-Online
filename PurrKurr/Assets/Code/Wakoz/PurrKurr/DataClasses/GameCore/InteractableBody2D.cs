@@ -46,8 +46,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
             SetForceDir(forceDir);
         }
 
-        public void SetTargetPosition(Vector2 position) {
-            SetNewPosition(position);
+        public void SetTargetPosition(Vector2 newPosition, float percentToPerform = 1) {
+            NewPositionToSetOnFixedUpdte = newPosition;
         }
 
         public void SetAsGrabbing(IInteractableBody grabbedBody) {
@@ -75,11 +75,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
         public void SetForceDir(Vector2 newForceDir) {
 
             ForceDirToSetOnFixedUpdate = newForceDir;
-        }
-
-        public void SetNewPosition(Vector2 newPosition) {
-            
-            NewPositionToSetOnFixedUpdte = newPosition;
         }
 
         private void FixedUpdate() {

@@ -263,7 +263,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                     SetState(Definitions.CharacterState.InterruptibleAnimation);
                     return;
 
-                } else if (_combatAbility == Definitions.ActionType.Jump) {
+                } else if (_combatAbility == Definitions.ActionType.Jump && IsAiming()) {
                     SetState(Definitions.CharacterState.AimingJump);
                     return;
 
@@ -405,7 +405,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public bool IsFrontWall() => _facingRight && _isRightWall || !_facingRight && _isLeftWall;
         public bool IsBackWall() => _facingRight && _isLeftWall || !_facingRight && _isRightWall;
-        
+
+        private float _aimingEndTime;
+        public bool IsAiming() => Time.time < _aimingEndTime;
+        public void SetAiming(float durationInMilliseconds) => _aimingEndTime = Time.time + durationInMilliseconds;
+        public void StopAiming() => SetAiming(0);
 
         public Quaternion ReturnForwardDirByTerrainQuaternion()  {
             
@@ -480,5 +484,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             return true;
         }
+
+        
     }
 }

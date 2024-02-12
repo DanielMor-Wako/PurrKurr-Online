@@ -13,7 +13,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
         public abstract float GetHpPercent();
         public abstract int DealDamage(int damage);
         public abstract void ApplyForce(Vector2 forceDir);
-        public abstract void SetTargetPosition(Vector2 position);
+        public abstract void SetTargetPosition(Vector2 position, float percentToPerform = 1);
 
         public abstract void SetAsGrabbing(IInteractableBody grabbedBody);
         public abstract void SetAsGrabbed(IInteractableBody attackerGameObject, Vector2 grabPosition);

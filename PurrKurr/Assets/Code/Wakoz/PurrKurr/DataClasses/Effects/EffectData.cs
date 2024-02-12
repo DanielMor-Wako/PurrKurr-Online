@@ -10,13 +10,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
         public Effect2DType EffectType;
         public ParticleSystem Effect;
         public bool TrackPosition;
-
-        public EffectData(float duration, Effect2DType effectType, ParticleSystem effect, bool trackPosition) {
-            DurationInSeconds = duration;
-            EffectType = effectType;
-            Effect = effect;
-            TrackPosition = trackPosition;
-        }
     }
 
 }

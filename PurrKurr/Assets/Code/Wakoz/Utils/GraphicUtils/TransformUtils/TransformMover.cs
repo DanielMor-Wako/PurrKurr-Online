@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Code.Wakoz.Utils.GraphicUtils.TransformUtils {
@@ -8,7 +10,9 @@ namespace Code.Wakoz.Utils.GraphicUtils.TransformUtils {
         private bool _isAnimating;
         private bool _endBeforeTimeEnd;
 
-        public void MoveToPosition(Transform theTransform, Vector3 targetPosition, float duration) {
+        public bool IsAnimating() => _isAnimating;
+
+        public void MoveToPosition(Transform theTransform, Vector3 targetPosition, float duration, Func<Task> actionOnEnd = null) {
 
             if (_isAnimating) {
                 //Debug.Log("is already animating, returned.... maybe just override instead?");
@@ -19,10 +23,10 @@ namespace Code.Wakoz.Utils.GraphicUtils.TransformUtils {
             float startTime = Time.time;
             Vector3 startPosition = transform.position;
 
-            StartCoroutine(MoveCoroutine(theTransform, startPosition, targetPosition, startTime, duration));
+            StartCoroutine(MoveCoroutine(theTransform, startPosition, targetPosition, startTime, duration, actionOnEnd));
         }
 
-        public IEnumerator MoveCoroutine(Transform theTransform, Vector3 startPosition, Vector3 targetPosition, float startTime, float duration) {
+        public IEnumerator MoveCoroutine(Transform theTransform, Vector3 startPosition, Vector3 targetPosition, float startTime, float duration, Func<Task> actionOnEnd) {
             
             var endTime = startTime + duration;
             var percentage = 0f;
@@ -44,6 +48,15 @@ namespace Code.Wakoz.Utils.GraphicUtils.TransformUtils {
             }
             
             _isAnimating = false;
+
+            if (actionOnEnd == null) {
+               yield break;
+            }
+
+            try {
+                actionOnEnd();
+            }
+            finally { }
         }
 
         public void EndMove() {

@@ -125,15 +125,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             interactedColliders = damageableColliders;
         }
 
-        public bool TryGetRopeDirection(Vector2 dir, ref Vector2 endPosition, ref Quaternion rotation, out Vector2 cursorPosition) {
-
-            var result = false;
+        public bool TryGetRopeDirection(Vector2 dir, ref Vector2 endPosition, ref Quaternion rotation, out Vector2 cursorPosition, ref float distancePercentReached) {
 
             var distance = 12;
-            if (RaycastAgainstSolid(dir, distance, out var hitPosition)) {
-                endPosition = hitPosition;
-                result = true;
-            }
+            var result = RaycastAgainstSolid(dir, distance, out var hitPosition, ref distancePercentReached);
+            endPosition = hitPosition;
 
             rotation = Quaternion.identity;
 
@@ -142,14 +138,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             return result;
         }
 
-        public bool TryGetProjectileDirection(Vector2 dir, ref Vector2 endPosition, ref Quaternion rotation) {
-
-            var result = false;
+        public bool TryGetProjectileDirection(Vector2 dir, ref Vector2 endPosition, ref Quaternion rotation, ref float distancePercentReached) {
 
             var distance = 9;
-            if (RaycastAgainstSolid(dir, distance, out var hitPosition)) {
-                result = true;
-            }
+            var result = RaycastAgainstSolid(dir, distance, out var hitPosition, ref distancePercentReached);
+            endPosition = hitPosition;
 
             // Create a rotation using the calculated angle by Atan2
             var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90;
@@ -215,7 +208,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             return hasObjectBlockingTrajectory;
         }
 
-        private bool RaycastAgainstSolid(Vector2 dir, int distance, out Vector2 endPosition) {
+        private bool RaycastAgainstSolid(Vector2 dir, int distance, out Vector2 endPosition, ref float distancePercentReached) {
 
             var TargetDir = dir.normalized * distance;
             var TargetPoint = (Vector2)LegsPosition + TargetDir;
@@ -225,6 +218,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             endPosition = hitFound ? hit.collider.ClosestPoint(hit.point) : TargetPoint;
             _debug.DrawLine((Vector2)LegsPosition, endPosition, hitFound ? Color.green : Color.grey, 2);
+            distancePercentReached = !hitFound ? 1 : HelperFunctions.PercentReachedBetweenPoints(LegsPosition, TargetPoint, endPosition);
             return hitFound;
         }
 
@@ -389,8 +383,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             SetForceDir(forceDir);
         }
 
-        public void SetTargetPosition(Vector2 position) {
-            SetNewPosition(position);
+        public void SetTargetPosition(Vector2 newPosition, float percentToPerform = 1) {
+            if (newPosition != Vector2.zero) {
+                newPosition.y -= GetPlayerLegsHeight();
+            }
+            NewPositionToSetOnFixedUpdte = newPosition;
         }
 
         public void SetAsGrabbing(IInteractableBody grabbedBody) {
@@ -426,14 +423,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 ForceDirToSetOnFixedUpdate = newForceDir;
             }
 
-        }
-
-        public void SetNewPosition(Vector2 newPosition) {
-
-            if (newPosition != Vector2.zero) {
-                newPosition.y -= GetPlayerLegsHeight();
-            }
-            NewPositionToSetOnFixedUpdte = newPosition;
         }
         
         private void Update() {

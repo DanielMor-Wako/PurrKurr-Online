@@ -347,6 +347,10 @@ MonoBehaviour:
       EffectType: 0
       Effect: {fileID: 1203877100513155449, guid: bf6ff8c8ac1e49d4398b6600e46a8bd8, type: 3}
       TrackPosition: 1
+    - DurationInSeconds: 0.1
+      EffectType: 21
+      Effect: {fileID: 5186544280080545649, guid: f250d794808043942b95c348d184dcb3, type: 3}
+      TrackPosition: 0
   _rigidbody: {fileID: 5807466878947769471}
   _legsCollider: {fileID: 2486121238406449663}
   _legs: {fileID: 5077573360968796146}
