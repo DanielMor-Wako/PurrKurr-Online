@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Pool;
 using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
+namespace Code.Wakoz.PurrKurr.DataClasses.Effects {
 
     [DefaultExecutionOrder(12)]
     public sealed class EffectsController : SingleController {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
+namespace Code.Wakoz.PurrKurr.DataClasses.Effects {
 
     [System.Serializable]
     public class EffectData {
