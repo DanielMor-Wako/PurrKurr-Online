@@ -125,9 +125,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
 
             } else if (ForceDirToSetOnFixedUpdate != Vector2.zero) {
 
-                if (_transformMover != null) {
+                // this makes the projectile hittable by 
+                /*if (_transformMover != null) {
                     _transformMover.EndMove();
-                }
+                }*/
 
                 if (_rigidbody != null) {
                     _rigidbody.velocity = ForceDirToSetOnFixedUpdate;
