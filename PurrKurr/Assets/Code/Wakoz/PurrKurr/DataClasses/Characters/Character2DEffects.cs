@@ -1,5 +1,5 @@
-﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
-using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
+﻿using Code.Wakoz.PurrKurr.DataClasses.Effects;
+using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
