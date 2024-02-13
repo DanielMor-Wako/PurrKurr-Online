@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
+namespace Code.Wakoz.PurrKurr.DataClasses.Effects {
 
     [Serializable]
-    public class Character2DEffects {
+    public class EffectsData {
 
         [SerializeField] private List<EffectData> _data;
 
@@ -25,5 +25,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             return null;
         }
+
     }
 }

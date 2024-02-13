@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
+using Code.Wakoz.PurrKurr.DataClasses.Effects;
 using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.Effects {
+namespace Code.Wakoz.PurrKurr.Screens.Effects {
 
     [DefaultExecutionOrder(12)]
     public sealed class EffectsController : SingleController {

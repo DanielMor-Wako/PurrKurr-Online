@@ -21,7 +21,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public event Action<Character2DState> OnStateChanged;
 
         [SerializeField] private CharacterStats _stats;
-        [SerializeField] private Character2DEffects _effects;
+        [Tooltip("Effects to be used instead of the default effect")]
+        [SerializeField] private EffectsData _effectOverrides;
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private CircleCollider2D _legsCollider;
         [SerializeField] private WheelJoint2D _legs;
@@ -463,13 +464,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _bodyDamager.gameObject.SetActive(isActive);
         }
 
-        public EffectData GetEffectData(Definitions.Effect2DType effect) {
+        public EffectData GetEffectOverride(Definitions.Effect2DType effect) {
 
-            if (_effects == null) {
+            if (_effectOverrides == null) {
                 return null;
             }
 
-            return _effects.GetDataByType(effect);
+            var overrideEffect = _effectOverrides.GetDataByType(effect);
+            return overrideEffect;
         }
 
         private async void SwitchRigidBodyType(RigidbodyType2D bodyType, float delayDuration = 0, bool resetVelocity = false) {

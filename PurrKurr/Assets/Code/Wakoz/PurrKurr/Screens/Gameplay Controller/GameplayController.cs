@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using Code.Wakoz.PurrKurr.DataClasses.Characters;
-using Code.Wakoz.PurrKurr.DataClasses.Effects;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
 using Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
@@ -14,6 +13,7 @@ using Code.Wakoz.PurrKurr.Screens.Init;
 using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection;
+using Code.Wakoz.PurrKurr.Screens.Effects;
 using Code.Wakoz.Utils.Extensions;
 using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
@@ -904,12 +904,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         private void ApplyEffectForDurationAndSetRotation(Character2DController character, Effect2DType effectType, Quaternion initialRotation, List<Effect2DType> stopWhenAnyEffectStarts = null) {
             
-            var effectData = character.GetEffectData(effectType);
-            if (effectData == null) {
-                return;
-            }
-
             _effects ??= GetController<EffectsController>();
+
+            var effectOverrideData = character.GetEffectOverride(effectType);
+            var effectData = effectOverrideData != null ? effectOverrideData : _gameplayLogic.GetEffects(effectType);
             _effects?.PlayEffect(effectData, character.transform, initialRotation, stopWhenAnyEffectStarts);
         }
 

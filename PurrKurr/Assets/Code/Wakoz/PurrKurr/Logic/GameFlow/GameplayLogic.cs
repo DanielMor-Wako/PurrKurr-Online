@@ -1,6 +1,8 @@
-﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
+﻿using Code.Wakoz.PurrKurr.DataClasses.Effects;
+using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using UnityEngine;
+using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
 namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
     public sealed class GameplayLogic : SOData<GameplayLogicSO> {
@@ -16,7 +18,8 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
 
         public LayerMask GetDamageables() => Data.GetDamageables();
         
-        
+        public EffectData GetEffects(Effect2DType effectType) => Data.GetEffectByType(effectType);
+
         public bool IsStateConsideredAsGrounded(Definitions.CharacterState specificState) =>
             Data.IsStateConsideredAsGrounded(specificState);
 

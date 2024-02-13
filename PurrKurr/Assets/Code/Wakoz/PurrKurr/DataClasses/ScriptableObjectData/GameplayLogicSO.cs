@@ -1,4 +1,5 @@
-﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
+﻿using Code.Wakoz.PurrKurr.DataClasses.Effects;
+using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +16,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
         [SerializeField] private LayerMask WhatIsClingable;
         [SerializeField] private LayerMask WhatIsTraversableClingable;
 
+        [Header("Effects Definition")]
+        [SerializeField] private EffectsData _effects;
+
         [Header("Character State Definitions")]
         [SerializeField] private List<Definitions.CharacterState> CharacterStatesConsideredAsGrounded;
         [SerializeField] private List<Definitions.CharacterState> CharacterStatesConsideredAsAerial;
@@ -28,6 +32,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
 
         public LayerMask GetDamageables() =>
             WhatIsCharacter | WhatIsInteractable;
+
+        public EffectData GetEffectByType(Definitions.Effect2DType effectType) => _effects.GetDataByType(effectType);
 
         public bool IsStateConsideredAsGrounded(Definitions.CharacterState specificState) {
 
