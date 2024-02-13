@@ -76,6 +76,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 if (isNavRightDir && (rigidbodyVelocity.x < stats.AirborneMaxSpeed)) {
 
                     forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x + stats.AirborneSpeed, rigidbodyVelocity.y);
+                    moveSpeed = 0;
 
                     return true;
 
@@ -83,6 +84,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                     forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x - stats.AirborneSpeed, rigidbodyVelocity.y);
                     moveSpeed = 0;
+                    
                     return true;
                 }
 
