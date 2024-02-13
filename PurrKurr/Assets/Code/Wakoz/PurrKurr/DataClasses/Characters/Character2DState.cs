@@ -37,6 +37,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private bool _hasLanded;
         private bool _isCrouching;
         private bool _isStanding;
+        private bool _chargingSuper;
         private Vector2 _velocity;
         private bool _hasGroundBeneathByRayCast;
         private Definitions.NavigationType _navigationDirection;
@@ -53,6 +54,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public void SetState(Definitions.CharacterState newState) {
             _currentState = newState;
         }
+
+        public void SetChargingSuper(bool isActive) => _chargingSuper = isActive;
+
+        public bool isChargingSuper() => _chargingSuper;
 
         public void DiagnoseState(Vector3 hitPoint, Vector2 collDir, Vector2 farSurfaceDir, Vector2 velocity, bool hasGroundBeneathByRayCast) {
             
