@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UnityEngine;
 using Code.Wakoz.PurrKurr.DataClasses.Characters;
+using Code.Wakoz.PurrKurr.DataClasses.Effects;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
-using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
 using Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using Code.Wakoz.PurrKurr.Logic.GameFlow;
@@ -14,7 +15,6 @@ using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection;
 using Code.Wakoz.Utils.Extensions;
-using UnityEngine;
 using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
@@ -53,6 +53,19 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private LayerMask _whatIsSurface;
         private LayerMask _whatIsCharacter;
         private LayerMask _whatIsDamageableCharacter;
+
+        protected override void Clean() {
+
+            DeregisterInputEvents();
+
+            _gameRunning = false;
+
+            if (_hero == null) {
+                return;
+            }
+            _hero.OnStateChanged -= OnStateChanged;
+            _hero.OnUpdatedStats -= UpdateOrInitUiDisplayForCharacter;
+        }
 
         protected override Task Initialize() {
 
@@ -148,10 +161,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             RefreshSpritesOrder();
         }
 
-        public void SetNewHero(Character2DController hero) {
-            TryInitHero(hero);
-        }
-        
+        public void SetNewHero(Character2DController hero) => TryInitHero(hero);
+
         private bool TryInitHero(Character2DController hero) {
 
             if (hero == null) {
@@ -227,19 +238,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _hero.Stats.UpdateStats(level);
         }
 
-        protected override void Clean() {
-
-            DeregisterInputEvents();
-
-            _gameRunning = false;
-
-            if (_hero == null) {
-                return;
-            }
-            _hero.OnStateChanged -= OnStateChanged;
-            _hero.OnUpdatedStats -= UpdateOrInitUiDisplayForCharacter;
-        }
-        
         private void RegisterInputEvents() {
 
             if (_input == null) {
@@ -299,7 +297,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             AlterJumpDirByNavigationDirection(ref forceDir, _hero.State.NavigationDir, _hero.Stats.JumpForce);
                             _hero.SetForceDir(forceDir);
                             _hero.DoMove(0); // might conflict with the TryPerformInputNavigation when the moveSpeed is already set by Navigation
-                            ApplyEffectForDuration(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
+                            ApplyEffectForDurationAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
 
                         } else if (actionInput.ActionType == ActionType.Block) {
                             ApplyEffectForDuration(_hero, Effect2DType.BlockActive);
@@ -378,13 +376,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         _hero.State.SetActiveCombatAbility(ActionType.Empty);
 
                         if (isSpecial) {
-                            // do somthing when special action ended?
                             ApplySpecialAction(_hero, false);
 
                         } else if (actionInput.NormalizedDirection != Vector2.zero) {
 
                             if (isBlockingEnded) {
                                 ApplyEffectForDuration(_hero, Effect2DType.DodgeActive);
+                                ApplyEffectForDurationAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
 
                             } else {
 
@@ -403,7 +401,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                                     // apply jump aim in trajectory dir
                                     _hero.SetJumping(Time.time + .2f);
                                     forceDir = actionInput.NormalizedDirection * _hero.Stats.JumpForce;
-                                    ApplyEffectForDuration(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
+                                    ApplyEffectForDurationAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
                                     //_hero.DoMove(0); // dont think its needed 
                                 }
                             }
@@ -806,17 +804,19 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             return facingRightOrLeftTowardsPoint;
         }
 
-        private bool _chargingSuper = false;
         private async void ApplySpecialAction(Character2DController character, bool isActive) {
 
-            _chargingSuper = isActive;
+            character.State.SetChargingSuper(isActive);
 
-            while (_chargingSuper && character != null && character.Stats.GetHealthPercentage() < 1) {
+            if (!isActive) {
+                return;
+            }
 
-                // revive 1 hp when character is not moving
-                if (character.State.IsNotMoving()) {
-                    character.DealDamage(-1);
-                    ApplyEffectForDuration(_hero, Effect2DType.GainHp);
+            while (character != null && character.State.isChargingSuper() && character.CanPerformSuper()) {
+
+                if (character.TryPerformSuper()) {
+                    var superActionProperties = true;
+                    PerformSuper(character, superActionProperties);
                 }
 
                 await Task.Delay(TimeSpan.FromMilliseconds(500));
@@ -824,7 +824,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         }
 
-        
+        // todo: make the function get properties and iterate on each one to generate a super, currently only gets true instead of property
+        private void PerformSuper(Character2DController character, bool superActionProperties) {
+
+            if (superActionProperties == true) {
+                // revive 1 hp when character is not moving
+                character.DealDamage(-1);
+                ApplyEffectForDuration(_hero, Effect2DType.GainHp);
+            }
+        }
+
         private async void ApplyAimingAction(Character2DController character, ActionInput actionInput) {
 
             var actionType = actionInput.ActionType;
@@ -890,10 +899,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         }
 
         private void ApplyEffectForDuration(Character2DController character, Effect2DType effectType, List<Effect2DType> stopWhenAnyEffectStarts = null) {
-            ApplyEffectForDuration(character, effectType, Quaternion.identity, stopWhenAnyEffectStarts);
+            ApplyEffectForDurationAndSetRotation(character, effectType, Quaternion.identity, stopWhenAnyEffectStarts);
         }
 
-        private void ApplyEffectForDuration(Character2DController character, Effect2DType effectType, Quaternion initialRotation, List<Effect2DType> stopWhenAnyEffectStarts = null) {
+        private void ApplyEffectForDurationAndSetRotation(Character2DController character, Effect2DType effectType, Quaternion initialRotation, List<Effect2DType> stopWhenAnyEffectStarts = null) {
             
             var effectData = character.GetEffectData(effectType);
             if (effectData == null) {
@@ -931,7 +940,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             var legsPosition = grabbed.GetCenterPosition();
             var grabbedColl = grabbed.GetCollider();
-            var legsRadius = ((CircleCollider2D)grabbedColl).radius;
+            var hasCircleColliderAsDamagerLayer = grabbedColl as CircleCollider2D;
+            var legsRadius = hasCircleColliderAsDamagerLayer != null ? hasCircleColliderAsDamagerLayer.radius : 1;
+            Vector2 objClosestPosition;
+            Vector3 dirFromCharacterToFoe;
+            RaycastHit2D blockingObjectsInAttackDirection;
 
             while (_gameRunning && grabbedVelocity.magnitude > 1) {
 
@@ -954,14 +967,22 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     var interactableBody = damagee.GetInteractable();
                     if (interactableBody != null && !damagees.Contains(interactable)) {
 
-                        damagees.Add(interactable);
+                        objClosestPosition = interactable.ClosestPoint(legsPosition);
+                        dirFromCharacterToFoe = (objClosestPosition - (Vector2)legsPosition).normalized;
+                        blockingObjectsInAttackDirection = Physics2D.Raycast(legsPosition,
+                    dirFromCharacterToFoe,
+                    Vector2.Distance(objClosestPosition, legsPosition), _whatIsSolid);
 
-                        var closestFoePosition = interactable.ClosestPoint(legsPosition);
-                        //var dir = ((Vector3)closestFoePosition - legsPosition).normalized;
+                        if (blockingObjectsInAttackDirection.collider != null) {
+                            continue;
+                        }
+
+                        damagees.Add(interactable);
+                        
                         var dir = Vector2.up;
-                        var directionTowardsFoe = (closestFoePosition.x > legsPosition.x) ? 1 : -1;
+                        var directionTowardsFoe = (objClosestPosition.x > legsPosition.x) ? 1 : -1;
                         dir.x = directionTowardsFoe;
-                        var newPositionToSetOnFixedUpdate = closestFoePosition + (Vector2)dir.normalized * -(legsRadius);
+                        var newPositionToSetOnFixedUpdate = objClosestPosition + (Vector2)dir.normalized * -(legsRadius);
                         interactableBody.ApplyForce(dir * grabbedVelocity * 0.7f); // 0.7f is an impact damage decrease
                         // todo: damage decrease based on velocity?
                         _debug.Log($"damage on {interactableBody.GetTransform().gameObject.name} by {thrower.GetTransform().gameObject.name}");
@@ -970,7 +991,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             ApplyEffectForDuration((Character2DController)interactableBody, Effect2DType.ImpactMed);
                         }
 
-                        _debug.DrawLine(closestFoePosition, newPositionToSetOnFixedUpdate, Color.white, 3);
+                        _debug.DrawLine(objClosestPosition, newPositionToSetOnFixedUpdate, Color.white, 3);
                     }
                 }
 

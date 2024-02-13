@@ -26513,10 +26513,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4040296853604752367, guid: 6e7dbefdede11e749820799d19132516, type: 3}
-      propertyPath: _legsCollider
-      value: 
-      objectReference: {fileID: 8475122670142816663}
     - target: {fileID: 6687828201751958988, guid: 6e7dbefdede11e749820799d19132516, type: 3}
       propertyPath: m_Name
       value: Projectile
@@ -26546,11 +26542,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4aaf9fad87db7274e9eda6f294ddcf92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!58 &8475122670142816663 stripped
-CircleCollider2D:
-  m_CorrespondingSourceObject: {fileID: 8748232249262352415, guid: 6e7dbefdede11e749820799d19132516, type: 3}
-  m_PrefabInstance: {fileID: 935158601991793032}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2062201657031608914
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26670,7 +26661,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 739120429229760473, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -726.6289
+      value: -726.62885
       objectReference: {fileID: 0}
     - target: {fileID: 1028692407419784291, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_text
@@ -26834,7 +26825,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7600501571068317291, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -585
+      value: -584.99994
       objectReference: {fileID: 0}
     - target: {fileID: 8156656911675872482, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
