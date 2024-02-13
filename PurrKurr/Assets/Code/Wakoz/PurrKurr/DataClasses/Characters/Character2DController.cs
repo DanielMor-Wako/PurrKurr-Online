@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Code.Wakoz.PurrKurr.DataClasses.Enums;
-using Code.Wakoz.PurrKurr.DataClasses.GameCore;
-using Code.Wakoz.PurrKurr.Logic.GameFlow;
-using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
-using Code.Wakoz.Utils.GraphicUtils.TransformUtils;
 using UnityEngine;
 using Code.Wakoz.Utils.Extensions;
+using Code.Wakoz.Utils.GraphicUtils.TransformUtils;
 using Code.Wakoz.PurrKurr.Screens.Init;
+using Code.Wakoz.PurrKurr.DataClasses.Enums;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore;
+using Code.Wakoz.PurrKurr.DataClasses.Effects;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
+using Code.Wakoz.PurrKurr.Logic.GameFlow;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
@@ -634,6 +635,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public void SetNavigationDir(Definitions.NavigationType inputDirection) => State.SetNavigationDir(inputDirection);
 
         public Definitions.NavigationType GetNavigationDir() => State.NavigationDir;
+
+        // todo make this should get the data from the CharacterBase, currently each character can revive itself when health is below 100%
+        public bool CanPerformSuper() => Stats.GetHealthPercentage() < 1;
+
+        // todo make this should get the data from the CharacterBase, and return the special action properties
+        public bool TryPerformSuper() {
+
+            var result = State.IsNotMoving();
+
+            return result;
+        }
 
     }
 
