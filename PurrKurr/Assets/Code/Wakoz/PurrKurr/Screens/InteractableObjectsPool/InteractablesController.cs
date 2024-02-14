@@ -1,5 +1,5 @@
 using Code.Wakoz.PurrKurr.DataClasses.Characters;
-using Code.Wakoz.PurrKurr.DataClasses.GameCore;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -11,7 +11,8 @@ namespace Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool {
     public sealed class InteractablesController : SingleController {
 
         public List<Character2DController> _heroes;
-        public List<Projectile2D> _projectiles;
+        public List<ProjectileController> _projectiles;
+        public List<RopeController> _ropes;
 
         private Dictionary<System.Type, object> objectPools = new Dictionary<System.Type, object>();
 
@@ -22,20 +23,20 @@ namespace Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool {
             return Task.CompletedTask;
         }
 
-        public void CreateObjectPool<T>(T prefab, int initialSize, int maxCapacity, string containerName) where T : MonoBehaviour, IInteractableBody {
+        public void CreateObjectPool<T>(T prefab, int initialSize, int maxCapacity, string containerName) where T : MonoBehaviour/*, IInteractableBody*/ {
 
             if (!objectPools.ContainsKey(typeof(T))) {
                 var container = new GameObject($"{containerName}");
                 container.transform.SetParent(transform, false);
-                InteractableObjectPool<T> pool = new InteractableObjectPool<T>(prefab, container.transform, initialSize, maxCapacity);
+                GenericObjectPool<T> pool = new GenericObjectPool<T>(prefab, container.transform, initialSize, maxCapacity);
                 objectPools.Add(typeof(T), pool);
             }
         }
 
-        public T GetInstance<T>() where T : MonoBehaviour, IInteractableBody {
+        public T GetInstance<T>() where T : MonoBehaviour/*, IInteractableBody*/ {
 
             if (objectPools.ContainsKey(typeof(T))) {
-                InteractableObjectPool<T> pool = (InteractableObjectPool<T>)objectPools[typeof(T)];
+                GenericObjectPool<T> pool = (GenericObjectPool<T>)objectPools[typeof(T)];
                 return pool.GetObjectFromPool();
             } else {
                 Debug.LogError("Object pool for type " + typeof(T) + " does not exist.");
@@ -43,9 +44,9 @@ namespace Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool {
             }
         }
 
-        public List<T> GetAllInstances<T>() where T : MonoBehaviour, IInteractableBody {
+        public List<T> GetAllInstances<T>() where T : MonoBehaviour/*, IInteractableBody*/ {
             if (objectPools.ContainsKey(typeof(T))) {
-                InteractableObjectPool<T> pool = (InteractableObjectPool<T>)objectPools[typeof(T)];
+                GenericObjectPool<T> pool = (GenericObjectPool<T>)objectPools[typeof(T)];
                 return pool.GetAllObjectsFromPool();
             } else {
                 Debug.LogError("Object pool for type " + typeof(T) + " does not exist.");
@@ -53,10 +54,10 @@ namespace Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool {
             }
         }
 
-        public Task ReleaseInstance<T>(T instance) where T : MonoBehaviour, IInteractableBody {
+        public Task ReleaseInstance<T>(T instance) where T : MonoBehaviour/*, IInteractableBody*/ {
 
             if (objectPools.ContainsKey(typeof(T))) {
-                InteractableObjectPool<T> pool = (InteractableObjectPool<T>)objectPools[typeof(T)];
+                GenericObjectPool<T> pool = (GenericObjectPool<T>)objectPools[typeof(T)];
                 pool.ReleaseObjectToPool(instance);
             } else {
                 Debug.LogError("Object pool for type " + typeof(T) + " does not the instance for release");
@@ -66,7 +67,7 @@ namespace Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool {
         }
     }
 
-    public class InteractableObjectPool<T> where T : MonoBehaviour, IInteractableBody {
+    public class GenericObjectPool<T> where T : MonoBehaviour {
 
         private ObjectPool<T> objectPool;
         private readonly List<T> _instances = new();
@@ -74,7 +75,7 @@ namespace Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool {
         private int _initialSize;
         private int _maxCapacity;
 
-        public InteractableObjectPool(T prefab, Transform container, int initialSize, int maxCapacity) {
+        public GenericObjectPool(T prefab, Transform container, int initialSize, int maxCapacity) {
             
             _container = container;
             _initialSize = initialSize;
@@ -90,7 +91,7 @@ namespace Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool {
                 return null;
             }
 
-            if (objectPool.CountAll <= _maxCapacity || objectPool.CountInactive > 0) {
+            if (objectPool.CountAll < _maxCapacity || objectPool.CountInactive > 0) {
                 T newObj = objectPool.Get();
                 newObj.transform.SetParent(_container, false);
                 newObj.gameObject.SetActive(true);

@@ -129,9 +129,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public bool TryGetRopeDirection(Vector2 dir, ref Vector2 endPosition, ref Quaternion rotation, out Vector2 cursorPosition, ref float distancePercentReached) {
 
-            var distance = 12;
+            var distance = 15;
             var result = RaycastAgainstSolid(dir, distance, out var hitPosition, ref distancePercentReached);
-            endPosition = hitPosition;
+            endPosition = result ? hitPosition : (Vector2)LegsPosition + dir.normalized * distance;
 
             rotation = Quaternion.identity;
 

@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using Code.Wakoz.Utils.Extensions;
+using Code.Wakoz.PurrKurr.Logic.GameFlow;
 using Code.Wakoz.PurrKurr.DataClasses.Characters;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
 using Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
-using Code.Wakoz.PurrKurr.Logic.GameFlow;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles;
 using Code.Wakoz.PurrKurr.Screens.CameraComponents;
 using Code.Wakoz.PurrKurr.Screens.Init;
 using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection;
 using Code.Wakoz.PurrKurr.Screens.Effects;
-using Code.Wakoz.Utils.Extensions;
 using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
@@ -106,6 +107,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             // tood: call levelController to set the pools for interactables and init the the instances in the level
             _interactables.CreateObjectPool(_interactables._projectiles.FirstOrDefault(), 0, 5, "Projectiles");
+            _interactables.CreateObjectPool(_interactables._ropes.FirstOrDefault(), 0, 2, "Ropes");
         }
 
         private void ReviveAllHeroes() {
@@ -394,8 +396,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                                     ShootProjectile(actionInput, ref newPos, ref rotation, ref distancePercentReached);
 
                                 } else if (isRopingEnded) {
-                                    // apply rope
-                                    _hero.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPosition, ref distancePercentReached);
+                                    ShootRope(actionInput, ref newPos, ref rotation, ref distancePercentReached);
                                     
                                 } else if (isJumpAimEnded) {
                                     // apply jump aim in trajectory dir
@@ -429,7 +430,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             _hero.TryGetProjectileDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, ref distancePercentReached);
 
-            var projectile = _interactables.GetInstance<Projectile2D>();
+            var projectile = _interactables.GetInstance<ProjectileController>();
             if (projectile == null) {
                 return;
             }
@@ -439,6 +440,36 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             ApplyEffectForDuration(_hero, Effect2DType.DustCloud);
             //ApplyEffectForDuration(_hero, Effect2DType.TrailInAir); // todo: other trails for fire ice etc
             ApplyProjectileStateWhenThrown(projectile, _hero.Stats.Damage, _hero, () =>_interactables.ReleaseInstance(projectile));
+
+        }
+
+        private List<RopeController> _charactersRopes = new();
+        [Min(0)] public float ropeLinkSize = 0.5f;
+        [Min(0)] public float weightDistanceFromLink = 0.5f;
+        private void ShootRope(ActionInput actionInput, ref Vector2 newPos, ref Quaternion rotation, ref float distancePercentReached) {
+
+            var hasNoHit = !_hero.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPosition, ref distancePercentReached);
+
+            if (hasNoHit) {
+                return;
+            }
+
+            RopeController rope = _interactables.GetInstance<RopeController>();
+            if (rope == null) {
+                _debug.LogWarning("No available rope instance in pool, consider increasing the max items capacity");
+                if (_charactersRopes.Count > 0) {
+                    rope = _charactersRopes.FirstOrDefault();
+                }
+            }
+
+            var ropePointsData = HelperFunctions.GenerateVectorsBetween(newPos, _hero.LegsPosition, ropeLinkSize);
+            ropePointsData.Add((Vector2)_hero.LegsPosition - actionInput.NormalizedDirection * weightDistanceFromLink); // last value is the weightDistance
+            var ropeData = new RopeData(rope.gameObject, ropePointsData.ToArray()); // last value is the distance between each link
+
+            rope.Initialize(ropeData);
+            _charactersRopes.Add(rope);
+
+            //ApplyEffectForDuration(_hero, Effect2DType.DustCloud);
 
         }
 

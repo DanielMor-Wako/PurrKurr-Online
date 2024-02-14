@@ -4,10 +4,10 @@ using Code.Wakoz.Utils.GraphicUtils.TransformUtils;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
+namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
 
     [DefaultExecutionOrder(15)]
-    public class Projectile2D : Controller, IInteractableBody {
+    public class ProjectileController : Controller, IInteractableBody {
 
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private TransformMover _transformMover;
@@ -16,10 +16,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
         [SerializeField] private MultiStateView _states;
 
         [Header("Settings")]
-        [SerializeField] private float _animDuration = 2f;
+        [SerializeField] private float _animDuration = 1.5f;
         [SerializeField] private float _pushForce = 30f;
         [Tooltip("Extra time to remain active in the scene after movement animation has finished")]
-        [SerializeField][Min(0)] private float _expirationTime = 3f;
+        [SerializeField][Min(0)] private float _expirationTime = 1f;
 
         private float MovingAnimationDuration = 2.5f;
         private Vector2 NewPositionToSetOnFixedUpdte;

@@ -58,11 +58,34 @@ namespace Code.Wakoz.Utils.Extensions {
             return new Vector2(newX, newY);
         }
 
-        public static float PercentReachedBetweenPoints(Vector3 startVector, Vector3 endVector, Vector3 targetVector) {
+        public static List<Vector2> GenerateVectorsBetween(this Vector2 startPosition, Vector2 endPosition, float linkSize) {
 
-            // Returns float that represents the percentage reached between two vectors by a third vector 
+            float distance = (endPosition - startPosition).magnitude;
+            int numberOfLinks = Mathf.CeilToInt(distance / linkSize);
+
+            List<Vector2> points = new List<Vector2> {
+                startPosition
+            };
+
+            for (int i = 1; i < numberOfLinks; i++) {
+                float t = i / (float)numberOfLinks;
+                points.Add(Vector2.Lerp(startPosition, endPosition, t) );
+            }
+
+            var aletrnative = false;
+            for (int i = 1; i < numberOfLinks; i++) {
+                Debug.DrawLine(points[i - 1], points[i], aletrnative ? Color.black : Color.white, 1);
+                aletrnative = !aletrnative;
+            }
+
+            return points;
+        }
+
+        public static float PercentReachedBetweenPoints(Vector3 startVector, Vector3 endVector, Vector3 refVector) {
+
+            // Returns float that represents the percentage reached between two vectors by a third vector as refference point
             var distanceStartToEnd = (endVector - startVector).magnitude;
-            var distanceStartToTarget = (targetVector - startVector).magnitude;
+            var distanceStartToTarget = (refVector - startVector).magnitude;
             return Mathf.Clamp01(distanceStartToTarget / distanceStartToEnd);
         }
 
