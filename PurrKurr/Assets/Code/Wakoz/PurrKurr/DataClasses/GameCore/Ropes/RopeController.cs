@@ -1,79 +1,83 @@
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
 using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
+using Code.Wakoz.Utils.Extensions;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
 
     [DefaultExecutionOrder(15)]
     public class RopeController : Controller {
 
-        [Tooltip("The first link with adjustments to the offset to the anchor")]
-        [SerializeField] private RopeLinkController firstLink;
         [Tooltip("The link of the rope, essetially the actual interactable rope")]
         [SerializeField] private RopeLinkController continousLink;
         [Tooltip("The last link that acts as weight, to create more realstic rope behaviour on the edge")]
         [SerializeField] private RopeLinkController weight;
-
+        [Tooltip("The rigid body of the anchor")]
+        [SerializeField] private Rigidbody2D _anchorRigidBody;
+        [Tooltip("The joint of the anchor")]
         [SerializeField] private HingeJoint2D _anchorJoint;
-        private AnchorHandler _anchor;
 
+        [SerializeField][Min(0)] private float delayBeforeRopeActivation = 0f;
+        [Header("Offsets")]
+        [SerializeField] private float AnchorRotationOffset = -90f;
+        [SerializeField] private float LinkRotationOffset = -90f;
+        [SerializeField] private float WeightRotationOffset = 90f;
+        [Header("Distance between links")]
+        [SerializeField] private float distanceFromAnchor = 0f;
+        [SerializeField] private float linksDistance = 0.7f;
+        [SerializeField] private float weightDistanceFromLink = 0.5f;
+
+        private AnchorHandler _anchor;
         private List<RopeLinkController> _ropeLinks = new List<RopeLinkController>();
         private InteractablesController _pool;
-        private Transform _anchorPoint;
 
         public void Initialize(RopeData ropeData) {
 
-            _pool ??= SingleController.GetController<InteractablesController>();
-            _pool.CreateObjectPool(continousLink, ropeData.linkPositions.Length, 100, "RopesLinks");
+            Vector2 startPosition = ropeData.linkPositions[0];
+            Vector2 endPosition = ropeData.linkPositions[ropeData.linkPositions.Length - 1];
+            var normalizedDir = (endPosition - startPosition).normalized;
+            var angle = Mathf.Atan2(normalizedDir.y, normalizedDir.x) * Mathf.Rad2Deg;
+            var linksRotation = Quaternion.Euler(0, 0, angle + LinkRotationOffset);
 
-            Vector3 startPosition = ropeData.linkPositions[0];
-            Vector3 endPosition = ropeData.linkPositions[ropeData.linkPositions.Length - 1];
-            float angle = Vector2.SignedAngle(startPosition, endPosition);
-            var rotation = Quaternion.Euler(0, 0, angle+90); // 90 is the original z offset of the object
+            ClearAnyExistingLinks();
+            weight.SetActiveState(false);
 
-            Transform anchorParent = null; // change from null to a transform to set its parent
-            _anchor.ModifyAnchor(startPosition, anchorParent);
-            _anchorJoint.connectedBody.simulated = true; // anchorParent != null;
+            SetAnchorPosition(startPosition, null);// change from null to a transform to set its parent
 
-            //transform.SetPositionAndRotation(startPosition, Quaternion.Euler(0, 0, 180));
-            firstLink.transform.SetPositionAndRotation(startPosition, rotation);
+            var proceduralPosition = startPosition + normalizedDir * distanceFromAnchor;
+            
+            var linksPositionData = HelperFunctions.GenerateVectorsBetween(proceduralPosition, endPosition, linksDistance);
 
-            if (_ropeLinks.Count > 0) {
-                foreach (var ropeLink in _ropeLinks) {
-                    _pool.ReleaseInstance(ropeLink);
-                }
-                _ropeLinks.Clear();
-            }
+            CreateLinks(ref _anchorRigidBody, ref linksPositionData, ref linksRotation, ref _ropeLinks);
 
-            //Vector3 distance = endPosition - startPosition;
-            //float linkLength = distance.magnitude / (ropeData.linkPositions.Length - 1);
+            var weightDistance = normalizedDir * weightDistanceFromLink;
+            proceduralPosition = endPosition + weightDistance;
 
-            Transform previousLink = firstLink.transform;
+            PrepareLink(weight, proceduralPosition, (Quaternion.Euler(0, 0, angle + WeightRotationOffset)), _ropeLinks[_ropeLinks.Count - 1].GetRigidBody());
 
-            for (int i = 1; i < ropeData.linkPositions.Length - 2; i++) {
-                Vector2 position = ropeData.linkPositions[i];
+            StartCoroutine(ActivateLinksWhenAnchorPositionHasUpdated());
+        }
 
-                //Transform newLink = Instantiate(linkPrefab, position, Quaternion.identity, transform).transform;
+        private void CreateLinks(ref Rigidbody2D anchorRigidBody, ref List<Vector2> linksPositionData, ref Quaternion linksRotation, ref List<RopeLinkController> ropeLinks) {
+
+            var previousRigidBody = anchorRigidBody;
+
+            for (int i = 1; i < linksPositionData.Count; i++) {
+
                 var newLink = _pool.GetInstance<RopeLinkController>();
                 if (newLink == null) {
                     Debug.LogWarning("No available rope instance in pool, consider increasing the max items capacity");
                     return;
                 }
 
-                newLink.transform.SetPositionAndRotation(position, rotation);
+                PrepareLink(newLink, linksPositionData[i], linksRotation, previousRigidBody);
 
-                newLink.ConnectJointTo(previousLink.GetComponent<Rigidbody2D>());
-
-                previousLink = newLink.transform;
-                _ropeLinks.Add(newLink);
+                previousRigidBody = newLink.GetRigidBody();
+                ropeLinks.Add(newLink);
             }
-
-            weight.transform.SetPositionAndRotation(endPosition, rotation);
-            weight.ConnectJointTo(previousLink.GetComponent<Rigidbody2D>());
-            // Additional graphic implementation
         }
 
         public Transform GetClosestLink(Vector3 referencePoint) {
@@ -93,6 +97,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
         }
 
         protected override void Clean() {
+            // destroy the weight that is outside of the rope transform?
+            // weight.transform.parent = transform;
         }
 
         protected override Task Initialize() {
@@ -100,8 +106,55 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
             _anchor ??= gameObject.AddComponent<AnchorHandler>();
             _anchorJoint.connectedBody = SingleController.GetController<AnchorsController>().GetAnchorRigidbody(_anchor);
 
+            _pool ??= SingleController.GetController<InteractablesController>();
+            _pool.CreateObjectPool(continousLink, 6, 100, "RopesLinks");
+
+            weight.transform.parent = transform.parent;
+
             return Task.CompletedTask;
         }
 
+        private void PrepareLink(RopeLinkController link, Vector2 position, Quaternion rotation, Rigidbody2D bodyToConnect) {
+            
+            link.transform.SetPositionAndRotation(position, rotation);
+            link.ConnectJointTo(bodyToConnect);
+            link.SetActiveState(false);
+        }
+
+        private void SetAnchorPosition(Vector2 ropeBuilderPosition, Transform anchorParent) {
+
+            _anchor.ModifyAnchor(ropeBuilderPosition, anchorParent);
+            _anchorJoint.connectedBody.simulated = true; // anchorParent != null;
+        }
+
+        private void ClearAnyExistingLinks() {
+
+            if (_ropeLinks.Count > 0) {
+                foreach (var ropeLink in _ropeLinks) {
+                    ropeLink.ConnectJointTo(null);
+                    ropeLink.SetActiveState(false);
+                    _pool.ReleaseInstance(ropeLink);
+                }
+                _ropeLinks.Clear();
+            }
+        }
+
+        private IEnumerator ActivateLinksWhenAnchorPositionHasUpdated() {
+
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForSeconds(delayBeforeRopeActivation);
+
+            if (_ropeLinks.Count <= 0) {
+                yield break;
+            }
+
+            foreach (var ropeLink in _ropeLinks) {
+                if (ropeLink != null) {
+                    ropeLink.SetActiveState(true);
+                }
+            }
+
+            weight.SetActiveState(true);
+        }
     }
 }

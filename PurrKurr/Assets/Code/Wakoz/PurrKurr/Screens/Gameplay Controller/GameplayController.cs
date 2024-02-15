@@ -107,7 +107,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             // tood: call levelController to set the pools for interactables and init the the instances in the level
             _interactables.CreateObjectPool(_interactables._projectiles.FirstOrDefault(), 0, 5, "Projectiles");
-            _interactables.CreateObjectPool(_interactables._ropes.FirstOrDefault(), 0, 2, "Ropes");
+            _interactables.CreateObjectPool(_interactables._ropes.FirstOrDefault(), 0, 1, "Ropes");
         }
 
         private void ReviveAllHeroes() {
@@ -444,15 +444,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         }
 
         private List<RopeController> _charactersRopes = new();
-        [Min(0)] public float ropeLinkSize = 0.5f;
-        [Min(0)] public float weightDistanceFromLink = 0.5f;
+
         private void ShootRope(ActionInput actionInput, ref Vector2 newPos, ref Quaternion rotation, ref float distancePercentReached) {
 
             var hasNoHit = !_hero.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPosition, ref distancePercentReached);
-
-            if (hasNoHit) {
-                return;
-            }
+            /*
+                        if (hasNoHit) {
+                            return;
+                        }*/
 
             RopeController rope = _interactables.GetInstance<RopeController>();
             if (rope == null) {
@@ -462,9 +461,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 }
             }
 
-            var ropePointsData = HelperFunctions.GenerateVectorsBetween(newPos, _hero.LegsPosition, ropeLinkSize);
-            ropePointsData.Add((Vector2)_hero.LegsPosition - actionInput.NormalizedDirection * weightDistanceFromLink); // last value is the weightDistance
-            var ropeData = new RopeData(rope.gameObject, ropePointsData.ToArray()); // last value is the distance between each link
+            //var ropePointsData = HelperFunctions.GenerateVectorsBetween(newPos, _hero.LegsPosition, ropeLinkSize);
+            //ropePointsData.Add((Vector2)_hero.LegsPosition - actionInput.NormalizedDirection * weightDistanceFromLink); // last value is the weightDistance
+            //var ropeData = new RopeData(rope.gameObject, ropePointsData.ToArray()); // last value is the distance between each link
+            var ropeData = new RopeData(rope.gameObject, new Vector2[2] { newPos, _hero.LegsPosition });
 
             rope.Initialize(ropeData);
             _charactersRopes.Add(rope);

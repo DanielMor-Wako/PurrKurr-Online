@@ -5060,6 +5060,14 @@ PrefabInstance:
       propertyPath: m_Creator
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2858177740415202816, guid: b366cfe60150f62429657356265f8bcf, type: 3}
+      propertyPath: distanceFromAnchor
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2858177740415202816, guid: b366cfe60150f62429657356265f8bcf, type: 3}
+      propertyPath: delayBeforeRopeActivation
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2957055777015681397, guid: b366cfe60150f62429657356265f8bcf, type: 3}
       propertyPath: m_Creator
       value: 
@@ -5067,6 +5075,10 @@ PrefabInstance:
     - target: {fileID: 4109964185164120387, guid: b366cfe60150f62429657356265f8bcf, type: 3}
       propertyPath: m_Name
       value: Init
+      objectReference: {fileID: 0}
+    - target: {fileID: 5550497904174191748, guid: b366cfe60150f62429657356265f8bcf, type: 3}
+      propertyPath: m_Creator
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5631274453852693096, guid: b366cfe60150f62429657356265f8bcf, type: 3}
       propertyPath: m_LocalPosition.x

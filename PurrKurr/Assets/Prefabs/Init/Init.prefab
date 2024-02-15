@@ -1349,8 +1349,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cam: {fileID: 4039740569464446090}
   _mainHero: {fileID: 7784759249914515740}
-  ropeLinkSize: 0.7
-  weightDistanceFromLink: 0.5
 --- !u!1 &1107854503883947925
 GameObject:
   m_ObjectHideFlags: 0
@@ -26654,7 +26652,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2842913602912303923, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -949.0896
+      value: -949.0897
       objectReference: {fileID: 0}
     - target: {fileID: 3043152446788562784, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_text
@@ -26782,7 +26780,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7371201212619044444, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -94.00006
+      value: -94.00012
       objectReference: {fileID: 0}
     - target: {fileID: 7600501571068317291, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_AnchoredPosition.y
