@@ -181,7 +181,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -651907805
-  m_SortingLayer: -4
+  m_SortingLayer: -5
   m_SortingOrder: -1
   m_RenderMode: 4
   m_MeshDistribution: 0
@@ -5052,6 +5052,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 452849803062544122, guid: b366cfe60150f62429657356265f8bcf, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -949.0897
+      objectReference: {fileID: 0}
     - target: {fileID: 545106831419512898, guid: b366cfe60150f62429657356265f8bcf, type: 3}
       propertyPath: m_Creator
       value: 

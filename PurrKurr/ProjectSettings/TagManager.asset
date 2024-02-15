@@ -47,11 +47,11 @@ TagManager:
   - name: Objects
     uniqueID: 4138141397
     locked: 0
-  - name: Rope
-    uniqueID: 3982045431
-    locked: 0
   - name: Characters
     uniqueID: 3643059491
+    locked: 0
+  - name: Rope
+    uniqueID: 3982045431
     locked: 0
   - name: Items
     uniqueID: 1378384525

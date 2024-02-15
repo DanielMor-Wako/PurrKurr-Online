@@ -512,7 +512,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -651907805
-  m_SortingLayer: -4
+  m_SortingLayer: -5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 547bbd39f7008f44fa6f49595d74e64c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -772,7 +772,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -651907805
-  m_SortingLayer: -4
+  m_SortingLayer: -5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 547bbd39f7008f44fa6f49595d74e64c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -7367,7 +7367,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -651907805
-  m_SortingLayer: -4
+  m_SortingLayer: -5
   m_SortingOrder: -1
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -12408,7 +12408,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -651907805
-  m_SortingLayer: -4
+  m_SortingLayer: -5
   m_SortingOrder: -1
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -17421,7 +17421,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -651907805
-  m_SortingLayer: -4
+  m_SortingLayer: -5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 547bbd39f7008f44fa6f49595d74e64c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -22354,7 +22354,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -651907805
-  m_SortingLayer: -4
+  m_SortingLayer: -5
   m_SortingOrder: -1
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -27745,6 +27745,10 @@ PrefabInstance:
     - target: {fileID: 3474109133781894608, guid: 114d4e394fdc7ab419266946ee721e61, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -180
+      objectReference: {fileID: 0}
+    - target: {fileID: 6204999245680566362, guid: 114d4e394fdc7ab419266946ee721e61, type: 3}
+      propertyPath: delayBeforeRopeActivation
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6604884944940480482, guid: 114d4e394fdc7ab419266946ee721e61, type: 3}
       propertyPath: m_Name
