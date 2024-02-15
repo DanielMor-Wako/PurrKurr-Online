@@ -449,11 +449,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             var hasNoHit = !_hero.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPosition, ref distancePercentReached);
             /*
-                        if (hasNoHit) {
-                            return;
-                        }*/
+            if (hasNoHit) {
+                return;
+            }*/
 
-            RopeController rope = _interactables.GetInstance<RopeController>();
+            var rope = _interactables.GetInstance<RopeController>();
             if (rope == null) {
                 _debug.LogWarning("No available rope instance in pool, consider increasing the max items capacity");
                 if (_charactersRopes.Count > 0) {
@@ -468,6 +468,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             rope.Initialize(ropeData);
             _charactersRopes.Add(rope);
+
+            // Connect character to rope
+            var lastLink = rope.GetLastLink();
+            _hero.SetTargetPosition(lastLink.GetCenterPosition(), 1);
+            //_hero.SetAsGrabbed(lastLink, lastLink.GetCenterPosition());
+            //_hero.SetAsGrabbing(lastLink);
 
             //ApplyEffectForDuration(_hero, Effect2DType.DustCloud);
 

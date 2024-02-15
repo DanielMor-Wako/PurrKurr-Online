@@ -250,8 +250,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea755ee96a387f04fa726abf298f674d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  continousLink: {fileID: 7850222914657994924}
-  weight: {fileID: 4632559184371182248}
+  _continousLink: {fileID: 7850222914657994924}
+  _weight: {fileID: 4632559184371182248}
   _anchorRigidBody: {fileID: 779232010997909125}
   _anchorJoint: {fileID: 1758298486355422424}
   delayBeforeRopeActivation: 0.5
@@ -381,8 +381,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ee9b94b39139414ab531b8d226e2fb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  joint: {fileID: 3079122203419112680}
-  rigidBody: {fileID: 1988358131088137192}
+  _rigidBody: {fileID: 1988358131088137192}
+  _joint: {fileID: 3079122203419112680}
 --- !u!50 &1988358131088137192
 Rigidbody2D:
   serializedVersion: 4
@@ -492,10 +492,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ChainLink
       objectReference: {fileID: 0}
-    - target: {fileID: 100148264881956354, guid: a8d78ece103e07942ba48c65da4c0009, type: 3}
-      propertyPath: m_Layer
-      value: 8
-      objectReference: {fileID: 0}
     - target: {fileID: 5113092008131380020, guid: a8d78ece103e07942ba48c65da4c0009, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -535,30 +531,6 @@ PrefabInstance:
     - target: {fileID: 5113092008131380020, guid: a8d78ece103e07942ba48c65da4c0009, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 180
-      objectReference: {fileID: 0}
-    - target: {fileID: 5197231628854481125, guid: a8d78ece103e07942ba48c65da4c0009, type: 3}
-      propertyPath: m_Size.x
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 5197231628854481125, guid: a8d78ece103e07942ba48c65da4c0009, type: 3}
-      propertyPath: m_Size.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6222386551514529345, guid: a8d78ece103e07942ba48c65da4c0009, type: 3}
-      propertyPath: m_Layer
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 6524372272996246084, guid: a8d78ece103e07942ba48c65da4c0009, type: 3}
-      propertyPath: m_Anchor.y
-      value: -0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 6524372272996246084, guid: a8d78ece103e07942ba48c65da4c0009, type: 3}
-      propertyPath: m_UseLimits
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7757475063758949700, guid: a8d78ece103e07942ba48c65da4c0009, type: 3}
-      propertyPath: m_Interpolate
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
