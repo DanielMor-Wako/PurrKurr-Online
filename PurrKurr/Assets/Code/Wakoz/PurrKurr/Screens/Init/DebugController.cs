@@ -49,7 +49,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Init {
             Debug.LogError(msg);
         }
 
-        public void DrawRay(Vector3 start, Vector2 dir, Color color, int duration) {
+        public void DrawRay(Vector3 start, Vector2 dir, Color color, float duration) {
 
             if (!DrawEnabled) {
                 return;
@@ -58,7 +58,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Init {
             Debug.DrawRay(start, dir, color, duration);
         }
 
-        public void DrawLine(Vector2 start, Vector2 end, Color color, int duration) {
+        public void DrawLine(Vector2 start, Vector2 end, Color color, float duration) {
 
             if (!DrawEnabled) {
                 return;
