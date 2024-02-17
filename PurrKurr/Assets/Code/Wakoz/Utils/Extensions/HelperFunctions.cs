@@ -81,6 +81,23 @@ namespace Code.Wakoz.Utils.Extensions {
             return points;
         }
 
+        public static Vector2 CalculateRotatedVector2(this Vector2 startPoint, Vector2 endPoint, float angleOffset) {
+
+            Vector2 direction = (endPoint - startPoint).normalized;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            angle += angleOffset;
+
+            return Quaternion.Euler(0, 0, angle) * Vector2.right;
+        }
+
+        public static Quaternion CalculateRotatedQuaternion(this Vector2 startPoint, Vector2 endPoint, float angleOffset) {
+            Vector2 direction = (endPoint - startPoint).normalized;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            angle += angleOffset;
+
+            return Quaternion.Euler(0, 0, angle);
+        }
+
         public static float PercentReachedBetweenPoints(Vector3 startVector, Vector3 endVector, Vector3 refVector) {
 
             // Returns float that represents the percentage reached between two vectors by a third vector as refference point
