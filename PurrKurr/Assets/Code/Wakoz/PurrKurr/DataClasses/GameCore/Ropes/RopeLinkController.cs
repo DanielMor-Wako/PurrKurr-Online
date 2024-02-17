@@ -1,4 +1,5 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
+using Code.Wakoz.PurrKurr.Screens.Ui_Controller;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -7,6 +8,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
     public sealed class RopeLinkController : Controller, IInteractableBody {
 
         public event Action<RopeLinkController> OnLinkStateChanged;
+        public event Action<RopeLinkController, ActionInput, Definitions.NavigationType> OnLinkInteracted;
 
         [SerializeField] private Rigidbody2D _rigidBody;
         [SerializeField] private HingeJoint2D _joint;
@@ -54,12 +56,20 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
             IsChainConnected() ? 1 : 0;
 
         public int DealDamage(int damage) {
+
+            if (damage == 0) {
+                return 1;
+            }
+
             ConnectJointTo(null);
             OnLinkStateChanged?.Invoke(this);
-            return 0;
+
+            var totalHp = 0;
+            return totalHp;
         }
 
         public void ApplyForce(Vector2 forceDir) {
+            //_rigidBody.AddForce(forceDir);
             _rigidBody.velocity = forceDir;
         }
 
@@ -82,5 +92,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
 
         public IInteractableBody GetGrabbedTarget() => _grabbedBody;
 
+        public void TryPerformInteraction(ActionInput actionInput, Definitions.NavigationType navigationDir) {
+            
+            OnLinkInteracted?.Invoke(this, actionInput, navigationDir);
+        }
     }
 }

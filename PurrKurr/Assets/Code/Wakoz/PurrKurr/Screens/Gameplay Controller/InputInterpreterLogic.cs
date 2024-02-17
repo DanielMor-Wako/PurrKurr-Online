@@ -40,8 +40,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 return true;
             }
             
-            state.SetCrouchOrStandingByUpDownInput(navigationDir);
             var isGrabbing = state.IsGrabbing();
+            // nth: rope specific state for movement?
+            /*if (isGrabbing && state.GetGrabbedTarget() != null) {
+                var grabbedTarget = character.GetGrabbedTarget();
+                if (grabbedTarget is RopeLinkController) {
+                    ((RopeLinkController)grabbedTarget).TryPerformInteraction(actionInput, navigationDir);
+                }
+            }*/
+
+            state.SetCrouchOrStandingByUpDownInput(navigationDir);
             var isInvalidState = state.CurrentState is Definitions.CharacterState.Blocking or Definitions.CharacterState.AimingRope or Definitions.CharacterState.AimingProjectile or Definitions.CharacterState.AimingJump;
             var isCrouchingState = !isInvalidState && state.CurrentState != Definitions.CharacterState.Running && state.IsCrouchingAndNotFallingNearWall();
             var isStandingState = !isInvalidState && state.CurrentState != Definitions.CharacterState.Running && (state.IsStandingUp() || isGrabbing);

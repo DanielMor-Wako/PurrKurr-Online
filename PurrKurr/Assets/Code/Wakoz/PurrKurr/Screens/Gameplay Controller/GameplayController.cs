@@ -340,6 +340,42 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             // check if player is not facing a wall while running so momentum sustains
                             _hero.FlipCharacterTowardsPoint(facingRight == true);
                         }
+
+                        //TryInteractWithRope(_hero, actionInput, navigationDir);
+                        // interact with rope link
+                        if (_hero.IsGrabbed() && _charactersRopes.Count > 0) {
+                            var rope = _charactersRopes.FirstOrDefault();
+                            var grabbedInteractable = _hero.GetGrabbedTarget();
+                            var ropeLink = grabbedInteractable as RopeLinkController;
+                            if (ropeLink != null) {
+                                if (navigationDir is NavigationType.Up or NavigationType.Down) {
+                                    var nextLink = rope.TryGetNextLink(ropeLink, navigationDir is NavigationType.Up);
+                                    if (nextLink != null && nextLink != ropeLink) {
+                                        // connect to next link
+                                        rope.DisconnectInteractableBody(_hero, ropeLink);
+                                        rope.ConnectInteractableBody(_hero, nextLink);
+                                    }
+
+                                } else if (navigationDir is not (NavigationType.None)) {
+                                    var isNavRightByFacingRight = facingRight != null ? facingRight == true ? true : false : false;
+
+                                    //TryStrechRope();
+                                    var RopeAngle = (Vector2)ropeLink.GetCenterPosition() - (Vector2)rope.GetFirstChainedLink().GetCenterPosition();
+                                    RaycastHit2D hit = Physics2D.Raycast((Vector2)rope.GetFirstChainedLink().GetCenterPosition(), RopeAngle.normalized, RopeAngle.magnitude, _whatIsSolid);
+                                    _debug.DrawLine((Vector2)rope.transform.position, (Vector2)ropeLink.GetCenterPosition(), Color.green, 0.2f);
+
+                                    var isRopeNotTouchingSolid = true;
+                                    if (hit.collider != null) {
+                                        _debug.DrawRay(hit.point, RopeAngle.normalized * 2f, Color.red, 0.5f);
+                                        isRopeNotTouchingSolid = false;
+                                    }
+
+                                    rope.TryCreateMommentum(ropeLink, isNavRightByFacingRight, isRopeNotTouchingSolid);
+                                    //ropeLink.TryPerformInteraction(actionInput, navigationDir);
+                                }
+                            }
+                        }
+
                     }
                 }
 
@@ -448,10 +484,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private void ShootRope(ActionInput actionInput, ref Vector2 newPos, ref Quaternion rotation, ref float distancePercentReached) {
 
             var hasNoHit = !_hero.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPosition, ref distancePercentReached);
-            /*
+
             if (hasNoHit) {
                 return;
-            }*/
+            }
 
             var rope = _interactables.GetInstance<RopeController>();
             if (rope == null) {
@@ -466,14 +502,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             //var ropeData = new RopeData(rope.gameObject, ropePointsData.ToArray()); // last value is the distance between each link
             var ropeData = new RopeData(rope.gameObject, new Vector2[2] { newPos, _hero.LegsPosition });
 
-            rope.Initialize(ropeData);
+            rope.Initialize(ropeData, _hero);
             _charactersRopes.Add(rope);
-
-            // Connect character to rope
-            var lastLink = rope.GetLastLink();
-            _hero.SetTargetPosition(lastLink.GetCenterPosition(), 1);
-            //_hero.SetAsGrabbed(lastLink, lastLink.GetCenterPosition());
-            //_hero.SetAsGrabbing(lastLink);
 
             //ApplyEffectForDuration(_hero, Effect2DType.DustCloud);
 
