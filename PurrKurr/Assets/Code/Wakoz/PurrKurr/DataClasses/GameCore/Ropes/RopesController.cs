@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
+namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
 
     [DefaultExecutionOrder(12)]
     public class RopesController : SingleController {

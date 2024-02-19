@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
+namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
 
     [System.Serializable]
     public class RopeData {

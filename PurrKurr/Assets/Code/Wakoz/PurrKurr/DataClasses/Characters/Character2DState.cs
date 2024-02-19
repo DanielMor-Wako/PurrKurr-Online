@@ -1,5 +1,7 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
@@ -323,6 +325,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             if (IsJumping()) {
                 SetState(Definitions.CharacterState.Jumping);
                 _hasLanded = false;
+                return;
+
+            } else if (IsGrabbing() && GetGrabbedTarget() is RopeLinkController) {
+                SetState(IsNotMoving() ? Definitions.CharacterState.RopeClinging : Definitions.CharacterState.RopeClimbing);
+                //_hasLanded = false;
                 return;
 
             } else if (_closestSurfaceDir == Vector2.zero && _closestSurfacePoint == Vector2.zero && !IsTouchingAnySurface() && _farSurfaceDir == Vector2.zero) {

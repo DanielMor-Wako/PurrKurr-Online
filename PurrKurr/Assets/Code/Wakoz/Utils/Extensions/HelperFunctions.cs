@@ -87,7 +87,16 @@ namespace Code.Wakoz.Utils.Extensions {
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             angle += angleOffset;
 
+            //var endDirection = AngleToVector(angle);
+            //Debug.DrawRay(endPoint, endDirection, Color.grey, 0.2f);
+
             return Quaternion.Euler(0, 0, angle) * Vector2.right;
+        }
+
+        public static Vector2 AngleToVector(float angleInDegrees) {
+
+            float angleInRadians = angleInDegrees * Mathf.Deg2Rad;
+            return new Vector2(Mathf.Cos(angleInRadians), Mathf.Sin(angleInRadians));
         }
 
         public static Quaternion CalculateRotatedQuaternion(this Vector2 startPoint, Vector2 endPoint, float angleOffset) {

@@ -163,17 +163,23 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 
                 case Definitions.ActionType.Jump:
 
-                    if (!ended && state.CanPerformJump(_gameplayLogic.IsStateConsideredAsGrounded(state.CurrentState))) {
+                    if (!ended && state.CanPerformJump(_gameplayLogic.IsStateConsideredAsGrounded(state.CurrentState)) ||
+                        started && character.State.CurrentState is Definitions.CharacterState.RopeClinging or Definitions.CharacterState.RopeClimbing) {
+                        
                         isActionPerformed = true;
                         forceDirToSetOnFixedUpdate = new Vector2(0, stats.JumpForce);
 
                     } else if (ended && state.Velocity.y > 0 && state.CurrentState == Definitions.CharacterState.Jumping) {
+
                         if (!(forceDirToSetOnFixedUpdate != Vector2.zero)) {
                             forceDirToSetOnFixedUpdate = new Vector2(state.Velocity.x, 0);
                         } else {//if (forceDirToSetOnFixedUpdate != Vector2.zero) {
                             forceDirToSetOnFixedUpdate = Vector2.zero;
                         }
-                    } else if ((started && character.State.CurrentState == Definitions.CharacterState.Crouching && state.IsCrouchingAndNotFallingNearWall() || ended && character.State.CurrentState == Definitions.CharacterState.AimingJump)) {
+                    
+                    } else if ((started && character.State.CurrentState == Definitions.CharacterState.Crouching && state.IsCrouchingAndNotFallingNearWall() ||
+                        ended && character.State.CurrentState == Definitions.CharacterState.AimingJump)) {
+
                         isActionPerformed = true;
                     }
                     return true;

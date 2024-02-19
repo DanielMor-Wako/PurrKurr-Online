@@ -256,13 +256,12 @@ MonoBehaviour:
   _anchorJoint: {fileID: 1758298486355422424}
   _distanceJoint: {fileID: 5510481188148821806}
   delayBeforeRopeActivation: 0.5
-  AnchorRotationOffset: -90
   LinkRotationOffset: -90
   WeightRotationOffset: 90
   distanceFromAnchor: 0
   linksDistance: 0.7
   weightDistanceFromLink: 0.5
-  ForceMulti: 15
+  ForceMulti: 3000
 --- !u!50 &779232010997909125
 Rigidbody2D:
   serializedVersion: 4
@@ -385,6 +384,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rigidBody: {fileID: 1988358131088137192}
   _joint: {fileID: 3079122203419112680}
+  _bodyCollider: {fileID: 4039801391068399177}
 --- !u!50 &1988358131088137192
 Rigidbody2D:
   serializedVersion: 4

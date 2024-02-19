@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Code.Wakoz.Utils.Extensions;
 using Code.Wakoz.PurrKurr.Logic.GameFlow;
+using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using Code.Wakoz.PurrKurr.DataClasses.Characters;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
-using Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils;
-using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles;
+using Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils;
 using Code.Wakoz.PurrKurr.Screens.CameraComponents;
 using Code.Wakoz.PurrKurr.Screens.Init;
 using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
@@ -285,6 +286,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         if (interactedColliders != null && !_hero.State.IsGrabbed()) {
                             CombatLogic(_hero, actionInput.ActionType, moveToPosition, interactedColliders, forceDir);
 
+                        } else if (interactedColliders != null && _hero.State.IsGrabbed() &&
+                            actionInput.ActionType is ActionType.Grab or ActionType.Attack) {
+                            if (actionInput.ActionType is ActionType.Grab) {
+                                DisconnectFromRope(_hero);
+                            } else {// if (actionInput.ActionType is ActionType.Attack) {
+                                CutRopeLink(_hero);
+                            }
+
                         } else if (actionInput.ActionType is ActionType.Special) {
                             ApplySpecialAction(_hero, true);
 
@@ -295,6 +304,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             ApplyAimingAction(_hero, actionInput);
 
                         } else if (actionInput.ActionType == ActionType.Jump && forceDir != Vector2.zero) {
+                            DisconnectFromRope(_hero);
                             _hero.SetJumping(Time.time + .2f);
                             AlterJumpDirByNavigationDirection(ref forceDir, _hero.State.NavigationDir, _hero.Stats.JumpForce);
                             _hero.SetForceDir(forceDir);
@@ -341,36 +351,27 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             _hero.FlipCharacterTowardsPoint(facingRight == true);
                         }
 
-                        //TryInteractWithRope(_hero, actionInput, navigationDir);
                         // interact with rope link
-                        if (_hero.IsGrabbed() && _charactersRopes.Count > 0) {
+                        if (_hero.IsGrabbed() && _charactersRopes.Count > 0 && !_hero.State.IsAiming()) {
                             var rope = _charactersRopes.FirstOrDefault();
                             var grabbedInteractable = _hero.GetGrabbedTarget();
                             var ropeLink = grabbedInteractable as RopeLinkController;
                             if (ropeLink != null) {
                                 if (navigationDir is NavigationType.Up or NavigationType.Down) {
+                                    // Connect to next link
                                     var nextLink = rope.TryGetNextLink(ropeLink, navigationDir is NavigationType.Up);
                                     if (nextLink != null && nextLink != ropeLink) {
-                                        // connect to next link
                                         rope.DisconnectInteractableBody(_hero, ropeLink);
                                         rope.ConnectInteractableBody(_hero, nextLink);
+                                        rope.UpdateWeightPosition();
                                     }
 
                                 } else if (navigationDir is not (NavigationType.None)) {
                                     var isNavRightByFacingRight = facingRight != null ? facingRight == true ? true : false : false;
-
-                                    //TryStrechRope();
-                                    var RopeAngle = (Vector2)ropeLink.GetCenterPosition() - (Vector2)rope.GetFirstChainedLink().GetCenterPosition();
-                                    RaycastHit2D hit = Physics2D.Raycast((Vector2)rope.GetFirstChainedLink().GetCenterPosition(), RopeAngle.normalized, RopeAngle.magnitude, _whatIsSolid);
-                                    _debug.DrawLine((Vector2)rope.transform.position, (Vector2)ropeLink.GetCenterPosition(), Color.green, 0.2f);
-
-                                    var isRopeNotTouchingSolid = true;
-                                    if (hit.collider != null) {
-                                        _debug.DrawRay(hit.point, RopeAngle.normalized * 2f, Color.red, 0.5f);
-                                        isRopeNotTouchingSolid = false;
-                                    }
-
-                                    rope.TryCreateMommentum(ropeLink, isNavRightByFacingRight, isRopeNotTouchingSolid);
+                                    
+                                    // Create Mommentum
+                                    rope.TryStrechRope(_whatIsSolid);
+                                    rope.TrySwingMommentum(ropeLink, isNavRightByFacingRight);
                                     //ropeLink.TryPerformInteraction(actionInput, navigationDir);
                                 }
                             }
@@ -507,6 +508,37 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             //ApplyEffectForDuration(_hero, Effect2DType.DustCloud);
 
+        }
+
+        private void CutRopeLink(IInteractableBody character) {
+
+            var grabbedInteractable = character.GetGrabbedTarget();
+            var ropeLink = grabbedInteractable as RopeLinkController;
+            if (ropeLink == null) {
+                return;
+            }
+
+            var rope = _charactersRopes.FirstOrDefault();
+            var nextLink = rope?.TryGetNextLink(ropeLink, false);
+            if (nextLink != null && rope != null) {
+                nextLink.DealDamage(1);
+                rope.UpdateWeightPosition();
+                rope.TryStrechRope(_whatIsSolid);
+            }
+        }
+
+        private void DisconnectFromRope(IInteractableBody character) {
+
+            var grabbedInteractable = character.GetGrabbedTarget();
+            var ropeLink = grabbedInteractable as RopeLinkController;
+            if (ropeLink == null) {
+                return;
+            }
+
+            var rope = _charactersRopes.FirstOrDefault();
+            rope?.DisconnectInteractableBody(character, ropeLink);
+            rope?.UpdateWeightPosition();
+            rope?.TryStrechRope(_whatIsSolid);
         }
 
         private bool CanPerformActionAlive() => _hero.State.CanPerformAction() && _hero.Stats.GetHealthPercentage() > 0;
@@ -675,7 +707,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             foreach (var col in interactedColliders) {
 
-                AttackStats attackStats = new AttackStats(attacker.Stats.Damage,
+                AttackData attackStats = new AttackData(attacker.Stats.Damage,
                     interactedColliders.Length < 2 ? forceDirAction : GetSingleHitForceDir(attacker.Stats.PushbackForce, col.GetCenterPosition(), moveToPosition));
                
                 var validAttack = TryPerformCombat(attacker, ref attackAbility, ref attackProperties, moveToPosition, col, attackStats);
@@ -708,7 +740,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             return (startPosition - endPosition).normalized * pushbackForce;
         }
 
-        private int TryPerformCombat(Character2DController attacker, ref AttackAbility attackAbility, ref AttackBaseStats attackProperties, Vector2 moveToPosition, IInteractableBody interactedCollider, AttackStats attackStats) {
+        private int TryPerformCombat(Character2DController attacker, ref AttackAbility attackAbility, ref AttackBaseStats attackProperties, Vector2 moveToPosition, IInteractableBody interactedCollider, AttackData attackStats) {
 
             var facingRightOrLeftTowardsPoint = 0;
 
@@ -805,6 +837,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         
                 } else if (_logic.AbilitiesLogic.IsAbilityAGrab(attackAbility)) {
 
+                    var grabbingRopeLink = foe is RopeLinkController ? foe as RopeLinkController : null;
+
                     //var abovePosition = new Vector3(moveToPosition.x, moveToPosition.y + attacker.LegsRadius, 0);
                     var isGroundSmash = properties.Contains(AttackProperty.GrabToGroundSmash) ||
                         foe.GetCurrentState() is CharacterState.Jumping or CharacterState.Falling;
@@ -830,8 +864,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         attackerAsInteractable.SetAsGrabbing(foe);
                         _debug.DrawRay(moveToPosition, Vector2.up * 10, Color.grey, 4);
                         _debug.DrawRay(endPosition, Vector2.up * 10, Color.yellow, 4);
+                        
+                        if (grabbingRopeLink != null) {
+                            // Grabbing the closest rope link
+                            var rope = _charactersRopes.FirstOrDefault();
+                            rope?.ConnectInteractableBody(attacker, grabbingRopeLink);
+                            rope?.UpdateWeightPosition();
 
-                        if (isGroundSmash) {
+                        } else if (isGroundSmash) {
 
                             ApplyGrabThrowWhenGrounded(foe, attacker, attackStats);
 
@@ -1048,10 +1088,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         var directionTowardsFoe = (objClosestPosition.x > legsPosition.x) ? 1 : -1;
                         dir.x = directionTowardsFoe;
                         var newPositionToSetOnFixedUpdate = objClosestPosition + (Vector2)dir.normalized * -(legsRadius);
-                        interactableBody.ApplyForce(dir * grabbedVelocity * 0.7f); // 0.7f is an impact damage decrease
                         // todo: damage decrease based on velocity?
                         _debug.Log($"damage on {interactableBody.GetTransform().gameObject.name} by {thrower.GetTransform().gameObject.name}");
                         interactableBody.DealDamage(damage);
+                        interactableBody.ApplyForce(dir * grabbedVelocity * 0.7f); // 0.7f is an impact damage decrease
                         if (interactableBody is Character2DController) {
                             ApplyEffectForDuration((Character2DController)interactableBody, Effect2DType.ImpactMed);
                         }
@@ -1157,7 +1197,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             return true;
         }
 
-        private async void ApplyForceOnFoeWithDelay(IInteractableBody damageableBody, AttackStats attackStats, int delayInMilliseconds = 0) {
+        private async void ApplyForceOnFoeWithDelay(IInteractableBody damageableBody, AttackData attackStats, int delayInMilliseconds = 0) {
 
             var ifDamageableIsGrabbedThenIgnoreAddToTargetsList = damageableBody.IsGrabbed();
             if (!ifDamageableIsGrabbedThenIgnoreAddToTargetsList) {
@@ -1219,7 +1259,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         }
 
-        private async void ApplyGrabThrowWhenGrounded(IInteractableBody grabbed, IInteractableBody grabber, AttackStats attackStats) {
+        private async void ApplyGrabThrowWhenGrounded(IInteractableBody grabbed, IInteractableBody grabber, AttackData attackStats) {
 
             await Task.Delay(150);
 

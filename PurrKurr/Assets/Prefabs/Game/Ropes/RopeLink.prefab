@@ -51,6 +51,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rigidBody: {fileID: 7757475063758949700}
   _joint: {fileID: 6524372272996246084}
+  _bodyCollider: {fileID: 5197231628854481125}
 --- !u!114 &1040143021546354763
 MonoBehaviour:
   m_ObjectHideFlags: 0

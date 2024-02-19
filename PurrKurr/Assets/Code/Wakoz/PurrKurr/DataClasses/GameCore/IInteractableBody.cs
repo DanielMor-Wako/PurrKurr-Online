@@ -16,7 +16,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
         public abstract void SetTargetPosition(Vector2 position, float percentToPerform = 1);
 
         public abstract void SetAsGrabbing(IInteractableBody grabbedBody);
-        public abstract void SetAsGrabbed(IInteractableBody attackerGameObject, Vector2 grabPosition);
+        public abstract void SetAsGrabbed(IInteractableBody grabberBody, Vector2 grabPosition);
         public abstract bool IsGrabbing();
         public abstract bool IsGrabbed();
         public abstract IInteractableBody GetGrabbedTarget();

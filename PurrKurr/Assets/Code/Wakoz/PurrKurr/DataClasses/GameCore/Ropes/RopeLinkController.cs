@@ -4,7 +4,7 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
+namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
     public sealed class RopeLinkController : Controller, IInteractableBody {
 
         public event Action<RopeLinkController> OnLinkStateChanged;
@@ -12,17 +12,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
 
         [SerializeField] private Rigidbody2D _rigidBody;
         [SerializeField] private HingeJoint2D _joint;
+        [SerializeField] private Collider2D _bodyCollider;
 
-        protected override void Clean() { }
-
-        protected override Task Initialize() {
-
-            _joint ??= GetComponent<HingeJoint2D>();
-            _rigidBody ??= GetComponent<Rigidbody2D>();
-
-            return Task.CompletedTask;
-        }
-
+        private IInteractableBody _grabbedBody;
+        
         public Rigidbody2D GetRigidBody() => _rigidBody;
 
         public void ConnectJointTo(Rigidbody2D bodyToConnectTo) {
@@ -41,7 +34,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
 
         public Rigidbody2D GetChainedBody() => _joint.connectedBody;
 
-        public Collider2D GetCollider() => null;
+        public void ApplySwingForce(Vector2 swingForceDir) {
+            _rigidBody.AddForce(swingForceDir);
+        }
+
+        public Collider2D GetCollider() => _bodyCollider;
 
         public Transform GetTransform() => transform;
 
@@ -69,15 +66,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
         }
 
         public void ApplyForce(Vector2 forceDir) {
-            //_rigidBody.AddForce(forceDir);
+            
+            if (IsGrabbed()) {
+                return;
+            }
+            
             _rigidBody.velocity = forceDir;
         }
 
         public void SetTargetPosition(Vector2 position, float percentToPerform = 1) {
             
         }
-
-        private IInteractableBody _grabbedBody;
 
         public void SetAsGrabbing(IInteractableBody grabbedBody) { }
 
@@ -96,5 +95,16 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
             
             OnLinkInteracted?.Invoke(this, actionInput, navigationDir);
         }
+
+        protected override void Clean() { }
+
+        protected override Task Initialize() {
+
+            _joint ??= GetComponent<HingeJoint2D>();
+            _rigidBody ??= GetComponent<Rigidbody2D>();
+
+            return Task.CompletedTask;
+        }
+
     }
 }
