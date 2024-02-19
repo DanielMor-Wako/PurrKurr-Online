@@ -1,5 +1,8 @@
 using Code.Wakoz.PurrKurr.DataClasses.Characters;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes;
+using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -10,10 +13,11 @@ namespace Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool {
     [DefaultExecutionOrder(12)]
     public sealed class InteractablesController : SingleController {
 
+        // todo; make the InteractablesController responsible for these
         public List<Character2DController> _heroes;
         public List<ProjectileController> _projectiles;
         public List<RopeController> _ropes;
-
+        // todo: make all these to ObjectPoolsController
         private Dictionary<System.Type, object> objectPools = new Dictionary<System.Type, object>();
 
         protected override void Clean() { }
@@ -81,7 +85,7 @@ namespace Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool {
             _initialSize = initialSize;
             _maxCapacity = maxCapacity;
 
-            objectPool = new ObjectPool<T>(() => Object.Instantiate(prefab, container));
+            objectPool = new ObjectPool<T>(() => UnityEngine.Object.Instantiate(prefab, container));
         }
 
         public T GetObjectFromPool() {
@@ -111,6 +115,35 @@ namespace Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool {
             } else {
                 Debug.LogWarning("Unable to release the object to the pool. Please ensure the object and the object pool are valid.");
             }
+        }
+
+        // _updatingState = StartCoroutine(ReleaseObjectsSequentially(_unchainedLinks, 3000, 200, (instance) => SafeRemoveInstance(instance), () => { _updatingState = null; return SafeRemoveAllUnchainedLinks(); })); // 100 milliseconds interval
+        public IEnumerator ReleaseObjectsSequentially(List<T> instances, float preDelay, float releaseInterval,
+        Func<T, IEnumerator> actionBeforeRelease = null, Func<IEnumerator> actionOnEndProcess = null) {
+
+            if (preDelay > 0) {
+                yield return new WaitForSeconds(preDelay * 0.001f);
+            }
+
+            foreach (var instance in instances) {
+
+                if (instance == null) {
+                    continue;
+                }
+
+                if (actionBeforeRelease != null) {
+                    yield return actionBeforeRelease(instance);
+                }
+
+                ReleaseObjectToPool(instance);
+
+                yield return new WaitForSeconds(releaseInterval * 0.001f);
+            }
+
+            if (actionOnEndProcess != null) {
+                yield return actionOnEndProcess();
+            }
+
         }
     }
 }

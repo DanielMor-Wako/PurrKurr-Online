@@ -14,6 +14,8 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
 
         public LayerMask GetSolidSurfaces() => Data.GetSolidSurfaces();
 
+        public LayerMask GetPlatformSurfaces() => Data.GetPlatformSurfaces();
+
         public LayerMask GetSurfaces() => Data.GetSurfaces();
 
         public LayerMask GetDamageables() => Data.GetDamageables();

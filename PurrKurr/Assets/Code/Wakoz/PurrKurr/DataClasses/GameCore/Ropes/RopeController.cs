@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
 
@@ -36,6 +37,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
         [SerializeField] private float linksDistance = 0.7f;
         [SerializeField] private float weightDistanceFromLink = 0.5f;
 
+        private RopeData _ropeData;
         private AnchorHandler _anchor;
         private InteractablesController _pool;
         private List<RopeLinkController> _ropeLinks = new List<RopeLinkController>();
@@ -45,10 +47,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
         private RopeLinkController _bodyToApplyForce = null;
         private Vector2 _forceToApply = Vector2.zero;
 
-        public async void Initialize(RopeData ropeData, IInteractableBody connectBodyToLastLink = null) {
+        public async Task Initialize(RopeData ropeData, IInteractableBody ropeInitiator = null) {
 
-            Vector2 startPosition = ropeData.linkPositions[0];
-            Vector2 endPosition = ropeData.linkPositions[ropeData.linkPositions.Length - 1];
+            _ropeData = ropeData;
+
+            Vector2 startPosition = ropeData.LinkPositions[0];
+            Vector2 endPosition = ropeData.LinkPositions[ropeData.LinkPositions.Length - 1];
             var normalizedDir = (endPosition - startPosition).normalized;
             var angle = Mathf.Atan2(normalizedDir.y, normalizedDir.x) * Mathf.Rad2Deg;
             var linksRotation = Quaternion.Euler(0, 0, angle + LinkRotationOffset);
@@ -70,14 +74,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
 
             PrepareLink(_weight, proceduralPosition, (Quaternion.Euler(0, 0, angle + WeightRotationOffset)), _ropeLinks[_ropeLinks.Count - 1].GetRigidBody());
 
-            if (connectBodyToLastLink != null) {
-
-                Debug.Log($"last Chained {_ropeLinks.Count} - {_unchainedLinks.Count}");
-                var lastLink = GetLastChainedLink();
-                Debug.Log($"Connect a body to link {lastLink.name}");
-                //_hero.SetTargetPosition(lastLink.GetCenterPosition(), 1);
-                ConnectInteractableBody(connectBodyToLastLink, lastLink);
-                UpdateWeightPosition();
+            if (ropeInitiator != null) {
+                Debug.Log($"Rope original initialor {ropeInitiator}");
             }
 
             if (_activationInAction != null) {
@@ -92,9 +90,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
             }
         }
 
-        public void DisconnectInteractableBody(IInteractableBody bodyToDisconnectFromLink, RopeLinkController link) {
+        private void DisconnectInteractableBody(RopeLinkController link, IInteractableBody bodyToDisconnectFromLink) {
 
-            DisconnectGrabbers(link);
+            DisconnectGrabbers(link, bodyToDisconnectFromLink);
 
             // todo: check for individual body to disconnect -> bodyToDisconnectFromLink
             //bodyToDisconnectFromLink.SetAsGrabbing(null);
@@ -102,88 +100,41 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
             //link.SetAsGrabbed(bodyToDisconnectFromLink, link.GetCenterPosition());
         }
 
-        public void ConnectInteractableBody(IInteractableBody bodyToConnectToLink, RopeLinkController link) {
+        public void HandleMoveToNextLink(RopeLinkController ropeLink, IInteractableBody bodyToConnectToLink, bool isNavUp) {
 
-            bodyToConnectToLink.SetAsGrabbing(link);
-            bodyToConnectToLink.SetAsGrabbed(link, link.GetCenterPosition());
-            link.SetAsGrabbed(bodyToConnectToLink, link.GetCenterPosition());
-        }
-
-        public void UpdateWeightPosition() {
-
-            if (HasNoChainedLinks()) {
-                if (_weight.GetChainedBody() != _anchorRigidBody) {
-                    UpdateLink(_weight, _anchorRigidBody.transform.position, Quaternion.identity, _anchorRigidBody);
-                }
+            var nextLink = TryGetNextAvailableLink(ropeLink, isNavUp);
+            if (nextLink == null || nextLink == ropeLink) {
                 return;
             }
 
-            var chainedLinks = GetChainedLinks();
-            foreach (var chainedLink in chainedLinks) {
-                if (chainedLink.IsGrabbed()) {
-                    if (_weight.GetChainedBody() != chainedLink.GetRigidBody()) {
-                        UpdateLink(_weight, chainedLink.GetCenterPosition(), Quaternion.identity, chainedLink.GetRigidBody());
-                    }
-                    return;
-                }
-            }
+            DisconnectInteractableBody(ropeLink, bodyToConnectToLink);
+            ConnectInteractableBody(nextLink, bodyToConnectToLink);
 
-            var lastChainedLink = chainedLinks[chainedLinks.Count - 1];
-            if (_weight.GetChainedBody() != lastChainedLink.GetRigidBody()) {
-                UpdateLink(_weight, lastChainedLink.GetCenterPosition(), Quaternion.identity, lastChainedLink.GetRigidBody());
-            }
+            UpdateWeightPosition();
+            UpdateStrechMode();
         }
 
-        public RopeLinkController TryGetNextLink(RopeLinkController ropeLink, bool isNavUp) {
+        public void HandleDisconnectInteractableBody(RopeLinkController link, IInteractableBody bodyToConnectToLink) {
 
-            if (ropeLink == null || _unchainedLinks.Contains(ropeLink) || HasNoChainedLinks()) {
-                return null;
-            }
+            DisconnectInteractableBody(link, bodyToConnectToLink);
 
-            if (!isNavUp && ropeLink != GetLastChainedLink() || isNavUp && ropeLink != GetFirstChainedLink()) {
-                return GetNextChainedLink(ropeLink, isNavUp ? -1 : 1);
-            }
-
-            return null;
+            UpdateWeightPosition();
+            UpdateStrechMode();
         }
 
-        public void TryStrechRope(LayerMask whatIsSolid) {
+        public void HandleConnectInteractableBody(RopeLinkController link, IInteractableBody bodyToConnectToLink) {
 
-            if (HasNoChainedLinks()) {
-                return;
-            }
+            ConnectInteractableBody(link, bodyToConnectToLink);
 
-            var ropeLinkConnectedToWeight = _weight.GetChainedBody().GetComponent<IInteractableBody>();
-            var firstLink = (Vector2)GetFirstChainedLink().GetCenterPosition();
-            var ropeAngle = (Vector2)ropeLinkConnectedToWeight.GetCenterPosition() - firstLink;
-
-            RaycastHit2D hit = Physics2D.Raycast(firstLink, ropeAngle.normalized, ropeAngle.magnitude, whatIsSolid);
-            Debug.DrawLine(firstLink, (Vector2)ropeLinkConnectedToWeight.GetCenterPosition(), Color.green, 0.2f);
-
-            var ropeHitPointTouchingSolid = transform.position;
-            if (hit.collider != null) {
-                Debug.DrawRay(hit.point, ropeAngle.normalized * 2f, Color.red, 0.5f);
-                ropeHitPointTouchingSolid = hit.point;
-            }
-
-            var canStrechRope = ropeHitPointTouchingSolid == transform.position;
-
-            _distanceJoint.maxDistanceOnly = !canStrechRope;
+            UpdateWeightPosition();
+            UpdateStrechMode();
         }
 
-        public bool TrySwingMommentum(RopeLinkController ropeLink, bool isNavRight) {
+        public void HandleSwingMommentum(RopeLinkController ropeLink, bool isNavRight) {
 
-            if (ropeLink == null || _unchainedLinks.Contains(ropeLink)) {
-                return false;
-            }
+            UpdateStrechMode();
 
-            var angle = isNavRight ? 90 : -90;
-
-            var pericularDirection = HelperFunctions.CalculateRotatedVector2(transform.position, ropeLink.GetCenterPosition(), angle);
-            _forceToApply = pericularDirection * Vector2.one * ForceMulti * Time.deltaTime;
-            _bodyToApplyForce = ropeLink;
-
-            return true;
+            TrySwingMommentum(ropeLink, isNavRight);
         }
 
         public RopeLinkController GetClosestLink(Vector3 referencePoint) {
@@ -204,7 +155,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
 
         public RopeLinkController GetLink(int index) {
 
-            // todo: check if index is -1, then return anchor item like index 0
+            // todo?: check if index is -1, then return anchor item like index 0
 
             if (index < _ropeLinks.Count && _ropeLinks[index] != null &&_ropeLinks.Contains(_ropeLinks[index])) {
                 return _ropeLinks[index];
@@ -220,6 +171,27 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
         public RopeLinkController GetFirstChainedLink() => GetLink(0);
 
         public RopeLinkController GetLastChainedLink() => GetLink(_ropeLinks.Count - _unchainedLinks.Count - 1);
+
+        public RopeLinkController GetNextChainedLink(RopeLinkController currentItem, int indexOffset) {
+
+            if (currentItem == null || indexOffset == 0) {
+                return currentItem;
+            }
+
+            var currentIndex = GetChainedLinks().FindIndex(item => item == currentItem);
+            if (currentIndex == -1) {
+                return null;
+            }
+
+            var newIndex = currentIndex + indexOffset;
+            var newIndexWithinRange = newIndex >= 0 && newIndex < _ropeLinks.Count;
+
+            return newIndexWithinRange ? _ropeLinks[newIndex] : null;
+        }
+
+        public void ApplyForce(Vector2 forceDir) {
+            _forceToApply = forceDir;
+        }
 
         public bool IsRopeStreched() => _distanceJoint.maxDistanceOnly == false;
 
@@ -318,7 +290,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
 
             _weight.SetSimulated(true);
 
-            _distanceJoint.maxDistanceOnly = false;
+            UpdateStrechMode();
+        }
+
+        private void StrechRope(bool strechted) {
+            _distanceJoint.maxDistanceOnly = !strechted;
         }
 
         private void HandleStateChanged(RopeLinkController triggeredRopeLink) {
@@ -370,7 +346,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
                 var weightConnectedBody = lastConnectedLink != null ? lastConnectedLink.GetRigidBody() : _anchorRigidBody;
 
                 UpdateWeightPosition();
-                //UpdateLink(_weight, weightPosition, Quaternion.identity, weightConnectedBody);
+                UpdateStrechMode();
 
                 if (lastConnectedLink == null) { Debug.Log("No Links, Last connected link is anchor");
                 } else { Debug.Log("Last connected link is "+lastConnectedLink.name); }
@@ -433,13 +409,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
             //if (_unchainedLinks.Contains(ropeLink)) { _unchainedLinks.Remove(ropeLink); }
         }
 
-        private void DisconnectGrabbers(RopeLinkController ropeLink) {
+        private void DisconnectGrabbers(RopeLinkController ropeLink, IInteractableBody bodyToDisconnectFromLink = null) {
 
             if (ropeLink == null) {
                 return;
             }
 
-            var connectedBody = ropeLink.GetGrabbedTarget();
+            var connectedBody = bodyToDisconnectFromLink != null ? bodyToDisconnectFromLink : ropeLink.GetGrabbedTarget();
             if (connectedBody == null) {
                 return;
             }
@@ -447,7 +423,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
             connectedBody.SetAsGrabbing(null);
             connectedBody.SetAsGrabbed(null, ropeLink.GetCenterPosition());
             ropeLink.SetAsGrabbed(null, ropeLink.GetCenterPosition());
-            Debug.Log($"Disconnect {connectedBody.GetTransform().name} from {ropeLink.name}");
+            //Debug.Log($"Disconnect {connectedBody.GetTransform().name} from {ropeLink.name}");
         }
 
         private async Task SafeRemoveAllUnchainedLinks() {
@@ -476,32 +452,103 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
             }
         }
 
-        private RopeLinkController GetNextChainedLink(RopeLinkController currentItem, int indexOffset) {
+        // Gets Next Link if not Occupied By Another InteractableBody
+        public RopeLinkController TryGetNextAvailableLink(RopeLinkController ropeLink, bool isNavUp) {
 
-            if (currentItem == null || indexOffset == 0) {
-                return currentItem;
-            }
-
-            var currentIndex = GetChainedLinks().FindIndex(item => item == currentItem);
-            if (currentIndex == -1) {
+            if (ropeLink == null || _unchainedLinks.Contains(ropeLink) || HasNoChainedLinks()) {
                 return null;
             }
-            
-            var newIndex = currentIndex + indexOffset;
-            var newIndexWithinRange = newIndex >= 0 && newIndex < _ropeLinks.Count;
 
-            if (newIndexWithinRange) {
-                if (_ropeLinks[newIndex].IsGrabbed()) {
-                    // Next Link Occupied By Another InteractableBody
-                    return null;
+            if (!isNavUp && ropeLink != GetLastChainedLink() || isNavUp && ropeLink != GetFirstChainedLink()) {
+                var nextChainedLink = GetNextChainedLink(ropeLink, isNavUp ? -1 : 1);
+                return !nextChainedLink.IsGrabbed() ? nextChainedLink : null;
+            }
+
+            return null;
+        }
+
+        private void ConnectInteractableBody(RopeLinkController link, IInteractableBody bodyToConnectToLink) {
+
+            bodyToConnectToLink.SetAsGrabbing(link);
+            bodyToConnectToLink.SetAsGrabbed(link, link.GetCenterPosition());
+            link.SetAsGrabbed(bodyToConnectToLink, link.GetCenterPosition());
+        }
+
+        private void UpdateWeightPosition() {
+
+            if (HasNoChainedLinks()) {
+                if (_weight.GetChainedBody() != _anchorRigidBody) {
+                    UpdateLink(_weight, _anchorRigidBody.transform.position, Quaternion.identity, _anchorRigidBody);
+                }
+                return;
+            }
+
+            var chainedLinks = GetChainedLinks();
+            foreach (var chainedLink in chainedLinks) {
+                if (chainedLink.IsGrabbed()) {
+                    if (_weight.GetChainedBody() != chainedLink.GetRigidBody()) {
+                        UpdateLink(_weight, chainedLink.GetCenterPosition(), Quaternion.identity, chainedLink.GetRigidBody());
+                    }
+                    return;
                 }
             }
 
-            return newIndexWithinRange ? _ropeLinks[newIndex] : null;
+            var lastChainedLink = chainedLinks[chainedLinks.Count - 1];
+            if (_weight.GetChainedBody() != lastChainedLink.GetRigidBody()) {
+                UpdateLink(_weight, lastChainedLink.GetCenterPosition(), Quaternion.identity, lastChainedLink.GetRigidBody());
+            }
         }
 
-        public void ApplyForce(Vector2 forceDir) {
-            _forceToApply = forceDir;
+        private void UpdateStrechMode() {
+
+            if (HasNoChainedLinks()) {
+                StrechRope(false);
+                return;
+            }
+
+            var ropeLinkConnectedToWeight = _weight.GetChainedBody().GetComponent<IInteractableBody>();
+            var hasInteractableConnected = ropeLinkConnectedToWeight?.GetGrabbedTarget() != null;
+            var linksNotTouchingSolids = IsRopePathCleanOfSolids();
+
+            StrechRope(hasInteractableConnected && linksNotTouchingSolids);
+        }
+
+        private bool IsRopePathCleanOfSolids() {
+
+            if (HasNoChainedLinks()) {
+                return false;
+            }
+
+            var ropeLinkConnectedToWeight = _weight.GetChainedBody().GetComponent<IInteractableBody>();
+            var firstLink = (Vector2)GetFirstChainedLink().GetCenterPosition();
+            var ropeAngle = (Vector2)ropeLinkConnectedToWeight.GetCenterPosition() - firstLink;
+
+            RaycastHit2D hit = Physics2D.Raycast(firstLink, ropeAngle.normalized, ropeAngle.magnitude, _ropeData.WhatIsSolid);
+            Debug.DrawLine(firstLink, (Vector2)ropeLinkConnectedToWeight.GetCenterPosition(), Color.green, 0.2f);
+
+            var ropeHitPointTouchingSolid = transform.position;
+            if (hit.collider != null) {
+                Debug.DrawRay(hit.point, ropeAngle.normalized * 2f, Color.red, 0.5f);
+                ropeHitPointTouchingSolid = hit.point;
+            }
+
+            var hasCleanPath = ropeHitPointTouchingSolid == transform.position;
+            return hasCleanPath;
+        }
+
+        private bool TrySwingMommentum(RopeLinkController ropeLink, bool isNavRight) {
+
+            if (ropeLink == null || _unchainedLinks.Contains(ropeLink)) {
+                return false;
+            }
+
+            var angle = isNavRight ? 90 : -90;
+
+            var pericularDirection = HelperFunctions.CalculateRotatedVector2(transform.position, ropeLink.GetCenterPosition(), angle);
+            _forceToApply = pericularDirection * Vector2.one * ForceMulti * Time.deltaTime;
+            _bodyToApplyForce = ropeLink;
+
+            return true;
         }
 
         private void FixedUpdate() {

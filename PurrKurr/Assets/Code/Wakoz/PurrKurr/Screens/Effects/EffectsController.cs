@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Pool;
 using Code.Wakoz.PurrKurr.DataClasses.Effects;
 using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
+using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
 
 namespace Code.Wakoz.PurrKurr.Screens.Effects {
 
@@ -23,6 +24,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Effects {
         protected override Task Initialize() {
 
             _effectsLayers = new List<GameObject>();
+            // todo: use the object pool class instead of this xxxxxxxxxx
+            //_pool ??= SingleController.GetController<InteractablesController>();
+            //_pool.CreateObjectPool(_continousLink, 6, 100, "Effects");
 
             return Task.CompletedTask;
         }

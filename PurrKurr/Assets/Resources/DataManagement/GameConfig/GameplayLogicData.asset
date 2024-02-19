@@ -21,6 +21,9 @@ MonoBehaviour:
   WhatIsSolid:
     serializedVersion: 2
     m_Bits: 2048
+  WhatIsPlatform:
+    serializedVersion: 2
+    m_Bits: 4096
   WhatIsTraversable:
     serializedVersion: 2
     m_Bits: 16384

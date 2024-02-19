@@ -1,6 +1,5 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
-using Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes;
 using UnityEngine;
 
@@ -10,7 +9,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public Definitions.CharacterState CurrentState => _currentState;
         private Definitions.CharacterState _currentState;
-        
+
+        private int _collLayer;
+        private int _outerRadiusCollLayer;
         private bool _facingRight = true;
         private bool _wasGrounded = false;
         private bool _isGrounded = false;
@@ -61,8 +62,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public bool isChargingSuper() => _chargingSuper;
 
-        public void DiagnoseState(Vector3 hitPoint, Vector2 collDir, Vector2 farSurfaceDir, Vector2 velocity, bool hasGroundBeneathByRayCast) {
+        public void DiagnoseState(Vector3 hitPoint, Vector2 collDir, int collLayer, Vector2 farSurfaceDir, int fatSurfaceCollLayer, Vector2 velocity, bool hasGroundBeneathByRayCast) {
             
+            _collLayer = _outerRadiusCollLayer = -1;
             _wasGrounded = _isGrounded; _isGrounded = false;
             _wasCeiling = _isCeiling; _isCeiling = false;
             _wasRightWall = _isRightWall; _isRightWall = false;
@@ -86,17 +88,21 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             
             if (collDir.y <= -0.5f) {
                 _isGrounded = true;
+                _collLayer = collLayer;
 
             } else if (farSurfaceDir.y >= 0.5f) {
                 _isCeiling = true;
+                _outerRadiusCollLayer = fatSurfaceCollLayer;
             }
 
             // validating wall hitpoint - that is not the too low beneath the player to be a wall 
             if (farSurfaceDir.y >= -0.5f) {
                 if (farSurfaceDir.x <= -0.7) {
                     _isLeftWall = true;
+                    _outerRadiusCollLayer = fatSurfaceCollLayer;
                 } else if (farSurfaceDir.x >= 0.7) {
                     _isRightWall = true;
+                    _outerRadiusCollLayer = fatSurfaceCollLayer;
                 }
             }
             
@@ -398,6 +404,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 Definitions.CharacterState.InterruptibleAnimation or Definitions.CharacterState.AimingJump;
         
         public bool IsJumping() => Time.time < _jumpingEndTime;
+
+        public int GetSurfaceCollLayer() => _collLayer > -1 ? _collLayer : _outerRadiusCollLayer;
 
         public bool IsGrounded() => _isGrounded;
 

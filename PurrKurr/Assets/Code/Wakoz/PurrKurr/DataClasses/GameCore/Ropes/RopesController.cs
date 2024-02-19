@@ -20,7 +20,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
 
         private RopeController GetRopeInstance(RopeData ropeData) {
 
-            GameObject ropeGO = Object.Instantiate(ropeData.anchorGameObject, transform);
+            GameObject ropeGO = Object.Instantiate(ropeData.AnchorGameObject, transform);
             RopeController ropeController = ropeGO.AddComponent<RopeController>();
             return ropeController;
         }

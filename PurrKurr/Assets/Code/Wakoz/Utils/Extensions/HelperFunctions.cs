@@ -158,6 +158,9 @@ namespace Code.Wakoz.Utils.Extensions {
             return self.Equals(other, StringComparison.OrdinalIgnoreCase);
         }
 
+        public static bool IsObjectInLayerMask(int objectLayer, ref LayerMask layerMask) {
+            return (layerMask.value & (1 << objectLayer)) > 0;
+        }
     }
     
 }

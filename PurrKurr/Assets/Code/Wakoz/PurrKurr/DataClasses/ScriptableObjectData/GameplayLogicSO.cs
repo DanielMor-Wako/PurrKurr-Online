@@ -12,6 +12,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
         [SerializeField] private LayerMask WhatIsInteractable; // add this
         [SerializeField] private LayerMask WhatIsCharacter;
         [SerializeField] private LayerMask WhatIsSolid;
+        [SerializeField] private LayerMask WhatIsPlatform;
         [SerializeField] private LayerMask WhatIsTraversable;
         [SerializeField] private LayerMask WhatIsClingable;
         [SerializeField] private LayerMask WhatIsTraversableClingable;
@@ -26,9 +27,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
 
         public LayerMask GetSolidSurfaces() =>
             WhatIsSolid;
-        
+
+        public LayerMask GetPlatformSurfaces() =>
+            WhatIsPlatform;
+
         public LayerMask GetSurfaces() =>
-            WhatIsSolid | WhatIsClingable | WhatIsTraversable | WhatIsTraversableClingable | WhatIsInteractable;
+            WhatIsSolid | WhatIsClingable | WhatIsTraversable | WhatIsTraversableClingable | WhatIsInteractable | WhatIsPlatform;
 
         public LayerMask GetDamageables() =>
             WhatIsCharacter | WhatIsInteractable;

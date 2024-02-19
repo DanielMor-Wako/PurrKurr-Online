@@ -32,6 +32,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         [SerializeField] private CharacterSenses _senses;
         [SerializeField] private Character2DRig _rigAnimator;
         [SerializeField] private Transform _bodyDamager;
+        [Header("Ground RayCheck Settings")]
+        [Tooltip("Angle Offset from the origin down direction")]
+        [SerializeField][Min(0)] private float GroundCheck_AngleOffset = 6f;
+        [Tooltip("Offsets the position to the ray from")]
+        [SerializeField] private Vector2 GroundCheck_PosOffset;
         private SpriteRenderer _sprite;
 
         private Rigidbody2D _legsRigidBody;
@@ -40,6 +45,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private Vector2 ForceDirToSetOnFixedUpdate;
 
         private LayerMask _whatIsSolid;
+        private LayerMask _whatIsPlatform;
         private LayerMask _whatIsSurface;
         private LayerMask _whatIsDamageableCharacter;
         private LayerMask _whatIsDamageable;
@@ -48,7 +54,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         const float CharacterMaxMotorTorque = 10000;
         const float AdditionalOuterRadius = 0.3f;
 
-        private Character2DState _characterState;
+        private Character2DState _state;
         private AnchorHandler _anchor;
 
         private LogicController _logic;
@@ -76,7 +82,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             
                 var objPosition = interaction.transform.position;
                 var dirFromCharacterToFoe = (objPosition - LegsPosition).normalized;
-                var isFacingTowardsFoe = dirFromCharacterToFoe.x > 0 == _characterState.IsFacingRight();
+                var isFacingTowardsFoe = dirFromCharacterToFoe.x > 0 == _state.IsFacingRight();
 
                 var blockingObjectsInAttackDirection = Physics2D.Raycast(LegsPosition,
                     dirFromCharacterToFoe,
@@ -129,7 +135,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public bool TryGetRopeDirection(Vector2 dir, ref Vector2 endPosition, ref Quaternion rotation, out Vector2 cursorPosition, ref float distancePercentReached) {
 
-            var distance = 15;
+            var distance = 17;
             var result = RaycastAgainstSolid(dir, distance, out var hitPosition, ref distancePercentReached);
             endPosition = result ? hitPosition : (Vector2)LegsPosition + dir.normalized * distance;
 
@@ -279,8 +285,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public CharacterStats Stats => _stats;
 
-        public Character2DState State => _characterState;
-        
+        public Character2DState State => _state;
+
         private void UpdateStats(int level = -1) {
 
             level = level == -1 ? _stats.GetCurrentLevel() : level;
@@ -298,10 +304,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _logic = SingleController.GetController<LogicController>();
             _debug = SingleController.GetController<DebugController>();
 
-            _whatIsSurface = _logic.GameplayLogic.GetSurfaces();
-            _whatIsSolid = _logic.GameplayLogic.GetSolidSurfaces();
-            _whatIsDamageableCharacter = _logic.GameplayLogic.GetDamageables();
-            _characterState = new Character2DState();
+            var gamePlayerLogic = _logic.GameplayLogic;
+            _whatIsSurface = gamePlayerLogic.GetSurfaces();
+            _whatIsSolid = gamePlayerLogic.GetSolidSurfaces();
+            _whatIsPlatform = gamePlayerLogic.GetPlatformSurfaces();
+            _whatIsDamageableCharacter = gamePlayerLogic.GetDamageables();
+            _state = new Character2DState();
 
             // todo: check if get logic is more performant under benchmark
             //_whatIsDamageableCharacter = _logic.TryGet<GameplayLogic>().GetDamageables();
@@ -340,13 +348,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         
         public void FlipCharacterTowardsPoint(bool facingRight) {
 
-            _characterState.SetFacingRight(facingRight);
+            _state.SetFacingRight(facingRight);
             _rigAnimator.SetFacingRight(facingRight);
         }
 
         public Collider2D GetCollider() => this != null ? _legsCollider ?? null : null;
         public Transform GetTransform() => this != null ? transform ?? null : null;
-        public Definitions.CharacterState GetCurrentState() => _characterState.CurrentState;
+        public Definitions.CharacterState GetCurrentState() => _state.CurrentState;
 
         public Vector3 GetCenterPosition() => LegsPosition;
 
@@ -394,7 +402,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public void SetAsGrabbing(IInteractableBody grabbedBody) {
 
-            _characterState.SetAsGrabbing(grabbedBody);
+            _state.SetAsGrabbing(grabbedBody);
         }
 
         public void SetAsGrabbed(IInteractableBody anchorParent, Vector2 position) {
@@ -405,15 +413,15 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _anchor.ModifyAnchor(position, anchorParent?.GetTransform());
             _cling.connectedBody.simulated = anchorParent != null;
 
-            _characterState.SetAsGrabbed(anchorParent);
+            _state.SetAsGrabbed(anchorParent);
         }
 
-        public bool IsGrabbing() => _characterState.IsGrabbing();
+        public bool IsGrabbing() => _state.IsGrabbing();
 
-        public bool IsGrabbed() => _cling.connectedBody.simulated && _characterState.IsGrabbed();
+        public bool IsGrabbed() => _cling.connectedBody.simulated && _state.IsGrabbed();
         
         public IInteractableBody GetGrabbedTarget() {
-            return _characterState.GetGrabbedTarget();
+            return _state.GetGrabbedTarget();
         }
 
         public void SetForceDir(Vector2 newForceDir, bool additionalForce = false) {
@@ -440,7 +448,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 SwitchRigidBodyType(RigidbodyType2D.Kinematic, 0, true);
                 _transformMover.MoveToPosition(transform, NewPositionToSetOnFixedUpdte, 0.15f); // 0.15f is the fastest combat turn
                 SwitchRigidBodyType(RigidbodyType2D.Dynamic, 0.15f, true);
-                _characterState.SetMoveAnimation(Time.time + (Stats.AttackDurationInMilliseconds * 0.001f));
+                _state.SetMoveAnimation(Time.time + (Stats.AttackDurationInMilliseconds * 0.001f));
                 NewPositionToSetOnFixedUpdte = Vector3.zero;
                 
             } else if (ForceDirToSetOnFixedUpdate != Vector2.zero) {
@@ -499,10 +507,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             var isAlive = Stats.Health > 0;
             
-            var terrainQuaternion = _characterState.ReturnForwardDirByTerrainQuaternion();
-            if (_characterState.IsJumping()) {
+            var terrainQuaternion = _state.ReturnForwardDirByTerrainQuaternion();
+            if (_state.IsJumping()) {
                 // aditional 50 to the jump direction, so character will start into rotation when jum[ing to create the flip effect. 50 is pretty random, 90 will turn the flip to obselete
-                terrainQuaternion *= Quaternion.AngleAxis(_characterState.GetFacingRightAsInt() * 50, new Vector3(0, 0, 1));
+                terrainQuaternion *= Quaternion.AngleAxis(_state.GetFacingRightAsInt() * 50, new Vector3(0, 0, 1));
             }
             
             _rigAnimator.UpdateRigRotation(isAlive, terrainQuaternion);
@@ -510,7 +518,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         private void UpdateCharacterState() {
 
-            var prevState = _characterState.CurrentState;
+            var prevState = _state.CurrentState;
             
             // solid objects are considered only as valid ground for player to move on
             var _groundColliders =
@@ -522,11 +530,21 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             var hitPoint = Vector2.zero;
             var collDir = Vector2.zero;
             var collLayer = -1;
+            var outerRadiusCollLayer = -1;
             var legsPosition = (Vector2)LegsPosition;
 
             var allSurfaces = new List<Collider2D>();
             if (_groundColliders.Length > 0) { allSurfaces.AddRange(_groundColliders); }
-            if (_solidObjectsColliders.Length > 0) { allSurfaces.AddRange(_solidObjectsColliders); }
+
+            if (_solidObjectsColliders.Length > 0) {
+                var isPlatformSurface = false;
+                foreach (var coll in _solidObjectsColliders) {
+                    isPlatformSurface = HelperFunctions.IsObjectInLayerMask(coll.gameObject.layer, ref _whatIsPlatform);
+                    if (!isPlatformSurface || isPlatformSurface && !_state.IsUpwardMovement() ) {
+                        allSurfaces.Add(coll);
+                    }
+                }
+            }
 
             if (allSurfaces.Count > 0) {
                 foreach (var coll in allSurfaces) {
@@ -552,37 +570,40 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             if (_solidOutRadiusObjectsColliders.Length > 0) {
                 var closestOuterRadiusColliderPosition = Vector2.zero;
                 foreach (var coll in _solidOutRadiusObjectsColliders) {
+                    
                     var newPoint = coll.ClosestPoint(legsPosition);
                     if (closestOuterRadiusColliderPosition == Vector2.zero || (closestOuterRadiusColliderPosition - legsPosition).magnitude > (newPoint - legsPosition).magnitude ) {
                         
                         closestOuterRadiusColliderPosition = newPoint;
                         outerRadiusCollDir = (closestOuterRadiusColliderPosition - legsPosition).normalized;
+                        outerRadiusCollLayer = coll.gameObject.layer;
                     }
                 }
             }
 
             //_debug.DrawRay(hitPoint, collDir * 5, Color.white, 1f);
             //_debug.Log("dir "+ collDir+", go = "+i.name);
-            var hasGroundBeneathByRayCast = _characterState.IsGrounded();
+            var hasGroundBeneathByRayCast = _state.IsGrounded();
             if (!hasGroundBeneathByRayCast && (collDir != Vector2.zero || outerRadiusCollDir != Vector2.zero)) {
                 
-                var downwardAndSlightForwardDir = HelperFunctions.RotateVector(-(Vector2.up) * 4, _characterState.GetFacingRightAsInt() * 9);
-                hasGroundBeneathByRayCast = Physics2D.Raycast(legsPosition, downwardAndSlightForwardDir, 4, _whatIsSolid);
-                _debug.DrawRay(legsPosition, downwardAndSlightForwardDir, hasGroundBeneathByRayCast ? Color.yellow : Color.grey, hasGroundBeneathByRayCast ? 2 : 1);
-                if (hasGroundBeneathByRayCast && !_characterState.CanMoveOnSurface()) {
-                    _characterState.SetAsLanded();
+                var downwardAndSlightForwardDir = HelperFunctions.RotateVector(-(Vector2.up) * 2, _state.GetFacingRightAsInt() * GroundCheck_AngleOffset);
+                var forwardLegsPosition = new Vector3(legsPosition.x + _state.GetFacingRightAsInt() * LegsRadius * GroundCheck_PosOffset.x, legsPosition.y + LegsRadius * GroundCheck_PosOffset.y, 0);
+                hasGroundBeneathByRayCast = Physics2D.Raycast(forwardLegsPosition, downwardAndSlightForwardDir, 4, _whatIsSolid);
+                _debug.DrawRay(forwardLegsPosition, downwardAndSlightForwardDir, hasGroundBeneathByRayCast ? Color.yellow : Color.grey, hasGroundBeneathByRayCast ? 2 : 1);
+                if (hasGroundBeneathByRayCast && !_state.CanMoveOnSurface()) {
+                    _state.SetAsLanded();
                 }
             }
             
-            _characterState.DiagnoseState(hitPoint, collDir, outerRadiusCollDir, _rigidbody.velocity, hasGroundBeneathByRayCast);
+            _state.DiagnoseState(hitPoint, collDir, collLayer, outerRadiusCollDir, outerRadiusCollLayer, _rigidbody.velocity, hasGroundBeneathByRayCast);
 
-            var shouldCallStateChange = prevState != _characterState.CurrentState ;// || _characterState.CurrentState == Definitions.CharacterState.Grounded;
+            var shouldCallStateChange = prevState != _state.CurrentState ;// || _characterState.CurrentState == Definitions.CharacterState.Grounded;
             
             if (shouldCallStateChange) {
 
-                OnStateChanged?.Invoke(_characterState);
+                OnStateChanged?.Invoke(_state);
 
-                if (_characterState.CurrentState == Definitions.CharacterState.Landed && ForceDirToSetOnFixedUpdate != Vector2.zero) {
+                if (_state.CurrentState == Definitions.CharacterState.Landed && ForceDirToSetOnFixedUpdate != Vector2.zero) {
                     ForceDirToSetOnFixedUpdate = new Vector2(_rigidbody.velocity.x, 0);
                     DoMove(0);
                 }
@@ -591,7 +612,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public void SetJumping(float time) {
 
-            _characterState.SetJumping(time);
+            _state.SetJumping(time);
         }
         
         public Vector3 IsFreeFalling(float distanceToCheckWhenFreeFalling) {

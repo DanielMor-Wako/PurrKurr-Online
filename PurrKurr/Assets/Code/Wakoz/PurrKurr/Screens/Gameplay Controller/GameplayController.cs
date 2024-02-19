@@ -52,6 +52,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private DebugController _debug;
 
         private LayerMask _whatIsSolid;
+        private LayerMask _whatIsPlatform;
         private LayerMask _whatIsSurface;
         private LayerMask _whatIsCharacter;
         private LayerMask _whatIsDamageableCharacter;
@@ -90,6 +91,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             
             _whatIsSurface = _gameplayLogic.GetSurfaces();
             _whatIsSolid = _gameplayLogic.GetSolidSurfaces();
+            _whatIsPlatform = _gameplayLogic.GetPlatformSurfaces();
             _whatIsCharacter = _gameplayLogic.GetDamageables();
             _whatIsDamageableCharacter = _gameplayLogic.GetDamageables();
 
@@ -301,7 +303,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             ApplyAimingAction(_hero, actionInput);
 
                         } else if (actionInput.ActionType is ActionType.Jump && _hero.State.CurrentState == CharacterState.Crouching) {
-                            ApplyAimingAction(_hero, actionInput);
+                            
+                            if (HelperFunctions.IsObjectInLayerMask(_hero.State.GetSurfaceCollLayer(), ref _whatIsPlatform)) {
+                                _hero.TryGetDodgeDirection(-Vector2.up * 2, ref moveToPosition);
+                                _hero.SetTargetPosition(moveToPosition);
+                            } else {
+                                ApplyAimingAction(_hero, actionInput);
+                            }
 
                         } else if (actionInput.ActionType == ActionType.Jump && forceDir != Vector2.zero) {
                             DisconnectFromRope(_hero);
@@ -358,21 +366,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             var ropeLink = grabbedInteractable as RopeLinkController;
                             if (ropeLink != null) {
                                 if (navigationDir is NavigationType.Up or NavigationType.Down) {
-                                    // Connect to next link
-                                    var nextLink = rope.TryGetNextLink(ropeLink, navigationDir is NavigationType.Up);
-                                    if (nextLink != null && nextLink != ropeLink) {
-                                        rope.DisconnectInteractableBody(_hero, ropeLink);
-                                        rope.ConnectInteractableBody(_hero, nextLink);
-                                        rope.UpdateWeightPosition();
-                                    }
+
+                                    rope.HandleMoveToNextLink(ropeLink, _hero, navigationDir is NavigationType.Up);
 
                                 } else if (navigationDir is not (NavigationType.None)) {
                                     var isNavRightByFacingRight = facingRight != null ? facingRight == true ? true : false : false;
-                                    
-                                    // Create Mommentum
-                                    rope.TryStrechRope(_whatIsSolid);
-                                    rope.TrySwingMommentum(ropeLink, isNavRightByFacingRight);
-                                    //ropeLink.TryPerformInteraction(actionInput, navigationDir);
+
+                                    rope.HandleSwingMommentum(ropeLink, isNavRightByFacingRight); 
+                                    //ropeLink.TryPerformInteraction(actionInput, navigationDir); //xxxxxxxxxxxxxxxx
                                 }
                             }
                         }
@@ -433,7 +434,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                                     ShootProjectile(actionInput, ref newPos, ref rotation, ref distancePercentReached);
 
                                 } else if (isRopingEnded) {
-                                    ShootRope(actionInput, ref newPos, ref rotation, ref distancePercentReached);
+                                    ShootRope(actionInput, newPos, rotation, distancePercentReached);
                                     
                                 } else if (isJumpAimEnded) {
                                     // apply jump aim in trajectory dir
@@ -482,7 +483,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         private List<RopeController> _charactersRopes = new();
 
-        private void ShootRope(ActionInput actionInput, ref Vector2 newPos, ref Quaternion rotation, ref float distancePercentReached) {
+        private async void ShootRope(ActionInput actionInput, Vector2 newPos, Quaternion rotation, float distancePercentReached) {
 
             var hasNoHit = !_hero.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPosition, ref distancePercentReached);
 
@@ -501,13 +502,20 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             //var ropePointsData = HelperFunctions.GenerateVectorsBetween(newPos, _hero.LegsPosition, ropeLinkSize);
             //ropePointsData.Add((Vector2)_hero.LegsPosition - actionInput.NormalizedDirection * weightDistanceFromLink); // last value is the weightDistance
             //var ropeData = new RopeData(rope.gameObject, ropePointsData.ToArray()); // last value is the distance between each link
-            var ropeData = new RopeData(rope.gameObject, new Vector2[2] { newPos, _hero.LegsPosition });
+            var ropeData = new RopeData(rope.gameObject, new Vector2[2] { newPos, _hero.LegsPosition }, _whatIsSolid);
 
-            rope.Initialize(ropeData, _hero);
-            _charactersRopes.Add(rope);
+            await rope.Initialize(ropeData, _hero);
+
+            var lastLink = rope.GetLastChainedLink();
+            //_hero.SetTargetPosition(lastLink.GetCenterPosition(), 1);
+            rope.HandleConnectInteractableBody(lastLink, _hero);
+            Debug.Log($"Connect a body to last link {lastLink.name}");
+
+            if (!_charactersRopes.Contains(rope)) {
+                _charactersRopes.Add(rope);
+            }
 
             //ApplyEffectForDuration(_hero, Effect2DType.DustCloud);
-
         }
 
         private void CutRopeLink(IInteractableBody character) {
@@ -519,11 +527,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
 
             var rope = _charactersRopes.FirstOrDefault();
-            var nextLink = rope?.TryGetNextLink(ropeLink, false);
-            if (nextLink != null && rope != null) {
-                nextLink.DealDamage(1);
-                rope.UpdateWeightPosition();
-                rope.TryStrechRope(_whatIsSolid);
+            var nextLink = rope?.GetNextChainedLink(ropeLink, 1);
+            if (nextLink != null) {
+                nextLink.DealDamage(1); // updating the rope is called thru the link event
             }
         }
 
@@ -536,9 +542,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
 
             var rope = _charactersRopes.FirstOrDefault();
-            rope?.DisconnectInteractableBody(character, ropeLink);
-            rope?.UpdateWeightPosition();
-            rope?.TryStrechRope(_whatIsSolid);
+            rope.HandleDisconnectInteractableBody(ropeLink, character);
         }
 
         private bool CanPerformActionAlive() => _hero.State.CanPerformAction() && _hero.Stats.GetHealthPercentage() > 0;
@@ -866,10 +870,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         _debug.DrawRay(endPosition, Vector2.up * 10, Color.yellow, 4);
                         
                         if (grabbingRopeLink != null) {
-                            // Grabbing the closest rope link
-                            var rope = _charactersRopes.FirstOrDefault();
-                            rope?.ConnectInteractableBody(attacker, grabbingRopeLink);
-                            rope?.UpdateWeightPosition();
+                            
+                            var rope = _charactersRopes.FirstOrDefault(); // Grabbing the closest rope link
+                            rope?.HandleConnectInteractableBody(grabbingRopeLink, attacker);
 
                         } else if (isGroundSmash) {
 
