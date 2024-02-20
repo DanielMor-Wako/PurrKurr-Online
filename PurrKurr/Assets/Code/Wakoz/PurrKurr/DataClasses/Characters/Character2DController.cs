@@ -540,7 +540,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 var isPlatformSurface = false;
                 foreach (var coll in _solidObjectsColliders) {
                     isPlatformSurface = HelperFunctions.IsObjectInLayerMask(coll.gameObject.layer, ref _whatIsPlatform);
-                    if (!isPlatformSurface || isPlatformSurface && !_state.IsUpwardMovement() ) {
+                    // validate the when isPlatformSurface occurs, the allSurfaces includes the collider.
+                    // as moving on platforms in angle might not always register the surface
+                    if (!isPlatformSurface || isPlatformSurface && !_state.IsUpwardMovement()) {
                         allSurfaces.Add(coll);
                     }
                 }
@@ -588,7 +590,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 
                 var downwardAndSlightForwardDir = HelperFunctions.RotateVector(-(Vector2.up) * 2, _state.GetFacingRightAsInt() * GroundCheck_AngleOffset);
                 var forwardLegsPosition = new Vector3(legsPosition.x + _state.GetFacingRightAsInt() * LegsRadius * GroundCheck_PosOffset.x, legsPosition.y + LegsRadius * GroundCheck_PosOffset.y, 0);
-                hasGroundBeneathByRayCast = Physics2D.Raycast(forwardLegsPosition, downwardAndSlightForwardDir, 4, _whatIsSolid);
+                hasGroundBeneathByRayCast = Physics2D.Raycast(forwardLegsPosition, downwardAndSlightForwardDir, 4, _whatIsSurface);//_whatIsSolid);
                 _debug.DrawRay(forwardLegsPosition, downwardAndSlightForwardDir, hasGroundBeneathByRayCast ? Color.yellow : Color.grey, hasGroundBeneathByRayCast ? 2 : 1);
                 if (hasGroundBeneathByRayCast && !_state.CanMoveOnSurface()) {
                     _state.SetAsLanded();
