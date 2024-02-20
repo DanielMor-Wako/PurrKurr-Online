@@ -104,7 +104,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -651907805
-  m_SortingLayer: -4
+  m_SortingLayer: -5
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 22e073fad2d83924eb036aa65a4dc98b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -325,32 +325,8 @@ MonoBehaviour:
     MultiTargetsDistance: 0
     BodySize: 1
     AttackDurationInMilliseconds: 150
-  _effects:
-    _data:
-    - DurationInSeconds: 0.05
-      EffectType: 13
-      Effect: {fileID: 2060154147542680831, guid: dce294a585d5d6a4c89e7491cc976932, type: 3}
-      TrackPosition: 0
-    - DurationInSeconds: 0.1
-      EffectType: 12
-      Effect: {fileID: 4267568921397314677, guid: 4b30d54482c5e20488cca0ee1b41ed80, type: 3}
-      TrackPosition: 0
-    - DurationInSeconds: 0.15
-      EffectType: 10
-      Effect: {fileID: 5688961944117140958, guid: 11cb6a908d1d01042863baa5d26aadd2, type: 3}
-      TrackPosition: 1
-    - DurationInSeconds: 0.1
-      EffectType: 9
-      Effect: {fileID: 4736606775567916809, guid: d1977b2085bd6104caf3c2db15a2c39a, type: 3}
-      TrackPosition: 1
-    - DurationInSeconds: 0.2
-      EffectType: 0
-      Effect: {fileID: 1203877100513155449, guid: bf6ff8c8ac1e49d4398b6600e46a8bd8, type: 3}
-      TrackPosition: 1
-    - DurationInSeconds: 0.1
-      EffectType: 21
-      Effect: {fileID: 5186544280080545649, guid: f250d794808043942b95c348d184dcb3, type: 3}
-      TrackPosition: 0
+  _effectOverrides:
+    _data: []
   _rigidbody: {fileID: 5807466878947769471}
   _legsCollider: {fileID: 2486121238406449663}
   _legs: {fileID: 5077573360968796146}
@@ -359,6 +335,8 @@ MonoBehaviour:
   _senses: {fileID: 3808448624113249814}
   _rigAnimator: {fileID: 1538035420728740240}
   _bodyDamager: {fileID: 5343545469360264959}
+  GroundCheck_AngleOffset: 1
+  GroundCheck_PosOffset: {x: 0.85, y: 0}
 --- !u!114 &1599996382888620125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1157,7 +1135,7 @@ TrailRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -651907805
-  m_SortingLayer: -4
+  m_SortingLayer: -5
   m_SortingOrder: -1
   m_Time: 0.5
   m_PreviewTimeScale: 1
