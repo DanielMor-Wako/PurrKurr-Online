@@ -352,7 +352,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
                 => Definitions.ActionType.Block
             };
 
+        public Character2DState GetState() => _state;
         public bool IsAerialState() => _state != null ? _gameplayLogic.IsStateConsideredAsAerial(_state.CurrentState) : false;
+
     }
 
 }

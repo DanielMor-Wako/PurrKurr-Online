@@ -128,18 +128,24 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
                 if (padModel.Config.actionType == Definitions.ActionType.Jump) {
                     padModel.UpdateAimAvailability(isValidDownInput);
                     padModel.SetAlternativeSymbolState(isValidDownInput ? 1 : 2);
+                    // todo: add leap beneath platform graphic , when on platform collider and player input is down + jump
+                    //padModel.SetAlternativeSymbolState(isValidDownInput ? Model.IsOnPlatformState() ? 3 : 1 : 2);
                     return true;
                 }
-                
+
+                var state = Model.GetState();
+                var isAerialState = Model.IsAerialState();
+                var isRopeState = state.CurrentState is Definitions.CharacterState.RopeClimbing or Definitions.CharacterState.RopeClinging;
+
                 if (padModel.Config.actionType == Definitions.ActionType.Attack) {
                     padModel.SetAlternativeSymbolState(
-                        Model.IsAerialState() ? 3 : isValidDownInput ? 1 : Model.IsInputDirectionValidAsUp() ? 2 : 0);
+                        isRopeState ? 4 : isAerialState ? 3 : isValidDownInput ? 1 : Model.IsInputDirectionValidAsUp() ? 2 : 0);
                     return true;
                 }
 
                 if (padModel.Config.actionType == Definitions.ActionType.Grab) {
                     padModel.SetAlternativeSymbolState(
-                        Model.IsAerialState() ? 3 : isValidDownInput ? 1 : Model.IsInputDirectionValidAsUp() ? 2 : 0);
+                        isRopeState ? 4 : isAerialState ? 3 : isValidDownInput ? 1 : Model.IsInputDirectionValidAsUp() ? 2 : 0);
                     return true;
                 }
 

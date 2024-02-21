@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7045502040548313582
+--- !u!1 &5221301482478471621
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,40 +8,40 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1968555326896585212}
-  - component: {fileID: 34838195972595647}
-  - component: {fileID: 107390690790760137}
-  - component: {fileID: 8523313033375891290}
-  - component: {fileID: 8284781067467050748}
+  - component: {fileID: 8501377807212344235}
+  - component: {fileID: 3027621409544201861}
+  - component: {fileID: 2654830434445078444}
+  - component: {fileID: 6872442175300116255}
+  - component: {fileID: 4373408133214645363}
   m_Layer: 12
-  m_Name: Platform_IceLog
+  m_Name: Platform_Rope
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1968555326896585212
+--- !u!4 &8501377807212344235
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7045502040548313582}
+  m_GameObject: {fileID: 5221301482478471621}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.59447896, y: 0.98245835, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -6.555, y: -1.14, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1971053207 &34838195972595647
+--- !u!1971053207 &3027621409544201861
 SpriteShapeRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7045502040548313582}
+  m_GameObject: {fileID: 5221301482478471621}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -81,18 +81,18 @@ SpriteShapeRenderer:
   m_MaskInteraction: 0
   m_ShapeTexture: {fileID: 0}
   m_Sprites:
-  - {fileID: 21300000, guid: 745364964513ef74a989ce2eb39ba784, type: 3}
+  - {fileID: 21300000, guid: ab304f89496cd0b40b0fa8bf5e40934a, type: 3}
   m_LocalAABB:
-    m_Center: {x: 12.175588, y: -0.34376562, z: 0}
-    m_Extent: {x: 3.5324469, y: 0.28555942, z: 0}
+    m_Center: {x: 9.101944, y: -0.43869334, z: 0}
+    m_Extent: {x: 1.6545155, y: 0.14525658, z: 0}
   m_SpriteSortPoint: 0
---- !u!114 &107390690790760137
+--- !u!114 &2654830434445078444
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7045502040548313582}
+  m_GameObject: {fileID: 5221301482478471621}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 90539df1cd5704abcb25fec9f3f5f84b, type: 3}
@@ -101,43 +101,27 @@ MonoBehaviour:
   m_Spline:
     m_IsOpenEnded: 1
     m_ControlPoints:
-    - position: {x: 8.644394, y: -0.40753382, z: 0}
+    - position: {x: 7.449108, y: -0.4476863, z: 0}
       leftTangent: {x: 0, y: 0, z: 0}
       rightTangent: {x: 0, y: 0, z: 0}
       mode: 0
-      height: 0.27
+      height: 0.5
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
-    - position: {x: 10.161263, y: -0.3793681, z: 0}
+    - position: {x: 10.754101, y: -0.39047152, z: 0}
       leftTangent: {x: 0, y: 0, z: 0}
       rightTangent: {x: 0, y: 0, z: 0}
       mode: 0
-      height: 1
+      height: 0.5
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
-    - position: {x: 13.9951935, y: -0.30817893, z: 0}
-      leftTangent: {x: 0, y: 0, z: 0}
-      rightTangent: {x: 0, y: 0, z: 0}
-      mode: 0
-      height: 1
-      spriteIndex: 0
-      corner: 1
-      m_CornerMode: 1
-    - position: {x: 15.707038, y: -0.33346158, z: 0}
-      leftTangent: {x: 0, y: 0, z: 0}
-      rightTangent: {x: 0, y: 0, z: 0}
-      mode: 0
-      height: 0.27
-      spriteIndex: 0
-      corner: 1
-      m_CornerMode: 1
-  m_SpriteShape: {fileID: 11400000, guid: 659f5f87d913e0140b4513a8aff980d7, type: 2}
-  m_FillPixelPerUnit: 30.6
+  m_SpriteShape: {fileID: 11400000, guid: d1831d540739197409440bb6cfd24043, type: 2}
+  m_FillPixelPerUnit: 20
   m_StretchTiling: 1
   m_SplineDetail: 4
-  m_AdaptiveUV: 1
+  m_AdaptiveUV: 0
   m_StretchUV: 0
   m_WorldSpaceUV: 1
   m_CornerAngleThreshold: 0
@@ -150,19 +134,22 @@ MonoBehaviour:
   m_Creator: {fileID: 0}
   m_Modifiers: []
   m_ColliderSegment:
-  - {x: 8.644397, y: -0.4076688}
-  - {x: 13.995186, y: -0.3086789}
-  - {x: 15.707036, y: -0.33359656}
---- !u!68 &8523313033375891290
+  - {x: 7.4494514, y: -0.46753404}
+  - {x: 8.3063, y: -0.4527005}
+  - {x: 8.715928, y: -0.44560915}
+  - {x: 9.897594, y: -0.42515266}
+  - {x: 9.982406, y: -0.42368448}
+  - {x: 10.754444, y: -0.41031924}
+--- !u!68 &6872442175300116255
 EdgeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7045502040548313582}
+  m_GameObject: {fileID: 5221301482478471621}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: 69b7e11a978f43c42bb616878e4eeb9a, type: 2}
+  m_Material: {fileID: 6200000, guid: 8ceb8e38691b3a14489a98426b1dc240, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -188,29 +175,32 @@ EdgeCollider2D:
   m_Offset: {x: 0, y: -0.5}
   m_EdgeRadius: 0.2
   m_Points:
-  - {x: 8.644397, y: -0.4076688}
-  - {x: 13.995186, y: -0.3086789}
-  - {x: 15.707036, y: -0.33359656}
+  - {x: 7.4494514, y: -0.46753404}
+  - {x: 8.3063, y: -0.4527005}
+  - {x: 8.715928, y: -0.44560915}
+  - {x: 9.897594, y: -0.42515266}
+  - {x: 9.982406, y: -0.42368448}
+  - {x: 10.754444, y: -0.41031924}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
---- !u!251 &8284781067467050748
+--- !u!251 &4373408133214645363
 PlatformEffector2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7045502040548313582}
+  m_GameObject: {fileID: 5221301482478471621}
   m_Enabled: 1
   m_UseColliderMask: 0
   m_ColliderMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_RotationalOffset: -10.7
+  m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 0
-  m_SurfaceArc: 100
+  m_SurfaceArc: 180
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
