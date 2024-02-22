@@ -1,5 +1,6 @@
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.Views;
+using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -12,11 +13,21 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
         [SerializeField] private MultiStateView _angle;
         [SerializeField] private LineRenderer _trajectory;
 
+        [Header("Slomo Settings")]
+        [SerializeField] private bool _affectTimeScale = true;
+        [SerializeField][Min(0)] public float _transitionDuration = 0.5f;
+        [SerializeField][Range(0.1f, 1f)] public float _slomoTimeScale = 0.5f;
+
+        private float _timeScaleTarget;
+        private Coroutine _timeScaleTransitionCoroutine;
+
         protected override void Clean() { }
 
         protected override Task Initialize() {
             return Task.CompletedTask;
         }
+
+        public void ToggleSlomoGameAssist() => _affectTimeScale = !_affectTimeScale;
 
         public void ActivateUtil(Definitions.ActionType actionType, Vector2 position, Quaternion quaternion, bool hasHitData, Vector3[] linePoints) => 
             UpdateUtilByActionType(actionType, true, position, quaternion, hasHitData, linePoints);
@@ -25,7 +36,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
             UpdateUtilByActionType(actionType, false, Vector2.zero, Quaternion.identity);
 
         private void UpdateUtilByActionType(Definitions.ActionType actionType, bool isActive, Vector2 position, Quaternion quaternion, bool hasHitData = false, Vector3[] linePoints = null) {
-            
+
+            TimeScaleTransition(_affectTimeScale && isActive);
+
             switch (actionType) {
 
                 case Definitions.ActionType.Rope:
@@ -72,6 +85,34 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
             }
 
             utilState.ChangeState(isActive ? 1 : 0);
+        }
+
+        private void TimeScaleTransition(bool slomoActive) {
+
+            _timeScaleTarget = slomoActive ? _slomoTimeScale : 1;
+
+            if (_timeScaleTransitionCoroutine != null) {
+                StopCoroutine(_timeScaleTransitionCoroutine);
+                _timeScaleTransitionCoroutine = null;
+            }
+            
+            _timeScaleTransitionCoroutine = StartCoroutine(TransitionTimeScale(_timeScaleTarget));
+        }
+
+        private IEnumerator TransitionTimeScale(float timeScaleTarget) {
+
+            float elapsedTime = 0f;
+            float initialTimeScale = Time.timeScale;
+            float target = timeScaleTarget;
+
+            while (elapsedTime < _transitionDuration) {
+                Time.timeScale = Mathf.Lerp(initialTimeScale, target, elapsedTime / _transitionDuration);
+                elapsedTime += Time.unscaledDeltaTime;
+                yield return null;
+            }
+
+            Time.timeScale = timeScaleTarget;
+            _timeScaleTransitionCoroutine = null;
         }
     }
 }
