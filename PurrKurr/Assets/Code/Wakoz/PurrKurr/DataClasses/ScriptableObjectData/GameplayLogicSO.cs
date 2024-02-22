@@ -21,15 +21,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
         [SerializeField] private EffectsData _effects;
 
         [Header("Character State Definitions")]
-        [SerializeField] private List<Definitions.CharacterState> CharacterStatesConsideredAsGrounded;
-        [SerializeField] private List<Definitions.CharacterState> CharacterStatesConsideredAsAerial;
+        [SerializeField] private List<Definitions.ObjectState> CharacterStatesConsideredAsGrounded;
+        [SerializeField] private List<Definitions.ObjectState> CharacterStatesConsideredAsAerial;
         [SerializeField][Min(0)] private float MinMagnitudeConsideredAsRunnin = 20;
 
         public LayerMask GetSolidSurfaces() =>
-            WhatIsSolid;
+            WhatIsSolid | WhatIsClingable;
 
         public LayerMask GetPlatformSurfaces() =>
             WhatIsPlatform;
+        public LayerMask GetClingableSurfaces() =>
+            WhatIsClingable;
 
         public LayerMask GetSurfaces() =>
             WhatIsSolid | WhatIsClingable | WhatIsTraversable | WhatIsTraversableClingable | WhatIsInteractable | WhatIsPlatform;
@@ -39,18 +41,18 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
 
         public EffectData GetEffectByType(Definitions.Effect2DType effectType) => _effects.GetDataByType(effectType);
 
-        public bool IsStateConsideredAsGrounded(Definitions.CharacterState specificState) {
+        public bool IsStateConsideredAsGrounded(Definitions.ObjectState specificState) {
 
             return IsStateIncludedInList(specificState, CharacterStatesConsideredAsGrounded);
         }
 
-        public bool IsStateConsideredAsAerial(Definitions.CharacterState specificState) {
+        public bool IsStateConsideredAsAerial(Definitions.ObjectState specificState) {
 
             return IsStateIncludedInList(specificState, CharacterStatesConsideredAsAerial);
         }
 
-        public bool IsStateConsideredAsRunning(Definitions.CharacterState specificState, float magnitude) =>
-            specificState is Definitions.CharacterState.Running && IsVelocityConsideredAsRunning(magnitude);
+        public bool IsStateConsideredAsRunning(Definitions.ObjectState specificState, float magnitude) =>
+            specificState is Definitions.ObjectState.Running && IsVelocityConsideredAsRunning(magnitude);
 
         public bool IsVelocityConsideredAsRunning(float magnitude) => magnitude > MinMagnitudeConsideredAsRunnin;
 
@@ -67,12 +69,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
         }*/
 
         // optimized search version - testing
-        private Dictionary<List<Definitions.CharacterState>, Dictionary<Definitions.CharacterState, bool>> stateCaches = new Dictionary<List<Definitions.CharacterState>, Dictionary<Definitions.CharacterState, bool>>();
+        private Dictionary<List<Definitions.ObjectState>, Dictionary<Definitions.ObjectState, bool>> stateCaches = new Dictionary<List<Definitions.ObjectState>, Dictionary<Definitions.ObjectState, bool>>();
 
-        private bool IsStateIncludedInList(Definitions.CharacterState specificState, List<Definitions.CharacterState> statesList) {
+        private bool IsStateIncludedInList(Definitions.ObjectState specificState, List<Definitions.ObjectState> statesList) {
             
             if (!stateCaches.ContainsKey(statesList)) {
-                stateCaches[statesList] = new Dictionary<Definitions.CharacterState, bool>();
+                stateCaches[statesList] = new Dictionary<Definitions.ObjectState, bool>();
             }
 
             if (stateCaches[statesList].ContainsKey(specificState)) {

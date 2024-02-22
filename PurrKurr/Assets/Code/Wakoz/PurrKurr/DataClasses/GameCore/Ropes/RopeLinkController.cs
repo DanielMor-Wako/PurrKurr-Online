@@ -42,8 +42,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
 
         public Transform GetTransform() => transform;
 
-        public Definitions.CharacterState GetCurrentState() =>
-            IsChainConnected() ? Definitions.CharacterState.Alive : Definitions.CharacterState.Dead;
+        public Definitions.ObjectState GetCurrentState() =>
+            IsChainConnected() ? Definitions.ObjectState.Alive : Definitions.ObjectState.Dead;
 
         public Vector3 GetCenterPosition() => _rigidBody != null ? _rigidBody.transform.position : Vector3.zero;
 

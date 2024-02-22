@@ -81,21 +81,21 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
             return _inputLogic.MinSwipeVelocity;
         }
         
-        public Definitions.AttackAbility GetAttackAbility(Definitions.NavigationType navigationDirection, Definitions.ActionType actionType, Definitions.CharacterState characterState) {
+        public Definitions.AttackAbility GetAttackAbility(Definitions.NavigationType navigationDirection, Definitions.ActionType actionType, Definitions.ObjectState characterState) {
             
             var attack = actionType == Definitions.ActionType.Attack;
             var block = actionType == Definitions.ActionType.Block;
             var grab = actionType == Definitions.ActionType.Grab;
             
             return navigationDirection switch {
-                _ when attack && characterState is Definitions.CharacterState.Running => Definitions.AttackAbility.RollAttack,
-                _ when attack && characterState is Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling => Definitions.AttackAbility.AerialAttack,
+                _ when attack && characterState is Definitions.ObjectState.Running => Definitions.AttackAbility.RollAttack,
+                _ when attack && characterState is Definitions.ObjectState.Jumping or Definitions.ObjectState.Falling => Definitions.AttackAbility.AerialAttack,
                 _ when attack && _inputLogic.IsNavigationDirValidAsDown(navigationDirection) => Definitions.AttackAbility.HeavyAttack,
                 _ when attack && _inputLogic.IsNavigationDirValidAsUp(navigationDirection) => Definitions.AttackAbility.MediumAttack,
                 _ when attack => Definitions.AttackAbility.LightAttackAlsoDefaultAttack,
                 _ when grab && _inputLogic.IsNavigationDirValidAsDown(navigationDirection) => Definitions.AttackAbility.HeavyGrab,
                 _ when grab && _inputLogic.IsNavigationDirValidAsUp(navigationDirection) => Definitions.AttackAbility.MediumGrab,
-                _ when grab && characterState is Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling => Definitions.AttackAbility.AerialGrab,
+                _ when grab && characterState is Definitions.ObjectState.Jumping or Definitions.ObjectState.Falling => Definitions.AttackAbility.AerialGrab,
                 _ when grab => Definitions.AttackAbility.LightGrabAlsoDefaultGrab,
                 _ => Definitions.AttackAbility.LightBlock
             };

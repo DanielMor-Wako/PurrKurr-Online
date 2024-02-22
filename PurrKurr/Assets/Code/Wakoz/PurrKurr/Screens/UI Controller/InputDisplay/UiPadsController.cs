@@ -85,14 +85,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
                     continue;
                 }
 
-                if (attackProperty.CharacterStateConditions.Contains(Definitions.CharacterState.Crouching)) {
+                if (attackProperty.CharacterStateConditions.Contains(Definitions.ObjectState.Crouching)) {
                     downKeyDependents.Add(_model.GetAttackMoveAsAbility(attackProperty.Ability));
                 
-                } else if (attackProperty.CharacterStateConditions.Contains(Definitions.CharacterState.StandingUp)) {
+                } else if (attackProperty.CharacterStateConditions.Contains(Definitions.ObjectState.StandingUp)) {
                     upKeyDependents.Add(_model.GetAttackMoveAsAbility(attackProperty.Ability));
                 }
 
-                if (attackProperty.CharacterStateConditions.Contains(Definitions.CharacterState.Jumping)) {
+                if (attackProperty.CharacterStateConditions.Contains(Definitions.ObjectState.Jumping)) {
                     characterStateDependents.Add(_model.GetAttackMoveAsAbility(attackProperty.Ability));
                 }
             }
@@ -119,7 +119,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
         }
 
 
-        private void OnStateChanged(Character2DState state) {
+        private void OnStateChanged(InteractableObject2DState state) {
             
             var stateDependents = _model.RefreshStateDependentPads(state);
             foreach (var i in stateDependents) {

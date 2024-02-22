@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
     [System.Serializable]
-    public sealed class Character2DState {
+    public sealed class InteractableObject2DState {
 
-        public Definitions.CharacterState CurrentState => _currentState;
-        private Definitions.CharacterState _currentState;
+        public Definitions.ObjectState CurrentState => _currentState;
+        private Definitions.ObjectState _currentState;
 
         private int _collLayer;
         private int _outerRadiusCollLayer;
@@ -24,7 +24,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private bool _wasTraversable = false;
         private bool _isTraversable = false;
 
-        public Vector2 farSurfaceDir => _farSurfaceDir;
+        public Vector2 FarSurfaceDir => _farSurfaceDir;
         private Vector2 _farSurfaceDir = Vector2.zero;
         public Vector2 ClosestSurfaceDir => _closestSurfaceDir;
         private Vector2 _closestSurfaceDir = Vector2.zero;
@@ -54,7 +54,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _hasGroundBeneathByRayCast = true;
         }
 
-        public void SetState(Definitions.CharacterState newState) {
+        public void SetState(Definitions.ObjectState newState) {
             _currentState = newState;
         }
 
@@ -62,7 +62,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public bool isChargingSuper() => _chargingSuper;
 
-        public void DiagnoseState(Vector3 hitPoint, Vector2 collDir, int collLayer, Vector2 farSurfaceDir, int fatSurfaceCollLayer, Vector2 velocity, bool hasGroundBeneathByRayCast) {
+        public void DiagnoseState(Vector3 hitPoint, Vector2 collDir, int collLayer, Vector2 farSurfaceDir, int farSurfaceCollLayer, Vector2 velocity, bool hasGroundBeneathByRayCast) {
             
             _collLayer = _outerRadiusCollLayer = -1;
             _wasGrounded = _isGrounded; _isGrounded = false;
@@ -92,17 +92,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             } else if (farSurfaceDir.y >= 0.5f) {
                 _isCeiling = true;
-                _outerRadiusCollLayer = fatSurfaceCollLayer;
+                _outerRadiusCollLayer = farSurfaceCollLayer;
             }
 
             // validating wall hitpoint - that is not the too low beneath the player to be a wall 
             if (farSurfaceDir.y >= -0.5f) {
                 if (farSurfaceDir.x <= -0.7) {
                     _isLeftWall = true;
-                    _outerRadiusCollLayer = fatSurfaceCollLayer;
+                    _outerRadiusCollLayer = farSurfaceCollLayer;
                 } else if (farSurfaceDir.x >= 0.7) {
                     _isRightWall = true;
-                    _outerRadiusCollLayer = fatSurfaceCollLayer;
+                    _outerRadiusCollLayer = farSurfaceCollLayer;
                 }
             }
             
@@ -253,35 +253,35 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 if (IsMoveAnimation()) {
 
                     if (_combatAbility == Definitions.ActionType.Attack) {
-                        SetState(Definitions.CharacterState.Attacking);
+                        SetState(Definitions.ObjectState.Attacking);
                         return;
                     } else if (_combatAbility == Definitions.ActionType.Grab) {
-                        SetState(Definitions.CharacterState.Grabbing);
+                        SetState(Definitions.ObjectState.Grabbing);
                         return;
                     }
 
                 } else if (_combatAbility == Definitions.ActionType.Block) {
-                    SetState(Definitions.CharacterState.Blocking);
+                    SetState(Definitions.ObjectState.Blocking);
                     return;
 
                 } else if (_combatAbility == Definitions.ActionType.Projectile) {
-                    SetState(Definitions.CharacterState.AimingProjectile);
+                    SetState(Definitions.ObjectState.AimingProjectile);
                     return;
 
                 } else if (_combatAbility == Definitions.ActionType.Rope) {
-                    SetState(Definitions.CharacterState.AimingRope);
+                    SetState(Definitions.ObjectState.AimingRope);
                     return;
 
                 } else if (_combatAbility == Definitions.ActionType.Special) {
-                    SetState(Definitions.CharacterState.InterruptibleAnimation);
+                    SetState(Definitions.ObjectState.InterruptibleAnimation);
                     return;
 
                 } else if (_combatAbility == Definitions.ActionType.Jump && IsAiming()) {
-                    SetState(Definitions.CharacterState.AimingJump);
+                    SetState(Definitions.ObjectState.AimingJump);
                     return;
 
                 } else if (!IsMoveAnimation() && IsInterraptibleAnimation()) {
-                    SetState(Definitions.CharacterState.InterruptibleAnimation);
+                    SetState(Definitions.ObjectState.InterruptibleAnimation);
                     return;
 
                 } else {
@@ -291,14 +291,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             }
 
             // todo: add the UninterruptibleAnimation
-            if (_currentState == Definitions.CharacterState.InterruptibleAnimation && _combatAbility == Definitions.ActionType.Empty && !IsInterraptibleAnimation()) {
-                SetState(Definitions.CharacterState.Grounded);
+            if (_currentState == Definitions.ObjectState.InterruptibleAnimation && _combatAbility == Definitions.ActionType.Empty && !IsInterraptibleAnimation()) {
+                SetState(Definitions.ObjectState.Grounded);
                 SetAsLanded();
                 return;
             }
 
-            if (!_hasLanded && _currentState is Definitions.CharacterState.Falling or Definitions.CharacterState.Jumping && (!_wasGrounded && _isGrounded || ( IsFrontWall() || IsBackWall() ) && _hasGroundBeneathByRayCast)) {
-                SetState(Definitions.CharacterState.Landed);
+            if (!_hasLanded && _currentState is Definitions.ObjectState.Falling or Definitions.ObjectState.Jumping && (!_wasGrounded && _isGrounded || ( IsFrontWall() || IsBackWall() ) && _hasGroundBeneathByRayCast)) {
+                SetState(Definitions.ObjectState.Landed);
                 SetAsLanded();
                 return;
             }
@@ -310,36 +310,41 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 }
 
                 if (_isCrouching) {
-                    SetState(Definitions.CharacterState.Crouching);
+                    SetState(Definitions.ObjectState.Crouching);
                     return;
                 } else if (_isStanding) {
-                    SetState(Definitions.CharacterState.StandingUp);
+                    SetState(Definitions.ObjectState.StandingUp);
                     return;
                 } else if (Velocity.magnitude > 2 && (_navigationDirection is Definitions.NavigationType.Right or Definitions.NavigationType.Left)) {
-                    SetState(Definitions.CharacterState.Running);
+                    SetState(Definitions.ObjectState.Running);
                     return;
                 } else if (_wasGrounded && _isGrounded /*&& _currentState == Definitions.CharacterState.Landed*/) {
-                    SetState(Definitions.CharacterState.Grounded);
+                    SetState(Definitions.ObjectState.Grounded);
                     return;
                 } else if (!_wasGrounded && !_isGrounded && IsFrontWall() && _hasLanded && _velocity.magnitude < 0.1f) {
-                    SetState(Definitions.CharacterState.Grounded);
+                    SetState(Definitions.ObjectState.Grounded);
                     return;
                 }
 
             }
 
             if (IsJumping()) {
-                SetState(Definitions.CharacterState.Jumping);
+                SetState(Definitions.ObjectState.Jumping);
                 _hasLanded = false;
                 return;
 
             } else if (IsGrabbing() && GetGrabbedTarget() is RopeLinkController) {
-                SetState(IsNotMoving() ? Definitions.CharacterState.RopeClinging : Definitions.CharacterState.RopeClimbing);
+                SetState(IsNotMoving() ? Definitions.ObjectState.RopeClinging : Definitions.ObjectState.RopeClimbing);
+                //_hasLanded = false;
+                return;
+
+            } else if (IsClinging()) {
+                SetState(IsNotMoving() ? Definitions.ObjectState.WallClinging : Definitions.ObjectState.WallClimbing);
                 //_hasLanded = false;
                 return;
 
             } else if (_closestSurfaceDir == Vector2.zero && _closestSurfacePoint == Vector2.zero && !IsTouchingAnySurface() && _farSurfaceDir == Vector2.zero) {
-                SetState(IsUpwardMovement() ? Definitions.CharacterState.Jumping : Definitions.CharacterState.Falling);
+                SetState(IsUpwardMovement() ? Definitions.ObjectState.Jumping : Definitions.ObjectState.Falling);
                 _hasLanded = false;
                 return;
             }
@@ -392,16 +397,16 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public bool CanPerformAction() =>
             !IsMoveAnimation() && 
-            _currentState is Definitions.CharacterState.Crouching or Definitions.CharacterState.StandingUp or
-                Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling or
-                Definitions.CharacterState.AerialJumping or Definitions.CharacterState.Grabbing or
-                Definitions.CharacterState.Grounded or Definitions.CharacterState.Landed or
-                Definitions.CharacterState.Running or Definitions.CharacterState.AirGliding or 
-                Definitions.CharacterState.WallClimbing or Definitions.CharacterState.RopeClinging or
-                Definitions.CharacterState.TraversalRunning or Definitions.CharacterState.WallClinging or 
-                Definitions.CharacterState.Alive or Definitions.CharacterState.Blocking or
-                Definitions.CharacterState.AimingRope or Definitions.CharacterState.AimingProjectile or 
-                Definitions.CharacterState.InterruptibleAnimation or Definitions.CharacterState.AimingJump;
+            _currentState is Definitions.ObjectState.Crouching or Definitions.ObjectState.StandingUp or
+                Definitions.ObjectState.Jumping or Definitions.ObjectState.Falling or
+                Definitions.ObjectState.AerialJumping or Definitions.ObjectState.Grabbing or
+                Definitions.ObjectState.Grounded or Definitions.ObjectState.Landed or
+                Definitions.ObjectState.Running or Definitions.ObjectState.AirGliding or 
+                Definitions.ObjectState.WallClimbing or Definitions.ObjectState.RopeClinging or
+                Definitions.ObjectState.TraversalRunning or Definitions.ObjectState.WallClinging or 
+                Definitions.ObjectState.Alive or Definitions.ObjectState.Blocking or
+                Definitions.ObjectState.AimingRope or Definitions.ObjectState.AimingProjectile or 
+                Definitions.ObjectState.InterruptibleAnimation or Definitions.ObjectState.AimingJump;
         
         public bool IsJumping() => Time.time < _jumpingEndTime;
 
@@ -425,6 +430,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public bool IsFrontWall() => _facingRight && _isRightWall || !_facingRight && _isLeftWall;
         public bool IsBackWall() => _facingRight && _isLeftWall || !_facingRight && _isRightWall;
+
+        private Transform _clingingOnObject;
+        public Transform GetClingableObject() => _clingingOnObject;
+        public bool IsClinging() => _clingingOnObject != null;
+        public void SetClinging(Transform objectToClingOn) => _clingingOnObject = objectToClingOn;
+        public void StopClinging() => SetClinging(null);
 
         private float _aimingEndTime;
         public bool IsAiming() => Time.time < _aimingEndTime;
@@ -470,7 +481,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             var isVerticalVelocityExceeding = Velocity.y < 10;
 
             var isGroundedOrCayoteTime = (IsTouchingAnySurface() && isStateConsideredAsGrounded || IsCoyoteTime() || _hasLanded);
-            return isVerticalVelocityExceeding && isGroundedOrCayoteTime && !IsJumping() && CurrentState != Definitions.CharacterState.Crouching;
+            return isVerticalVelocityExceeding && isGroundedOrCayoteTime && !IsJumping() && CurrentState != Definitions.ObjectState.Crouching;
         }
 
         public void SetAsGrabbed(IInteractableBody grabber) => _grabberAnchor = grabber;

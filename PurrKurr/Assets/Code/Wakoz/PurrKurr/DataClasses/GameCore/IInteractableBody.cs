@@ -7,7 +7,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
 
         public abstract Collider2D GetCollider();
         public abstract Transform GetTransform();
-        public abstract Definitions.CharacterState GetCurrentState();
+        public abstract Definitions.ObjectState GetCurrentState();
         public abstract Vector3 GetCenterPosition();
         public abstract Vector2 GetVelocity();
         public abstract float GetHpPercent();

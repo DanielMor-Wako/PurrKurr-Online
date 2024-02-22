@@ -135,7 +135,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
 
                 var state = Model.GetState();
                 var isAerialState = Model.IsAerialState();
-                var isRopeState = state.CurrentState is Definitions.CharacterState.RopeClimbing or Definitions.CharacterState.RopeClinging;
+                var isRopeState = state.CurrentState is Definitions.ObjectState.RopeClimbing or Definitions.ObjectState.RopeClinging;
 
                 if (padModel.Config.actionType == Definitions.ActionType.Attack) {
                     padModel.SetAlternativeSymbolState(

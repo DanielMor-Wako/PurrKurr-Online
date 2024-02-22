@@ -112,7 +112,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
         }
 
         // InteractableState?
-        public enum CharacterState {
+        public enum ObjectState {
             Alive,
             UninterruptibleAnimation,
             Dead,

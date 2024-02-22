@@ -18,7 +18,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
     public class Character2DController : Controller, IInteractableBody {
 
         public event Action<List<DisplayedableStatData>> OnUpdatedStats;
-        public event Action<Character2DState> OnStateChanged;
+        public event Action<InteractableObject2DState> OnStateChanged;
 
         [SerializeField] private CharacterStats _stats;
         [Tooltip("Effects to be used instead of the default effect")]
@@ -54,14 +54,15 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         const float CharacterMaxMotorTorque = 10000;
         const float AdditionalOuterRadius = 0.3f;
 
-        private Character2DState _state;
+        private InteractableObject2DState _state;
         private AnchorHandler _anchor;
 
         private LogicController _logic;
         private DebugController _debug;
-        
-        private Collider2D[] _solidObjectsColliders;
-        private Collider2D[] _solidOutRadiusObjectsColliders;
+
+        private Collider2D[] _groundColliders;
+        public Collider2D[] _solidObjectsColliders;
+        public Collider2D[] _solidOutRadiusObjectsColliders;
 
         public Collider2D[] NearbyInteractables() {
  
@@ -285,7 +286,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public CharacterStats Stats => _stats;
 
-        public Character2DState State => _state;
+        public InteractableObject2DState State => _state;
 
         private void UpdateStats(int level = -1) {
 
@@ -309,7 +310,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _whatIsSolid = gamePlayerLogic.GetSolidSurfaces();
             _whatIsPlatform = gamePlayerLogic.GetPlatformSurfaces();
             _whatIsDamageableCharacter = gamePlayerLogic.GetDamageables();
-            _state = new Character2DState();
+            _state = new InteractableObject2DState();
 
             // todo: check if get logic is more performant under benchmark
             //_whatIsDamageableCharacter = _logic.TryGet<GameplayLogic>().GetDamageables();
@@ -354,7 +355,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public Collider2D GetCollider() => this != null ? _legsCollider ?? null : null;
         public Transform GetTransform() => this != null ? transform ?? null : null;
-        public Definitions.CharacterState GetCurrentState() => _state.CurrentState;
+        public Definitions.ObjectState GetCurrentState() => _state.CurrentState;
 
         public Vector3 GetCenterPosition() => LegsPosition;
 
@@ -400,20 +401,37 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             NewPositionToSetOnFixedUpdte = newPosition;
         }
 
-        public void SetAsGrabbing(IInteractableBody grabbedBody) {
+        public void SetAsClinging(Transform wallParent, Vector2 position) {
 
-            _state.SetAsGrabbing(grabbedBody);
+            _transformMover.EndMove();
+            transform.position = position;
+
+            UpdateAnchor(wallParent, position);
+
+            if (wallParent != null) {
+                // 1 is the time to be able to cling
+                _state.SetClinging(wallParent);
+            } else {
+                _state.StopClinging();
+            }
         }
+
+        public void SetAsGrabbing(IInteractableBody grabbedBody) => _state.SetAsGrabbing(grabbedBody);
 
         public void SetAsGrabbed(IInteractableBody anchorParent, Vector2 position) {
 
             _transformMover.EndMove();
             transform.position = position;
 
-            _anchor.ModifyAnchor(position, anchorParent?.GetTransform());
-            _cling.connectedBody.simulated = anchorParent != null;
+            UpdateAnchor(anchorParent?.GetTransform(), position);
 
             _state.SetAsGrabbed(anchorParent);
+        }
+
+        private void UpdateAnchor(Transform anchorParent, Vector2 position) {
+
+            _anchor.ModifyAnchor(position, anchorParent);
+            _cling.connectedBody.simulated = anchorParent != null;
         }
 
         public bool IsGrabbing() => _state.IsGrabbing();
@@ -519,13 +537,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private void UpdateCharacterState() {
 
             var prevState = _state.CurrentState;
-            
-            // solid objects are considered only as valid ground for player to move on
-            var _groundColliders =
+
+            UpdateOverlappingColliders(ref _groundColliders, ref _solidObjectsColliders, ref _solidOutRadiusObjectsColliders);
+
+            /*_groundColliders =
                 Physics2D.OverlapCircleAll(LegsPosition, GroundedRadius, _whatIsSolid);
 
             _solidObjectsColliders =
-                Physics2D.OverlapCircleAll(LegsPosition, LegsRadius, _whatIsSurface);
+                Physics2D.OverlapCircleAll(LegsPosition, LegsRadius, _whatIsSurface);*/
             
             var hitPoint = Vector2.zero;
             var collDir = Vector2.zero;
@@ -534,8 +553,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             var legsPosition = (Vector2)LegsPosition;
 
             var allSurfaces = new List<Collider2D>();
-            if (_groundColliders.Length > 0) { allSurfaces.AddRange(_groundColliders); }
-
+            if (_groundColliders.Length > 0) {
+                allSurfaces.AddRange(_groundColliders);
+            }
             if (_solidObjectsColliders.Length > 0) {
                 var isPlatformSurface = false;
                 foreach (var coll in _solidObjectsColliders) {
@@ -547,12 +567,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                     }
                 }
             }
+            if (_solidOutRadiusObjectsColliders.Length > 0) {
+                allSurfaces.AddRange(_solidOutRadiusObjectsColliders);
+            }
 
-            if (allSurfaces.Count > 0) {
+            /*if (allSurfaces.Count > 0) {
                 foreach (var coll in allSurfaces) {
-                    if (coll.gameObject == gameObject) {
-                        continue;
-                    }
 
                     var newPoint = coll.ClosestPoint(legsPosition);
                     if (hitPoint == Vector2.zero || (hitPoint - legsPosition).magnitude > (newPoint - legsPosition).magnitude ) {
@@ -562,14 +582,20 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                         collLayer = coll.gameObject.layer;
                     }
                 }
+            }*/
+            var closestColl = allSurfaces.FirstOrDefault();
+            if (closestColl != null) {
+                hitPoint = closestColl.ClosestPoint(legsPosition);
+                collDir = (hitPoint - legsPosition).normalized;
+                collLayer = closestColl.gameObject.layer;
             }
-            
-            _solidOutRadiusObjectsColliders =
+
+            /*_solidOutRadiusObjectsColliders =
                 Physics2D.OverlapCircleAll(LegsPosition, LegsRadius + AdditionalOuterRadius, _whatIsSolid).
                     Where(collz => collz.gameObject != gameObject).ToArray();
-            
+            */
             var outerRadiusCollDir = Vector2.zero;
-            if (_solidOutRadiusObjectsColliders.Length > 0) {
+            /*if (_solidOutRadiusObjectsColliders.Length > 0) {
                 var closestOuterRadiusColliderPosition = Vector2.zero;
                 foreach (var coll in _solidOutRadiusObjectsColliders) {
                     
@@ -581,17 +607,38 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                         outerRadiusCollLayer = coll.gameObject.layer;
                     }
                 }
+            }*/
+            var farestColl = allSurfaces.FirstOrDefault();
+            if (farestColl != null) {
+                var hitOutPoint = farestColl.ClosestPoint(legsPosition);
+                outerRadiusCollDir = (hitOutPoint - legsPosition).normalized;
+                outerRadiusCollLayer = farestColl.gameObject.layer;
             }
 
             //_debug.DrawRay(hitPoint, collDir * 5, Color.white, 1f);
             //_debug.Log("dir "+ collDir+", go = "+i.name);
             var hasGroundBeneathByRayCast = _state.IsGrounded();
             if (!hasGroundBeneathByRayCast && (collDir != Vector2.zero || outerRadiusCollDir != Vector2.zero)) {
+
+                var facingDirectionAsInt = _state.GetFacingRightAsInt();
+                var forwardDownwardDir = HelperFunctions.RotateVector(-(Vector2.up) * 2, facingDirectionAsInt * GroundCheck_AngleOffset);
+                var backwardDownwardDir = HelperFunctions.RotateVector(-(Vector2.up) * 2, facingDirectionAsInt * -GroundCheck_AngleOffset);
+                var xOffsetFromCenter = facingDirectionAsInt * LegsRadius * GroundCheck_PosOffset.x;
+                var yOffsetFromCenter = LegsRadius * GroundCheck_PosOffset.y;
+                var legsForwardPosition = new Vector3(legsPosition.x + xOffsetFromCenter, legsPosition.y + yOffsetFromCenter, 0);
+                var legsBackwardPosition = new Vector3(legsPosition.x - xOffsetFromCenter, legsPosition.y + yOffsetFromCenter, 0);
+
+                hasGroundBeneathByRayCast = Physics2D.Raycast(legsForwardPosition, forwardDownwardDir, 4, _whatIsSurface);//_whatIsSolid);
+                _debug.DrawRay(legsForwardPosition, forwardDownwardDir, hasGroundBeneathByRayCast ? Color.yellow : Color.grey, hasGroundBeneathByRayCast ? 2 : 1);
+                if (!hasGroundBeneathByRayCast) {
+                    hasGroundBeneathByRayCast = Physics2D.Raycast(legsPosition, -(Vector2.up) * 2, 4, _whatIsSurface);
+                    _debug.DrawRay(legsPosition, -(Vector2.up) * 2, hasGroundBeneathByRayCast ? Color.yellow : Color.grey, hasGroundBeneathByRayCast ? 2 : 1);
+                    if (!hasGroundBeneathByRayCast) {
+                        hasGroundBeneathByRayCast = Physics2D.Raycast(legsBackwardPosition, backwardDownwardDir, 4, _whatIsSurface);
+                        _debug.DrawRay(legsBackwardPosition, backwardDownwardDir, hasGroundBeneathByRayCast ? Color.yellow : Color.grey, hasGroundBeneathByRayCast ? 2 : 1);
+                    }
+                }
                 
-                var downwardAndSlightForwardDir = HelperFunctions.RotateVector(-(Vector2.up) * 2, _state.GetFacingRightAsInt() * GroundCheck_AngleOffset);
-                var forwardLegsPosition = new Vector3(legsPosition.x + _state.GetFacingRightAsInt() * LegsRadius * GroundCheck_PosOffset.x, legsPosition.y + LegsRadius * GroundCheck_PosOffset.y, 0);
-                hasGroundBeneathByRayCast = Physics2D.Raycast(forwardLegsPosition, downwardAndSlightForwardDir, 4, _whatIsSurface);//_whatIsSolid);
-                _debug.DrawRay(forwardLegsPosition, downwardAndSlightForwardDir, hasGroundBeneathByRayCast ? Color.yellow : Color.grey, hasGroundBeneathByRayCast ? 2 : 1);
                 if (hasGroundBeneathByRayCast && !_state.CanMoveOnSurface()) {
                     _state.SetAsLanded();
                 }
@@ -605,12 +652,50 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
                 OnStateChanged?.Invoke(_state);
 
-                if (_state.CurrentState == Definitions.CharacterState.Landed && ForceDirToSetOnFixedUpdate != Vector2.zero) {
+                if (_state.CurrentState == Definitions.ObjectState.Landed && ForceDirToSetOnFixedUpdate != Vector2.zero) {
                     ForceDirToSetOnFixedUpdate = new Vector2(_rigidbody.velocity.x, 0);
                     DoMove(0);
                 }
             }
         }
+
+        // Sort the colliders into separate arrays based on their layer masks
+        private void UpdateOverlappingColliders(ref Collider2D[] groundColliders, ref Collider2D[] solidObjectsColliders, ref Collider2D[] solidOutRadiusObjectsColliders) {
+
+            var allColliders = Physics2D.OverlapCircleAll(LegsPosition, LegsRadius + AdditionalOuterRadius, _whatIsSurface)
+                .Where(coll => coll.gameObject != gameObject)
+                .OrderBy(obj => Vector2.Distance(obj.transform.position, LegsPosition)).ToArray();
+
+            // solid objects are considered only as valid ground for player to move on
+            var groundCollidersList = new List<Collider2D>();
+            var solidObjectsCollidersList = new List<Collider2D>();
+            var solidOutRadiusObjectsCollidersList = new List<Collider2D>();
+
+            foreach (var collider in allColliders) {
+
+                var distance = Vector2.Distance(LegsPosition, collider.transform.position);
+                var colliderLayer = collider.gameObject.layer;
+
+                if (distance <= LegsRadius) {
+                    
+                    if (distance <= GroundedRadius && IsLayerMask(colliderLayer, ref _whatIsSolid)) {
+                        groundCollidersList.Add(collider);
+
+                    } else {
+                        solidObjectsCollidersList.Add(collider);
+                    }
+
+                } else {
+                    solidOutRadiusObjectsCollidersList.Add(collider);
+                }
+            }
+
+            groundColliders = groundCollidersList.ToArray();
+            solidObjectsColliders = solidObjectsCollidersList.ToArray();
+            solidOutRadiusObjectsColliders = solidOutRadiusObjectsCollidersList.ToArray();
+        }
+
+        private bool IsLayerMask(int gameObjectLayerToMatch, ref LayerMask layerMask) => HelperFunctions.IsObjectInLayerMask(gameObjectLayerToMatch, ref layerMask);
 
         public void SetJumping(float time) {
 
@@ -619,7 +704,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         
         public Vector3 IsFreeFalling(float distanceToCheckWhenFreeFalling) {
 
-            if (State.CurrentState is not (Definitions.CharacterState.Jumping or Definitions.CharacterState.Falling or Definitions.CharacterState.Landed) || Velocity.y > 0 || State.IsTouchingAnySurface()) {
+            if (State.CurrentState is not (Definitions.ObjectState.Jumping or Definitions.ObjectState.Falling or Definitions.ObjectState.Landed) || Velocity.y > 0 || State.IsTouchingAnySurface()) {
                 //_debug.LogWarning("Is not free falling because state is "+State.State);
                 return Vector3.zero;
             }
@@ -654,7 +739,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         private RaycastHit2D FreeFallRayCast(Vector3 startPos, Vector3 direction, float distanceToCheckWhenFreeFalling) {
 
-            return Physics2D.Raycast(startPos, direction, distanceToCheckWhenFreeFalling,_whatIsSolid);
+            return Physics2D.Raycast(startPos, direction, distanceToCheckWhenFreeFalling, _whatIsSolid);
         }
 
         public void SetNavigationDir(Definitions.NavigationType inputDirection) => State.SetNavigationDir(inputDirection);

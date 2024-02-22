@@ -18,7 +18,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
         private readonly AbilitiesLogic _abilitiesLogic;
         private readonly InputLogic _inputLogic;
         private readonly GameplayLogic _gameplayLogic;
-        private Character2DState _state;
+        private InteractableObject2DState _state;
 
         public bool IsMovementPad { get; private set; }
         public bool IsJumpPad { get; private set; }
@@ -91,7 +91,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
         public void ActivatePad(ActionInput padType) => SetPadActiveState(padType, true);
         public void UpdatePad(ActionInput padType) => UpdatePadState(padType);
         public void DeactivatePad(ActionInput padType) => SetPadActiveState(padType, false);
-        public List<Definitions.ActionType> RefreshStateDependentPads(Character2DState state) {
+        public List<Definitions.ActionType> RefreshStateDependentPads(InteractableObject2DState state) {
 
             _state = state;
             var refreshedDependents = new List<Definitions.ActionType>();
@@ -352,7 +352,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
                 => Definitions.ActionType.Block
             };
 
-        public Character2DState GetState() => _state;
+        public InteractableObject2DState GetState() => _state;
         public bool IsAerialState() => _state != null ? _gameplayLogic.IsStateConsideredAsAerial(_state.CurrentState) : false;
 
     }

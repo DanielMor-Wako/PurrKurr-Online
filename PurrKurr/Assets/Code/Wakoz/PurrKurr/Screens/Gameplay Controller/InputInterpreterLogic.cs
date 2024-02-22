@@ -50,9 +50,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }*/
 
             state.SetCrouchOrStandingByUpDownInput(navigationDir);
-            var isInvalidState = state.CurrentState is Definitions.CharacterState.Blocking or Definitions.CharacterState.AimingRope or Definitions.CharacterState.AimingProjectile or Definitions.CharacterState.AimingJump;
-            var isCrouchingState = !isInvalidState && state.CurrentState != Definitions.CharacterState.Running && state.IsCrouchingAndNotFallingNearWall();
-            var isStandingState = !isInvalidState && state.CurrentState != Definitions.CharacterState.Running && (state.IsStandingUp() || isGrabbing);
+            var isInvalidState = state.CurrentState is Definitions.ObjectState.Blocking or Definitions.ObjectState.AimingRope or Definitions.ObjectState.AimingProjectile or Definitions.ObjectState.AimingJump;
+            var isCrouchingState = !isInvalidState && state.CurrentState != Definitions.ObjectState.Running && state.IsCrouchingAndNotFallingNearWall();
+            var isStandingState = !isInvalidState && state.CurrentState != Definitions.ObjectState.Running && (state.IsStandingUp() || isGrabbing);
 
             // full charge towards walls when any nav pad is held
             //if (!isGrabbing && (state.IsCeiling() || state.IsFrontWall()) && navigationDir != Definitions.NavigationType.None) {
@@ -78,7 +78,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             var isNavLeftDir = _inputLogic.IsNavigationDirValidAsLeft(navigationDir);
 
 
-            if (rigidbodyVelocity.y < -1f && state.CurrentState == Definitions.CharacterState.Falling) {
+            if (rigidbodyVelocity.y < -1f && state.CurrentState == Definitions.ObjectState.Falling) {
                 //if (rigidbodyVelocity.y < -1f && !state.IsJumping() && _gameplayLogic.IsStateConsideredAsAerial(state.CurrentState)) {
 
                 if (isNavRightDir && (rigidbodyVelocity.x < stats.AirborneMaxSpeed)) {
@@ -164,12 +164,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 case Definitions.ActionType.Jump:
 
                     if (!ended && state.CanPerformJump(_gameplayLogic.IsStateConsideredAsGrounded(state.CurrentState)) ||
-                        started && character.State.CurrentState is Definitions.CharacterState.RopeClinging or Definitions.CharacterState.RopeClimbing) {
+                        started && character.State.CurrentState is Definitions.ObjectState.RopeClinging or Definitions.ObjectState.RopeClimbing or Definitions.ObjectState.WallClinging or Definitions.ObjectState.WallClimbing) {
                         
                         isActionPerformed = true;
                         forceDirToSetOnFixedUpdate = new Vector2(0, stats.JumpForce);
 
-                    } else if (ended && state.Velocity.y > 0 && state.CurrentState == Definitions.CharacterState.Jumping) {
+                    } else if (ended && state.Velocity.y > 0 && state.CurrentState == Definitions.ObjectState.Jumping) {
 
                         if (!(forceDirToSetOnFixedUpdate != Vector2.zero)) {
                             forceDirToSetOnFixedUpdate = new Vector2(state.Velocity.x, 0);
@@ -177,8 +177,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             forceDirToSetOnFixedUpdate = Vector2.zero;
                         }
                     
-                    } else if ((started && character.State.CurrentState == Definitions.CharacterState.Crouching && state.IsCrouchingAndNotFallingNearWall() ||
-                        ended && character.State.CurrentState == Definitions.CharacterState.AimingJump)) {
+                    } else if ((started && character.State.CurrentState == Definitions.ObjectState.Crouching && state.IsCrouchingAndNotFallingNearWall() ||
+                        ended && character.State.CurrentState == Definitions.ObjectState.AimingJump)) {
 
                         isActionPerformed = true;
                     }

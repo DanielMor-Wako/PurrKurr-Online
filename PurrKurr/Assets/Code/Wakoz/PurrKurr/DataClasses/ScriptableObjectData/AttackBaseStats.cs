@@ -16,10 +16,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
         [SerializeField]private List<Definitions.AttackProperty> _properties;
 
         [Tooltip("The character conditional state for perform the action")]
-        [SerializeField] private List<Definitions.CharacterState> _characterStateCondition;
+        [SerializeField] private List<Definitions.ObjectState> _characterStateCondition;
         
         [Tooltip("The opponent conditional state for landing a hit")]
-        [SerializeField] private List<Definitions.CharacterState> _opponentStateCondition;
+        [SerializeField] private List<Definitions.ObjectState> _opponentStateCondition;
 
 
         // todo: maybe add the projectile attack to the attack list?
@@ -27,9 +27,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
         
         public List<Definitions.AttackProperty> Properties => _properties;
         
-        public List<Definitions.CharacterState> CharacterStateConditions => _characterStateCondition;
+        public List<Definitions.ObjectState> CharacterStateConditions => _characterStateCondition;
         
-        public List<Definitions.CharacterState> OpponentStateConditions => _opponentStateCondition;
+        public List<Definitions.ObjectState> OpponentStateConditions => _opponentStateCondition;
 
     }
 

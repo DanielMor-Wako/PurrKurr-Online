@@ -32,7 +32,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
         protected override void Clean() {}
         public Collider2D GetCollider() => _legsCollider ?? null;
         public Transform GetTransform() => transform;
-        public Definitions.CharacterState GetCurrentState() => Definitions.CharacterState.Grounded;
+        public Definitions.ObjectState GetCurrentState() => Definitions.ObjectState.Grounded;
         public Vector3 GetCenterPosition() => transform.position;
 
         public Vector2 GetVelocity() => _rigidbody.velocity;
