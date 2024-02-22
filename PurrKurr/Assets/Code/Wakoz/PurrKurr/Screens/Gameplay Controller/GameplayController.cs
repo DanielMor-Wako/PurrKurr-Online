@@ -30,7 +30,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         public event Action<ActionInput> OnTouchPadDown;
         public event Action<ActionInput> OnTouchPadClick;
         public event Action<ActionInput> OnTouchPadUp;
-        public event Action<Character2DState> OnStateChanged;
+        public event Action<InteractableObject2DState> OnStateChanged;
         public event Action<List<DisplayedableStatData>> OnStatsChanged;
 
         [SerializeField] private CameraFollow _cam;
@@ -53,6 +53,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         private LayerMask _whatIsSolid;
         private LayerMask _whatIsPlatform;
+        private LayerMask _whatIsClingable;
         private LayerMask _whatIsSurface;
         private LayerMask _whatIsCharacter;
         private LayerMask _whatIsDamageableCharacter;
@@ -92,6 +93,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _whatIsSurface = _gameplayLogic.GetSurfaces();
             _whatIsSolid = _gameplayLogic.GetSolidSurfaces();
             _whatIsPlatform = _gameplayLogic.GetPlatformSurfaces();
+            _whatIsClingable = _gameplayLogic.GetClingableSurfaces();
             _whatIsCharacter = _gameplayLogic.GetDamageables();
             _whatIsDamageableCharacter = _gameplayLogic.GetDamageables();
 
@@ -302,7 +304,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         } else if (actionInput.ActionType is ActionType.Rope or ActionType.Projectile) {
                             ApplyAimingAction(_hero, actionInput);
 
-                        } else if (actionInput.ActionType is ActionType.Jump && _hero.State.CurrentState == CharacterState.Crouching) {
+                        } else if (actionInput.ActionType is ActionType.Jump && _hero.State.CurrentState == ObjectState.Crouching) {
                             
                             if (HelperFunctions.IsObjectInLayerMask(_hero.State.GetSurfaceCollLayer(), ref _whatIsPlatform)) {
                                 _hero.TryGetDodgeDirection(-Vector2.up * 2, ref moveToPosition);
@@ -312,9 +314,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             }
 
                         } else if (actionInput.ActionType == ActionType.Jump && forceDir != Vector2.zero) {
-                            DisconnectFromRope(_hero);
+                            // todo: flip horizontal when player infront of wall?
+                            var flipHorizontalDirectionWhileClinging = false ;// _hero.State.IsClinging() && _hero.State.IsFrontWall();
+                            DisconnectFromAnyGrabbing(_hero);
                             _hero.SetJumping(Time.time + .2f);
-                            AlterJumpDirByNavigationDirection(ref forceDir, _hero.State.NavigationDir, _hero.Stats.JumpForce);
+                            AlterJumpDirByStateNavigationDirection(ref forceDir, _hero.State, flipHorizontalDirectionWhileClinging);
                             _hero.SetForceDir(forceDir);
                             _hero.DoMove(0); // might conflict with the TryPerformInputNavigation when the moveSpeed is already set by Navigation
                             ApplyEffectForDurationAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
@@ -351,8 +355,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         bool? facingRight = _logic.InputLogic.IsNavigationDirValidAsRight(navigationDir) ? true :
                             _logic.InputLogic.IsNavigationDirValidAsLeft(navigationDir) ? false : null;
 
-                        bool isNotJumpingState = _hero.State.CurrentState != CharacterState.Jumping;
-                        bool isRunState = _hero.State.CurrentState == CharacterState.Running;
+                        bool isNotJumpingState = _hero.State.CurrentState != ObjectState.Jumping;
+                        bool isRunState = _hero.State.CurrentState == ObjectState.Running;
 
                         if (facingRight != null && isNotJumpingState && (!isRunState && Mathf.Abs(_hero.Velocity.x) > _MinVelocityForFlip )) {
                             // check if player is not facing a wall while running so momentum sustains
@@ -375,6 +379,22 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                                     rope.HandleSwingMommentum(ropeLink, isNavRightByFacingRight); 
                                     //ropeLink.TryPerformInteraction(actionInput, navigationDir); //xxxxxxxxxxxxxxxx
                                 }
+                            }
+                        } else if(_hero.State.CurrentState is not (ObjectState.RopeClinging or ObjectState.RopeClimbing)) {
+                            
+                            var collSurfaceLayer = _hero.State.GetSurfaceCollLayer();
+                            if (collSurfaceLayer > -1 && HelperFunctions.IsObjectInLayerMask(collSurfaceLayer, ref _whatIsClingable)) {
+
+                                var closestWall = _hero._solidOutRadiusObjectsColliders.FirstOrDefault();
+                                if (closestWall != null) {
+                                    ApplyClingingAction(_hero, closestWall);
+                                }
+                            
+                            } else if (_hero.State.IsClinging() && !_hero.State.IsTouchingAnySurface() && _logic.InputLogic.IsNavigationDirValidAsDown(navigationDir)) {
+
+                                var xOffsetFromWall = new Vector2(0, -0.2f);
+                                var clingPointCloserToTopEdge = (Vector2)_hero.transform.position + xOffsetFromWall;
+                                _hero.SetAsClinging(null, clingPointCloserToTopEdge);
                             }
                         }
 
@@ -405,11 +425,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                 if (isActionPerformed) {
 
-                    var isBlockingEnded = actionInput.ActionType is ActionType.Block && _hero.State.CurrentState is CharacterState.Blocking;
-                    var isProjectilingEnded = actionInput.ActionType is ActionType.Projectile && _hero.State.CurrentState is CharacterState.AimingProjectile;
-                    var isRopingEnded = actionInput.ActionType is ActionType.Rope && _hero.State.CurrentState is CharacterState.AimingRope;
-                    var isJumpAimEnded = actionInput.ActionType is ActionType.Jump && _hero.State.CurrentState is CharacterState.AimingJump;
-                    var isSpecial = actionInput.ActionType is ActionType.Special && _hero.State.CurrentState is CharacterState.InterruptibleAnimation;
+                    var isBlockingEnded = actionInput.ActionType is ActionType.Block && _hero.State.CurrentState is ObjectState.Blocking;
+                    var isProjectilingEnded = actionInput.ActionType is ActionType.Projectile && _hero.State.CurrentState is ObjectState.AimingProjectile;
+                    var isRopingEnded = actionInput.ActionType is ActionType.Rope && _hero.State.CurrentState is ObjectState.AimingRope;
+                    var isJumpAimEnded = actionInput.ActionType is ActionType.Jump && _hero.State.CurrentState is ObjectState.AimingJump;
+                    var isSpecial = actionInput.ActionType is ActionType.Special && _hero.State.CurrentState is ObjectState.InterruptibleAnimation;
 
                     if (isBlockingEnded || isProjectilingEnded || isRopingEnded || isJumpAimEnded || isSpecial) {
 
@@ -518,6 +538,54 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             //ApplyEffectForDuration(_hero, Effect2DType.DustCloud);
         }
 
+        private void ApplyClingingAction(Character2DController character, Collider2D coll) {
+
+            if (coll is not EdgeCollider2D) {
+                return;
+            }
+
+            // 0.55f is the default hingeJoint2D y offset of the Anchor, the climbSpeed determines the offset when up or down
+            var climbSpeed = 0.1f;
+
+            var navType = character.State.NavigationDir;
+            var yMovementByNavigation = navType is NavigationType.Up ? climbSpeed : navType is NavigationType.Down ? -climbSpeed : 0;
+
+            var reachedWallBottom = yMovementByNavigation < 0 && character.State.IsCeiling();
+            if (reachedWallBottom) {
+                character.SetAsClinging(null, character.transform.position);
+                return;
+            }
+
+            var edges = coll ;// as EdgeCollider2D;
+
+            var legsPos = character.transform.position;
+            legsPos.y += yMovementByNavigation; 
+            var edgesClosestPoint = edges.ClosestPoint(legsPos);
+            var wallPoint = edgesClosestPoint;
+            wallPoint.y = legsPos.y;
+            var isWallPositionedRightToThePlayer = wallPoint.x > legsPos.x;
+
+            var isNavTowardsWall = _logic.InputLogic.IsNavigationDirValidAsRight(character.State.NavigationDir) && isWallPositionedRightToThePlayer;
+            if (!isNavTowardsWall) {
+                isNavTowardsWall = _logic.InputLogic.IsNavigationDirValidAsLeft(character.State.NavigationDir) && !isWallPositionedRightToThePlayer;
+                if (!isNavTowardsWall) {
+                    isNavTowardsWall = character.State.IsFacingRight() == isWallPositionedRightToThePlayer;
+                }
+            }
+
+            var notFacingTowardsWall = !isNavTowardsWall;
+            if (notFacingTowardsWall) {
+                return;
+            }
+
+            var xOffsetFromWall = new Vector2(isWallPositionedRightToThePlayer ? -1 : 1, 0); //Quaternion.Inverse(character.State.ReturnForwardDirByTerrainQuaternion())
+            //Vector2 offsetAngleFromWall = xOffsetFromWall * character.LegsRadius * 0.75f; // legsRadius * 0.9f, position the character right next the edge of the collider
+            wallPoint += xOffsetFromWall * character.LegsRadius * 0.8f;
+            character.SetAsClinging(edges.transform, wallPoint);
+
+            _debug.DrawLine(edgesClosestPoint, wallPoint, Color.magenta, 1f);
+        }
+
         private void CutRopeLink(IInteractableBody character) {
 
             var grabbedInteractable = character.GetGrabbedTarget();
@@ -545,6 +613,18 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             rope.HandleDisconnectInteractableBody(ropeLink, character);
         }
 
+        private void DisconnectFromAnyGrabbing(Character2DController character) {
+
+            DisconnectFromRope(character);
+            DisconnectAnyGrabbing(character);
+        }
+
+        private void DisconnectAnyGrabbing(Character2DController character) {
+            
+            //if (character.State.GetClingableObject() != null) { }
+            character.SetAsClinging(null, character.LegsPosition);
+        }
+
         private bool CanPerformActionAlive() => _hero.State.CanPerformAction() && _hero.Stats.GetHealthPercentage() > 0;
 
         private void FaceCharacterTowardsPointByNavigationDir(NavigationType navigationDir) {
@@ -556,18 +636,19 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
         }
 
-        private void AlterJumpDirByNavigationDirection(ref Vector2 forceDir, NavigationType navigationDir, float jumpForce) {
+        private void AlterJumpDirByStateNavigationDirection(ref Vector2 forceDir, InteractableObject2DState state, bool flipJumpHorizontalWhenClinging) {
 
-            forceDir.x = 0;
-            
+            var navigationDir = state.NavigationDir;
+            var horizontalDir = _hero.State.GetFacingRightAsInt() * (flipJumpHorizontalWhenClinging ? -1 : 1);
+
             //_debug.DrawRay(_hero.LegsPosition, forceDir, Color.white, 3);
             if (navigationDir == NavigationType.Up || _hero.State.IsFrontWall()) {
                 //forceDir.x = _hero.State.GetFacingRightAsInt();
-                forceDir = HelperFunctions.RotateVector(forceDir, _hero.State.GetFacingRightAsInt() * -5);
+                forceDir = HelperFunctions.RotateVector(forceDir, horizontalDir * -5);
 
             } else {
                 //forceDir.x = _hero.State.GetFacingRightAsInt() * jumpForce * 0.25f;
-                forceDir = HelperFunctions.RotateVector(forceDir, _hero.State.GetFacingRightAsInt() * -18);
+                forceDir = HelperFunctions.RotateVector(forceDir, horizontalDir * -18);
 
             }
             _debug.DrawRay(_hero.LegsPosition, forceDir, Color.white, 3);
@@ -768,11 +849,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 facingRightOrLeftTowardsPoint = foe.GetCenterPosition().x > attacker.LegsPosition.x ? 1 : -1;
                 
                 var properties = attackProperties.Properties;
-                var isFoeBlocking = foeState == CharacterState.Blocking;
+                var isFoeBlocking = foeState == ObjectState.Blocking;
 
                 if (isAttackAction) {
 
-                    if (foe.GetCurrentState() is CharacterState.Jumping or CharacterState.Falling &&
+                    if (foe.GetCurrentState() is ObjectState.Jumping or ObjectState.Falling &&
                         (properties.Contains(AttackProperty.PushDownOnHit) ||
                         properties.Contains(AttackProperty.PushDownOnBlock) && isFoeBlocking)) {
 
@@ -845,7 +926,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                     //var abovePosition = new Vector3(moveToPosition.x, moveToPosition.y + attacker.LegsRadius, 0);
                     var isGroundSmash = properties.Contains(AttackProperty.GrabToGroundSmash) ||
-                        foe.GetCurrentState() is CharacterState.Jumping or CharacterState.Falling;
+                        foe.GetCurrentState() is ObjectState.Jumping or ObjectState.Falling;
                     var grabPointOffset = (isGroundSmash) ? Vector2.down : Vector2.up;
                     var endPosition = moveToPosition + grabPointOffset * (attacker.LegsRadius);
                     var attackerAsInteractable = (IInteractableBody)attacker;
@@ -1120,7 +1201,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             finally { }
         }
 
-        private bool ValidateAttackConditions(AttackBaseStats attack, Character2DState characterState) {
+        private bool ValidateAttackConditions(AttackBaseStats attack, InteractableObject2DState characterState) {
 
             var attackerState = characterState.CurrentState;
             if (attack.Ability == AttackAbility.RollAttack) { _debug.Log($"roll attack data: {characterState.Velocity.magnitude}"); }
@@ -1128,13 +1209,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             foreach (var condition in attack.CharacterStateConditions) {
 
                 switch (condition) {
-                    case CharacterState.Running when !_logic.GameplayLogic.IsStateConsideredAsRunning(attackerState, characterState.Velocity.magnitude):
-                    case CharacterState.Jumping or CharacterState.Falling when !(_logic.GameplayLogic.IsStateConsideredAsAerial(attackerState)):
-                    case CharacterState.Grounded when !_logic.GameplayLogic.IsStateConsideredAsGrounded(attackerState):
-                    case CharacterState.Crouching when attackerState != CharacterState.Crouching:
-                    case CharacterState.StandingUp when attackerState != CharacterState.StandingUp:
-                    case CharacterState.Blocking when attackerState != CharacterState.Blocking:
-                    case CharacterState.Grabbing when attackerState != CharacterState.Grabbing:
+                    case ObjectState.Running when !_logic.GameplayLogic.IsStateConsideredAsRunning(attackerState, characterState.Velocity.magnitude):
+                    case ObjectState.Jumping or ObjectState.Falling when !(_logic.GameplayLogic.IsStateConsideredAsAerial(attackerState)):
+                    case ObjectState.Grounded when !_logic.GameplayLogic.IsStateConsideredAsGrounded(attackerState):
+                    case ObjectState.Crouching when attackerState != ObjectState.Crouching:
+                    case ObjectState.StandingUp when attackerState != ObjectState.StandingUp:
+                    case ObjectState.Blocking when attackerState != ObjectState.Blocking:
+                    case ObjectState.Grabbing when attackerState != ObjectState.Grabbing:
                         return false;
                 }
 
@@ -1143,7 +1224,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             return true;
         }
 
-        private bool ValidateAlternativeAttackConditions(ref AttackAbility attackAbility, ref AttackBaseStats attack, Character2DState characterState) {
+        private bool ValidateAlternativeAttackConditions(ref AttackAbility attackAbility, ref AttackBaseStats attack, InteractableObject2DState characterState) {
 
             var state = characterState.CurrentState;
             _debug.Log($"checking matching alternative Attack for {attackAbility}");
@@ -1151,11 +1232,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 //_debug.Log($"checking alt condition {condition} is considered ? {characterState.Velocity.magnitude}");
                 switch (condition) {
 
-                    case CharacterState.Running when !_logic.GameplayLogic.IsStateConsideredAsRunning(characterState.CurrentState, characterState.Velocity.magnitude):
+                    case ObjectState.Running when !_logic.GameplayLogic.IsStateConsideredAsRunning(characterState.CurrentState, characterState.Velocity.magnitude):
                         attackAbility = AttackAbility.LightAttackAlsoDefaultAttack;
                         return true;
 
-                    case var _ when condition is CharacterState.StandingUp or CharacterState.Crouching && _logic.GameplayLogic.IsStateConsideredAsAerial(characterState.CurrentState):
+                    case var _ when condition is ObjectState.StandingUp or ObjectState.Crouching && _logic.GameplayLogic.IsStateConsideredAsAerial(characterState.CurrentState):
                         if (attackAbility is AttackAbility.MediumAttack or AttackAbility.HeavyAttack) {
                             attackAbility = AttackAbility.AerialAttack;
                             return true;
@@ -1184,14 +1265,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         when opponentState is (CharacterState.Falling or CharacterState.Jumping or CharacterState.Grounded) :
                         return true;*/
                     
-                    case CharacterState.Alive when interactable.GetHpPercent() == 0:
-                    case CharacterState.Running when opponentState != CharacterState.Running:
-                    case CharacterState.Jumping or CharacterState.Falling when !(_logic.GameplayLogic.IsStateConsideredAsAerial(opponentState)):
-                    case CharacterState.Grounded when !_logic.GameplayLogic.IsStateConsideredAsGrounded(opponentState) && !interactable.IsGrabbed():
-                    case CharacterState.Crouching when opponentState != CharacterState.Crouching:
-                    case CharacterState.StandingUp when opponentState != CharacterState.StandingUp:
-                    case CharacterState.Blocking when opponentState != CharacterState.Blocking:
-                    case CharacterState.Grabbing when opponentState != CharacterState.Grabbing:
+                    case ObjectState.Alive when interactable.GetHpPercent() == 0:
+                    case ObjectState.Running when opponentState != ObjectState.Running:
+                    case ObjectState.Jumping or ObjectState.Falling when !(_logic.GameplayLogic.IsStateConsideredAsAerial(opponentState)):
+                    case ObjectState.Grounded when !_logic.GameplayLogic.IsStateConsideredAsGrounded(opponentState) && !interactable.IsGrabbed():
+                    case ObjectState.Crouching when opponentState != ObjectState.Crouching:
+                    case ObjectState.StandingUp when opponentState != ObjectState.StandingUp:
+                    case ObjectState.Blocking when opponentState != ObjectState.Blocking:
+                    case ObjectState.Grabbing when opponentState != ObjectState.Grabbing:
                         return false;
                 }
 
@@ -1266,7 +1347,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             await Task.Delay(150);
 
-            while (grabber.GetCurrentState() is not (CharacterState.Grounded or CharacterState.Running or CharacterState.Crouching or CharacterState.StandingUp)) {
+            while (grabber.GetCurrentState() is not (ObjectState.Grounded or ObjectState.Running or ObjectState.Crouching or ObjectState.StandingUp)) {
 
                 await Task.Delay(TimeSpan.FromMilliseconds(200));
             }
