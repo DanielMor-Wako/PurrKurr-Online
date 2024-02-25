@@ -243,7 +243,7 @@ GameObject:
   - component: {fileID: 501235292739084909}
   - component: {fileID: 5716619472191139129}
   m_Layer: 8
-  m_Name: Grp-Rope (2)
+  m_Name: Grp-RopeSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

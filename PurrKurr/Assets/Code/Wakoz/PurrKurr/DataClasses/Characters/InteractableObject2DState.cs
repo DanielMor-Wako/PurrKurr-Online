@@ -26,8 +26,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private Vector2 _closestSurfaceDir = Vector2.zero;
         public Vector2 ClosestPoint => _closestSurfacePoint;
         private Vector2 _closestSurfacePoint = Vector2.zero;
-        public Vector2 FarSurfaceDir => _farSurfaceDir;
-        private Vector2 _farSurfaceDir = Vector2.zero;
+        public Vector2 AlternativeSurfaceDir => _alternativeSurfaceDir;
+        private Vector2 _alternativeSurfaceDir = Vector2.zero;
         private int _collLayer = -1;
 
         private Definitions.ActionType _combatAbility;
@@ -40,6 +40,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private bool _isCrouching;
         private bool _isStanding;
         private bool _chargingSuper;
+        private Vector2 _position;
         private Vector2 _velocity;
         private bool _hasGroundBeneathByRayCast;
         private Definitions.NavigationType _navigationDirection;
@@ -61,13 +62,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public bool isChargingSuper() => _chargingSuper;
 
-        public void DiagnoseState(Vector3 hitPoint, Vector2 collDir, int collLayer, Vector2 velocity, bool hasGroundBeneathByRayCast, bool isInTraversableSurface) {
+        public void DiagnoseState(Vector3 hitPoint, Vector2 collDir, int collLayer, Vector2 position, Vector2 velocity, bool hasGroundBeneathByRayCast, bool isInTraversableSurface) {
             
             _wasGrounded = _isGrounded; _isGrounded = false;
             _wasCeiling = _isCeiling; _isCeiling = false;
             _wasRightWall = _isRightWall; _isRightWall = false;
             _wasLeftWall = _isLeftWall; _isLeftWall = false;
             _wasTraversable = _isTraversable; _isTraversable = false;
+            _position = position;
             _velocity = velocity;
             _hasGroundBeneathByRayCast = hasGroundBeneathByRayCast;
 
@@ -209,7 +211,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 SetState(Definitions.ObjectState.TraversalRunning);
                 return;
 
-            } else if (_closestSurfaceDir == Vector2.zero && _closestSurfacePoint == Vector2.zero && !IsTouchingAnySurface() && _farSurfaceDir == Vector2.zero) {
+            } else if (_closestSurfaceDir == Vector2.zero && _closestSurfacePoint == Vector2.zero && !IsTouchingAnySurface() && _alternativeSurfaceDir == Vector2.zero) {
                 SetState(IsUpwardMovement() ? Definitions.ObjectState.Jumping : Definitions.ObjectState.Falling);
                 _hasLanded = false;
                 return;
@@ -293,10 +295,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public bool IsFrontWall() => _facingRight && _isRightWall || !_facingRight && _isLeftWall;
         public bool IsBackWall() => _facingRight && _isLeftWall || !_facingRight && _isRightWall;
 
-        private Transform _clingingOnObject;
-        public Transform GetClingableObject() => _clingingOnObject;
+        private Collider2D _clingingOnObject;
+        public Collider2D GetClingableObject() => _clingingOnObject;
         public bool IsClinging() => _clingingOnObject != null;
-        public void SetClinging(Transform objectToClingOn) => _clingingOnObject = objectToClingOn;
+        public void SetClinging(Collider2D objectToClingOn) => _clingingOnObject = objectToClingOn;
         public void StopClinging() => SetClinging(null);
 
         private float _aimingEndTime;
@@ -317,16 +319,22 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             }
 
             if (HasAnySurfaceAround()) {
-                Quaternion surfaceQuaternion = Quaternion.LookRotation(Vector3.forward, _farSurfaceDir);
+                Quaternion surfaceQuaternion = Quaternion.LookRotation(Vector3.forward, _alternativeSurfaceDir);
                 return surfaceQuaternion;
             }
-            
+
+            /*if (IsClinging()) {
+                var clingableCollider = _clingingOnObject.GetComponent<Collider2D>();
+                Quaternion surfaceQuaternion = Quaternion.LookRotation(Vector3.forward, clingableCollider.ClosestPoint(_position));
+                return surfaceQuaternion;
+            }*/
+
             Quaternion velocityQuaternion = Quaternion.LookRotation(Vector3.forward, _velocity);
             return velocityQuaternion;
             
         }
 
-        public bool HasAnySurfaceAround() => _farSurfaceDir != Vector2.zero && _hasLanded;
+        public bool HasAnySurfaceAround() => _closestSurfaceDir != Vector2.zero && _hasLanded;
 
         public Vector2 Velocity => _velocity;
 

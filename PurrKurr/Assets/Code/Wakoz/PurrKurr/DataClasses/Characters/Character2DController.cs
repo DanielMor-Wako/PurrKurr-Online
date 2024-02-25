@@ -402,15 +402,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             NewPositionToSetOnFixedUpdte = newPosition;
         }
 
-        public void SetAsClinging(Transform wallParent, Vector2 position) {
+        public void SetAsClinging(Collider2D wallParent, Vector2 position) {
 
             _transformMover.EndMove();
             transform.position = position;
 
-            UpdateAnchor(wallParent, position);
+            UpdateAnchor(wallParent?.transform, position);
 
             if (wallParent != null) {
-                // 1 is the time to be able to cling
                 _state.SetClinging(wallParent);
             } else {
                 _state.StopClinging();
@@ -528,7 +527,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             
             var terrainQuaternion = _state.ReturnForwardDirByTerrainQuaternion();
             if (_state.IsJumping()) {
-                // aditional 50 to the jump direction, so character will start into rotation when jum[ing to create the flip effect. 50 is pretty random, 90 will turn the flip to obselete
+                // aditional 50 to the jump direction, so character will start into rotation when jumping to create the flip effect. 50 is pretty random, 90 will turn the flip to obselete
                 terrainQuaternion *= Quaternion.AngleAxis(_state.GetFacingRightAsInt() * 50, new Vector3(0, 0, 1));
             }
             
@@ -561,7 +560,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 }
             }*/
 
-            var highestPriorityCollider = _solidColliders.FirstOrDefault();
+            var highestPriorityCollider = _state.GetClingableObject();
             if (highestPriorityCollider != null) {
 
                 hitPoint = highestPriorityCollider.ClosestPoint(legsPosition);
@@ -572,8 +571,19 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
                 highestPriorityCollider = _traversableColliders.FirstOrDefault();
                 if (highestPriorityCollider != null) {
+
                     collLayer = highestPriorityCollider.gameObject.layer;
                     isInTraversableSurface = HelperFunctions.IsObjectInLayerMask(collLayer, ref _whatIsTraversable);
+                
+                } else {
+
+                    highestPriorityCollider = _solidColliders.FirstOrDefault();
+                    if (highestPriorityCollider != null) {
+
+                        hitPoint = highestPriorityCollider.ClosestPoint(legsPosition);
+                        collDir = (hitPoint - legsPosition).normalized;
+                        collLayer = highestPriorityCollider.gameObject.layer;
+                    }
                 }
             }
 
@@ -604,7 +614,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 }
             }
 
-            _state.DiagnoseState(hitPoint, collDir, collLayer, _rigidbody.velocity, hasGroundBeneathByRayCast, isInTraversableSurface);
+            _state.DiagnoseState(hitPoint, collDir, collLayer, legsPosition, _rigidbody.velocity, hasGroundBeneathByRayCast, isInTraversableSurface);
 
             var shouldCallStateChange = prevState != _state.CurrentState ;
             

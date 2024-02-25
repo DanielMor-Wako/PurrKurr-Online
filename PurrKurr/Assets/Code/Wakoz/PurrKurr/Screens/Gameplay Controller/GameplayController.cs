@@ -87,7 +87,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 RegisterInputEvents();
             } else {
                 _ui = null;
-                _debug.Log("Something went wrong, there is no active ref to PadsDisplayController");
+                _debug.LogWarning("Something went wrong, there is no active ref to PadsDisplayController");
             }
             
             _whatIsSurface = _gameplayLogic.GetSurfaces();
@@ -524,9 +524,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 }
             }
 
-            //var ropePointsData = HelperFunctions.GenerateVectorsBetween(newPos, character.LegsPosition, ropeLinkSize);
-            //ropePointsData.Add((Vector2)character.LegsPosition - actionInput.NormalizedDirection * weightDistanceFromLink); // last value is the weightDistance
-            //var ropeData = new RopeData(rope.gameObject, ropePointsData.ToArray()); // last value is the distance between each link
             var ropeData = new RopeData(rope.gameObject, new Vector2[2] { newPos, character.LegsPosition }, _whatIsSolid);
 
             await rope.Initialize(ropeData, character);
@@ -586,7 +583,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             var xOffsetFromWall = new Vector2(isWallPositionedRightToThePlayer ? -1 : 1, 0); //Quaternion.Inverse(character.State.ReturnForwardDirByTerrainQuaternion())
             //Vector2 offsetAngleFromWall = xOffsetFromWall * character.LegsRadius * 0.75f; // legsRadius * 0.9f, position the character right next the edge of the collider
             wallPoint += xOffsetFromWall * character.LegsRadius * 0.8f;
-            character.SetAsClinging(edges.transform, wallPoint);
+            character.SetAsClinging(edges, wallPoint);
 
             _debug.DrawLine(edgesClosestPoint, wallPoint, Color.magenta, 1f);
         }
