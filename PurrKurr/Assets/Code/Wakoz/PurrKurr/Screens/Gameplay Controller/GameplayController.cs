@@ -75,14 +75,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             _cam ??= Camera.main.GetComponent<CameraFollow>();
             
-            _input = SingleController.GetController<InputController>();
-            _logic = SingleController.GetController<LogicController>();
+            _input = GetController<InputController>();
+            _logic = GetController<LogicController>();
             _inputInterpreterLogic = new InputInterpreterLogic(_logic.InputLogic, _logic.GameplayLogic);
             _gameplayLogic = _logic.GameplayLogic;
             _interactables = GetController<InteractablesController>();
-            _debug = SingleController.GetController<DebugController>();
+            _debug = GetController<DebugController>();
 
-            _ui ??= SingleController.GetController<UIController>();
+            _ui ??= GetController<UIController>();
             if (_ui.TryBindToCharacterController(this)) {
                 RegisterInputEvents();
             } else {
@@ -456,10 +456,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                                 float distancePercentReached = 1f;
 
                                 if (isProjectilingEnded) {
-                                    ShootProjectile(actionInput, ref newPos, ref rotation, ref distancePercentReached);
+                                    ShootProjectile(_hero, actionInput, ref newPos, ref rotation, ref distancePercentReached);
 
                                 } else if (isRopingEnded) {
-                                    ShootRope(actionInput, newPos, rotation, distancePercentReached);
+                                    ShootRope(_hero, actionInput, newPos, rotation, distancePercentReached);
                                     
                                 } else if (isJumpAimEnded) {
                                     // apply jump aim in trajectory dir
@@ -489,28 +489,28 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             OnTouchPadUp?.Invoke(actionInput);
         }
 
-        private void ShootProjectile(ActionInput actionInput, ref Vector2 newPos, ref Quaternion rotation, ref float distancePercentReached) {
+        private void ShootProjectile(Character2DController character, ActionInput actionInput, ref Vector2 newPos, ref Quaternion rotation, ref float distancePercentReached) {
 
-            _hero.TryGetProjectileDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, ref distancePercentReached);
+            character.TryGetProjectileDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, ref distancePercentReached);
 
             var projectile = _interactables.GetInstance<ProjectileController>();
             if (projectile == null) {
                 return;
             }
 
-            projectile.transform.SetPositionAndRotation(_hero.LegsPosition, rotation);
+            projectile.transform.SetPositionAndRotation(character.LegsPosition, rotation);
             projectile.SetTargetPosition(newPos, distancePercentReached);
-            ApplyEffectForDuration(_hero, Effect2DType.DustCloud);
-            //ApplyEffectForDuration(_hero, Effect2DType.TrailInAir); // todo: other trails for fire ice etc
-            ApplyProjectileStateWhenThrown(projectile, _hero.Stats.Damage, _hero, () =>_interactables.ReleaseInstance(projectile));
+            ApplyEffectForDuration(character, Effect2DType.DustCloud);
+            //ApplyEffectForDuration(character, Effect2DType.TrailInAir); // todo: other trails for fire ice etc
+            ApplyProjectileStateWhenThrown(projectile, character.Stats.Damage, character, () =>_interactables.ReleaseInstance(projectile));
 
         }
 
         private List<RopeController> _charactersRopes = new();
 
-        private async void ShootRope(ActionInput actionInput, Vector2 newPos, Quaternion rotation, float distancePercentReached) {
+        private async void ShootRope(Character2DController character, ActionInput actionInput, Vector2 newPos, Quaternion rotation, float distancePercentReached) {
 
-            var hasNoHit = !_hero.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPosition, ref distancePercentReached);
+            var hasNoHit = !character.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPosition, ref distancePercentReached);
 
             if (hasNoHit) {
                 return;
@@ -524,23 +524,23 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 }
             }
 
-            //var ropePointsData = HelperFunctions.GenerateVectorsBetween(newPos, _hero.LegsPosition, ropeLinkSize);
-            //ropePointsData.Add((Vector2)_hero.LegsPosition - actionInput.NormalizedDirection * weightDistanceFromLink); // last value is the weightDistance
+            //var ropePointsData = HelperFunctions.GenerateVectorsBetween(newPos, character.LegsPosition, ropeLinkSize);
+            //ropePointsData.Add((Vector2)character.LegsPosition - actionInput.NormalizedDirection * weightDistanceFromLink); // last value is the weightDistance
             //var ropeData = new RopeData(rope.gameObject, ropePointsData.ToArray()); // last value is the distance between each link
-            var ropeData = new RopeData(rope.gameObject, new Vector2[2] { newPos, _hero.LegsPosition }, _whatIsSolid);
+            var ropeData = new RopeData(rope.gameObject, new Vector2[2] { newPos, character.LegsPosition }, _whatIsSolid);
 
-            await rope.Initialize(ropeData, _hero);
+            await rope.Initialize(ropeData, character);
 
             var lastLink = rope.GetLastChainedLink();
-            //_hero.SetTargetPosition(lastLink.GetCenterPosition(), 1);
-            rope.HandleConnectInteractableBody(lastLink, _hero);
+            //character.SetTargetPosition(lastLink.GetCenterPosition(), 1);
+            rope.HandleConnectInteractableBody(lastLink, character);
             Debug.Log($"Connect a body to last link {lastLink.name}");
 
             if (!_charactersRopes.Contains(rope)) {
                 _charactersRopes.Add(rope);
             }
 
-            //ApplyEffectForDuration(_hero, Effect2DType.DustCloud);
+            //ApplyEffectForDuration(character, Effect2DType.DustCloud);
         }
 
         private void ApplyClingingAction(Character2DController character, Collider2D coll) {
@@ -1026,7 +1026,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             if (superActionProperties == true) {
                 // revive 1 hp when character is not moving
                 character.DealDamage(-1);
-                ApplyEffectForDuration(_hero, Effect2DType.GainHp);
+                ApplyEffectForDuration(character, Effect2DType.GainHp);
             }
         }
 
@@ -1065,18 +1065,18 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 hasAimDir = actionInput.NormalizedDirection != Vector2.zero;
 
                 if (isRope) {
-                    hasHitData = _hero.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPos, ref distancePercentReached);
+                    hasHitData = character.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPos, ref distancePercentReached);
                     newPos = cursorPos;
 
                 } else if (isProjectile) {
-                    hasHitData = _hero.TryGetProjectileDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, ref distancePercentReached);
-                    newPos = _hero.LegsPosition;
+                    hasHitData = character.TryGetProjectileDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, ref distancePercentReached);
+                    newPos = character.LegsPosition;
 
                 } else if (isJumpAim) {
                     linePoints = new Vector3[] { Vector3.zero, Vector2.one };
-                    var forceDir = actionInput.NormalizedDirection * _hero.Stats.JumpForce;
-                    hasHitData = _hero.TryGetJumpTrajectory(forceDir, ref newPos, ref linePoints);
-                    newPos = _hero.LegsPosition;
+                    var forceDir = actionInput.NormalizedDirection * character.Stats.JumpForce;
+                    hasHitData = character.TryGetJumpTrajectory(forceDir, ref newPos, ref linePoints);
+                    newPos = character.LegsPosition;
                 }
 
                 if (hasAimDir) {

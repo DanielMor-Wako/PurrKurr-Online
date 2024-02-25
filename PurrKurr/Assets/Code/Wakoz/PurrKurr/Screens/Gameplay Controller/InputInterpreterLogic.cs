@@ -6,7 +6,6 @@ using UnityEngine;
 using System.Linq;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
 
-// todo: move to a better namespace like player input
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
     public sealed class InputInterpreterLogic {
 
@@ -77,7 +76,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             var isNavRightDir = _inputLogic.IsNavigationDirValidAsRight(navigationDir);
             var isNavLeftDir = _inputLogic.IsNavigationDirValidAsLeft(navigationDir);
 
-            //if (rigidbodyVelocity.y < -1f && !state.IsJumping() && _gameplayLogic.IsStateConsideredAsAerial(state.CurrentState)) {
             var isFalling = state.CurrentState == Definitions.ObjectState.Falling;
             //var isTraversableRunning = state.CurrentState == Definitions.ObjectState.TraversalRunning;
 
@@ -94,11 +92,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         var newXVelocity = rigidbodyVelocity.x + stats.AirborneSpeed * (isNavRightDir ? 1 : -1);
                         var clampedXVelocity = Mathf.Clamp(newXVelocity, -stats.AirborneMaxSpeed, stats.AirborneMaxSpeed);
                         forceDirToSetOnFixedUpdate = new Vector2(clampedXVelocity, yVelocity);
-
-                    }/* else {
-                        // Retain the original x velocity
-                        forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x, yVelocity);
-                    }*/
+                    }
                     moveSpeed = 0;
 
                     return true;
