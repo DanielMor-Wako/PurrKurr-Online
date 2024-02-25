@@ -77,23 +77,32 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             var isNavRightDir = _inputLogic.IsNavigationDirValidAsRight(navigationDir);
             var isNavLeftDir = _inputLogic.IsNavigationDirValidAsLeft(navigationDir);
 
+            //if (rigidbodyVelocity.y < -1f && !state.IsJumping() && _gameplayLogic.IsStateConsideredAsAerial(state.CurrentState)) {
+            var isFalling = state.CurrentState == Definitions.ObjectState.Falling;
+            //var isTraversableRunning = state.CurrentState == Definitions.ObjectState.TraversalRunning;
 
-            if (rigidbodyVelocity.y < -1f && state.CurrentState == Definitions.ObjectState.Falling) {
-                //if (rigidbodyVelocity.y < -1f && !state.IsJumping() && _gameplayLogic.IsStateConsideredAsAerial(state.CurrentState)) {
+            if (rigidbodyVelocity.y < -1f && isFalling) {
+                var yVelocity = rigidbodyVelocity.y;
 
-                if (isNavRightDir && (rigidbodyVelocity.x < stats.AirborneMaxSpeed)) {
+                if (isNavRightDir || isNavLeftDir) {
 
-                    forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x + stats.AirborneSpeed, rigidbodyVelocity.y);
+                    // Check if the absolute value of the current x velocity is beneath the threshold
+                    if (Mathf.Abs(rigidbodyVelocity.x) < stats.AirborneMaxSpeed
+                        || Mathf.Sign(rigidbodyVelocity.x) > 0 && isNavLeftDir
+                        || Mathf.Sign(rigidbodyVelocity.x) < 0 && isNavRightDir) {
+
+                        var newXVelocity = rigidbodyVelocity.x + stats.AirborneSpeed * (isNavRightDir ? 1 : -1);
+                        var clampedXVelocity = Mathf.Clamp(newXVelocity, -stats.AirborneMaxSpeed, stats.AirborneMaxSpeed);
+                        forceDirToSetOnFixedUpdate = new Vector2(clampedXVelocity, yVelocity);
+
+                    }/* else {
+                        // Retain the original x velocity
+                        forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x, yVelocity);
+                    }*/
                     moveSpeed = 0;
 
                     return true;
 
-                } else if (isNavLeftDir && (rigidbodyVelocity.x > -stats.AirborneMaxSpeed)) {
-
-                    forceDirToSetOnFixedUpdate = new Vector2(rigidbodyVelocity.x - stats.AirborneSpeed, rigidbodyVelocity.y);
-                    moveSpeed = 0;
-                    
-                    return true;
                 }
 
             } else if (!isInvalidState && !state.IsCeiling() &&
@@ -164,7 +173,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 case Definitions.ActionType.Jump:
 
                     if (!ended && state.CanPerformJump(_gameplayLogic.IsStateConsideredAsGrounded(state.CurrentState)) ||
-                        started && character.State.CurrentState is Definitions.ObjectState.RopeClinging or Definitions.ObjectState.RopeClimbing or Definitions.ObjectState.WallClinging or Definitions.ObjectState.WallClimbing) {
+                        started && character.State.CurrentState is Definitions.ObjectState.TraversalRunning or Definitions.ObjectState.RopeClinging or Definitions.ObjectState.RopeClimbing or Definitions.ObjectState.WallClinging or Definitions.ObjectState.WallClimbing) {
                         
                         isActionPerformed = true;
                         forceDirToSetOnFixedUpdate = new Vector2(0, stats.JumpForce);

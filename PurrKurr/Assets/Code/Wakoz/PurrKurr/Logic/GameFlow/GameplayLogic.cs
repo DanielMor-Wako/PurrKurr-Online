@@ -11,13 +11,13 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
 
         protected override void Init() {}
 
+        public LayerMask GetSurfaces() => Data.GetSurfaces();
 
         public LayerMask GetSolidSurfaces() => Data.GetSolidSurfaces();
 
         public LayerMask GetPlatformSurfaces() => Data.GetPlatformSurfaces();
         public LayerMask GetClingableSurfaces() => Data.GetClingableSurfaces();
-
-        public LayerMask GetSurfaces() => Data.GetSurfaces();
+        public LayerMask GetTraversableSurfaces() => Data.GetTraversableSurfaces();
 
         public LayerMask GetDamageables() => Data.GetDamageables();
         

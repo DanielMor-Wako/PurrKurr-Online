@@ -234,7 +234,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 return;
             }
 
-            _mainHero = HelperFunctions.Random(_heroes);
+            var newHero = HelperFunctions.Random(_heroes);
+            if (newHero == null) {
+                return;
+            }
+
+            _mainHero = newHero;
             SetHeroAsReferenced();
         }
         
@@ -306,7 +311,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                         } else if (actionInput.ActionType is ActionType.Jump && _hero.State.CurrentState == ObjectState.Crouching) {
                             
-                            if (HelperFunctions.IsObjectInLayerMask(_hero.State.GetSurfaceCollLayer(), ref _whatIsPlatform)) {
+                            if (HelperFunctions.IsObjectInLayerMask(_hero.GetSurfaceCollLayer(), ref _whatIsPlatform)) {
                                 _hero.TryGetDodgeDirection(-Vector2.up * 2, ref moveToPosition);
                                 _hero.SetTargetPosition(moveToPosition);
                             } else {
@@ -382,10 +387,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             }
                         } else if(_hero.State.CurrentState is not (ObjectState.RopeClinging or ObjectState.RopeClimbing)) {
                             
-                            var collSurfaceLayer = _hero.State.GetSurfaceCollLayer();
+                            var collSurfaceLayer = _hero.GetSurfaceCollLayer();
                             if (collSurfaceLayer > -1 && HelperFunctions.IsObjectInLayerMask(collSurfaceLayer, ref _whatIsClingable)) {
 
-                                var closestWall = _hero._solidOutRadiusObjectsColliders.FirstOrDefault();
+                                var closestWall = _hero._solidColliders.FirstOrDefault();
                                 if (closestWall != null) {
                                     ApplyClingingAction(_hero, closestWall);
                                 }

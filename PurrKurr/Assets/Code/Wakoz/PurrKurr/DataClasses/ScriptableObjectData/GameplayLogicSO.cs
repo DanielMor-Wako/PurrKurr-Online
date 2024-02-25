@@ -30,6 +30,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
 
         public LayerMask GetPlatformSurfaces() =>
             WhatIsPlatform;
+
+        public LayerMask GetTraversableSurfaces() =>
+            WhatIsTraversable;
+
         public LayerMask GetClingableSurfaces() =>
             WhatIsClingable;
 

@@ -44,9 +44,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private Vector3 NewPositionToSetOnFixedUpdte;
         private Vector2 ForceDirToSetOnFixedUpdate;
 
+        private LayerMask _whatIsSurface;
         private LayerMask _whatIsSolid;
         private LayerMask _whatIsPlatform;
-        private LayerMask _whatIsSurface;
+        private LayerMask _whatIsTraversable;
         private LayerMask _whatIsDamageableCharacter;
         private LayerMask _whatIsDamageable;
 
@@ -60,9 +61,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private LogicController _logic;
         private DebugController _debug;
 
-        private Collider2D[] _groundColliders;
-        public Collider2D[] _solidObjectsColliders;
-        public Collider2D[] _solidOutRadiusObjectsColliders;
+        public Collider2D[] _solidColliders;
+        public Collider2D[] _traversableColliders;
 
         public Collider2D[] NearbyInteractables() {
  
@@ -309,6 +309,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _whatIsSurface = gamePlayerLogic.GetSurfaces();
             _whatIsSolid = gamePlayerLogic.GetSolidSurfaces();
             _whatIsPlatform = gamePlayerLogic.GetPlatformSurfaces();
+            _whatIsTraversable = gamePlayerLogic.GetTraversableSurfaces();
             _whatIsDamageableCharacter = gamePlayerLogic.GetDamageables();
             _state = new InteractableObject2DState();
 
@@ -538,87 +539,46 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             var prevState = _state.CurrentState;
 
-            UpdateOverlappingColliders(ref _groundColliders, ref _solidObjectsColliders, ref _solidOutRadiusObjectsColliders);
+            UpdateOverlappingColliders(ref _solidColliders, ref _traversableColliders);
 
-            /*_groundColliders =
-                Physics2D.OverlapCircleAll(LegsPosition, GroundedRadius, _whatIsSolid);
-
-            _solidObjectsColliders =
-                Physics2D.OverlapCircleAll(LegsPosition, LegsRadius, _whatIsSurface);*/
-            
             var hitPoint = Vector2.zero;
             var collDir = Vector2.zero;
             var collLayer = -1;
-            var outerRadiusCollLayer = -1;
             var legsPosition = (Vector2)LegsPosition;
 
-            var allSurfaces = new List<Collider2D>();
-            if (_groundColliders.Length > 0) {
-                allSurfaces.AddRange(_groundColliders);
-            }
-            if (_solidObjectsColliders.Length > 0) {
+            var isInTraversableSurface = false;
+
+            // find specific colliders to priorotize rather than soilds and distance?
+            /*if (_solidColliders.Length > 0) {
                 var isPlatformSurface = false;
-                foreach (var coll in _solidObjectsColliders) {
+                foreach (var coll in _solidColliders) {
                     isPlatformSurface = HelperFunctions.IsObjectInLayerMask(coll.gameObject.layer, ref _whatIsPlatform);
                     // validate the when isPlatformSurface occurs, the allSurfaces includes the collider.
                     // as moving on platforms in angle might not always register the surface
                     if (!isPlatformSurface || isPlatformSurface && !_state.IsUpwardMovement()) {
-                        allSurfaces.Add(coll);
-                    }
-                }
-            }
-            if (_solidOutRadiusObjectsColliders.Length > 0) {
-                allSurfaces.AddRange(_solidOutRadiusObjectsColliders);
-            }
-
-            /*if (allSurfaces.Count > 0) {
-                foreach (var coll in allSurfaces) {
-
-                    var newPoint = coll.ClosestPoint(legsPosition);
-                    if (hitPoint == Vector2.zero || (hitPoint - legsPosition).magnitude > (newPoint - legsPosition).magnitude ) {
-                        
-                        hitPoint = newPoint;
-                        collDir = (hitPoint - legsPosition).normalized;
-                        collLayer = coll.gameObject.layer;
+                        highestPriorityCollider = coll; break;
                     }
                 }
             }*/
-            var closestColl = allSurfaces.FirstOrDefault();
-            if (closestColl != null) {
-                hitPoint = closestColl.ClosestPoint(legsPosition);
+
+            var highestPriorityCollider = _solidColliders.FirstOrDefault();
+            if (highestPriorityCollider != null) {
+
+                hitPoint = highestPriorityCollider.ClosestPoint(legsPosition);
                 collDir = (hitPoint - legsPosition).normalized;
-                collLayer = closestColl.gameObject.layer;
-            }
+                collLayer = highestPriorityCollider.gameObject.layer;
 
-            /*_solidOutRadiusObjectsColliders =
-                Physics2D.OverlapCircleAll(LegsPosition, LegsRadius + AdditionalOuterRadius, _whatIsSolid).
-                    Where(collz => collz.gameObject != gameObject).ToArray();
-            */
-            var outerRadiusCollDir = Vector2.zero;
-            /*if (_solidOutRadiusObjectsColliders.Length > 0) {
-                var closestOuterRadiusColliderPosition = Vector2.zero;
-                foreach (var coll in _solidOutRadiusObjectsColliders) {
-                    
-                    var newPoint = coll.ClosestPoint(legsPosition);
-                    if (closestOuterRadiusColliderPosition == Vector2.zero || (closestOuterRadiusColliderPosition - legsPosition).magnitude > (newPoint - legsPosition).magnitude ) {
-                        
-                        closestOuterRadiusColliderPosition = newPoint;
-                        outerRadiusCollDir = (closestOuterRadiusColliderPosition - legsPosition).normalized;
-                        outerRadiusCollLayer = coll.gameObject.layer;
-                    }
+            } else {
+
+                highestPriorityCollider = _traversableColliders.FirstOrDefault();
+                if (highestPriorityCollider != null) {
+                    collLayer = highestPriorityCollider.gameObject.layer;
+                    isInTraversableSurface = HelperFunctions.IsObjectInLayerMask(collLayer, ref _whatIsTraversable);
                 }
-            }*/
-            var farestColl = allSurfaces.FirstOrDefault();
-            if (farestColl != null) {
-                var hitOutPoint = farestColl.ClosestPoint(legsPosition);
-                outerRadiusCollDir = (hitOutPoint - legsPosition).normalized;
-                outerRadiusCollLayer = farestColl.gameObject.layer;
             }
 
-            //_debug.DrawRay(hitPoint, collDir * 5, Color.white, 1f);
-            //_debug.Log("dir "+ collDir+", go = "+i.name);
             var hasGroundBeneathByRayCast = _state.IsGrounded();
-            if (!hasGroundBeneathByRayCast && (collDir != Vector2.zero || outerRadiusCollDir != Vector2.zero)) {
+            if (!hasGroundBeneathByRayCast && (collDir != Vector2.zero)) {
 
                 var facingDirectionAsInt = _state.GetFacingRightAsInt();
                 var forwardDownwardDir = HelperFunctions.RotateVector(-(Vector2.up) * 2, facingDirectionAsInt * GroundCheck_AngleOffset);
@@ -643,15 +603,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                     _state.SetAsLanded();
                 }
             }
-            
-            _state.DiagnoseState(hitPoint, collDir, collLayer, outerRadiusCollDir, outerRadiusCollLayer, _rigidbody.velocity, hasGroundBeneathByRayCast);
 
-            var shouldCallStateChange = prevState != _state.CurrentState ;// || _characterState.CurrentState == Definitions.CharacterState.Grounded;
+            _state.DiagnoseState(hitPoint, collDir, collLayer, _rigidbody.velocity, hasGroundBeneathByRayCast, isInTraversableSurface);
+
+            var shouldCallStateChange = prevState != _state.CurrentState ;
             
             if (shouldCallStateChange) {
 
                 OnStateChanged?.Invoke(_state);
 
+                // Additional specific states:
+                // Resets rigidbody velocity when player has landed
                 if (_state.CurrentState == Definitions.ObjectState.Landed && ForceDirToSetOnFixedUpdate != Vector2.zero) {
                     ForceDirToSetOnFixedUpdate = new Vector2(_rigidbody.velocity.x, 0);
                     DoMove(0);
@@ -659,40 +621,39 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             }
         }
 
-        // Sort the colliders into separate arrays based on their layer masks
-        private void UpdateOverlappingColliders(ref Collider2D[] groundColliders, ref Collider2D[] solidObjectsColliders, ref Collider2D[] solidOutRadiusObjectsColliders) {
+        private void UpdateOverlappingColliders(ref Collider2D[] solids, ref Collider2D[] traversables) {
 
             var allColliders = Physics2D.OverlapCircleAll(LegsPosition, LegsRadius + AdditionalOuterRadius, _whatIsSurface)
-                .Where(coll => coll.gameObject != gameObject)
-                .OrderBy(obj => Vector2.Distance(obj.transform.position, LegsPosition)).ToArray();
+                .Where(coll => coll.gameObject != gameObject).ToArray();
 
-            // solid objects are considered only as valid ground for player to move on
-            var groundCollidersList = new List<Collider2D>();
-            var solidObjectsCollidersList = new List<Collider2D>();
-            var solidOutRadiusObjectsCollidersList = new List<Collider2D>();
+            var traversablesList = allColliders.Where(coll => coll.isTrigger).ToList();
+            var solidsList = allColliders.Except(traversablesList)
+                .OrderBy(coll => Vector2.Distance(coll.ClosestPoint(transform.position), transform.position)).ToList();
 
-            foreach (var collider in allColliders) {
-
-                var distance = Vector2.Distance(LegsPosition, collider.transform.position);
-                var colliderLayer = collider.gameObject.layer;
-
-                if (distance <= LegsRadius) {
-                    
-                    if (distance <= GroundedRadius && IsLayerMask(colliderLayer, ref _whatIsSolid)) {
-                        groundCollidersList.Add(collider);
-
-                    } else {
-                        solidObjectsCollidersList.Add(collider);
-                    }
-
-                } else {
-                    solidOutRadiusObjectsCollidersList.Add(collider);
+            var collidersToTransferFromSolidsToTraversables = new List<Collider2D>();
+            foreach (var coll in solidsList) {
+                var isPlatformSurface = HelperFunctions.IsObjectInLayerMask(coll.gameObject.layer, ref _whatIsPlatform);
+                // validates PlatformSurface, initially platform counts as solid but set as traversable when the player is moving up thru the platform
+                if (isPlatformSurface && _state.IsUpwardMovement()) {
+                    collidersToTransferFromSolidsToTraversables.Add(coll);
                 }
             }
 
-            groundColliders = groundCollidersList.ToArray();
-            solidObjectsColliders = solidObjectsCollidersList.ToArray();
-            solidOutRadiusObjectsColliders = solidOutRadiusObjectsCollidersList.ToArray();
+            foreach (var coll in collidersToTransferFromSolidsToTraversables) {
+                solidsList.Remove(coll);
+                traversablesList.Add(coll);
+            }
+
+            solids = solidsList.ToArray();
+            traversables = traversablesList.ToArray();
+        }
+
+        public int GetSurfaceCollLayer() {
+
+            var closestColl = _solidColliders.FirstOrDefault();
+            closestColl ??= _traversableColliders.FirstOrDefault();
+
+            return closestColl != null ? closestColl.gameObject.layer : -1;
         }
 
         private bool IsLayerMask(int gameObjectLayerToMatch, ref LayerMask layerMask) => HelperFunctions.IsObjectInLayerMask(gameObjectLayerToMatch, ref layerMask);
@@ -745,6 +706,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public void SetNavigationDir(Definitions.NavigationType inputDirection) => State.SetNavigationDir(inputDirection);
 
         public Definitions.NavigationType GetNavigationDir() => State.NavigationDir;
+
+        public float NegateYDownwardForce() {
+            return Mathf.Abs(Physics2D.gravity.y) * _rigidbody.mass * _rigidbody.gravityScale;
+        }
 
         // todo make this should get the data from the CharacterBase, currently each character can revive itself when health is below 100%
         public bool CanPerformSuper() => Stats.GetHealthPercentage() < 1;
