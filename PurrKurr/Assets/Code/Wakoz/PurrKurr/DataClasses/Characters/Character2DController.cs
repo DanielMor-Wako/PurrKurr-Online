@@ -569,20 +569,20 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             } else {
 
-                highestPriorityCollider = _traversableColliders.FirstOrDefault();
+                highestPriorityCollider = _solidColliders.FirstOrDefault();
                 if (highestPriorityCollider != null) {
 
+                    hitPoint = highestPriorityCollider.ClosestPoint(legsPosition);
+                    collDir = (hitPoint - legsPosition).normalized;
                     collLayer = highestPriorityCollider.gameObject.layer;
-                    isInTraversableSurface = HelperFunctions.IsObjectInLayerMask(collLayer, ref _whatIsTraversable);
                 
                 } else {
 
-                    highestPriorityCollider = _solidColliders.FirstOrDefault();
+                    highestPriorityCollider = _traversableColliders.FirstOrDefault();
                     if (highestPriorityCollider != null) {
 
-                        hitPoint = highestPriorityCollider.ClosestPoint(legsPosition);
-                        collDir = (hitPoint - legsPosition).normalized;
                         collLayer = highestPriorityCollider.gameObject.layer;
+                        isInTraversableSurface = HelperFunctions.IsObjectInLayerMask(collLayer, ref _whatIsTraversable);
                     }
                 }
             }
@@ -636,8 +636,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             var allColliders = Physics2D.OverlapCircleAll(LegsPosition, LegsRadius + AdditionalOuterRadius, _whatIsSurface)
                 .Where(coll => coll.gameObject != gameObject).ToArray();
 
-            var traversablesList = allColliders.Where(coll => coll.isTrigger).ToList();
-            var solidsList = allColliders.Except(traversablesList)
+            IList<Collider2D> traversablesList = allColliders.Where(coll => coll.isTrigger).ToList();
+            IList<Collider2D> solidsList = allColliders.Except(traversablesList)
                 .OrderBy(coll => Vector2.Distance(coll.ClosestPoint(transform.position), transform.position)).ToList();
 
             var collidersToTransferFromSolidsToTraversables = new List<Collider2D>();
@@ -654,6 +654,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 traversablesList.Add(coll);
             }
 
+            var clingableObject = _state.GetClingableObject();
+            if (clingableObject != null) {
+                HelperFunctions.MoveOrAddItemAsFirst(ref solidsList, ref clingableObject, false);
+            }
+
             solids = solidsList.ToArray();
             traversables = traversablesList.ToArray();
         }
@@ -665,8 +670,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             return closestColl != null ? closestColl.gameObject.layer : -1;
         }
-
-        private bool IsLayerMask(int gameObjectLayerToMatch, ref LayerMask layerMask) => HelperFunctions.IsObjectInLayerMask(gameObjectLayerToMatch, ref layerMask);
 
         public void SetJumping(float time) {
 
