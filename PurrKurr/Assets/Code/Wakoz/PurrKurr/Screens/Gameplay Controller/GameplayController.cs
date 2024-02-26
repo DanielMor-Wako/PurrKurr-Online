@@ -645,11 +645,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             //_debug.DrawRay(_hero.LegsPosition, forceDir, Color.white, 3);
             if (navigationDir == NavigationType.Up || _hero.State.IsFrontWall()) {
-                //forceDir.x = _hero.State.GetFacingRightAsInt();
                 forceDir = HelperFunctions.RotateVector(forceDir, horizontalDir * -5);
 
             } else {
-                //forceDir.x = _hero.State.GetFacingRightAsInt() * jumpForce * 0.25f;
                 forceDir = HelperFunctions.RotateVector(forceDir, horizontalDir * -18);
 
             }
