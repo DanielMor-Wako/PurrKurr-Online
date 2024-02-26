@@ -542,9 +542,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         private void ApplyClingingAction(Character2DController character, Collider2D coll) {
 
-            if (coll is not EdgeCollider2D) {
+            /*if (coll is not EdgeCollider2D) {
                 return;
-            }
+            }*/
 
             // 0.55f is the default hingeJoint2D y offset of the Anchor, the climbSpeed determines the offset when up or down
             var climbSpeed = 0.1f;
