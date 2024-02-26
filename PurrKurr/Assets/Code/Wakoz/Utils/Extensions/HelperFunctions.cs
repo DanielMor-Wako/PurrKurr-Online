@@ -44,6 +44,17 @@ namespace Code.Wakoz.Utils.Extensions {
             return true;
         }
 
+        public static void MoveOrAddItemAsFirst<T>(ref IList<T> items, ref T specificItem, bool addItemIfNotIncluded) {
+
+            if (items.Contains(specificItem)) {
+                items.Remove(specificItem);
+                items.Insert(0, specificItem);
+
+            } else if (addItemIfNotIncluded) {
+                items.Insert(0, specificItem);
+            }
+        }
+
         public static Vector2 RotateVector(this Vector2 originalVector, float rotationAngleDegrees) {
 
             // Convert the rotation angle to radians
