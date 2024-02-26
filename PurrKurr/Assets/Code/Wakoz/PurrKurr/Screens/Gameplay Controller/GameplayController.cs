@@ -26,6 +26,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         
         private const float attackCooldownDuration = 0.25f;
         private const float _MinVelocityForFlip = 5;
+        [SerializeField] private float _xDistanceFrommClingPoint = 0.8f;
 
         public event Action<ActionInput> OnTouchPadDown;
         public event Action<ActionInput> OnTouchPadClick;
@@ -558,8 +559,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 return;
             }
 
-            var edges = coll ;// as EdgeCollider2D;
+            var anchorDistanceFromLegsPosition = (character.transform.position.y - character.LegsPosition.y);
+            if (anchorDistanceFromLegsPosition > 0 && navType is NavigationType.Up) {
+                _debug.Log($"anchor too far from legs position, climb up ignored {anchorDistanceFromLegsPosition} > 0");
+                return;
+            }
 
+            var edges = coll ;// as EdgeCollider2D;
+            
             var legsPos = character.transform.position;
             legsPos.y += yMovementByNavigation; 
             var edgesClosestPoint = edges.ClosestPoint(legsPos);
@@ -580,9 +587,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 return;
             }
 
-            var xOffsetFromWall = new Vector2(isWallPositionedRightToThePlayer ? -1 : 1, 0); //Quaternion.Inverse(character.State.ReturnForwardDirByTerrainQuaternion())
+            var xHorizontalOffsetFromWall = new Vector2(isWallPositionedRightToThePlayer ? -1 : 1, 0); //Quaternion.Inverse(character.State.ReturnForwardDirByTerrainQuaternion())
             //Vector2 offsetAngleFromWall = xOffsetFromWall * character.LegsRadius * 0.75f; // legsRadius * 0.9f, position the character right next the edge of the collider
-            wallPoint += xOffsetFromWall * character.LegsRadius * 0.8f;
+            wallPoint += xHorizontalOffsetFromWall * character.LegsRadius * _xDistanceFrommClingPoint;
             character.SetAsClinging(edges, wallPoint);
 
             _debug.DrawLine(edgesClosestPoint, wallPoint, Color.magenta, 1f);
