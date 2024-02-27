@@ -6,6 +6,6 @@ PhysicsMaterial2D:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Mat_Floor
-  friction: 20
+  m_Name: Mat_Slippery
+  friction: 0.05
   bounciness: 0
