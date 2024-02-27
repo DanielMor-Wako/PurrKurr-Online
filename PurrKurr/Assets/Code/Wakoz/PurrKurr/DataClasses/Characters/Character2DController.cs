@@ -644,7 +644,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             foreach (var coll in solidsList) {
                 var isPlatformSurface = HelperFunctions.IsObjectInLayerMask(coll.gameObject.layer, ref _whatIsPlatform);
                 // validates PlatformSurface, initially platform counts as solid but set as traversable when the player is moving up thru the platform
-                if (isPlatformSurface && _state.IsUpwardMovement()) {
+                if (isPlatformSurface && _state.IsUpwardMovement() && !_state.IsGrounded()) {
                     collidersToTransferFromSolidsToTraversables.Add(coll);
                 }
             }
