@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 11498bf491965d54c9d0f38b620da8b8
+guid: 7014e1a0f130f4b4ea1dd7aa47a2c5e8
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -94,19 +94,6 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
-    buildTarget: iPhone
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -136,169 +123,148 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: RoyaltySymbols_Crown1
+      name: CartonBox3dSheet_BackLeft
       rect:
         serializedVersion: 2
-        x: 2
-        y: 240
-        width: 126
-        height: 66
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 17
+        y: 504
+        width: 255
+        height: 86
+      alignment: 9
+      pivot: {x: 0.6503632, y: 0.0973021}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bfa15acfafa2c35469601d03f8caf2fc
-      internalID: 1415090980
+      spriteID: 4644889b2dfe5d0488b1ad08fe2cd4b5
+      internalID: -795773663
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: RoyaltySymbols_Lion
-      rect:
-        serializedVersion: 2
-        x: 132
-        y: 144
-        width: 138
-        height: 162
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ca9f72b6689ccd943bf68a0e1a1d2929
-      internalID: -167871124
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: RoyaltySymbols_Crown4
-      rect:
-        serializedVersion: 2
-        x: 305
-        y: 234
-        width: 115
-        height: 81
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 61e41a1714a03094caec40f9eda65940
-      internalID: -1205253971
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: RoyaltySymbols_Crown2
-      rect:
-        serializedVersion: 2
-        x: 3
-        y: 149
-        width: 124
-        height: 71
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b9da0548823e15344924984afad71232
-      internalID: 133129660
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: RoyaltySymbols_Crown3
+      name: CartonBox3dSheet_BackRight
       rect:
         serializedVersion: 2
         x: 300
-        y: 140
-        width: 124
-        height: 91
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        y: 504
+        width: 233
+        height: 78
+      alignment: 9
+      pivot: {x: 0.4044488, y: 0.08771378}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4407f88cc83f3a44ebde881609f2b14f
-      internalID: 1106825854
+      spriteID: 819074369b5aec7449174c2d05ed3f06
+      internalID: -1440599787
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: RoyaltySymbols_Crown5
+      name: CartonBox3dSheet_FrontLeft
       rect:
         serializedVersion: 2
-        x: 5
-        y: 16
-        width: 121
-        height: 117
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 17
+        y: 402
+        width: 252
+        height: 78
+      alignment: 9
+      pivot: {x: 0.6128878, y: 1.0074291}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b2b84457b1d0d9f46b023418825adc3e
-      internalID: 719899714
+      spriteID: 59ded6b4de976c548a44965a4776adfe
+      internalID: 1338714464
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: RoyaltySymbols_Decoration
+      name: CartonBox3dSheet_FrontRight
       rect:
         serializedVersion: 2
-        x: 145
-        y: 13
-        width: 133
-        height: 113
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 288
+        y: 396
+        width: 298
+        height: 84
+      alignment: 9
+      pivot: {x: 0.41698933, y: 0.92701066}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0db83bde4e6cb9a4a80c7a491e9cff34
-      internalID: -551061129
+      spriteID: 10738d90e0be88642a42b741eafb026d
+      internalID: -755828753
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: RoyaltySymbols_Instrument
+      name: CartonBox3dSheet_Interior
       rect:
         serializedVersion: 2
-        x: 282
-        y: 9
-        width: 167
-        height: 126
+        x: 12
+        y: 259
+        width: 352
+        height: 131
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 628860d6bdf733f45ba7038979c3e4b7
-      internalID: -8997597
+      spriteID: 0dff1b57ac7dec548a2c8222b0ba7f72
+      internalID: -1296375815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CartonBox3dSheet_InteriorMask
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 14
+        width: 127
+        height: 354
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5361e2b23ae964141be78efb2669a0d9
+      internalID: 567195645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CartonBox3dSheet_Exterior
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 10
+        width: 354
+        height: 240
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66860796875fcce488cecf488fe6b357
+      internalID: 1766290726
       vertices: []
       indices: 
       edges: []
@@ -314,14 +280,13 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      RoyaltySymbols_Crown1: 1415090980
-      RoyaltySymbols_Crown2: 133129660
-      RoyaltySymbols_Crown3: 1106825854
-      RoyaltySymbols_Crown4: -1205253971
-      RoyaltySymbols_Crown5: 719899714
-      RoyaltySymbols_Decoration: -551061129
-      RoyaltySymbols_Instrument: -8997597
-      RoyaltySymbols_Lion: -167871124
+      CartonBox3dSheet_BackLeft: -795773663
+      CartonBox3dSheet_BackRight: -1440599787
+      CartonBox3dSheet_Exterior: 1766290726
+      CartonBox3dSheet_FrontLeft: 1338714464
+      CartonBox3dSheet_FrontRight: -755828753
+      CartonBox3dSheet_Interior: -1296375815
+      CartonBox3dSheet_InteriorMask: 567195645
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

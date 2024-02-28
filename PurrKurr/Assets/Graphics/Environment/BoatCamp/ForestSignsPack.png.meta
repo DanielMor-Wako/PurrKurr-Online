@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 11498bf491965d54c9d0f38b620da8b8
+guid: 954e02eda7197534286c5cc32f8470f7
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -94,19 +94,6 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
-    buildTarget: iPhone
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -136,169 +123,274 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: RoyaltySymbols_Crown1
+      name: ForestBamboo
       rect:
         serializedVersion: 2
-        x: 2
-        y: 240
-        width: 126
-        height: 66
+        x: 4
+        y: 262
+        width: 69
+        height: 434
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bfa15acfafa2c35469601d03f8caf2fc
-      internalID: 1415090980
+      spriteID: f437a64711b08c246857ee25f18e2b7c
+      internalID: -1398041885
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: RoyaltySymbols_Lion
+      name: ForestBamboo_strip2
       rect:
         serializedVersion: 2
-        x: 132
-        y: 144
-        width: 138
-        height: 162
+        x: 121
+        y: 660
+        width: 65
+        height: 27
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ca9f72b6689ccd943bf68a0e1a1d2929
-      internalID: -167871124
+      spriteID: 4224c7f8f761b8c4ea2a65c508e6a134
+      internalID: -725960563
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: RoyaltySymbols_Crown4
+      name: ForestBamboo_strip3
       rect:
         serializedVersion: 2
-        x: 305
-        y: 234
-        width: 115
-        height: 81
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 234
+        y: 568
+        width: 95
+        height: 119
+      alignment: 9
+      pivot: {x: 0.5079394, y: 0.538029}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 61e41a1714a03094caec40f9eda65940
-      internalID: -1205253971
+      spriteID: 4073655c874cf1840b9aedb9669c575b
+      internalID: 559366938
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: RoyaltySymbols_Crown2
+      name: ForestBambooAlbino
       rect:
         serializedVersion: 2
-        x: 3
-        y: 149
-        width: 124
-        height: 71
+        x: 523
+        y: 262
+        width: 69
+        height: 434
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b9da0548823e15344924984afad71232
-      internalID: 133129660
+      spriteID: c0caf6d4e9893a34caa5899b6af10719
+      internalID: -1412200808
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: RoyaltySymbols_Crown3
+      name: ForestBamboo_strip1
       rect:
         serializedVersion: 2
-        x: 300
-        y: 140
-        width: 124
-        height: 91
+        x: 119
+        y: 575
+        width: 67
+        height: 27
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4407f88cc83f3a44ebde881609f2b14f
-      internalID: 1106825854
+      spriteID: 08944e1442689b64e8d67f8a1b47b5be
+      internalID: 1448980643
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: RoyaltySymbols_Crown5
+      name: ForestBamboo_X_strip4
       rect:
         serializedVersion: 2
-        x: 5
-        y: 16
-        width: 121
+        x: 378
+        y: 568
+        width: 90
+        height: 116
+      alignment: 9
+      pivot: {x: 0.46647745, y: 0.5715232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e79bedff6780c1419e8c7aacf61efe9
+      internalID: 1806037369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ForestSignsPack_7
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 564
+        width: 6
+        height: 4
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1fb0c633116298b489f7aa83e8c85e32
+      internalID: -1781450150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ForestBoxBamboo
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 268
+        width: 349
+        height: 243
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 7, y: 5, z: 6, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2106ce3357671442b8cf7ce69d8752a
+      internalID: -1131744650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ForestBoxAlbino
+      rect:
+        serializedVersion: 2
+        x: 641
+        y: 268
+        width: 349
+        height: 251
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 7, y: 6, z: 7, w: 7}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6002895a28618f14bb9555b639889b0b
+      internalID: 439725224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ForestArrowAlbino
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 0
+        width: 420
+        height: 201
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25e3b2e665a6f8d4a93553d270046d15
+      internalID: -124593191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ForestArrow
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 0
+        width: 420
+        height: 201
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1f2501a055d55f4ca779bc864232606
+      internalID: -1009468407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ForestSeamlessPipeWhite
+      rect:
+        serializedVersion: 2
+        x: 529
+        y: 415
+        width: 60
         height: 117
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b2b84457b1d0d9f46b023418825adc3e
-      internalID: 719899714
+      spriteID: 2f92be2b297591c43ae32927006af6dc
+      internalID: -2095980001
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: RoyaltySymbols_Decoration
+      name: ForestSeamlessPipe
       rect:
         serializedVersion: 2
-        x: 145
-        y: 13
-        width: 133
-        height: 113
+        x: 6
+        y: 398
+        width: 63
+        height: 103
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0db83bde4e6cb9a4a80c7a491e9cff34
-      internalID: -551061129
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: RoyaltySymbols_Instrument
-      rect:
-        serializedVersion: 2
-        x: 282
-        y: 9
-        width: 167
-        height: 126
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 628860d6bdf733f45ba7038979c3e4b7
-      internalID: -8997597
+      spriteID: a4532be367bf68f4e9558b43e710ba2a
+      internalID: -533646580
       vertices: []
       indices: 
       edges: []
@@ -314,14 +406,27 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      RoyaltySymbols_Crown1: 1415090980
-      RoyaltySymbols_Crown2: 133129660
-      RoyaltySymbols_Crown3: 1106825854
-      RoyaltySymbols_Crown4: -1205253971
-      RoyaltySymbols_Crown5: 719899714
-      RoyaltySymbols_Decoration: -551061129
-      RoyaltySymbols_Instrument: -8997597
-      RoyaltySymbols_Lion: -167871124
+      ForestArrow: -1009468407
+      ForestArrowAlbino: -124593191
+      ForestBamboo: -1398041885
+      ForestBambooAlbino: -1412200808
+      ForestBamboo_X_strip4: 1806037369
+      ForestBamboo_strip1: 1448980643
+      ForestBamboo_strip2: -725960563
+      ForestBamboo_strip3: 559366938
+      ForestBoxAlbino: 439725224
+      ForestBoxBamboo: -1131744650
+      ForestSeamlessPipe: -533646580
+      ForestSeamlessPipeWhite: -2095980001
+      ForestSignsPack_10: -1926072046
+      ForestSignsPack_11: -1918633471
+      ForestSignsPack_12: 1241739902
+      ForestSignsPack_14: -992420994
+      ForestSignsPack_15: -1208477486
+      ForestSignsPack_17: 947438659
+      ForestSignsPack_18: 1614738281
+      ForestSignsPack_19: 406217667
+      ForestSignsPack_7: -1781450150
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -69,7 +69,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -134,7 +134,1267 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: HouseMenuItems_AddicTop
+      rect:
+        serializedVersion: 2
+        x: 908
+        y: 1631
+        width: 462
+        height: 177
+      alignment: 9
+      pivot: {x: 0.8377392, y: 0.44786495}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fcaa2c232c8b99b4a8bf98df2f58d77d
+      internalID: -126208919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_clothsHolder2
+      rect:
+        serializedVersion: 2
+        x: 1811
+        y: 1286
+        width: 158
+        height: 521
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1186175df89a204aafb1bcb7c7083a1
+      internalID: -615208117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_clothsHolder
+      rect:
+        serializedVersion: 2
+        x: 2015
+        y: 1288
+        width: 149
+        height: 519
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1debd14124c89a4ebfe005fca693b96
+      internalID: 273434324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_Lamp3
+      rect:
+        serializedVersion: 2
+        x: 2205
+        y: 1297
+        width: 139
+        height: 498
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ac767fd2f4c7234aa7a05da0969e2ff
+      internalID: 174427587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_Bed
+      rect:
+        serializedVersion: 2
+        x: 2380
+        y: 1336
+        width: 820
+        height: 405
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d233b0cd0929d2a4384f6569542c5df6
+      internalID: -618794613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_BookShelf1
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 1016
+        width: 269
+        height: 669
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e92871c93de56224c85ee48064c1f58e
+      internalID: 864808191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_BookShelf2
+      rect:
+        serializedVersion: 2
+        x: 356
+        y: 1017
+        width: 271
+        height: 669
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11edee0336bf81e4490e93823c7cf580
+      internalID: 1688248521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_Shoes
+      rect:
+        serializedVersion: 2
+        x: 710
+        y: 1536
+        width: 100
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95b703924ff8e49439da9bfae459d6f3
+      internalID: -216922088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_SalonChair
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 1323
+        width: 313
+        height: 319
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35b36c11af1acea4cb25e9031be500d2
+      internalID: 622212064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_Addic
+      rect:
+        serializedVersion: 2
+        x: 899
+        y: 1422
+        width: 471
+        height: 135
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91256326757a7474ca7f04c2fc8cab92
+      internalID: 559697345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_smallLamp
+      rect:
+        serializedVersion: 2
+        x: 695
+        y: 1252
+        width: 113
+        height: 193
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5de30e280cfefc240b8418b24aeca212
+      internalID: -1481447763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_22
+      rect:
+        serializedVersion: 2
+        x: 931
+        y: 1264
+        width: 81
+        height: 137
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecc3feaf3a465f94ba4ed97a2d7a25be
+      internalID: 100835168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_couch
+      rect:
+        serializedVersion: 2
+        x: 1049
+        y: 955
+        width: 531
+        height: 325
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1352904de79a2e14589449cb68ae2b4f
+      internalID: -858745156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_woodDoubleShelf
+      rect:
+        serializedVersion: 2
+        x: 1630
+        y: 1080
+        width: 478
+        height: 196
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73a82e3f66eb19d448869521a7e8dcf0
+      internalID: -1764274413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_smallDrawer
+      rect:
+        serializedVersion: 2
+        x: 2208
+        y: 1092
+        width: 211
+        height: 169
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed0c3292c7105aa4f8cd33aa0125aaa3
+      internalID: 1299237321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_book1
+      rect:
+        serializedVersion: 2
+        x: 684
+        y: 1055
+        width: 121
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f078e8bd60c4e5444869766e7bc34898
+      internalID: 1050777078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_CupMag
+      rect:
+        serializedVersion: 2
+        x: 911
+        y: 1123
+        width: 94
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc6ad74599fe6594983a0fc0d918d143
+      internalID: -1172543243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_38
+      rect:
+        serializedVersion: 2
+        x: 2477
+        y: 905
+        width: 684
+        height: 332
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41cb95fe5d871ac4c9d7c9e1a502f112
+      internalID: 1898460759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_41
+      rect:
+        serializedVersion: 2
+        x: 911
+        y: 1023
+        width: 106
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2777b7f79f679e64d80ab32b7c75f431
+      internalID: -1543081707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_woodPlank
+      rect:
+        serializedVersion: 2
+        x: 1686
+        y: 1027
+        width: 653
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 43, y: 0, z: 146, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d62ce0df6a0bc1a44817e00feacdaaf2
+      internalID: -2049208939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_books2
+      rect:
+        serializedVersion: 2
+        x: 690
+        y: 917
+        width: 136
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60f9fdc63e2fe3a49a8915ca69d7f62a
+      internalID: -1543950090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_49
+      rect:
+        serializedVersion: 2
+        x: 871
+        y: 867
+        width: 174
+        height: 130
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d56a450536c80bf42a7f6c5022657a46
+      internalID: -2119642542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_Table
+      rect:
+        serializedVersion: 2
+        x: 1686
+        y: 898
+        width: 653
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47baff29f68502a488c43ae7b7539ad9
+      internalID: -701170016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_appleGreen
+      rect:
+        serializedVersion: 2
+        x: 1124
+        y: 828
+        width: 80
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e94f84898f50814c9b696fd093e1e1f
+      internalID: 2046983473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_redApple
+      rect:
+        serializedVersion: 2
+        x: 1231
+        y: 828
+        width: 80
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41374d1de290e3d468b500cb363304d8
+      internalID: -34205129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_picture1
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 716
+        width: 207
+        height: 198
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0a98fb1993a0d444900760dc99afb8a
+      internalID: -690252723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_speaker
+      rect:
+        serializedVersion: 2
+        x: 1402
+        y: 712
+        width: 146
+        height: 190
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ce87fd4467910a4b828d0edf36fce61
+      internalID: 1244034208
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_59
+      rect:
+        serializedVersion: 2
+        x: 2259
+        y: 711
+        width: 75
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76dd1e94efc487b46a4286ca99ca4dac
+      internalID: 1200160098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_62
+      rect:
+        serializedVersion: 2
+        x: 2133
+        y: 711
+        width: 75
+        height: 168
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71b2218499e35a04a8a81b066c21f11b
+      internalID: 1682404806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_lamp
+      rect:
+        serializedVersion: 2
+        x: 2700
+        y: 648
+        width: 164
+        height: 225
+      alignment: 9
+      pivot: {x: 0.5357115, y: 0.97326064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4eb279305bc30bc41a458f32f905dbe5
+      internalID: -1136523133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_lamp0
+      rect:
+        serializedVersion: 2
+        x: 2939
+        y: 605
+        width: 258
+        height: 262
+      alignment: 9
+      pivot: {x: 0.4960228, y: 0.97107005}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e30db72e164b6714aba1f4adfa89623c
+      internalID: -1348073214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_Fridge
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 117
+        width: 342
+        height: 747
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d74b040c19b0a8e4b92993e4d1f67d81
+      internalID: -1722968822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_foodBowl
+      rect:
+        serializedVersion: 2
+        x: 870
+        y: 774
+        width: 175
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c63a589ae6d65b844ae075c874750330
+      internalID: 1191216049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_68
+      rect:
+        serializedVersion: 2
+        x: 1933
+        y: 711
+        width: 148
+        height: 141
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c34490eec0caf6b48bb5777e88444a19
+      internalID: -1310985264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_picture2
+      rect:
+        serializedVersion: 2
+        x: 639
+        y: 692
+        width: 168
+        height: 134
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f6eda120fb447445897d052f1671116
+      internalID: -2099911534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_speakerSmall
+      rect:
+        serializedVersion: 2
+        x: 1661
+        y: 711
+        width: 102
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e17cf936699974448b17ee11415a4647
+      internalID: 1158677340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_75
+      rect:
+        serializedVersion: 2
+        x: 1798
+        y: 711
+        width: 107
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e06af4efacd2e8a4993d95bc7e35259e
+      internalID: -177006410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_Mirror
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 470
+        width: 160
+        height: 310
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24081cf0d4886904f903fc1143b1a1f9
+      internalID: -944578928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_picture3
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 598
+        width: 82
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fda75b72079bf541a10bb4ed28035d0
+      internalID: -2015296301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_Electricity
+      rect:
+        serializedVersion: 2
+        x: 867
+        y: 545
+        width: 160
+        height: 191
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f8072c75d88b15478bd767451047456
+      internalID: 1280856337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_bookShelf
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 102
+        width: 282
+        height: 593
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2ca9b9de2b3a5f4287a29b99f43d55f
+      internalID: -1059123535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_Shelf
+      rect:
+        serializedVersion: 2
+        x: 1705
+        y: 655
+        width: 634
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e6b6d878c586a4419690722f38f06a7
+      internalID: -1387626993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_LaundryCan
+      rect:
+        serializedVersion: 2
+        x: 2408
+        y: 436
+        width: 184
+        height: 249
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 606a3c0787fb1e14fbafa72162a4fcf2
+      internalID: -701872981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_picture4
+      rect:
+        serializedVersion: 2
+        x: 498
+        y: 545
+        width: 104
+        height: 138
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb496b1e38ff6b04b82e46cd28bff00c
+      internalID: -2025339734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_picture6
+      rect:
+        serializedVersion: 2
+        x: 739
+        y: 601
+        width: 72
+        height: 82
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d4569f3ca812614290187dd9aacfbf6
+      internalID: -1935113664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_picture5
+      rect:
+        serializedVersion: 2
+        x: 652
+        y: 549
+        width: 86
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6479f312c5c1471458c6084cbc14fa50
+      internalID: -456531672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_89
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 449
+        width: 496
+        height: 171
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f975df0643d02e42a8a4eb0d4b6848b
+      internalID: -174442956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_gloves
+      rect:
+        serializedVersion: 2
+        x: 1695
+        y: 517
+        width: 106
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c49dc9db595fae14facc0af400399dab
+      internalID: 2035652050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_93
+      rect:
+        serializedVersion: 2
+        x: 2786
+        y: 442
+        width: 131
+        height: 148
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1cdb50ea8532a1d4ab9c01d5c56e2056
+      internalID: 1155975923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_97
+      rect:
+        serializedVersion: 2
+        x: 2633
+        y: 439
+        width: 87
+        height: 134
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9bec12c8e5bf61c48aebe73a4120e15a
+      internalID: -1603257601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_FedexBox1
+      rect:
+        serializedVersion: 2
+        x: 2977
+        y: 398
+        width: 217
+        height: 150
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d07f2915c4ca8041883d11fee0a47ab
+      internalID: -324999163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_LaundryMachine
+      rect:
+        serializedVersion: 2
+        x: 373
+        y: 117
+        width: 385
+        height: 381
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f4601c8fadc0e04a8ca9f98b7b2ab1c
+      internalID: -375570566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_electricCable
+      rect:
+        serializedVersion: 2
+        x: 805
+        y: 93
+        width: 268
+        height: 401
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4618ec61db7b873408c470e02d5e4f1e
+      internalID: -316121661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_104
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 116
+        width: 87
+        height: 295
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8caefc0dc8b85674d8451a2738b16a80
+      internalID: -466360826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_WoodSelf
+      rect:
+        serializedVersion: 2
+        x: 1627
+        y: 356
+        width: 725
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 79, y: 29, z: 69, w: 11}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a2ad96507f102f43aee4ee3c4b5c22a
+      internalID: -170168787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_LaundryWithCloth
+      rect:
+        serializedVersion: 2
+        x: 2403
+        y: 108
+        width: 202
+        height: 297
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74c54cca6172ecb4796b1b91e508a466
+      internalID: -1067219464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_BigTable
+      rect:
+        serializedVersion: 2
+        x: 1627
+        y: 93
+        width: 725
+        height: 224
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 919d498e4f2394a41a6c4ba5307e9f68
+      internalID: 1993739183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_SmallBoxTop
+      rect:
+        serializedVersion: 2
+        x: 2664
+        y: 287
+        width: 184
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e25c366de6619740bdb5d4cbc2259d2
+      internalID: 777604054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_FedexBox2
+      rect:
+        serializedVersion: 2
+        x: 2899
+        y: 117
+        width: 296
+        height: 188
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 339827e81d66bec4ea4e0c363d948645
+      internalID: -1888082701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HouseMenuItems_SmallBox
+      rect:
+        serializedVersion: 2
+        x: 2645
+        y: 111
+        width: 212
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28e4147d49db1a646ba7e9f1440ac2f7
+      internalID: -1466994364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -145,7 +1405,128 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      HouseMenuItems_10: -1955457703
+      HouseMenuItems_102: 545519638
+      HouseMenuItems_103: -457549965
+      HouseMenuItems_104: -466360826
+      HouseMenuItems_107: -1542128026
+      HouseMenuItems_108: -528142361
+      HouseMenuItems_109: -1990534184
+      HouseMenuItems_11: -981780894
+      HouseMenuItems_110: 89276949
+      HouseMenuItems_111: 1314211060
+      HouseMenuItems_112: -760289158
+      HouseMenuItems_115: -1804337489
+      HouseMenuItems_116: 1106036120
+      HouseMenuItems_118: 1336975415
+      HouseMenuItems_119: -1819024241
+      HouseMenuItems_13: -2117615530
+      HouseMenuItems_15: 953939857
+      HouseMenuItems_17: 767250213
+      HouseMenuItems_18: 1121991785
+      HouseMenuItems_19: 1060143600
+      HouseMenuItems_21: 63045438
+      HouseMenuItems_22: 100835168
+      HouseMenuItems_23: 216567691
+      HouseMenuItems_24: 300876269
+      HouseMenuItems_25: 993844395
+      HouseMenuItems_26: 873064430
+      HouseMenuItems_27: 1868189983
+      HouseMenuItems_28: -83980008
+      HouseMenuItems_30: -1888055454
+      HouseMenuItems_32: -1475254436
+      HouseMenuItems_34: 61283337
+      HouseMenuItems_37: 309315268
+      HouseMenuItems_38: 1898460759
+      HouseMenuItems_39: 450397157
+      HouseMenuItems_4: -1326408125
+      HouseMenuItems_40: -1724646320
+      HouseMenuItems_41: -1543081707
+      HouseMenuItems_43: -2125346342
+      HouseMenuItems_44: -1861417053
+      HouseMenuItems_45: 1879442961
+      HouseMenuItems_46: -1032905093
+      HouseMenuItems_47: -1616920103
+      HouseMenuItems_49: -2119642542
+      HouseMenuItems_5: -609440050
+      HouseMenuItems_53: 903478933
+      HouseMenuItems_55: 373141014
+      HouseMenuItems_56: -962442998
+      HouseMenuItems_58: 1042117519
+      HouseMenuItems_59: 1200160098
+      HouseMenuItems_60: 196556924
+      HouseMenuItems_61: 1739779573
+      HouseMenuItems_62: 1682404806
+      HouseMenuItems_67: -1788448212
+      HouseMenuItems_68: -1310985264
+      HouseMenuItems_70: 625772252
+      HouseMenuItems_71: -1953630182
+      HouseMenuItems_73: -1457948460
+      HouseMenuItems_74: -1253794615
+      HouseMenuItems_75: -177006410
+      HouseMenuItems_76: 899061906
+      HouseMenuItems_80: 1605967648
+      HouseMenuItems_84: -408498575
+      HouseMenuItems_87: 293155928
+      HouseMenuItems_89: -174442956
+      HouseMenuItems_9: 2100314244
+      HouseMenuItems_90: 1201905936
+      HouseMenuItems_92: 457344485
+      HouseMenuItems_93: 1155975923
+      HouseMenuItems_94: -696206793
+      HouseMenuItems_95: 1434786390
+      HouseMenuItems_96: 1144107499
+      HouseMenuItems_97: -1603257601
+      HouseMenuItems_98: 449994784
+      HouseMenuItems_Addic: 559697345
+      HouseMenuItems_AddicTop: -126208919
+      HouseMenuItems_Bed: -618794613
+      HouseMenuItems_BigTable: 1993739183
+      HouseMenuItems_BookShelf1: 864808191
+      HouseMenuItems_BookShelf2: 1688248521
+      HouseMenuItems_CupMag: -1172543243
+      HouseMenuItems_Electricity: 1280856337
+      HouseMenuItems_FedexBox1: -324999163
+      HouseMenuItems_FedexBox2: -1888082701
+      HouseMenuItems_Fridge: -1722968822
+      HouseMenuItems_Lamp3: 174427587
+      HouseMenuItems_LaundryCan: -701872981
+      HouseMenuItems_LaundryMachine: -375570566
+      HouseMenuItems_LaundryWithCloth: -1067219464
+      HouseMenuItems_Mirror: -944578928
+      HouseMenuItems_SalonChair: 622212064
+      HouseMenuItems_Shelf: -1387626993
+      HouseMenuItems_Shoes: -216922088
+      HouseMenuItems_SmallBox: -1466994364
+      HouseMenuItems_SmallBoxTop: 777604054
+      HouseMenuItems_Table: -701170016
+      HouseMenuItems_WoodSelf: -170168787
+      HouseMenuItems_appleGreen: 2046983473
+      HouseMenuItems_book1: 1050777078
+      HouseMenuItems_bookShelf: -1059123535
+      HouseMenuItems_books2: -1543950090
+      HouseMenuItems_clothsHolder: 273434324
+      HouseMenuItems_clothsHolder2: -615208117
+      HouseMenuItems_couch: -858745156
+      HouseMenuItems_electricCable: -316121661
+      HouseMenuItems_foodBowl: 1191216049
+      HouseMenuItems_gloves: 2035652050
+      HouseMenuItems_lamp: -1136523133
+      HouseMenuItems_lamp0: -1348073214
+      HouseMenuItems_picture1: -690252723
+      HouseMenuItems_picture2: -2099911534
+      HouseMenuItems_picture3: -2015296301
+      HouseMenuItems_picture4: -2025339734
+      HouseMenuItems_picture5: -456531672
+      HouseMenuItems_picture6: -1935113664
+      HouseMenuItems_redApple: -34205129
+      HouseMenuItems_smallDrawer: 1299237321
+      HouseMenuItems_smallLamp: -1481447763
+      HouseMenuItems_speaker: 1244034208
+      HouseMenuItems_speakerSmall: 1158677340
+      HouseMenuItems_woodDoubleShelf: -1764274413
+      HouseMenuItems_woodPlank: -2049208939
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
