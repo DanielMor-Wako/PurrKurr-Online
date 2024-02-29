@@ -1,0 +1,157 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2894854162961221827
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 344272715317516658}
+  m_Layer: 7
+  m_Name: BoatDoor_Exit
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &344272715317516658
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2894854162961221827}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10, y: 5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3745476694953324658}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &3024088719928911037
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 344272715317516658}
+    m_Modifications:
+    - target: {fileID: 57736022965924807, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1877195783570363599, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1877195783570363599, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1877195783570363599, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1877195783570363599, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1877195783570363599, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1877195783570363599, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1877195783570363599, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1877195783570363599, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1877195783570363599, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1877195783570363599, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3136786737466977384, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: _currentState
+      value: 
+      objectReference: {fileID: 7298519189511654373}
+    - target: {fileID: 3493927570089879841, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4570179785687260956, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4570179785687260956, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4570179785687260956, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4570179785687260956, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5529914720566783832, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5690801901905279033, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5936559246725191391, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_Name
+      value: BoatDoor (Entrance)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6697323531793075308, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6991601238062606303, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_Color.b
+      value: 0.57254905
+      objectReference: {fileID: 0}
+    - target: {fileID: 6991601238062606303, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_Color.g
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6991601238062606303, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_Color.r
+      value: 0.7058824
+      objectReference: {fileID: 0}
+    - target: {fileID: 7135355400870742372, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 470c90347b0d887499fe78cca54fb579, type: 3}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+--- !u!4 &3745476694953324658 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1877195783570363599, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+  m_PrefabInstance: {fileID: 3024088719928911037}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7298519189511654373 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5529914720566783832, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+  m_PrefabInstance: {fileID: 3024088719928911037}
+  m_PrefabAsset: {fileID: 0}
