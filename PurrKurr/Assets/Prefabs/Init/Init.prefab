@@ -75,13 +75,13 @@ SpriteMask:
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: ff5ad24517794af43b0159640f458756, type: 3}
   m_MaskAlphaCutoff: 0.2
-  m_FrontSortingLayerID: 0
-  m_BackSortingLayerID: 0
-  m_FrontSortingLayer: 0
-  m_BackSortingLayer: 0
-  m_FrontSortingOrder: 0
-  m_BackSortingOrder: 0
-  m_IsCustomRangeActive: 0
+  m_FrontSortingLayerID: 1830143165
+  m_BackSortingLayerID: 1830143165
+  m_FrontSortingLayer: -1
+  m_BackSortingLayer: -1
+  m_FrontSortingOrder: 10
+  m_BackSortingOrder: 9
+  m_IsCustomRangeActive: 1
   m_SpriteSortPoint: 0
 --- !u!1 &142994974125223364
 GameObject:
@@ -897,6 +897,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5556951cfa0935b45bf6bba245c5d54d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _xDistanceFrommClingPoint: 0.8
   _cam: {fileID: 4039740569464446090}
   _mainHero: {fileID: 7784759249914515740}
 --- !u!1 &1107854503883947925
@@ -18467,13 +18468,13 @@ SpriteMask:
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: d96290eb599d86d4facbab6fb83c4731, type: 3}
   m_MaskAlphaCutoff: 0.2
-  m_FrontSortingLayerID: 0
-  m_BackSortingLayerID: 0
-  m_FrontSortingLayer: 0
-  m_BackSortingLayer: 0
-  m_FrontSortingOrder: 0
-  m_BackSortingOrder: 0
-  m_IsCustomRangeActive: 0
+  m_FrontSortingLayerID: 1830143165
+  m_BackSortingLayerID: 1830143165
+  m_FrontSortingLayer: -1
+  m_BackSortingLayer: -1
+  m_FrontSortingOrder: 10
+  m_BackSortingOrder: 9
+  m_IsCustomRangeActive: 1
   m_SpriteSortPoint: 0
 --- !u!1 &6088020022117728438
 GameObject:
