@@ -118,7 +118,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5936559246725191391, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_Name
-      value: BoatDoor (Entrance)
+      value: BoatDoor
       objectReference: {fileID: 0}
     - target: {fileID: 6697323531793075308, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_IsActive

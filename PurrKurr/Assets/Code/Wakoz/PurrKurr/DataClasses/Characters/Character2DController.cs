@@ -11,6 +11,7 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore;
 using Code.Wakoz.PurrKurr.DataClasses.Effects;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
 using Code.Wakoz.PurrKurr.Logic.GameFlow;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
@@ -29,7 +30,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         [SerializeField] private HingeJoint2D _cling;
         [SerializeField] private JointMotor2D _motor;
         [SerializeField] private TransformMover _transformMover;
-        [SerializeField] private CharacterSenses _senses;
+        [SerializeField] private DetectionZone _senses;
         [SerializeField] private Character2DRig _rigAnimator;
         [SerializeField] private Transform _bodyDamager;
         [Header("Ground RayCheck Settings")]
@@ -66,7 +67,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public Collider2D[] NearbyInteractables() {
  
-            var _nearbyInteractions = _senses.NearbyInteractables();
+            var _nearbyInteractions = _senses.GetColliders();
             
             if (_nearbyInteractions == null || _legsCollider == null) {
                 return null;
@@ -319,7 +320,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _motor = new JointMotor2D();
             _motor.maxMotorTorque = CharacterMaxMotorTorque;
 
-            _senses.Init(_whatIsDamageableCharacter, _whatIsDamageable);
+            if (_senses == null) {
+                Debug.LogWarning($"character {name} is missing _senses collider");
+            }
 
             UpdateStats();
             _stats.InitUpgrades();

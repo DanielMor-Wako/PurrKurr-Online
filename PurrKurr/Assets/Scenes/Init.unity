@@ -9261,6 +9261,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BoatDoor
       objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: roomIndex
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7135355400870742372, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -31603,6 +31607,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BoatDoor (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: roomIndex
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6697323531793075308, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -43692,6 +43700,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1251386406}
     m_Modifications:
+    - target: {fileID: 2113421583923616965, guid: 502eccadfc59fe749b5c0cb0eb89b2c4, type: 3}
+      propertyPath: roomIndex
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5763171036544367004, guid: 502eccadfc59fe749b5c0cb0eb89b2c4, type: 3}
       propertyPath: m_Name
       value: BoatDoor_Entrance
@@ -79238,6 +79250,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2147294713}
     m_Modifications:
+    - target: {fileID: 2113421583923616965, guid: 502eccadfc59fe749b5c0cb0eb89b2c4, type: 3}
+      propertyPath: roomIndex
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5763171036544367004, guid: 502eccadfc59fe749b5c0cb0eb89b2c4, type: 3}
       propertyPath: m_Name
       value: BoatDoor_Entrance
@@ -79990,6 +80006,10 @@ PrefabInstance:
       propertyPath: m_Creator
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1362960598664048836, guid: b366cfe60150f62429657356265f8bcf, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -292.00012
+      objectReference: {fileID: 0}
     - target: {fileID: 1412954848787504057, guid: b366cfe60150f62429657356265f8bcf, type: 3}
       propertyPath: m_Creator
       value: 
@@ -80090,6 +80110,10 @@ PrefabInstance:
       propertyPath: m_Creator
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 3133718908027658768, guid: b366cfe60150f62429657356265f8bcf, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -726.629
+      objectReference: {fileID: 0}
     - target: {fileID: 3161128932080785654, guid: b366cfe60150f62429657356265f8bcf, type: 3}
       propertyPath: m_Creator
       value: 
@@ -80181,6 +80205,14 @@ PrefabInstance:
     - target: {fileID: 5111850057383799558, guid: b366cfe60150f62429657356265f8bcf, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5208044958115951522, guid: b366cfe60150f62429657356265f8bcf, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -585.0001
+      objectReference: {fileID: 0}
+    - target: {fileID: 5272395028810765300, guid: b366cfe60150f62429657356265f8bcf, type: 3}
+      propertyPath: _defaultTimeScale
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 5315595994478507751, guid: b366cfe60150f62429657356265f8bcf, type: 3}
       propertyPath: m_Creator

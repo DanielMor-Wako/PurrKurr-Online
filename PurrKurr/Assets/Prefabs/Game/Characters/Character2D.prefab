@@ -337,6 +337,8 @@ MonoBehaviour:
   _bodyDamager: {fileID: 5343545469360264959}
   GroundCheck_AngleOffset: 1
   GroundCheck_PosOffset: {x: 0.85, y: 0}
+  _solidColliders: []
+  _traversableColliders: []
 --- !u!114 &1599996382888620125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -555,7 +557,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fa2923de5414922b13cbaf73c821181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _senses: {fileID: 2872959379183530337}
 --- !u!58 &2872959379183530337
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -568,7 +569,7 @@ CircleCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 384
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0

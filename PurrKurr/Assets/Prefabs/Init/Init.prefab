@@ -133,6 +133,7 @@ MonoBehaviour:
   _cursor: {fileID: 133848036909616884}
   _angle: {fileID: 228212626260989112}
   _trajectory: {fileID: 7113463177468501051}
+  _defaultTimeScale: 1
   _affectTimeScale: 1
   _transitionDuration: 0.2
   _slomoTimeScale: 0.1
@@ -619,7 +620,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fa2923de5414922b13cbaf73c821181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _senses: {fileID: 4883787996328607230}
 --- !u!58 &4883787996328607230
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -632,7 +632,7 @@ CircleCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 384
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -6252,6 +6252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0770bb9c1605a34e8084b96ec23401a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _levels: {fileID: 0}
 --- !u!1 &2184821671793913574
 GameObject:
   m_ObjectHideFlags: 0
@@ -11594,7 +11595,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fa2923de5414922b13cbaf73c821181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _senses: {fileID: 3697343433055784836}
 --- !u!58 &3697343433055784836
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -11607,7 +11607,7 @@ CircleCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 384
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -18797,7 +18797,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fa2923de5414922b13cbaf73c821181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _senses: {fileID: 2287075497783559705}
 --- !u!58 &2287075497783559705
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -18810,7 +18809,7 @@ CircleCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 384
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0

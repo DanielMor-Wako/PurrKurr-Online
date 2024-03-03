@@ -19,6 +19,7 @@ using Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection;
 using Code.Wakoz.PurrKurr.Screens.Effects;
 using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 using Code.Wakoz.PurrKurr.Screens.Levels;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
@@ -116,7 +117,27 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             _levelsController.InitInteractablePools(_interactables);
 
-            _levelsController.LoadLevel(0);
+            LoadLevel(0);
+        }
+
+        public void OnCharacterNearDoor(DoorController door, Collider2D triggeredCollider) {
+
+            var x = triggeredCollider.GetComponent<IInteractable>();
+            var character = x.GetInteractable();
+            
+            if (character != (IInteractableBody)_hero) {
+                return;
+            }
+
+            if (_logic.InputLogic.IsNavigationDirValidAsUp(_hero.State.NavigationDir)) {
+                LoadLevel(door.GetRoomIndex());
+            }
+
+        }
+
+        public void LoadLevel(int levelToLoad) {
+
+            _levelsController.LoadLevel(levelToLoad);
         }
 
         private void ReviveAllHeroes() {
@@ -134,7 +155,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 }
                 
                 character.Revive();
-
                 _levelsController.RefreshSpriteOrder(character, character == _hero);
             }
 
@@ -1087,7 +1107,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             var effectData = effectOverrideData != null ? effectOverrideData : _gameplayLogic.GetEffects(effectType);
             _effects?.PlayEffect(effectData, character.transform, initialRotation, stopWhenAnyEffectStarts);
         }
-
 
         private async void ApplyProjectileStateWhenThrown(IInteractableBody grabbed, int damage, IInteractableBody thrower, Func<Task> actionOnEnd = null) {
 
