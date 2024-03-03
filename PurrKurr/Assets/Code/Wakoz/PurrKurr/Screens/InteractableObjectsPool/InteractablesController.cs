@@ -69,6 +69,7 @@ namespace Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool {
 
             return Task.CompletedTask;
         }
+
     }
 
     public class GenericObjectPool<T> where T : MonoBehaviour {

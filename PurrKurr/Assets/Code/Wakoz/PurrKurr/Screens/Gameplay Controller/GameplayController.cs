@@ -18,6 +18,7 @@ using Code.Wakoz.PurrKurr.Screens.Ui_Controller;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection;
 using Code.Wakoz.PurrKurr.Screens.Effects;
 using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
+using Code.Wakoz.PurrKurr.Screens.Levels;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
@@ -49,6 +50,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private GameplayLogic _gameplayLogic;
         private GamePlayUtils _gameplayUtils;
         private EffectsController _effects;
+        private LevelsController _levelsController;
         private InteractablesController _interactables;
         private DebugController _debug;
 
@@ -80,6 +82,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _logic = GetController<LogicController>();
             _inputInterpreterLogic = new InputInterpreterLogic(_logic.InputLogic, _logic.GameplayLogic);
             _gameplayLogic = _logic.GameplayLogic;
+            _levelsController = GetController<LevelsController>();
             _interactables = GetController<InteractablesController>();
             _debug = GetController<DebugController>();
 
@@ -98,22 +101,22 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _whatIsCharacter = _gameplayLogic.GetDamageables();
             _whatIsDamageableCharacter = _gameplayLogic.GetDamageables();
 
-            InitInteractable();
+            InitLevel();
 
             TryInitHero(_mainHero);
 
-            RefreshSpritesOrder();
+            _levelsController.RefreshSpritesOrder(_hero);
 
             _gameRunning = true;
 
             return Task.CompletedTask;
         }
 
-        private void InitInteractable() {
+        private void InitLevel() {
 
-            // tood: call levelController to set the pools for interactables and init the the instances in the level
-            _interactables.CreateObjectPool(_interactables._projectiles.FirstOrDefault(), 0, 5, "Projectiles");
-            _interactables.CreateObjectPool(_interactables._ropes.FirstOrDefault(), 0, 1, "Ropes");
+            _levelsController.InitInteractablePools(_interactables);
+
+            _levelsController.LoadLevel(0);
         }
 
         private void ReviveAllHeroes() {
@@ -132,41 +135,17 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 
                 character.Revive();
 
-                RefreshSpriteOrder(character);
+                _levelsController.RefreshSpriteOrder(character, character == _hero);
             }
 
             _hero?.SetLevel(_hero.Stats.GetCurrentLevel());
-        }
-
-        private void RefreshSpritesOrder() {
-
-            var _heroes = _interactables._heroes;
-
-            if (_heroes == null) {
-                return;
-            }
-
-            foreach (var character in _heroes) {
-
-                if (character == null) {
-                    continue;
-                }
-
-                RefreshSpriteOrder(character);
-            }
-        }
-
-        private void RefreshSpriteOrder(Character2DController character) {
-
-            var isAlive = character.Stats.GetHealthPercentage() > 0;
-            character.SetSpriteOrder(character == _hero ? 2 : isAlive ? 1 : 0);
         }
 
         [ContextMenu("Init Referenced Hero")]
         public void SetHeroAsReferenced() {
             TryInitHero(_mainHero);
             _ui.InitUiForCharacter(_mainHero);
-            RefreshSpritesOrder();
+            _levelsController.RefreshSpritesOrder(_hero);
         }
 
         public void SetNewHero(Character2DController hero) => TryInitHero(hero);
@@ -209,7 +188,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 
                 if (!_firstTimeInitialized) { return; }
                 _firstTimeInitialized = false;
-                RefreshSpritesOrder();
+                _levelsController.RefreshSpritesOrder(_hero);
             }
         }
 
@@ -503,7 +482,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             projectile.SetTargetPosition(newPos, distancePercentReached);
             ApplyEffectForDuration(character, Effect2DType.DustCloud);
             //ApplyEffectForDuration(character, Effect2DType.TrailInAir); // todo: other trails for fire ice etc
-            ApplyProjectileStateWhenThrown(projectile, character.Stats.Damage, character, () =>_interactables.ReleaseInstance(projectile));
+            ApplyProjectileStateWhenThrown(projectile, character.Stats.Damage, character, () => _interactables.ReleaseInstance(projectile));
 
         }
 
