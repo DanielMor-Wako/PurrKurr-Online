@@ -14,6 +14,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
         [SerializeField] private LineRenderer _trajectory;
 
         [Header("Slomo Settings")]
+        [SerializeField][Range(0.1f, 1f)] public float _defaultTimeScale = 1f;
         [SerializeField] private bool _affectTimeScale = true;
         [SerializeField][Min(0)] public float _transitionDuration = 0.5f;
         [SerializeField][Range(0.1f, 1f)] public float _slomoTimeScale = 0.5f;
@@ -24,6 +25,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
         protected override void Clean() { }
 
         protected override Task Initialize() {
+
+            Time.timeScale = _defaultTimeScale;
+
             return Task.CompletedTask;
         }
 
@@ -89,7 +93,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
 
         private void TimeScaleTransition(bool slomoActive) {
 
-            _timeScaleTarget = slomoActive ? _slomoTimeScale : 1;
+            _timeScaleTarget = slomoActive ? _slomoTimeScale : _defaultTimeScale;
 
             if (_timeScaleTransitionCoroutine != null) {
                 StopCoroutine(_timeScaleTransitionCoroutine);
