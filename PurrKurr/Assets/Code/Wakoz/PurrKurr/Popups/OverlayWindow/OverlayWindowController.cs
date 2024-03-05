@@ -53,6 +53,7 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
         protected override Task Initialize() {
 
             _view.InitButtons(true);
+
             SetModel();
 
             return Task.CompletedTask;

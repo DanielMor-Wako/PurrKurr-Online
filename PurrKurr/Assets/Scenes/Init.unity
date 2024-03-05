@@ -9347,7 +9347,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: overlayWindowData.Array.data[0].Title
-      value: 
+      value: Movement
       objectReference: {fileID: 0}
     - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: overlayWindowData.Array.data[0].BodyContent
@@ -9356,6 +9356,18 @@ PrefabInstance:
     - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: overlayWindowData.Array.data[0].BodyPicture
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].ButtonsRawData.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].ButtonsRawData.Array.data[1].ButtonText
+      value: Purr
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].ButtonsRawData.Array.data[1].ButtonType
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7135355400870742372, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_Sprite
@@ -9402,16 +9414,16 @@ Transform:
   m_Children:
   - {fileID: 130441650}
   - {fileID: 832595919}
-  - {fileID: 744451978}
-  - {fileID: 506990314}
-  - {fileID: 303339660}
+  - {fileID: 1764659375}
   - {fileID: 1188783924}
+  - {fileID: 744451978}
+  - {fileID: 303339660}
   - {fileID: 1533884177}
   - {fileID: 746853525}
   - {fileID: 742327456}
-  - {fileID: 1764659375}
-  - {fileID: 232740909}
+  - {fileID: 506990314}
   - {fileID: 1430961699}
+  - {fileID: 232740909}
   m_Father: {fileID: 1118577077}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &133460158
@@ -13064,6 +13076,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: BoatDoor (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].Title
+      value: No Way Back
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].BodyContent
+      value: You are not ready yet
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].BodyPicture
+      value: 
+      objectReference: {fileID: 21300000, guid: 99bed2f72af95fe4ba96fcebfadd6fd0, type: 3}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].ButtonsRawData.Array.data[0].ButtonType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6697323531793075308, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -15421,6 +15449,14 @@ PrefabInstance:
     - target: {fileID: 5936559246725191391, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_Name
       value: BoatDoor (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].Title
+      value: Block & Dodge
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].BodyContent
+      value: Enter The Room?
       objectReference: {fileID: 0}
     - target: {fileID: 7135355400870742372, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_FlipX
@@ -21728,6 +21764,10 @@ PrefabInstance:
     - target: {fileID: 5936559246725191391, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_Name
       value: BoatDoor (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].Title
+      value: Go Downstairs?
       objectReference: {fileID: 0}
     - target: {fileID: 6697323531793075308, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_IsActive
@@ -29418,6 +29458,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: BoatDoor (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].Title
+      value: Ropes
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].BodyContent
+      value: Enter The Room?
+      objectReference: {fileID: 0}
     - target: {fileID: 7135355400870742372, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_Size.x
       value: 8.92
@@ -29545,6 +29593,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: BoatDoor (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].Title
+      value: Grab
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].BodyContent
+      value: Enter The Room?
+      objectReference: {fileID: 0}
     - target: {fileID: 7135355400870742372, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_FlipX
       value: 1
@@ -29634,6 +29690,14 @@ PrefabInstance:
     - target: {fileID: 5936559246725191391, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_Name
       value: BoatDoor (11)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].Title
+      value: Projectile
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].BodyContent
+      value: Enter The Room?
       objectReference: {fileID: 0}
     - target: {fileID: 7135355400870742372, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_Sprite
@@ -32178,6 +32242,18 @@ PrefabInstance:
     - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: roomIndex
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].Title
+      value: Jump
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].BodyContent
+      value: Enter The Room?
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].ButtonsRawData.Array.data[0].ButtonType
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6697323531793075308, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_IsActive
@@ -41634,7 +41710,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 468901190767057538, guid: 154235886bcb30d44815693a1bd7ac97, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5325743470825641973, guid: 154235886bcb30d44815693a1bd7ac97, type: 3}
       propertyPath: m_LocalPosition.x
@@ -44081,6 +44157,14 @@ PrefabInstance:
     - target: {fileID: 5936559246725191391, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_Name
       value: BoatDoor (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].Title
+      value: Attack
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].BodyContent
+      value: Enter The Room?
       objectReference: {fileID: 0}
     - target: {fileID: 6697323531793075308, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_IsActive
@@ -51449,7 +51533,7 @@ MonoBehaviour:
   - {fileID: 25680372}
   - {fileID: 2013251719}
   - {fileID: 184731462}
-  _currentState: {fileID: 2013251719}
+  _currentState: {fileID: 1118577084}
 --- !u!1 &1362726908
 GameObject:
   m_ObjectHideFlags: 0
@@ -53290,6 +53374,10 @@ PrefabInstance:
     - target: {fileID: 5936559246725191391, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_Name
       value: BoatDoor (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].Title
+      value: Go Upstairs?
       objectReference: {fileID: 0}
     - target: {fileID: 6697323531793075308, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_IsActive
@@ -60793,6 +60881,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: BoatDoor (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].Title
+      value: Climb
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].BodyContent
+      value: Enter The Room?
+      objectReference: {fileID: 0}
     - target: {fileID: 7135355400870742372, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -67862,6 +67958,14 @@ PrefabInstance:
     - target: {fileID: 5936559246725191391, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_Name
       value: BoatDoor (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].Title
+      value: Advanced Jump
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].BodyContent
+      value: Enter The Room?
       objectReference: {fileID: 0}
     - target: {fileID: 6697323531793075308, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_IsActive
@@ -76012,7 +76116,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 468901190767057538, guid: 154235886bcb30d44815693a1bd7ac97, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3817396000860786363, guid: 154235886bcb30d44815693a1bd7ac97, type: 3}
       propertyPath: m_IsActive

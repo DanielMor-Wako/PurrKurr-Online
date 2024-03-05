@@ -31,7 +31,7 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
         [SerializeField] private Transform footerArea;
         [SerializeField] private List<GenericButtonView> _buttonViews;
 
-        private List<GenericButtonModel> _buttonModels = new();
+        private Dictionary<GenericButtonType, GenericButtonModel> _buttonModels = new();
 
         public void Confirm() => onConfirmCallback?.Invoke();
         public void Decline() => onDeclineCallback?.Invoke();
@@ -64,11 +64,12 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
 
                 
                 if (initEventInsteadOfClear) {
-                    
-                    var _mode = new GenericButtonModel(new GenericButtonData(button.GetButtonType(), null));
+
+                    var buttonType = button.GetButtonType();
+                    var _mode = new GenericButtonModel(new GenericButtonData(buttonType, null));
                     button.SetModel(_mode);
                     
-                    _buttonModels.Add(_mode);
+                    _buttonModels.Add(buttonType, _mode);
 
                     button.OnClick += OnButtonClicked;
                 } else {
@@ -129,13 +130,15 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
                 return;
             }
 
-            foreach (var button in _buttonModels) {
+            foreach (var buttonEntry in _buttonModels) {
 
-                GenericButtonData matchingData = 
-                    button.Data != null ? GetButtonDataByType(buttonData, button.Data.ButtonType) 
-                    : null;
+                var buttonType = buttonEntry.Key;
+                var button = buttonEntry.Value;
 
-                UpdateButton(button, matchingData);
+                if (_buttonModels.TryGetValue(buttonType, out var buttonRawData)) {
+                    var data = GetButtonDataByType(buttonData, buttonType);
+                    UpdateButton(button, data);
+                }
             }
 
         }
@@ -182,7 +185,6 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
                 iconContainer.gameObject.SetActive(false);
             }
 
-            // todo: add text beneath image
             //iconText.text = hasBody && Model.HasBodyPicture ? Model.BodyContent : "";
         }
 

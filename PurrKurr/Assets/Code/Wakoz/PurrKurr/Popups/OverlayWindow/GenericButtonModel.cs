@@ -1,4 +1,6 @@
-﻿namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
+﻿using UnityEngine.Profiling.Memory.Experimental;
+
+namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
 
     public enum GenericButtonType {
         Confirm = 0,
@@ -28,6 +30,7 @@
             IsAvailable = data != null && isAvailable;
             Changed();
         }
+
         public bool IsClickable() =>
             Data.ButtonType is GenericButtonType.Confirm or GenericButtonType.Close 
             || IsWithinPageLimits(Data.ButtonType);
