@@ -22,6 +22,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
 
             if (zone != null) {
                 zone.OnColliderEntered -= handleColliderEntered;
+                zone.OnColliderExited -= handleColliderExited;
             }
 
         }
@@ -40,6 +41,18 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
             }
 
             zone.OnColliderEntered += handleColliderEntered;
+            zone.OnColliderExited += handleColliderExited;
+        }
+
+        private void handleColliderExited(Collider2D triggeredCollider) {
+
+            _gameplayController ??= SingleController.GetController<GameplayController>();
+
+            if (_gameplayController == null) {
+                return;
+            }
+
+            _gameplayController.OnCharacterExitDoor(this, triggeredCollider);
         }
 
         private void handleColliderEntered(Collider2D triggeredCollider) {

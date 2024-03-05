@@ -20,6 +20,7 @@ using Code.Wakoz.PurrKurr.Screens.Effects;
 using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 using Code.Wakoz.PurrKurr.Screens.Levels;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors;
+using Code.Wakoz.PurrKurr.Popups.OverlayWindow;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
@@ -129,10 +130,23 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 return;
             }
 
-            if (_logic.InputLogic.IsNavigationDirValidAsUp(_hero.State.NavigationDir)) {
-                LoadLevel(door.GetRoomIndex());
+            var buttons = new List<GenericButtonData>() {
+                new GenericButtonData(GenericButtonType.Confirm, "Purr", () => LoadLevel(door.GetRoomIndex()))
+            };
+            GetController<OverlayWindowController>().UpdateWindow("Enter the room?", null, null, buttons);
+
+        }
+
+        public void OnCharacterExitDoor(DoorController door, Collider2D triggeredCollider) {
+
+            var x = triggeredCollider.GetComponent<IInteractable>();
+            var character = x.GetInteractable();
+
+            if (character != (IInteractableBody)_hero) {
+                return;
             }
 
+            GetController<OverlayWindowController>().UpdateWindow();
         }
 
         public void LoadLevel(int levelToLoad) {

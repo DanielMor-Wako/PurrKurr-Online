@@ -260,7 +260,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             UnlockCoreAbilities, // attack, block, grab
             BreedNewCharacter
         }
-        
+
         public enum AiGoals {
             Explore,
             Protect,
