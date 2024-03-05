@@ -699,6 +699,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isDoorEntrance: 1
   roomIndex: 0
+  overlayWindowData:
+  - Title: Enter The Room?
+    BodyContent: 
+    BodyPicture: {fileID: 0}
+    ButtonsRawData:
+    - ButtonType: 0
+      ButtonText: Purr
   zone: {fileID: 3025956858762521297}
 --- !u!1 &6697323531793075308
 GameObject:
