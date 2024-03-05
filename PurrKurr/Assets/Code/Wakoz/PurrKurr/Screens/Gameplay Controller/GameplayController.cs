@@ -130,10 +130,19 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 return;
             }
 
-            var buttons = new List<GenericButtonData>() {
-                new GenericButtonData(GenericButtonType.Confirm, "Purr", () => LoadLevel(door.GetRoomIndex()))
-            };
-            GetController<OverlayWindowController>().UpdateWindow("Enter the room?", null, null, buttons);
+            var windowPageData = door.GetWindowData();
+
+            foreach (var page in windowPageData) {
+
+                var confirmButtons =
+                    page.ButtonsRawData.Where(obj => obj.ButtonType == GenericButtonType.Confirm).FirstOrDefault();
+
+                if (confirmButtons != null) {
+                    confirmButtons.ClickedAction = () => LoadLevel(door.GetRoomIndex());
+                }
+            }
+
+            GetController<OverlayWindowController>().ShowWindow(windowPageData);
 
         }
 
@@ -146,7 +155,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 return;
             }
 
-            GetController<OverlayWindowController>().UpdateWindow();
+            GetController<OverlayWindowController>().HideWindow();
         }
 
         public void LoadLevel(int levelToLoad) {

@@ -9345,6 +9345,18 @@ PrefabInstance:
       propertyPath: roomIndex
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].Title
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].BodyContent
+      value: Enter The Room?
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].BodyPicture
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7135355400870742372, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_Sprite
       value: 

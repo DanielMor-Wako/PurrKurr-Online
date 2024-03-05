@@ -168,9 +168,22 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
                 return;
             }
 
-            contentText.text = hasBody && Model.HasBodyContent ? Model.BodyContent : "";
-            iconImage.sprite = hasBody && Model.HasBodyPicture ? Model.BodyPicture : null;
-            iconText.text = hasBody && Model.HasBodyPicture ? Model.BodyContent : "";
+            if (Model.HasBodyContent) {
+                contentText.gameObject.SetActive(true);
+                contentText.text = Model.BodyContent;
+            } else {
+                contentText.gameObject.SetActive(false);
+            }
+
+            if (Model.HasBodyPicture) {
+                iconContainer.gameObject.SetActive(true);
+                iconImage.sprite = Model.BodyPicture;
+            } else {
+                iconContainer.gameObject.SetActive(false);
+            }
+
+            // todo: add text beneath image
+            //iconText.text = hasBody && Model.HasBodyPicture ? Model.BodyContent : "";
         }
 
         private void UpdateTitleView() {

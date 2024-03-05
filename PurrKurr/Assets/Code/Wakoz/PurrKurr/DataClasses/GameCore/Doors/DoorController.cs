@@ -1,6 +1,7 @@
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
+using Code.Wakoz.PurrKurr.Popups.OverlayWindow;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
-using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -11,12 +12,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
 
         [SerializeField] private bool isDoorEntrance = true;
         [SerializeField] private int roomIndex;
+        [SerializeField] private List<OverlayWindowData> overlayWindowData;
 
         [SerializeField] private DetectionZone zone;
 
         private GameplayController _gameplayController;
 
         public int GetRoomIndex() => roomIndex;
+        public List<OverlayWindowData> GetWindowData() => overlayWindowData;
 
         protected override void Clean() {
 

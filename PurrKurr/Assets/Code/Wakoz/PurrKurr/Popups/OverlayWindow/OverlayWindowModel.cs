@@ -7,7 +7,6 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
         public string Title { get; private set; }
         public string BodyContent { get; private set; }
         public Sprite BodyPicture { get; private set; }
-        public string Footer { get; private set; }
         public List<GenericButtonData> ButtonsRawData { get; private set; }
 
         public bool HasTitle => !string.IsNullOrEmpty(Title);
@@ -36,22 +35,6 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
             UpdateInternal(title, bodyContent, bodyPicture, buttons);
 
             Changed();
-        }
-
-        public GenericButtonData GetButtonDataByType(GenericButtonType typeToMatch) {
-
-            foreach (var buttonData in ButtonsRawData) {
-                
-                if (buttonData == null) {
-                    continue;
-                }
-
-                if (buttonData.ButtonType == typeToMatch) {
-                    return buttonData;
-                }
-            }
-
-            return null;
         }
 
     }

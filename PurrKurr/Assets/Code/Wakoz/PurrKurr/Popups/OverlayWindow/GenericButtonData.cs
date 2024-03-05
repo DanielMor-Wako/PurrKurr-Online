@@ -1,10 +1,12 @@
 ﻿using System;
 
 namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
+
+    [Serializable]
     public class GenericButtonData {
 
-        public GenericButtonType ButtonType { get; private set; }
-        public string ButtonText { get; private set; }
+        public GenericButtonType ButtonType;
+        public string ButtonText;
 
         public Action ClickedAction;
 

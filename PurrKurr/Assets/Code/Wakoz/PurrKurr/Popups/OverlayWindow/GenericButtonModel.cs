@@ -28,12 +28,6 @@
             IsAvailable = data != null && isAvailable;
             Changed();
         }
-
-        private void UpdateInternal(GenericButtonData data) {
-
-            Data = data;
-        }
-
         public bool IsClickable() =>
             Data.ButtonType is GenericButtonType.Confirm or GenericButtonType.Close 
             || IsWithinPageLimits(Data.ButtonType);
@@ -48,5 +42,11 @@
 
             return IsAvailable;
         }
+
+        private void UpdateInternal(GenericButtonData data) {
+
+            Data = data;
+        }
+
     }
 }
