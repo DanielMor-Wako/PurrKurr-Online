@@ -1,6 +1,4 @@
-﻿using UnityEngine.Profiling.Memory.Experimental;
-
-namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
+﻿namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
 
     public enum GenericButtonType {
         Confirm = 0,
