@@ -5,8 +5,9 @@
         Close = 1,
         Next = 2,
         Back = 3,
-        Maximize = 4,
-        Minimize = 5,
+        Alternative = 4,
+        Maximize = 5,
+        Minimize = 6,
     }
 
     public class GenericButtonModel : Model {
@@ -30,7 +31,7 @@
         }
 
         public bool IsClickable() =>
-            Data.ButtonType is GenericButtonType.Confirm or GenericButtonType.Close 
+            Data.ButtonType is GenericButtonType.Confirm or GenericButtonType.Close or GenericButtonType.Alternative
             || IsWithinPageLimits(Data.ButtonType);
 
         public bool IsWithinPageLimits(GenericButtonType type) {

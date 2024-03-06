@@ -7,10 +7,8 @@ using UnityEngine.UI;
 namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
     public class OverlayWindowView : View<OverlayWindowModel> {
 
-        public event Action onConfirmCallback;
-        public event Action onDeclineCallback;
-        public event Action onAlternateCallback;
-
+        public event Action OnNextPageClicked;
+        public event Action OnPreviousPageClicked;
 
         [Header("Container")]
         [SerializeField] private GameObject container;
@@ -30,14 +28,10 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
         [Header("Footer")]
         [SerializeField] private Transform footerArea;
         [SerializeField] private List<GenericButtonView> _buttonViews;
+        [SerializeField] private GameObject _pageArea;
+        [SerializeField] private TextMeshProUGUI _pageCountText;
 
         private Dictionary<GenericButtonType, GenericButtonModel> _buttonModels = new();
-
-        public void Confirm() => onConfirmCallback?.Invoke();
-        public void Decline() => onDeclineCallback?.Invoke();
-        public void Alternate() => onAlternateCallback?.Invoke();
-        public void NextPage() => onDeclineCallback?.Invoke();
-        public void PreviousPage() => onAlternateCallback?.Invoke();
 
         private void UpdateContainerView(bool isActive) {
             container.SetActive(isActive);
@@ -82,6 +76,11 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
 
             Debug.Log($"{model.Data.ButtonType} was pressed");
 
+            if (IsNextOrBackButton(model)) {
+                
+                return;
+            }
+
             foreach (var button in Model.ButtonsRawData) {
                 
                 if (button == null || button.ButtonType != model.Data.ButtonType) {
@@ -93,6 +92,24 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
                 } finally {
                 }
             }
+        }
+
+        private bool IsNextOrBackButton(GenericButtonModel model) {
+            
+            if (model.Data.ButtonType is GenericButtonType.Next) {
+
+                OnNextPageClicked?.Invoke();
+                return true;
+
+            } else if (model.Data.ButtonType is GenericButtonType.Back) {
+
+                OnPreviousPageClicked?.Invoke();
+                return true;
+
+            }
+
+            return false;
+
         }
 
         protected override void ModelChanged() {
@@ -124,6 +141,14 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
                 return;
             }
 
+            UpdateButtonsView();
+
+            UpdatePageCountText(hasFooter);
+
+        }
+
+        private void UpdateButtonsView() {
+
             var buttonData = Model.ButtonsRawData;
 
             if (_buttonModels == null) {
@@ -140,7 +165,17 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
                     UpdateButton(button, data);
                 }
             }
+        }
 
+        private void UpdatePageCountText(bool hasFooter) {
+
+            _pageArea.SetActive(hasFooter);
+
+            if (!hasFooter) {
+                return;
+            }
+
+            _pageCountText.SetText(Model.PageCount);
         }
 
         private static GenericButtonData GetButtonDataByType(List<GenericButtonData> buttonData, GenericButtonType typeTypeMatch) {

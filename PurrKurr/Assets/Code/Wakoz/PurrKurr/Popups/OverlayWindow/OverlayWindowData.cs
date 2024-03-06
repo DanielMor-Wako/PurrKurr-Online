@@ -11,6 +11,7 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
         public string BodyContent;
         public Sprite BodyPicture;
         public List<GenericButtonData> ButtonsRawData;
+        [HideInInspector] public string PageCount;
 
     }
 }
