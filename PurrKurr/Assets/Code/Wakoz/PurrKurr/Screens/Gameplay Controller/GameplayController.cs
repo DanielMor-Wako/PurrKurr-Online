@@ -21,6 +21,8 @@ using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 using Code.Wakoz.PurrKurr.Screens.Levels;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors;
 using Code.Wakoz.PurrKurr.Popups.OverlayWindow;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
@@ -121,41 +123,51 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             LoadLevel(0);
         }
 
-        public void OnCharacterNearDoor(DoorController door, Collider2D triggeredCollider) {
+        public bool OnCharacterNearDoor(DetectionZoneTrigger zone, Collider2D triggeredCollider) {
 
             var x = triggeredCollider.GetComponent<IInteractable>();
             var character = x.GetInteractable();
             
             if (character != (IInteractableBody)_hero) {
-                return;
+                return false;
             }
 
-            var windowPageData = door.GetWindowData();
+            var windowPageData = zone.GetWindowData();
 
-            foreach (var page in windowPageData) {
+            if (zone is DoorController) {
 
-                var confirmButtons =
-                    page.ButtonsRawData.Where(obj => obj.ButtonType == GenericButtonType.Confirm).FirstOrDefault();
+                var door = zone as DoorController;
+                foreach (var page in windowPageData) {
 
-                if (confirmButtons != null) {
-                    confirmButtons.ClickedAction = () => LoadLevel(door.GetRoomIndex());
+                    var confirmButtons =
+                        page.ButtonsRawData.Where(obj => obj.ButtonType == GenericButtonType.Confirm).FirstOrDefault();
+
+                    if (confirmButtons != null) {
+                        confirmButtons.ClickedAction = () => LoadLevel(door.GetRoomIndex());
+                    }
                 }
-            }
+
+            }/* else if (zone is OverlayWindowTrigger) {
+
+            }*/
 
             GetController<OverlayWindowController>().ShowWindow(windowPageData);
 
+            return true;
         }
 
-        public void OnCharacterExitDoor(DoorController door, Collider2D triggeredCollider) {
+        public bool OnCharacterExitDoor(DetectionZoneTrigger zone, Collider2D triggeredCollider) {
 
             var x = triggeredCollider.GetComponent<IInteractable>();
             var character = x.GetInteractable();
 
             if (character != (IInteractableBody)_hero) {
-                return;
+                return false;
             }
 
             GetController<OverlayWindowController>().HideWindow();
+
+            return true;
         }
 
         public void LoadLevel(int levelToLoad) {
