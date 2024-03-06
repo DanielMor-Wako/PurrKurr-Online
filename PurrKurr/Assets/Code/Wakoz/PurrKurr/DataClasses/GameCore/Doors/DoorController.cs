@@ -1,68 +1,52 @@
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
-using Code.Wakoz.PurrKurr.Popups.OverlayWindow;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
-    [DefaultExecutionOrder(15)]
 
-    public class DoorController : Controller {
+    [DefaultExecutionOrder(15)]
+    public class DoorController : DetectionZoneTrigger {
 
         [SerializeField] private bool isDoorEntrance = true;
         [SerializeField] private int roomIndex;
-        [SerializeField] private List<OverlayWindowData> overlayWindowData;
-
-        [SerializeField] private DetectionZone zone;
 
         private GameplayController _gameplayController;
 
         public int GetRoomIndex() => roomIndex;
-        public List<OverlayWindowData> GetWindowData() => overlayWindowData;
 
         protected override void Clean() {
+            base.Clean();
 
-            if (zone != null) {
-                zone.OnColliderEntered -= handleColliderEntered;
-                zone.OnColliderExited -= handleColliderExited;
-            }
-
+            OnColliderEntered -= handleColliderEntered;
+            OnColliderExited -= handleColliderExited;
         }
 
         protected override Task Initialize() {
+            base.Initialize();
 
-            Init();
+            _gameplayController ??= SingleController.GetController<GameplayController>();
+
+            OnColliderEntered += handleColliderEntered;
+            OnColliderExited += handleColliderExited;
 
             return Task.CompletedTask;
         }
 
-        private void Init() {
-            
-            if (zone == null) {
-                return;
-            }
-
-            zone.OnColliderEntered += handleColliderEntered;
-            zone.OnColliderExited += handleColliderExited;
-        }
-
-        private void handleColliderExited(Collider2D triggeredCollider) {
-
-            _gameplayController ??= SingleController.GetController<GameplayController>();
+        public void handleColliderExited(Collider2D triggeredCollider) {
 
             if (_gameplayController == null) {
+                Debug.LogError("_gameplayController is missing");
                 return;
             }
 
             _gameplayController.OnCharacterExitDoor(this, triggeredCollider);
         }
 
-        private void handleColliderEntered(Collider2D triggeredCollider) {
-
-            _gameplayController ??= SingleController.GetController<GameplayController>();
+        public void handleColliderEntered(Collider2D triggeredCollider) {
 
             if (_gameplayController == null) {
+                Debug.LogError("_gameplayController is missing");
                 return;
             }
 
@@ -70,4 +54,5 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
         }
 
     }
+
 }
