@@ -49,6 +49,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private LayerMask _whatIsSolid;
         private LayerMask _whatIsPlatform;
         private LayerMask _whatIsTraversable;
+        private LayerMask _whatIsTraversableCrouch;
         private LayerMask _whatIsDamageableCharacter;
         private LayerMask _whatIsDamageable;
 
@@ -311,6 +312,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _whatIsSolid = gamePlayerLogic.GetSolidSurfaces();
             _whatIsPlatform = gamePlayerLogic.GetPlatformSurfaces();
             _whatIsTraversable = gamePlayerLogic.GetTraversableSurfaces();
+            _whatIsTraversableCrouch = gamePlayerLogic.GetTraversableCrouchAreas();
             _whatIsDamageableCharacter = gamePlayerLogic.GetDamageables();
             _state = new InteractableObject2DState();
 
@@ -549,6 +551,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             var legsPosition = (Vector2)LegsPosition;
 
             var isInTraversableSurface = false;
+            var isInTraversableCrouchArea = false;
 
             // find specific colliders to priorotize rather than soilds and distance?
             /*if (_solidColliders.Length > 0) {
@@ -617,7 +620,18 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 }
             }
 
-            _state.DiagnoseState(hitPoint, collDir, collLayer, legsPosition, _rigidbody.velocity, hasGroundBeneathByRayCast, isInTraversableSurface);
+            if (hasGroundBeneathByRayCast) {
+
+                foreach (var crouchArea in _traversableColliders) {
+                    var potentiallyCrouchLayer = crouchArea.gameObject.layer;
+                    var isInCrouchSurface = HelperFunctions.IsObjectInLayerMask(potentiallyCrouchLayer, ref _whatIsTraversableCrouch);
+                    if (isInCrouchSurface) {
+                        isInTraversableCrouchArea = true;
+                    }
+                }
+            }
+
+            _state.DiagnoseState(hitPoint, collDir, collLayer, legsPosition, _rigidbody.velocity, hasGroundBeneathByRayCast, isInTraversableSurface, isInTraversableCrouchArea);
 
             var shouldCallStateChange = prevState != _state.CurrentState ;
             

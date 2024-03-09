@@ -33,7 +33,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
         public Collider2D GetCollider() => _legsCollider ?? null;
         public Transform GetTransform() => transform;
         public Definitions.ObjectState GetCurrentState() => Definitions.ObjectState.Grounded;
-        public Vector3 GetCenterPosition() => transform.position;
+        public Vector3 GetCenterPosition() => transform != null ? transform.position : Vector3.zero;
 
         public Vector2 GetVelocity() => _rigidbody.velocity;
         public float GetHpPercent() => 1;

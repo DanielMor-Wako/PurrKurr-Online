@@ -33,6 +33,9 @@ MonoBehaviour:
   WhatIsTraversableClingable:
     serializedVersion: 2
     m_Bits: 32768
+  WhatIsTraversableCrouch:
+    serializedVersion: 2
+    m_Bits: 65536
   _effects:
     _data:
     - DurationInSeconds: 0.05

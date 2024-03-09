@@ -18,6 +18,7 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
         public LayerMask GetPlatformSurfaces() => Data.GetPlatformSurfaces();
         public LayerMask GetClingableSurfaces() => Data.GetClingableSurfaces();
         public LayerMask GetTraversableSurfaces() => Data.GetTraversableSurfaces();
+        public LayerMask GetTraversableCrouchAreas() => Data.GetTraversableCrouch();
 
         public LayerMask GetDamageables() => Data.GetDamageables();
         

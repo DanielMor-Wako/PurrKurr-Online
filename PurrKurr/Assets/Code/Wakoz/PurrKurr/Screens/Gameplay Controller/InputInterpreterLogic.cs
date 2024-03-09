@@ -53,6 +53,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             var isCrouchingState = !isInvalidState && state.CurrentState != Definitions.ObjectState.Running && state.IsCrouchingAndNotFallingNearWall();
             var isStandingState = !isInvalidState && state.CurrentState != Definitions.ObjectState.Running && (state.IsStandingUp() || isGrabbing);
 
+            if (state.IsInCrouchOnlyArea()) {
+                Debug.Log("character should be crouching to move. isCrouching? "+ isCrouchingState);
+            }
+
             // full charge towards walls when any nav pad is held
             //if (!isGrabbing && (state.IsCeiling() || state.IsFrontWall()) && navigationDir != Definitions.NavigationType.None) {
             if (!isInvalidState && !isGrabbing && !isCrouchingState && !isStandingState && state.HasAnySurfaceAround() && navigationDir != Definitions.NavigationType.None && state.CanPerformContinousRunning()) {

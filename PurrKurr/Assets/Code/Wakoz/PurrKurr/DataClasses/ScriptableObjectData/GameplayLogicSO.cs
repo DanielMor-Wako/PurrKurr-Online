@@ -16,6 +16,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
         [SerializeField] private LayerMask WhatIsTraversable;
         [SerializeField] private LayerMask WhatIsClingable;
         [SerializeField] private LayerMask WhatIsTraversableClingable;
+        [SerializeField] private LayerMask WhatIsTraversableCrouch;
 
         [Header("Effects Definition")]
         [SerializeField] private EffectsData _effects;
@@ -34,11 +35,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
         public LayerMask GetTraversableSurfaces() =>
             WhatIsTraversable;
 
+        public LayerMask GetTraversableCrouch() =>
+            WhatIsTraversableCrouch;
+
         public LayerMask GetClingableSurfaces() =>
             WhatIsClingable;
 
         public LayerMask GetSurfaces() =>
-            WhatIsSolid | WhatIsClingable | WhatIsTraversable | WhatIsTraversableClingable | WhatIsInteractable | WhatIsPlatform;
+            WhatIsSolid | WhatIsClingable | WhatIsTraversable | WhatIsTraversableClingable | WhatIsInteractable | WhatIsPlatform | WhatIsTraversableCrouch;
 
         public LayerMask GetDamageables() =>
             WhatIsCharacter | WhatIsInteractable;

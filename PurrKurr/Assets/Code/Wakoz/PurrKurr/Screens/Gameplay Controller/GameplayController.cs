@@ -1366,7 +1366,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _debug.DrawRay(damageableBody.GetCenterPosition(), attackStats.ForceDir, Color.red, 4);
 
             var distanceFromAttacker = damageableBody.GetCenterPosition() - _hero.LegsPosition;
-            while (damageableBody != null &&Mathf.Abs(distanceFromAttacker.x) < 15 && Mathf.Abs(distanceFromAttacker.y) < 8
+            while (damageableBody != null && Mathf.Abs(distanceFromAttacker.x) < 15 && Mathf.Abs(distanceFromAttacker.y) < 8
                  && (_hero.Velocity.magnitude <= 20 || _hero.Velocity.magnitude > 20 && distanceFromAttacker.magnitude > 200 && Mathf.Sign(_hero.Velocity.y) == Mathf.Sign(distanceFromAttacker.y)) ) {
                 await Task.Delay((500));
                 distanceFromAttacker = damageableBody.GetCenterPosition() - _hero.LegsPosition;

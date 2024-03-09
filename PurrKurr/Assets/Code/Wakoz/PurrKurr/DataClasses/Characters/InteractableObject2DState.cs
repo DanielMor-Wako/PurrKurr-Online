@@ -21,6 +21,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private bool _isLeftWall = false;
         private bool _wasTraversable = false;
         private bool _isTraversable = false;
+        private bool _isInTraversableCrouchArea = false;
 
         public Vector2 ClosestSurfaceDir => _closestSurfaceDir;
         private Vector2 _closestSurfaceDir = Vector2.zero;
@@ -29,6 +30,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public Vector2 AlternativeSurfaceDir => _alternativeSurfaceDir;
         private Vector2 _alternativeSurfaceDir = Vector2.zero;
         private int _collLayer = -1;
+
+        public bool IsInCrouchOnlyArea => _isInTraversableCrouchArea;
 
         private Definitions.ActionType _combatAbility;
         private float _moveAnimation;
@@ -62,7 +65,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public bool isChargingSuper() => _chargingSuper;
 
-        public void DiagnoseState(Vector3 hitPoint, Vector2 collDir, int collLayer, Vector2 position, Vector2 velocity, bool hasGroundBeneathByRayCast, bool isInTraversableSurface) {
+        public void DiagnoseState(Vector3 hitPoint, Vector2 collDir, int collLayer, Vector2 position, Vector2 velocity, bool hasGroundBeneathByRayCast, bool isInTraversableSurface, bool isInTraversableCrouchArea) {
             
             _wasGrounded = _isGrounded; _isGrounded = false;
             _wasCeiling = _isCeiling; _isCeiling = false;
@@ -98,6 +101,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             }
 
             _isTraversable = isInTraversableSurface;
+            _isInTraversableCrouchArea = isInTraversableCrouchArea;
 
             UpdateState();
             
