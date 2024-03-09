@@ -123,7 +123,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             LoadLevel(0);
         }
 
-        public bool OnCharacterNearDoor(DetectionZoneTrigger zone, Collider2D triggeredCollider) {
+        public bool OnCharacterNearTriggerZone(DetectionZoneTrigger zone, Collider2D triggeredCollider) {
 
             var x = triggeredCollider.GetComponent<IInteractable>();
             var character = x.GetInteractable();
@@ -143,13 +143,23 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         page.ButtonsRawData.Where(obj => obj.ButtonType == GenericButtonType.Confirm).FirstOrDefault();
 
                     if (confirmButtons != null) {
-                        confirmButtons.ClickedAction = () => LoadLevel(door.GetRoomIndex());
+                        confirmButtons.ClickedAction = () => LoadLevel(door.GetRoomIndex(), door.GetNextDoor());
                     }
                 }
 
-            }/* else if (zone is OverlayWindowTrigger) {
+            } else if (zone is OverlayWindowTrigger) {
 
-            }*/
+                var windowTrigger = zone as OverlayWindowTrigger;
+                foreach (var page in windowPageData) {
+
+                    var confirmButtons =
+                        page.ButtonsRawData.Where(obj => obj.ButtonType is GenericButtonType.Confirm or GenericButtonType.Close).FirstOrDefault();
+
+                    if (confirmButtons != null) {
+                        confirmButtons.ClickedAction = () => windowTrigger.TurnOffWindow();
+                    }
+                }
+            }
 
             GetController<OverlayWindowController>().ShowWindow(windowPageData);
 
@@ -170,9 +180,15 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             return true;
         }
 
-        public void LoadLevel(int levelToLoad) {
+        public void LoadLevel(int levelToLoad, DoorController nextDoor = null) {
 
             _levelsController.LoadLevel(levelToLoad);
+
+            if (nextDoor != null) {
+                var newPosition = nextDoor.transform.position;
+                _hero.transform.position = newPosition + (Vector3.up * _hero.LegsRadius *.5f );
+                _hero.SetTargetPosition(newPosition + (Vector3.up * _hero.LegsRadius ));
+            }
         }
 
         private void ReviveAllHeroes() {
@@ -685,7 +701,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             var horizontalDir = _hero.State.GetFacingRightAsInt() * (flipJumpHorizontalWhenClinging ? -1 : 1);
 
             //_debug.DrawRay(_hero.LegsPosition, forceDir, Color.white, 3);
-            if (navigationDir == NavigationType.Up || _hero.State.IsFrontWall()) {
+            if (navigationDir is NavigationType.Up or NavigationType.None || _hero.State.IsFrontWall()) {
                 forceDir = HelperFunctions.RotateVector(forceDir, horizontalDir * -5);
 
             } else {

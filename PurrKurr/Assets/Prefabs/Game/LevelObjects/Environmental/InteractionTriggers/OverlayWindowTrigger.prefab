@@ -196,9 +196,10 @@ MonoBehaviour:
     BodyContent: Touch and drag to move around
     BodyPicture: {fileID: 0}
     ButtonsRawData: []
+    PageCount: 
   zone: {fileID: 7114389606640936834}
-  isDoorEntrance: 1
-  roomIndex: 0
+  _activationLimit: 0
+  _state: {fileID: 1942954096631172480}
 --- !u!114 &1942954096631172480
 MonoBehaviour:
   m_ObjectHideFlags: 0

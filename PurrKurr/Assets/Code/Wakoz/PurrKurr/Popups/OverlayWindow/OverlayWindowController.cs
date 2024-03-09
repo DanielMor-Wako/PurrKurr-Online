@@ -19,36 +19,14 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
 
             _pageData = windowPageData;
 
-            AddPageNavigationButtons(ref _pageData);
             _pageIndex = 0;
             var firstPage = windowPageData.FirstOrDefault();
-            ShowSinglePage(firstPage);
-        }
-
-        private void AddPageNavigationButtons(ref List<OverlayWindowData> pageData) {
-
-            var pageCount = _pageData.Count;
-
-            if (_pageData == null || pageCount < 1) {
+            if (firstPage == null) {
+                Debug.LogWarning("No data for window popup");
+                HideWindow();
                 return;
             }
-
-
-            for (int i = 0; i < pageCount; i++) {
-
-                var page = _pageData[i];
-                page.PageCount = $"{i + 1} / {pageCount}";
-
-                if (i < pageCount - 1) {
-                    page.ButtonsRawData.Add(new GenericButtonData(GenericButtonType.Next, "->"));
-                }
-
-                if (i > 0) {
-                    page.ButtonsRawData.Add(new GenericButtonData(GenericButtonType.Back, "<-"));
-                }
-
-            }
-
+            ShowSinglePage(firstPage);
         }
 
         public void ShowWindow(string title = null, string bodyContent = null, Sprite bodyPicture = null, List<GenericButtonData> buttons = null, string pageCount = null) {
@@ -74,6 +52,8 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
         protected override Task Initialize() {
 
             _view.InitButtons(true);
+            _view.OnConfirmClicked += HandleCloseWindow;
+            _view.OnCloseClicked += HandleCloseWindow;
             _view.OnNextPageClicked += HandleNextPage;
             _view.OnPreviousPageClicked += HandlePreviousPage;
 
@@ -89,6 +69,8 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
             }
 
             _view.InitButtons(false);
+            _view.OnConfirmClicked -= HandleCloseWindow;
+            _view.OnCloseClicked -= HandleCloseWindow;
             _view.OnNextPageClicked -= HandleNextPage;
             _view.OnPreviousPageClicked -= HandlePreviousPage;
 
@@ -97,6 +79,10 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
         private void ShowSinglePage(OverlayWindowData page) {
 
             ShowWindow(page.Title, page.BodyContent, page.BodyPicture, page.ButtonsRawData, page.PageCount);
+        }
+
+        private void HandleCloseWindow() {
+            HideWindow();
         }
 
         private void HandleNextPage() {

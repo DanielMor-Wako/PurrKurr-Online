@@ -12,11 +12,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection {
         public event Action<Collider2D> OnColliderEntered;
         public event Action<Collider2D> OnColliderExited;
 
-        public List<OverlayWindowData> overlayWindowData;
+        [SerializeField] private List<OverlayWindowData> overlayWindowData;
 
         [SerializeField] private DetectionZone zone;
 
         public List<OverlayWindowData> GetWindowData() => overlayWindowData;
+
+        public void UpdateWindowData(List<OverlayWindowData> data) => overlayWindowData = data;
 
         protected override void Clean() {
 

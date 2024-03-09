@@ -1,5 +1,10 @@
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
+using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
+using Code.Wakoz.PurrKurr.Popups.OverlayWindow;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
+using Code.Wakoz.PurrKurr.Views;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -8,11 +13,19 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
     [DefaultExecutionOrder(15)]
     public class OverlayWindowTrigger : DetectionZoneTrigger {
 
+        [Tooltip("When ref exist to scriptable object, it overrides the windowData from the scriptable data")]
+        [SerializeField] private OverlayWindowDataSO _scriptableObjectData;
         [Tooltip("Sets the max activation for the window. 0 counts as infinite activations")]
         [SerializeField][Min(0)] private int _activationLimit = 0;
+        [Tooltip("Sets the View state to active and deactive")]
+        [SerializeField] MultiStateView _state;
 
         private GameplayController _gameplayController;
         private int _activationsCount = 0;
+
+        public void TurnOffWindow() {
+            UpdateStateView(false);
+        }
 
         protected override void Clean() {
             base.Clean();
@@ -29,10 +42,26 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
             OnColliderEntered += handleColliderEntered;
             OnColliderExited += handleColliderExited;
 
+            LoadDataFromScriptableObject();
+
+            AddPageCount();
+
+            UpdateStateView(false);
+
             return Task.CompletedTask;
         }
 
-        public void handleColliderExited(Collider2D triggeredCollider) {
+        private void LoadDataFromScriptableObject() {
+            
+            if (_scriptableObjectData == null) {
+                return;
+            }
+
+            var defaultData = _scriptableObjectData.GetData();
+            UpdateWindowData(defaultData);
+        }
+
+        private void handleColliderExited(Collider2D triggeredCollider) {
 
             if (_gameplayController == null) {
                 Debug.LogError("_gameplayController is missing");
@@ -44,9 +73,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
             }
 
             _gameplayController.OnCharacterExitDoor(this, triggeredCollider);
+
+            UpdateStateView(false);
         }
 
-        public void handleColliderEntered(Collider2D triggeredCollider) {
+        private void handleColliderEntered(Collider2D triggeredCollider) {
 
             if (_gameplayController == null) {
                 Debug.LogError("_gameplayController is missing");
@@ -57,13 +88,41 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
                 return;
             }
 
-            if (_gameplayController.OnCharacterNearDoor(this, triggeredCollider)) {
+            if (_gameplayController.OnCharacterNearTriggerZone(this, triggeredCollider)) {
                 _activationsCount++;
             }
+
+            UpdateStateView(true);
         }
 
         private bool HasReachedMaxCount() => _activationLimit > 0 && _activationsCount > _activationLimit;
 
+        private void AddPageCount() {
+
+            List<OverlayWindowData> pagesData = GetWindowData();
+            var pageCount = pagesData.Count;
+
+            if (pagesData == null || pageCount < 2) {
+                return;
+            }
+
+            for (int i = 0; i < pageCount; i++) {
+
+                var page = pagesData[i];
+                page.PageCount = $"{i + 1}/{pageCount}";
+
+            }
+
+        }
+
+        private void UpdateStateView(bool activeState) {
+
+            if (_state == null) {
+                return;
+            }
+
+            _state.ChangeState(activeState ? 1 : 0);
+        }
     }
 
 }

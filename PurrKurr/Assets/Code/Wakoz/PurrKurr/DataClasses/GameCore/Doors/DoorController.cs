@@ -10,10 +10,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
 
         [SerializeField] private bool isDoorEntrance = true;
         [SerializeField] private int roomIndex;
+        [SerializeField] private DoorController NextDoor;
 
         private GameplayController _gameplayController;
 
         public int GetRoomIndex() => roomIndex;
+        public DoorController GetNextDoor() => NextDoor;
 
         protected override void Clean() {
             base.Clean();
@@ -50,7 +52,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
                 return;
             }
 
-            _gameplayController.OnCharacterNearDoor(this, triggeredCollider);
+            _gameplayController.OnCharacterNearTriggerZone(this, triggeredCollider);
         }
 
     }
