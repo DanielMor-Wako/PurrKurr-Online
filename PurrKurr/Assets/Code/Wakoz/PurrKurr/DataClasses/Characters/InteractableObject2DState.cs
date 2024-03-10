@@ -1,6 +1,7 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes;
+using System;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
@@ -31,7 +32,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private Vector2 _alternativeSurfaceDir = Vector2.zero;
         private int _collLayer = -1;
 
-        public bool IsInCrouchOnlyArea() => _isInTraversableCrouchArea;
+        public bool IsInCrouchArea() => _isInTraversableCrouchArea;
 
         private Definitions.ActionType _combatAbility;
         private float _moveAnimation;
@@ -104,7 +105,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _isInTraversableCrouchArea = isInTraversableCrouchArea;
 
             UpdateState();
-            
+
             UpdateCayoteTime();
         }
 

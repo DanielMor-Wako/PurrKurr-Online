@@ -629,6 +629,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                         isInTraversableCrouchArea = true;
                     }
                 }
+
+                if (isInTraversableCrouchArea && _logic.InputLogic.IsNavigationDirValidAsDown(_state.NavigationDir)) {
+                    _legsCollider.radius = 0.8f;
+                } else if (_legsCollider.radius != 1) {
+                    _legsCollider.radius = 1;
+                }
+
             }
 
             _state.DiagnoseState(hitPoint, collDir, collLayer, legsPosition, _rigidbody.velocity, hasGroundBeneathByRayCast, isInTraversableSurface, isInTraversableCrouchArea);
