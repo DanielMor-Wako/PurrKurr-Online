@@ -3,7 +3,6 @@ using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using Code.Wakoz.PurrKurr.Popups.OverlayWindow;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Views;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -102,7 +101,15 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
             List<OverlayWindowData> pagesData = GetWindowData();
             var pageCount = pagesData.Count;
 
-            if (pagesData == null || pageCount < 2) {
+            if (pagesData == null) {
+                return;
+            }
+
+            if (pageCount == 1) {
+                var page = pagesData[0];
+                if (page != null) {
+                    page.PageCount = null;
+                }
                 return;
             }
 
