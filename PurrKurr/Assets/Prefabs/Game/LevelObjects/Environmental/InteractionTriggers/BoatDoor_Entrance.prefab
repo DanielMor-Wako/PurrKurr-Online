@@ -120,6 +120,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BoatDoor
       objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: overlayWindowData.Array.data[0].Title
+      value: Leave?
+      objectReference: {fileID: 0}
     - target: {fileID: 6697323531793075308, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_IsActive
       value: 0
