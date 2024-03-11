@@ -71,7 +71,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
                 return;
             }
 
-            _gameplayController.OnCharacterExitDoor(this, triggeredCollider);
+            _gameplayController.OnExitDetectionZone(this, triggeredCollider);
 
             UpdateStateView(false);
         }
@@ -87,14 +87,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
                 return;
             }
 
-            if (_gameplayController.OnCharacterNearTriggerZone(this, triggeredCollider)) {
+            if (_gameplayController.OnEnterDetectionZone(this, triggeredCollider)) {
                 _activationsCount++;
             }
 
             UpdateStateView(true);
         }
 
-        private bool HasReachedMaxCount() => _activationLimit > 0 && _activationsCount > _activationLimit;
+        private bool HasReachedMaxCount() => _activationLimit > 0 && _activationsCount >= _activationLimit;
 
         private void AddPageCount() {
 
@@ -128,7 +128,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
                 return;
             }
 
-            _state.ChangeState(activeState ? 1 : 0);
+            _state.ChangeState(activeState ? 0 : !HasReachedMaxCount() ? 1 : 2);
         }
     }
 
