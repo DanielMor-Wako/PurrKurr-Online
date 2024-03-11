@@ -42,7 +42,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
                 return;
             }
 
-            _gameplayController.OnCharacterExitDoor(this, triggeredCollider);
+            _gameplayController.OnExitDetectionZone(this, triggeredCollider);
         }
 
         public void handleColliderEntered(Collider2D triggeredCollider) {
@@ -52,7 +52,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
                 return;
             }
 
-            _gameplayController.OnCharacterNearTriggerZone(this, triggeredCollider);
+            _gameplayController.OnEnterDetectionZone(this, triggeredCollider);
         }
 
     }
