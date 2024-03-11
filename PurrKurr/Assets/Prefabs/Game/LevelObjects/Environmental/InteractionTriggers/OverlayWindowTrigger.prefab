@@ -198,6 +198,7 @@ MonoBehaviour:
     ButtonsRawData: []
     PageCount: 
   zone: {fileID: 7114389606640936834}
+  _scriptableObjectData: {fileID: 0}
   _activationLimit: 0
   _state: {fileID: 1942954096631172480}
 --- !u!114 &1942954096631172480
@@ -213,8 +214,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _states:
-  - {fileID: 5769818548052800803}
   - {fileID: 3026568912411006411}
+  - {fileID: 5769818548052800803}
+  - {fileID: 0}
   _currentState: {fileID: 3026568912411006411}
 --- !u!1 &3026568912411006411
 GameObject:
