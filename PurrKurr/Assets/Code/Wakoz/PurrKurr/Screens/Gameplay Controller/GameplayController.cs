@@ -31,6 +31,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         
         private const float attackCooldownDuration = 0.25f;
         private const float _MinVelocityForFlip = 5;
+
+        [SerializeField][Min(0)] private int _startingLevelIndex = 0;
         [SerializeField] private float _xDistanceFrommClingPoint = 0.8f;
 
         public event Action<ActionInput> OnTouchPadDown;
@@ -120,10 +122,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             _levelsController.InitInteractablePools(_interactables);
 
-            LoadLevel(0);
+            LoadLevel(_startingLevelIndex);
         }
 
-        public bool OnCharacterNearTriggerZone(DetectionZoneTrigger zone, Collider2D triggeredCollider) {
+        public bool OnEnterDetectionZone(DetectionZoneTrigger zone, Collider2D triggeredCollider) {
 
             var x = triggeredCollider.GetComponent<IInteractable>();
             var character = x.GetInteractable();
@@ -166,7 +168,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             return true;
         }
 
-        public bool OnCharacterExitDoor(DetectionZoneTrigger zone, Collider2D triggeredCollider) {
+        public bool OnExitDetectionZone(DetectionZoneTrigger zone, Collider2D triggeredCollider) {
 
             var x = triggeredCollider.GetComponent<IInteractable>();
             var character = x.GetInteractable();
@@ -597,10 +599,18 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 return;
             }*/
 
+            var navType = character.State.NavigationDir;
+            var facingRightAsInt = character.State.GetFacingRightAsInt();
+            var horizontalNavigationDirAsInt = _logic.InputLogic.GetNavigationDirAsFacingRightInt(navType);
+            //var isPlayerMovingTowardsWall = horizontalNavigationDirAsInt == 1 && _hero.State.IsFrontWall();
+
+            if (!character.State.IsClinging() && _hero.State.IsFrontWall() 
+                && facingRightAsInt != horizontalNavigationDirAsInt) {
+                return;
+            }
+
             // 0.55f is the default hingeJoint2D y offset of the Anchor, the climbSpeed determines the offset when up or down
             var climbSpeed = 0.1f;
-
-            var navType = character.State.NavigationDir;
             var yMovementByNavigation = navType is NavigationType.Up ? climbSpeed : navType is NavigationType.Down ? -climbSpeed : 0;
 
             var reachedWallBottom = yMovementByNavigation < 0 && character.State.IsCeiling();

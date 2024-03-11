@@ -28,6 +28,11 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
             };
         }
 
+        public int GetNavigationDirAsFacingRightInt(Definitions.NavigationType navigationDirection) =>
+            IsNavigationDirValidAsLeft(navigationDirection) ? -1 
+            : IsNavigationDirValidAsRight(navigationDirection) ? 1 
+            : 0;
+
         public bool IsNavigationDirValidAsDown(Definitions.NavigationType navigationDirection) =>
             navigationDirection is Definitions.NavigationType.Down or Definitions.NavigationType.DownLeft or Definitions.NavigationType.DownRight;
         
