@@ -336,7 +336,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     _hero.SetForceDir(forceDirNavigation); // used for airborne, probably more accurate after the diagnosis
                     _hero.SetNavigationDir(navigationDir);
                     if (_hero.IsGrabbed()) {
-                        FaceCharacterTowardsPointByNavigationDir(navigationDir);
+                        FaceCharacterByNavigationDir(navigationDir);
                     }
                 }
             
@@ -696,7 +696,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         private bool CanPerformActionAlive() => _hero.State.CanPerformAction() && _hero.Stats.GetHealthPercentage() > 0;
 
-        private void FaceCharacterTowardsPointByNavigationDir(NavigationType navigationDir) {
+        private void FaceCharacterByNavigationDir(NavigationType navigationDir) {
 
             if (_logic.InputLogic.IsNavigationDirValidAsRight(navigationDir)) {
                 _hero.FlipCharacterTowardsPoint(true);
