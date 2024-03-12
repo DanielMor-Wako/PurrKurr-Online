@@ -135,7 +135,7 @@ MonoBehaviour:
   overlayWindowData: []
   zone: {fileID: 4625066690352291017}
   _scriptableObjectData: {fileID: 0}
-  _activationLimit: 0
+  _activationLimit: 1
   _state: {fileID: 4516229012026859957}
 --- !u!114 &4516229012026859957
 MonoBehaviour:
@@ -152,7 +152,7 @@ MonoBehaviour:
   _states:
   - {fileID: 7016158315473840358}
   - {fileID: 7396371673219031360}
-  - {fileID: 0}
+  - {fileID: 7016158315473840358}
   _currentState: {fileID: 7396371673219031360}
 --- !u!1 &5674555798262025111
 GameObject:
