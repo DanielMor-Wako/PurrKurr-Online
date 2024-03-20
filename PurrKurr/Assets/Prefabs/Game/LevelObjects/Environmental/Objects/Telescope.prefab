@@ -9,10 +9,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1381080631519619024}
+  - component: {fileID: 1975482775783038971}
+  - component: {fileID: 7940227696294395438}
   - component: {fileID: 5798102218421969499}
   - component: {fileID: 4301816035096749797}
   - component: {fileID: 3633811701488445585}
-  m_Layer: 11
+  - component: {fileID: 7766125459099495963}
+  - component: {fileID: 2235321921256652269}
+  m_Layer: 7
   m_Name: Telescope
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34,6 +38,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1975482775783038971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7079012511803266965}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f64e59c493c4e3bbb2f519658f502a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rigidbody: {fileID: 4301816035096749797}
+  _transformMover: {fileID: 7766125459099495963}
+  _legsCollider: {fileID: 3633811701488445585}
+  _cling: {fileID: 2235321921256652269}
+--- !u!114 &7940227696294395438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7079012511803266965}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35af4b2e75184e7fb09d40ff240693e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!212 &5798102218421969499
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -98,7 +130,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 0.5
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 5
@@ -148,3 +180,40 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 4.5, y: 1.2}
   m_Direction: 1
+--- !u!114 &7766125459099495963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7079012511803266965}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92bb98144b3ccd94e8e99c2302e92ac6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!233 &2235321921256652269
+HingeJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7079012511803266965}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_EnableCollision: 0
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_BreakAction: 0
+  m_AutoConfigureConnectedAnchor: 0
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0, y: 0}
+  m_UseMotor: 0
+  m_Motor:
+    m_MotorSpeed: 0
+    m_MaximumMotorForce: 10000
+  m_UseLimits: 0
+  m_AngleLimits:
+    m_LowerAngle: 0
+    m_UpperAngle: 359
