@@ -21,15 +21,23 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
 
         private IInteractableBody _grabbedBody;
 
+        protected override void Clean() {}
         protected override Task Initialize() {
 
             _anchor = gameObject.AddComponent<AnchorHandler>();
-            _cling.connectedBody = SingleController.GetController<AnchorsController>().GetAnchorRigidbody(_anchor);
+            SetAnchor();
 
             return Task.CompletedTask;
         }
 
-        protected override void Clean() {}
+        private void OnEnable() {
+            SetAnchor();
+        }
+
+        private void SetAnchor() {
+            _cling.connectedBody = SingleController.GetController<AnchorsController>().GetAnchorRigidbody(_anchor);
+        }
+
         public Collider2D GetCollider() => _legsCollider ?? null;
         public Transform GetTransform() => transform;
         public Definitions.ObjectState GetCurrentState() => Definitions.ObjectState.Grounded;

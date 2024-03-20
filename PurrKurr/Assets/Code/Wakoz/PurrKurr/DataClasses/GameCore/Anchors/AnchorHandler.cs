@@ -14,7 +14,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
 
         public void ModifyAnchor(Vector3 Pos, Transform NewParent) => OnAnchorChanged(this, Pos, NewParent);
 
-        private void Awake() => OnAnchorAdded(this);
+        private void OnEnable() => OnAnchorAdded(this);
 
         private void OnDisable() => OnAnchorRemoved(this);
     }
