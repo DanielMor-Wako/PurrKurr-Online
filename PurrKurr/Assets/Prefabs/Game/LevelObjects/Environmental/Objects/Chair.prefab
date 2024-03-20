@@ -9,10 +9,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6295927102248602186}
+  - component: {fileID: 2428383316769855715}
+  - component: {fileID: 2217988413446611254}
   - component: {fileID: 4789065903360390514}
   - component: {fileID: 7875785068152186163}
   - component: {fileID: 4754917048292898356}
-  m_Layer: 11
+  - component: {fileID: 5813242017192527974}
+  - component: {fileID: 3837436453879440592}
+  m_Layer: 7
   m_Name: Chair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34,6 +38,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2428383316769855715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7968625747073430503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f64e59c493c4e3bbb2f519658f502a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rigidbody: {fileID: 7875785068152186163}
+  _transformMover: {fileID: 5813242017192527974}
+  _legsCollider: {fileID: 4754917048292898356}
+  _cling: {fileID: 3837436453879440592}
+--- !u!114 &2217988413446611254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7968625747073430503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35af4b2e75184e7fb09d40ff240693e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!212 &4789065903360390514
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -182,3 +214,40 @@ PolygonCollider2D:
       - {x: -2.5681734, y: -3.4517825}
       - {x: -2.1208758, y: -1.463223}
   m_UseDelaunayMesh: 0
+--- !u!114 &5813242017192527974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7968625747073430503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92bb98144b3ccd94e8e99c2302e92ac6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!233 &3837436453879440592
+HingeJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7968625747073430503}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_EnableCollision: 0
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_BreakAction: 0
+  m_AutoConfigureConnectedAnchor: 0
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0, y: 0}
+  m_UseMotor: 0
+  m_Motor:
+    m_MotorSpeed: 0
+    m_MaximumMotorForce: 10000
+  m_UseLimits: 0
+  m_AngleLimits:
+    m_LowerAngle: 0
+    m_UpperAngle: 359
