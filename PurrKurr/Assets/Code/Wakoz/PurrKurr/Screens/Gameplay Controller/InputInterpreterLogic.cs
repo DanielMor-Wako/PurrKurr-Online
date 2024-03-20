@@ -202,6 +202,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     if (started) {
 
                         isActionPerformed = true;
+                        // todo: delete these calculation from here after they are move to lateon when action occur, both forceDir and newPosition
                         var closestColl = closestColliders.FirstOrDefault();
                         var legsPosition = character.LegsPosition;
                         var closestFoePosition = closestColl.ClosestPoint(legsPosition);
