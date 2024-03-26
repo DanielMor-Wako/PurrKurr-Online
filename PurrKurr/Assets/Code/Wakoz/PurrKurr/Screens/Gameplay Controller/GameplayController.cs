@@ -1074,7 +1074,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     properties.Contains(AttackProperty.PushDownOnBlock) && isFoeBlocking)) {
 
                     attackStats.ForceDir.y = -Mathf.Abs(attackStats.ForceDir.y);
-                    ApplyForceOnFoeWithDelay(foe, attackStats, (attacker.Stats.AttackDurationInMilliseconds));
+                    ApplyForceOnFoeWithDelay(foe, attackStats, Effect2DType.ImpactCritical);
 
                     // todo: make the aerial attack turn into grab to groundsmash, and turn aerial grab into throwing the opponent
                     // ApplyProjectileStateWhenThrown(foe, attackStats.Damage, interactedCollider);
@@ -1107,7 +1107,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         }
                         attackStats.ForceDir = averageDirBetweenGroundAndHit.normalized * (Vector2.one * 0.5f * foeCharacter.Stats.PushbackForce);
                     }
-                    ApplyForceOnFoeWithDelay(foe, attackStats, (attacker.Stats.AttackDurationInMilliseconds));
+                    ApplyForceOnFoeWithDelay(foe, attackStats, Effect2DType.ImpactLight);
 
                 } else if (properties.Contains(AttackProperty.PushUpOnHit) ||
                             properties.Contains(AttackProperty.PushUpOnBlock) && isFoeBlocking) {
@@ -1119,7 +1119,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                     attackStats.ForceDir.x *= 0.05f;
 
-                    ApplyForceOnFoeWithDelay(foe, attackStats, (attacker.Stats.AttackDurationInMilliseconds));
+                    ApplyForceOnFoeWithDelay(foe, attackStats, Effect2DType.ImpactHeavy);
 
                 } else if (properties.Contains(AttackProperty.PushDiagonalOnHit) ||
                             properties.Contains(AttackProperty.PushDiagonalOnBlock) && isFoeBlocking) {
@@ -1132,7 +1132,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     }
                     attackStats.ForceDir.x *= 0.5f;
 
-                    ApplyForceOnFoeWithDelay(foe, attackStats, (attacker.Stats.AttackDurationInMilliseconds));
+                    ApplyForceOnFoeWithDelay(foe, attackStats, Effect2DType.ImpactMed);
 
                 }
 
@@ -1154,7 +1154,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     
                     AlterThrowDirBasedOnNavigationDirection(ref throwStats.ForceDir, attacker.State.NavigationDir, _gameplayLogic.IsStateConsideredAsAerial(attacker.State.CurrentState));
                     ApplyGrabOnFoeWithDelay(foe, null, foe.GetTransform().position);
-                    ApplyForceOnFoeWithDelay(foe, throwStats, attacker.Stats.AttackDurationInMilliseconds);
+                    ApplyForceOnFoeWithDelay(foe, throwStats, Effect2DType.DustCloud);
                     attackerAsInteractable.SetAsGrabbing(null);
                     ApplyProjectileStateWhenThrown(foe, throwStats.Damage, attackerAsInteractable);
 
@@ -1503,7 +1503,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             return true;
         }
 
-        private async void ApplyForceOnFoeWithDelay(IInteractableBody damageableBody, AttackData attackStats, int delayInMilliseconds = 0) {
+        private async void ApplyForceOnFoeWithDelay(IInteractableBody damageableBody, AttackData attackStats, Effect2DType effectOnImpact = Effect2DType.None) {
 
             var ifDamageableIsGrabbedThenIgnoreAddToTargetsList = damageableBody.IsGrabbed();
             if (!ifDamageableIsGrabbedThenIgnoreAddToTargetsList) {
@@ -1521,9 +1521,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             damageableBody.DealDamage(attackStats.Damage);
             damageableBody.ApplyForce(attackStats.ForceDir);
 
-            var damageableCharacter = damageableBody as Character2DController;
-            if (damageableCharacter != null) {
-                ApplyEffectForDuration((Character2DController)damageableBody, Effect2DType.ImpactLight);
+            if (effectOnImpact != Effect2DType.None) {
+                var damageableCharacter = damageableBody as Character2DController;
+                if (damageableCharacter != null) {
+                    ApplyEffectForDuration((Character2DController)damageableBody, effectOnImpact);
+                }
             }
 
             _debug.DrawRay(damageableBody.GetCenterPosition(), attackStats.ForceDir, Color.red, 4);
@@ -1579,7 +1581,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             grabber.SetAsGrabbing(null);
             ApplyGrabOnFoeWithDelay(grabbed, null, grabbed.GetCenterPosition());
-            ApplyForceOnFoeWithDelay(grabbed, attackStats);
+            ApplyForceOnFoeWithDelay(grabbed, attackStats, Effect2DType.ImpactCritical);
             ApplyProjectileStateWhenThrown(grabbed, attackStats.Damage, grabber);
         }
 

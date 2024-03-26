@@ -38,13 +38,25 @@ MonoBehaviour:
     m_Bits: 65536
   _effects:
     _data:
-    - DurationInSeconds: 0.05
-      EffectType: 13
-      Effect: {fileID: 2060154147542680831, guid: dce294a585d5d6a4c89e7491cc976932, type: 3}
-      TrackPosition: 0
     - DurationInSeconds: 0.1
       EffectType: 12
       Effect: {fileID: 4267568921397314677, guid: 4b30d54482c5e20488cca0ee1b41ed80, type: 3}
+      TrackPosition: 0
+    - DurationInSeconds: 0.05
+      EffectType: 13
+      Effect: {fileID: 6190310287543606472, guid: d2f8d4ed091eb054191882502e0a708e, type: 3}
+      TrackPosition: 0
+    - DurationInSeconds: 0.05
+      EffectType: 14
+      Effect: {fileID: 4948268702402485453, guid: 60dcc7be502096e46b7f55ada35fcbaf, type: 3}
+      TrackPosition: 0
+    - DurationInSeconds: 0.05
+      EffectType: 17
+      Effect: {fileID: 1203877100513155449, guid: 2275e4cd929d777478a09608f113d707, type: 3}
+      TrackPosition: 0
+    - DurationInSeconds: 0.05
+      EffectType: 16
+      Effect: {fileID: 2060154147542680831, guid: dce294a585d5d6a4c89e7491cc976932, type: 3}
       TrackPosition: 0
     - DurationInSeconds: 0.15
       EffectType: 10
