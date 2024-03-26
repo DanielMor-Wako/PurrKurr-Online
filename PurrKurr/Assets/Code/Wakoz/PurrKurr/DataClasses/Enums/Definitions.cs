@@ -144,6 +144,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
         }
 
         public enum Effect2DType {
+            None = -1,
             GainHp = 0,
             GainTimer = 1,
             GainPawer = 2,
