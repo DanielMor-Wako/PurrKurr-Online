@@ -29,10 +29,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
     [DefaultExecutionOrder(14)]
     public sealed class GameplayController : SingleController {
         
-        private const float attackCooldownDuration = 0.25f;
+        private const float _attackCooldownDuration = 0.25f;
         private const float _MinVelocityForFlip = 5;
 
         [SerializeField][Min(0)] private int _startingLevelIndex = 0;
+        [SerializeField][Min(0)] private float _attackRadius = 2f;
         [SerializeField] private float _xDistanceFrommClingPoint = 0.8f;
 
         public event Action<ActionInput> OnTouchPadDown;
@@ -328,69 +329,75 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         private void OnActionStarted(ActionInput actionInput) {
             
-            if (CanPerformActionAlive()) {
-                
-                if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, true, false, _hero,
-                        out var moveSpeed, out Vector2 forceDirNavigation, out var navigationDir)) {
+            if (IsAlive()) {
 
-                    // save for later to be called on tick?
-                    _hero.DoMove(moveSpeed);
-                    _hero.SetForceDir(forceDirNavigation); // used for airborne, probably more accurate after the diagnosis
-                    _hero.SetNavigationDir(navigationDir);
-                    if (_hero.IsGrabbed()) {
-                        FaceCharacterByNavigationDir(navigationDir);
+                if (CanPerformAction()) {
+                    if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, true, false, _hero,
+                            out var moveSpeed, out Vector2 forceDirNavigation, out var navigationDir)) {
+
+                        // save for later to be called on tick?
+                        _hero.DoMove(moveSpeed);
+                        _hero.SetForceDir(forceDirNavigation); // used for airborne, probably more accurate after the diagnosis
+                        _hero.SetNavigationDir(navigationDir);
+                        if (_hero.IsGrabbed()) {
+                            FaceCharacterByNavigationDir(navigationDir);
+                        }
                     }
-                }
-            
-                if (_inputInterpreterLogic.TryPerformInputAction(actionInput, true, false, _hero,
-                        out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedColliders)) {
-                    
-                    if (isActionPerformed) {
 
-                        if (interactedColliders != null && !_hero.State.IsGrabbed()) {
-                            CombatLogic(_hero, actionInput.ActionType, moveToPosition, interactedColliders);
+                    if (_inputInterpreterLogic.TryPerformInputAction(actionInput, true, false, _hero,
+                            out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedColliders)) {
 
-                        } else if (interactedColliders != null && _hero.State.IsGrabbed() &&
-                            actionInput.ActionType is ActionType.Grab or ActionType.Attack) {
-                            if (actionInput.ActionType is ActionType.Grab) {
-                                DisconnectFromRope(_hero);
-                            } else {// if (actionInput.ActionType is ActionType.Attack) {
-                                CutRopeLink(_hero);
-                            }
+                        if (isActionPerformed) {
 
-                        } else if (actionInput.ActionType is ActionType.Special) {
-                            ApplySpecialAction(_hero, true);
+                            if (interactedColliders != null && !_hero.State.IsGrabbed()) {
+                                CombatLogic(_hero, actionInput.ActionType, moveToPosition, interactedColliders);
 
-                        } else if (actionInput.ActionType is ActionType.Rope or ActionType.Projectile) {
-                            ApplyAimingAction(_hero, actionInput);
+                            } else if (interactedColliders != null && _hero.State.IsGrabbed() &&
+                                actionInput.ActionType is ActionType.Grab or ActionType.Attack) {
+                                if (actionInput.ActionType is ActionType.Grab) {
+                                    DisconnectFromRope(_hero);
+                                } else {// if (actionInput.ActionType is ActionType.Attack) {
+                                    CutRopeLink(_hero);
+                                }
 
-                        } else if (actionInput.ActionType is ActionType.Jump && _hero.State.CurrentState == ObjectState.Crouching) {
-                            
-                            if (HelperFunctions.IsObjectInLayerMask(_hero.GetSurfaceCollLayer(), ref _whatIsPlatform)) {
-                                _hero.TryGetDodgeDirection(-Vector2.up * 2, ref moveToPosition);
-                                _hero.SetTargetPosition(moveToPosition);
-                            } else {
+                            } else if (actionInput.ActionType is ActionType.Special) {
+                                ApplySpecialAction(_hero, true);
+
+                            } else if (actionInput.ActionType is ActionType.Rope or ActionType.Projectile) {
                                 ApplyAimingAction(_hero, actionInput);
+
+                            } else if (actionInput.ActionType is ActionType.Jump && _hero.State.CurrentState == ObjectState.Crouching) {
+
+                                if (HelperFunctions.IsObjectInLayerMask(_hero.GetSurfaceCollLayer(), ref _whatIsPlatform)) {
+                                    _hero.TryGetDodgeDirection(-Vector2.up * 2, ref moveToPosition);
+                                    _hero.SetTargetPosition(moveToPosition);
+                                } else {
+                                    ApplyAimingAction(_hero, actionInput);
+                                }
+
+                            } else if (actionInput.ActionType == ActionType.Jump && forceDir != Vector2.zero) {
+                                // todo: flip horizontal when player infront of wall?
+                                var flipHorizontalDirectionWhileClinging = false;// _hero.State.IsClinging() && _hero.State.IsFrontWall();
+                                DisconnectFromAnyGrabbing(_hero);
+                                _hero.SetJumping(Time.time + .2f);
+                                AlterJumpDirByStateNavigationDirection(ref forceDir, _hero.State, flipHorizontalDirectionWhileClinging);
+                                _hero.SetForceDir(forceDir);
+                                _hero.DoMove(0); // might conflict with the TryPerformInputNavigation when the moveSpeed is already set by Navigation
+                                ApplyEffectForDurationAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
+
+                            } else if (actionInput.ActionType == ActionType.Block) {
+                                ApplyEffectForDuration(_hero, Effect2DType.BlockActive);
                             }
 
-                        } else if (actionInput.ActionType == ActionType.Jump && forceDir != Vector2.zero) {
-                            // todo: flip horizontal when player infront of wall?
-                            var flipHorizontalDirectionWhileClinging = false ;// _hero.State.IsClinging() && _hero.State.IsFrontWall();
-                            DisconnectFromAnyGrabbing(_hero);
-                            _hero.SetJumping(Time.time + .2f);
-                            AlterJumpDirByStateNavigationDirection(ref forceDir, _hero.State, flipHorizontalDirectionWhileClinging);
-                            _hero.SetForceDir(forceDir);
-                            _hero.DoMove(0); // might conflict with the TryPerformInputNavigation when the moveSpeed is already set by Navigation
-                            ApplyEffectForDurationAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
-
-                        } else if (actionInput.ActionType == ActionType.Block) {
-                            ApplyEffectForDuration(_hero, Effect2DType.BlockActive);
+                            _hero.State.SetActiveCombatAbility(actionInput.ActionType);
                         }
 
-                        _hero.State.SetActiveCombatAbility(actionInput.ActionType);
                     }
 
-                }
+                // todo: replace the condition so it allows for stacking future actions (CanPerformAction() || CanOnlyStackActions())
+                }/* else if (CanOnlyStackActions()) {
+                    //RegisterInteractionEvent();
+                }*/
 
             } else {
 
@@ -402,7 +409,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         private void OnActionOngoing(ActionInput actionInput) {
             
-            if (CanPerformActionAlive()) {
+            if (CanPerformAction()) {
 
                 if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, false, false, _hero, 
                         out var moveSpeed, out var forceDirNavigation, out var navigationDir)) {
@@ -696,7 +703,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             character.SetAsClinging(null, character.LegsPosition);
         }
 
-        private bool CanPerformActionAlive() => _hero.State.CanPerformAction() && _hero.Stats.GetHealthPercentage() > 0;
+        private bool IsAlive() => _hero.Stats.GetHealthPercentage() > 0;
+        private bool CanPerformAction() => _hero.State.CanPerformAction();
+        private bool CanOnlyStackActions() => _hero.State.CurrentState is ObjectState.Attacking or ObjectState.InterruptibleAnimation;
 
         private void FaceCharacterByNavigationDir(NavigationType navigationDir) {
 
@@ -802,12 +811,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 foreach (var e in endedEvents) {
 
                     var newFacingDirection = 0;
-                    var moveToPos = e.InteractionPosition;
+                    var hitPosition = e.InteractionPosition;
 
-                    HitTargets(e.Attacker, ref moveToPos, e.Targets, ref newFacingDirection, e.InteractionType, e.AttackProperties);
+                    var distanceLimiter = _attackRadius;
+                    var nearbyTargets = e.Targets.Where(
+                        obj => Vector2.Distance(obj.GetCenterPosition(), hitPosition) < distanceLimiter).OrderBy(obj
+                                => Vector2.Distance(obj.GetCenterPosition(), hitPosition)).ToArray();
 
-                    var isNewFacingDirectionSetAndCharacterIsFacingAnything = newFacingDirection != 0;
-                    if (isNewFacingDirectionSetAndCharacterIsFacingAnything) {
+                    HitTargets(e.Attacker, ref hitPosition, nearbyTargets, ref newFacingDirection, e.InteractionType, e.AttackProperties);
+
+                    if (newFacingDirection != 0) {
 
                         e.Attacker.FlipCharacterTowardsPoint(newFacingDirection == 1);
                         //e.Attacker.SetTargetPosition(moveToPos);
@@ -982,7 +995,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             if (latestInteraction != null) {
 
-                attacker.State.SetInterruptibleAnimation(Time.time + attackCooldownDuration);
+                attacker.State.SetInterruptibleAnimation(Time.time + _attackCooldownDuration);
 
                 if (latestInteraction.GetHpPercent() <= 0) {
                     latestInteraction = null;
@@ -1496,16 +1509,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             if (!ifDamageableIsGrabbedThenIgnoreAddToTargetsList) {
                 _cam.AddToTargetList(damageableBody.GetTransform());
             }
+            
             //foeRigidBody.constraints = RigidbodyConstraints2D.FreezeAll;
-            
-            /*if (delayInMilliseconds > 0) {
-                await Task.Delay(TimeSpan.FromMilliseconds(delayInMilliseconds));
-            }*/
-            
                 
             if (damageableBody == null) {
                 return;
             }
+            
             //foeRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
             
             damageableBody.DealDamage(attackStats.Damage);
@@ -1519,10 +1529,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _debug.DrawRay(damageableBody.GetCenterPosition(), attackStats.ForceDir, Color.red, 4);
 
             var distanceFromAttacker = damageableBody.GetCenterPosition() - _hero.LegsPosition;
-            while (damageableBody != null && Mathf.Abs(distanceFromAttacker.x) < 15 && Mathf.Abs(distanceFromAttacker.y) < 8
+            while (damageableBody != null && _hero != null && Mathf.Abs(distanceFromAttacker.x) < 15 && Mathf.Abs(distanceFromAttacker.y) < 8
                  && (_hero.Velocity.magnitude <= 20 || _hero.Velocity.magnitude > 20 && distanceFromAttacker.magnitude > 200 && Mathf.Sign(_hero.Velocity.y) == Mathf.Sign(distanceFromAttacker.y)) ) {
                 await Task.Delay((500));
-                distanceFromAttacker = damageableBody.GetCenterPosition() - _hero.LegsPosition;
+                if (damageableBody != null && _hero != null) { 
+                    distanceFromAttacker = damageableBody.GetCenterPosition() - _hero.LegsPosition;
+                }
             }
 
             if (damageableBody != null) {
