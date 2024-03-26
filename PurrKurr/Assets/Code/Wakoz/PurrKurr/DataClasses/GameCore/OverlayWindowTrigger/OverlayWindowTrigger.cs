@@ -17,7 +17,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
         [Tooltip("Sets the max activation for the window. 0 counts as infinite activations")]
         [SerializeField][Min(0)] private int _activationLimit = 0;
         [Tooltip("Sets the View state to active and deactive")]
-        [SerializeField] MultiStateView _state;
+        [SerializeField] private MultiStateView _state;
 
         private GameplayController _gameplayController;
         private int _activationsCount = 0;
@@ -71,7 +71,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
                 return;
             }
 
-            _gameplayController.OnExitDetectionZone(this, triggeredCollider);
+            if (_gameplayController.OnExitDetectionZone(this, triggeredCollider)) {
+                _activationsCount++;
+            }
 
             UpdateStateView(false);
         }
@@ -87,9 +89,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
                 return;
             }
 
-            if (_gameplayController.OnEnterDetectionZone(this, triggeredCollider)) {
-                _activationsCount++;
-            }
+            _gameplayController.OnEnterDetectionZone(this, triggeredCollider);
 
             UpdateStateView(true);
         }
