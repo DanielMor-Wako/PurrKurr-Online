@@ -48,7 +48,7 @@ MonoBehaviour:
       TrackPosition: 0
     - DurationInSeconds: 0.05
       EffectType: 14
-      Effect: {fileID: 4948268702402485453, guid: 60dcc7be502096e46b7f55ada35fcbaf, type: 3}
+      Effect: {fileID: 15869940777677038, guid: d7d6df7b435dde548bea99f398ed3f0d, type: 3}
       TrackPosition: 0
     - DurationInSeconds: 0.05
       EffectType: 17
