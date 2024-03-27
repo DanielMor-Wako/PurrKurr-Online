@@ -44,7 +44,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public float MultiTargetsDistance = 5f;
         public float BodySize = 1;
         
-        public int AttackDurationInMilliseconds = 150;
+        public float MoveAnimDurationInMilliseconds = 0.15f;
         
         private float _levelInterval;
         private float _healthPercentage;
