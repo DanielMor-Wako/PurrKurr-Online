@@ -42,7 +42,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         private Rigidbody2D _legsRigidBody;
 
-        private Vector3 NewPositionToSetOnFixedUpdte;
         private Vector2 ForceDirToSetOnFixedUpdate;
 
         private LayerMask _whatIsSurface;
@@ -53,9 +52,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private LayerMask _whatIsDamageableCharacter;
         private LayerMask _whatIsDamageable;
 
-        const float GroundedRadius = .7f;
-        const float CharacterMaxMotorTorque = 10000;
-        const float AdditionalOuterRadius = 0.3f;
+        private const float GroundedRadius = .7f;
+        private const float CharacterMaxMotorTorque = 10000;
+        private const float AdditionalOuterRadius = 0.3f;
 
         private InteractableObject2DState _state;
         private AnchorHandler _anchor;
@@ -401,10 +400,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         }
 
         public void SetTargetPosition(Vector2 newPosition, float percentToPerform = 1) {
+
             if (newPosition != Vector2.zero) {
                 newPosition.y -= GetPlayerLegsHeight();
+
+                SwitchRigidBodyType(RigidbodyType2D.Kinematic, true);
+                _transformMover.MoveToPosition(transform, newPosition, 0.15f, // 0.15f is the fastest combat turn
+                    () => SwitchRigidBodyType(RigidbodyType2D.Dynamic, true)); 
             }
-            NewPositionToSetOnFixedUpdte = newPosition;
         }
 
         public void SetAsClinging(Collider2D wallParent, Vector2 position) {
@@ -461,30 +464,32 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private void Update() {
 
             UpdateCharacterState();
+
+
+            if (ForceDirToSetOnFixedUpdate != Vector2.zero) {
+
+                //SwitchRigidBodyType(RigidbodyType2D.Dynamic, false);
+                //_transformMover.EndMove();
+                _rigidbody.velocity = ForceDirToSetOnFixedUpdate;
+                ForceDirToSetOnFixedUpdate = Vector2.zero;
+            }
+
+            UpdateAnimatorRigRotation();
         }
 
-        private void FixedUpdate() {
-
+        /*private void FixedUpdate() {
             
-            if (NewPositionToSetOnFixedUpdte != Vector3.zero) {
+            if (ForceDirToSetOnFixedUpdate != Vector2.zero) {
 
-                SwitchRigidBodyType(RigidbodyType2D.Kinematic, 0, true);
-                _transformMover.MoveToPosition(transform, NewPositionToSetOnFixedUpdte, 0.15f); // 0.15f is the fastest combat turn
-                SwitchRigidBodyType(RigidbodyType2D.Dynamic, 0.15f, true);
-                _state.SetMoveAnimation(Time.time + (Stats.AttackDurationInMilliseconds * 0.001f));
-                NewPositionToSetOnFixedUpdte = Vector3.zero;
-                
-            } else if (ForceDirToSetOnFixedUpdate != Vector2.zero) {
-
-                SwitchRigidBodyType(RigidbodyType2D.Dynamic, 0, false);
+                SwitchRigidBodyType(RigidbodyType2D.Dynamic, false);
                 _transformMover.EndMove();
                 _rigidbody.velocity = ForceDirToSetOnFixedUpdate;
                 ForceDirToSetOnFixedUpdate = Vector2.zero;
             }
             
             UpdateAnimatorRigRotation();
-
-        }
+            
+        }*/
         
         public void SetProjectileState(bool isActive) {
             
@@ -505,12 +510,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             return overrideEffect;
         }
 
-        private async void SwitchRigidBodyType(RigidbodyType2D bodyType, float delayDuration = 0, bool resetVelocity = false) {
-
-            if (delayDuration > 0) {
-                await Task.Delay(TimeSpan.FromSeconds(delayDuration));
-            }
-            
+        private Task SwitchRigidBodyType(RigidbodyType2D bodyType, bool resetVelocity = false) {
             _rigidbody.bodyType = bodyType;
 
             _legsRigidBody ??= _legsCollider.GetComponent<Rigidbody2D>();
@@ -520,6 +520,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 _rigidbody.velocity = Vector2.zero;
                 _legsRigidBody.velocity = Vector2.zero;
             }
+
+            return Task.CompletedTask;
         }
 
         private void UpdateAnimatorRigRotation() {
