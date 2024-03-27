@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlayWindowData:
   - Title: 
-    BodyContent: Watch out from slipping on the ice
+    BodyContent: Watch your steps. Ice can be slippery!
     BodyPicture: {fileID: 21300000, guid: a917a647c53db4d49879a25e7f3a7c27, type: 3}
     ButtonsRawData: []
     PageCount: 3/3
