@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlayWindowData:
   - Title: 
-    BodyContent: Use Traversable Surfaces while airbornce to jump on
+    BodyContent: Use Traversable Surfaces while airborne for extra jump
     BodyPicture: {fileID: 21300000, guid: 08b373c7029b3334694f40881e50d627, type: 3}
     ButtonsRawData: []
     PageCount: 1/3
