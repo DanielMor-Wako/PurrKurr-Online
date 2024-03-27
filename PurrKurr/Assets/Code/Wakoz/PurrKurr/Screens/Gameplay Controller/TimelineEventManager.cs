@@ -20,9 +20,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             timelineHistory = new();
         }
 
-        public void RegisterInteractionEvent(Character2DController attacker, IInteractableBody[] targets, float startTime, float duration, AttackData attackData, AttackAbility interactionAction, Vector2 interactionPosition, AttackBaseStats attackProperties) {
-            
-            var newEvent = new TimelineEvent(attacker, targets, startTime, duration * .001f, interactionPosition, attackData, interactionAction, attackProperties);
+        public void RegisterInteractionEvent(Character2DController attacker, IInteractableBody[] targets, float startTime, AttackData attackData, AttackAbility interactionAction, Vector2 interactionPosition, AttackBaseStats attackProperties) {
+
+            var newEvent = new TimelineEvent(attacker, targets, startTime, attackProperties.ActionDuration, interactionPosition, attackData, interactionAction, attackProperties);
 
             // Check for overlapping events and resolve effects
             foreach (var existingEvent in futureEvents) {
