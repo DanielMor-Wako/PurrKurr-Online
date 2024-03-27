@@ -14,11 +14,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Init {
 
         protected override Task Initialize() {
 
-            // Disable All When Out Of Editor;
-#if !UNITY_EDITOR
-            LogEnabled = false;
-            DrawEnabled = false;
-#endif
+            DisableAllWhenOutOfEditor();
             return Task.CompletedTask;
         }
 
@@ -65,6 +61,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Init {
             }
 
             Debug.DrawLine(start, end, color, duration);
+        }
+
+        private void DisableAllWhenOutOfEditor() {
+#if !UNITY_EDITOR
+            LogEnabled = false;
+            DrawEnabled = false;
+#endif
         }
 
     }
