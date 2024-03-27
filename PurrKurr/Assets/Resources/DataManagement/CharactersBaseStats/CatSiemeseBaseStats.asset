@@ -34,51 +34,71 @@ MonoBehaviour:
     _baseAttackMoves:
     - _elementName: Light Attack
       _attackAbility: 0
+      _actionDuration: 0.15
+      _actionCooldownDuration: 0.15
       _properties: 04000000
       _characterStateCondition: 
       _opponentStateCondition: 00000000
     - _elementName: Med Attack
       _attackAbility: 1
+      _actionDuration: 0.15
+      _actionCooldownDuration: 0.3
       _properties: 0100000008000000
       _characterStateCondition: 05000000
       _opponentStateCondition: 00000000
     - _elementName: Heavy Attack
       _attackAbility: 2
+      _actionDuration: 0.15
+      _actionCooldownDuration: 0.4
       _properties: 01000000020000000600000007000000
       _characterStateCondition: 04000000
       _opponentStateCondition: 0300000000000000
     - _elementName: Roll Attack
       _attackAbility: 3
+      _actionDuration: 0.15
+      _actionCooldownDuration: 0.2
       _properties: 01000000080000000b000000
       _characterStateCondition: 0b000000
       _opponentStateCondition: 0300000000000000
     - _elementName: Aerial Attack
       _attackAbility: 4
+      _actionDuration: 0.15
+      _actionCooldownDuration: 0.5
       _properties: 0b0000000e00000008000000
       _characterStateCondition: 0c000000
       _opponentStateCondition: 00000000
     - _elementName: Light Grab
       _attackAbility: 5
+      _actionDuration: 0.15
+      _actionCooldownDuration: 0
       _properties: 010000000200000003000000
       _characterStateCondition: 03000000
       _opponentStateCondition: 03000000
     - _elementName: Med Grab
       _attackAbility: 6
+      _actionDuration: 0.15
+      _actionCooldownDuration: 0
       _properties: 01000000020000000d00000000000000
       _characterStateCondition: 05000000
       _opponentStateCondition: 03000000
     - _elementName: Heavy Grab
       _attackAbility: 7
+      _actionDuration: 0.15
+      _actionCooldownDuration: 0.2
       _properties: 0000000001000000000000000a000000
       _characterStateCondition: 04000000
       _opponentStateCondition: 03000000
     - _elementName: Aerial Grab
       _attackAbility: 8
+      _actionDuration: 0.15
+      _actionCooldownDuration: 0.5
       _properties: 01000000020000000c000000
       _characterStateCondition: 
       _opponentStateCondition: 0c00000000000000
     - _elementName: Light Block
       _attackAbility: 9
+      _actionDuration: 0.15
+      _actionCooldownDuration: 0.1
       _properties: 00000000
       _characterStateCondition: 
       _opponentStateCondition: 
