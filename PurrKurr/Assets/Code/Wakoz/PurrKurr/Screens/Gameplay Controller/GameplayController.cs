@@ -28,8 +28,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
     [DefaultExecutionOrder(14)]
     public sealed class GameplayController : SingleController {
-        
-        private const float _attackCooldownDuration = 0.25f;
+
         private const float _MinVelocityForFlip = 5;
 
         [SerializeField][Min(0)] private int _startingLevelIndex = 0;
@@ -376,11 +375,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                                 }
 
                             } else if (actionInput.ActionType == ActionType.Jump && forceDir != Vector2.zero) {
-                                // todo: flip horizontal when player infront of wall?
-                                var flipHorizontalDirectionWhileClinging = false;// _hero.State.IsClinging() && _hero.State.IsFrontWall();
                                 DisconnectFromAnyGrabbing(_hero);
+                                AlterJumpDirByStateNavigationDirection(ref forceDir, _hero.State);
                                 _hero.SetJumping(Time.time + .2f);
-                                AlterJumpDirByStateNavigationDirection(ref forceDir, _hero.State, flipHorizontalDirectionWhileClinging);
                                 _hero.SetForceDir(forceDir);
                                 _hero.DoMove(0); // might conflict with the TryPerformInputNavigation when the moveSpeed is already set by Navigation
                                 ApplyEffectForDurationAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
@@ -528,7 +525,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                                     _hero.SetJumping(Time.time + .2f);
                                     forceDir = actionInput.NormalizedDirection * _hero.Stats.JumpForce;
                                     ApplyEffectForDurationAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
-                                    //_hero.DoMove(0); // dont think its needed 
                                 }
                             }
                         }
@@ -540,7 +536,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 }
 
                 if (forceDir != Vector2.zero) {
-                    // might conflict with the DiagnosePlayerInputNavigation when the forceDir is already set by Navigation
                     _hero.SetForceDir(forceDir, true);
                 }
 
@@ -716,13 +711,23 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
         }
 
-        private void AlterJumpDirByStateNavigationDirection(ref Vector2 forceDir, InteractableObject2DState state, bool flipJumpHorizontalWhenClinging) {
-
+        private void AlterJumpDirByStateNavigationDirection(ref Vector2 forceDir, InteractableObject2DState state) {
+            
             var navigationDir = state.NavigationDir;
-            var horizontalDir = _hero.State.GetFacingRightAsInt() * (flipJumpHorizontalWhenClinging ? -1 : 1);
+            var isNavDirUpOrNone = navigationDir is NavigationType.Up or NavigationType.None;
+
+            var facingDir =
+                _logic.InputLogic.IsNavigationDirValidAsLeft(navigationDir) ? -1
+                : _logic.InputLogic.IsNavigationDirValidAsRight(navigationDir) ? 1
+                : _hero.State.GetFacingRightAsInt();
+
+            // todo: flip horizontal when player infront of wall?
+            var flipJumpHorizontalWhenClinging = false ;// _hero.State.IsFrontWall() && !isNavDirUpOrNone && facingDir == _hero.State.GetFacingRightAsInt();
+
+            var horizontalDir = facingDir * (flipJumpHorizontalWhenClinging ? -1 : 1);
 
             //_debug.DrawRay(_hero.LegsPosition, forceDir, Color.white, 3);
-            if (navigationDir is NavigationType.Up or NavigationType.None || _hero.State.IsFrontWall()) {
+            if (isNavDirUpOrNone) {
                 forceDir = HelperFunctions.RotateVector(forceDir, horizontalDir * -5);
 
             } else {
@@ -732,7 +737,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _debug.DrawRay(_hero.LegsPosition, forceDir, Color.white, 3);
         }
 
-        private void AlterThrowDirBasedOnNavigationDirection(ref Vector2 throwDir, NavigationType navigationDir, bool isAerial) {
+        private void AlterThrowDirBasedOnNavigationDirection(ref Vector2 throwDir, ref int facingRightOrLeftTowardsPoint, NavigationType navigationDir, bool isAerial) {
 
             switch (navigationDir) {
 
@@ -749,26 +754,32 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                 case NavigationType.Left:
                     throwDir = HelperFunctions.RotateVector(throwDir, 45);
+                    facingRightOrLeftTowardsPoint = -1;
                     break;
                 
                 case NavigationType.Right:
                     throwDir = HelperFunctions.RotateVector(throwDir, -45);
+                    facingRightOrLeftTowardsPoint = 1;
                     break;
                 
                 case NavigationType.UpRight:
                     throwDir = HelperFunctions.RotateVector(throwDir, -25);
+                    facingRightOrLeftTowardsPoint = 1;
                     break;
                 
                 case NavigationType.UpLeft:
                     throwDir = HelperFunctions.RotateVector(throwDir, 25);
+                    facingRightOrLeftTowardsPoint = -1;
                     break;
                 
                 case NavigationType.DownRight:
                     throwDir = HelperFunctions.RotateVector(throwDir, -100);
+                    facingRightOrLeftTowardsPoint = 1;
                     break;
                 
                 case NavigationType.DownLeft:
                     throwDir = HelperFunctions.RotateVector(throwDir, 100);
+                    facingRightOrLeftTowardsPoint = -1;
                     break;
             }
 
@@ -789,7 +800,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private List<TimelineEvent> endedEvents = new();
 
         private void Update() {
-
+            
             if (_timelineEventManager == null) {
                 return;
             }
@@ -803,6 +814,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     var facingRightWhileMoving = e.Targets.FirstOrDefault().GetCenterPosition().x > e.Attacker.LegsPosition.x ? true : false;
                     e.Attacker.FlipCharacterTowardsPoint(facingRightWhileMoving);
                     e.Attacker.SetTargetPosition(e.InteractionPosition);
+                    e.Attacker.State.SetMoveAnimation(Time.time + e.AttackProperties.ActionDuration);
                 }
             }
 
@@ -813,10 +825,15 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     var newFacingDirection = 0;
                     var hitPosition = e.InteractionPosition;
 
-                    var distanceLimiter = _attackRadius;
-                    var nearbyTargets = e.Targets.Where(
-                        obj => Vector2.Distance(obj.GetCenterPosition(), hitPosition) < distanceLimiter).OrderBy(obj
-                                => Vector2.Distance(obj.GetCenterPosition(), hitPosition)).ToArray();
+                    IInteractableBody[] nearbyTargets;
+                    if (_logic.AbilitiesLogic.IsAbilityAnAttack(e.InteractionType)) {
+                        var distanceLimiter = _attackRadius;
+                        nearbyTargets = e.Targets.Where(
+                            obj => Vector2.Distance(obj.GetCenterPosition(), hitPosition) < distanceLimiter).OrderBy(obj
+                                    => Vector2.Distance(obj.GetCenterPosition(), hitPosition)).ToArray();
+                    } else {
+                        nearbyTargets = e.Targets;
+                    }
 
                     HitTargets(e.Attacker, ref hitPosition, nearbyTargets, ref newFacingDirection, e.InteractionType, e.AttackProperties);
 
@@ -965,7 +982,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             if (latestInteraction != null) {
 
-                _timelineEventManager.RegisterInteractionEvent(attacker, interactedColliders, Time.time, attacker.Stats.AttackDurationInMilliseconds, attackStats, attackAbility, moveToPosition, attackProperties);
+                _timelineEventManager.RegisterInteractionEvent(attacker, interactedColliders, Time.time, attackStats, attackAbility, moveToPosition, attackProperties);
             }
 
             attacker.State.MarkLatestInteraction(latestInteraction);
@@ -995,8 +1012,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             if (latestInteraction != null) {
 
-                attacker.State.SetInterruptibleAnimation(Time.time + _attackCooldownDuration);
-
+                attacker.State.SetInterruptibleAnimation(Time.time + attackProperties.ActionCooldownDuration);
+                
                 if (latestInteraction.GetHpPercent() <= 0) {
                     latestInteraction = null;
                 }
@@ -1144,15 +1161,18 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 var isGroundSmash = properties.Contains(AttackProperty.GrabToGroundSmash) ||
                     foe.GetCurrentState() is ObjectState.Jumping or ObjectState.Falling;
                 var grabPointOffset = (isGroundSmash) ? Vector2.down : Vector2.up;
-                var endPosition = moveToPosition + grabPointOffset * (attacker.LegsRadius);
+                var endPosition = (Vector2)attacker.GetCenterPosition() + grabPointOffset * (attacker.LegsRadius);
                 var attackerAsInteractable = (IInteractableBody)attacker;
+
+                attacker.State.SetInterruptibleAnimation(Time.time + 1); // throw cooldown
 
                 var isThrowingGrabbedFoe = attackerAsInteractable.IsGrabbing() && foe.IsGrabbed();
                 if (isThrowingGrabbedFoe) {
 
                     AttackData throwStats = new AttackData(attacker.Stats.Damage, Vector2.up * attacker.Stats.PushbackForce);
-                    
-                    AlterThrowDirBasedOnNavigationDirection(ref throwStats.ForceDir, attacker.State.NavigationDir, _gameplayLogic.IsStateConsideredAsAerial(attacker.State.CurrentState));
+
+                    facingRightOrLeftTowardsPoint = attacker.State.GetFacingRightAsInt();
+                    AlterThrowDirBasedOnNavigationDirection(ref throwStats.ForceDir, ref facingRightOrLeftTowardsPoint, attacker.State.NavigationDir, _gameplayLogic.IsStateConsideredAsAerial(attacker.State.CurrentState));
                     ApplyGrabOnFoeWithDelay(foe, null, foe.GetTransform().position);
                     ApplyForceOnFoeWithDelay(foe, throwStats, Effect2DType.DustCloud);
                     attackerAsInteractable.SetAsGrabbing(null);
@@ -1162,13 +1182,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                 } else {
 
-                    AttackData grabActionStats = new AttackData(attacker.Stats.Damage, GetAttackDirection(attacker.Stats.PushbackForce, moveToPosition, interactedCollider.GetCollider().ClosestPoint(attacker.GetCenterPosition()), attacker.LegsRadius));
+                    AttackData grabActionStats = new AttackData(attacker.Stats.Damage, Vector2.up * attacker.Stats.PushbackForce);
+                    
+                    facingRightOrLeftTowardsPoint = attacker.State.GetFacingRightAsInt();
 
-                    foe.SetTargetPosition(endPosition);
+                    //foe.SetTargetPosition(endPosition);
 
                     _cam.RemoveFromTargetList(foe.GetTransform());
-                    ApplyGrabOnFoeWithDelay(foe, attacker, endPosition, attacker.Stats.AttackDurationInMilliseconds);
-                    attackerAsInteractable.SetAsGrabbing(foe);
                     _debug.DrawRay(moveToPosition, Vector2.up * 10, Color.grey, 4);
                     _debug.DrawRay(endPosition, Vector2.up * 10, Color.yellow, 4);
 
@@ -1181,25 +1201,36 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                     } else if (isGroundSmash) {
 
+                        foe.SetTargetPosition(endPosition);
+                        ApplyGrabOnFoeWithDelay(foe, attacker, endPosition);
+                        attackerAsInteractable.SetAsGrabbing(foe);
+
                         ApplyGrabThrowWhenGrounded(foe, attacker, grabActionStats);
 
                     } else if (properties.Contains(AttackProperty.GrabAndPickUp)) {
 
+                        foe.SetTargetPosition(endPosition);
+                        ApplyGrabOnFoeWithDelay(foe, attacker, endPosition);
+                        attackerAsInteractable.SetAsGrabbing(foe);
+
                     } else {
 
-                        var directionTowardsFoe = (endPosition.x >= attacker.LegsPosition.x) ? 1 : -1;
+                        var directionTowardsFoe = attacker.State.GetFacingRightAsInt();
 
                         if (properties.Contains(AttackProperty.StunOnGrabber)) {
 
                             grabActionStats.ForceDir.x = -directionTowardsFoe * 0.3f * Mathf.Abs(grabActionStats.ForceDir.y);
-                            ApplyGrabThrowWhenGrounded(foe, attacker, grabActionStats);
+                            //ApplyGrabThrowWhenGrounded(foe, attacker, grabActionStats);
 
                         } else {
 
-                            grabActionStats.ForceDir.x = directionTowardsFoe * Mathf.Abs(grabActionStats.ForceDir.y);
-                            grabActionStats.ForceDir.y *= 0.4f;
-                            ApplyGrabThrowWhenGrounded(foe, attacker, grabActionStats);
+                            grabActionStats.ForceDir = HelperFunctions.RotateVector(grabActionStats.ForceDir, 60 * -directionTowardsFoe);
+                            
                         }
+
+                        foe.GetTransform().transform.position = endPosition;
+                        ApplyForceOnFoeWithDelay(foe, grabActionStats, Effect2DType.DustCloud);
+                        attackerAsInteractable.SetAsGrabbing(null);
                     }
 
                 }
