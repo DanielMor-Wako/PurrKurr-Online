@@ -269,7 +269,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public bool IsInterraptibleAnimation() => Time.time < _interruptibleAnimation;
 
         public bool CanPerformAction() =>
-            !IsMoveAnimation() && 
+            !IsMoveAnimation() && !IsInterraptibleAnimation() && !IsJumping() &&
             _currentState is Definitions.ObjectState.Crouching or Definitions.ObjectState.StandingUp or
                 Definitions.ObjectState.Jumping or Definitions.ObjectState.Falling or
                 Definitions.ObjectState.AerialJumping or Definitions.ObjectState.Grabbing or
