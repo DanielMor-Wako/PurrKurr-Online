@@ -328,7 +328,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         private void OnActionStarted(ActionInput actionInput) {
             
-            if (IsAlive()) {
+            if (IsAlive(_hero)) {
 
                 if (CanPerformAction()) {
                     if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, true, false, _hero,
@@ -377,7 +377,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                             } else if (actionInput.ActionType == ActionType.Jump && forceDir != Vector2.zero) {
                                 DisconnectFromAnyGrabbing(_hero);
                                 AlterJumpDirByStateNavigationDirection(ref forceDir, _hero.State);
-                                _hero.SetJumping(Time.time + .2f);
+                                _hero.SetJumping(Time.time + .05f);
                                 _hero.SetForceDir(forceDir);
                                 _hero.DoMove(0); // might conflict with the TryPerformInputNavigation when the moveSpeed is already set by Navigation
                                 ApplyEffectForDurationAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
@@ -522,7 +522,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                                     
                                 } else if (isJumpAimEnded) {
                                     // apply jump aim in trajectory dir
-                                    _hero.SetJumping(Time.time + .2f);
+                                    _hero.SetJumping(Time.time + .1f);
                                     forceDir = actionInput.NormalizedDirection * _hero.Stats.JumpForce;
                                     ApplyEffectForDurationAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
                                 }
@@ -698,7 +698,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             character.SetAsClinging(null, character.LegsPosition);
         }
 
-        private bool IsAlive() => _hero.Stats.GetHealthPercentage() > 0;
         private bool CanPerformAction() => _hero.State.CanPerformAction();
         private bool CanOnlyStackActions() => _hero.State.CurrentState is ObjectState.Attacking or ObjectState.InterruptibleAnimation;
 
@@ -827,13 +826,21 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                     IInteractableBody[] nearbyTargets;
                     if (_logic.AbilitiesLogic.IsAbilityAnAttack(e.InteractionType)) {
+
                         var distanceLimiter = _attackRadius;
                         nearbyTargets = e.Targets.Where(
                             obj => Vector2.Distance(obj.GetCenterPosition(), hitPosition) < distanceLimiter).OrderBy(obj
                                     => Vector2.Distance(obj.GetCenterPosition(), hitPosition)).ToArray();
+
+                        if (nearbyTargets.Length == 0 && e.Targets != null && e.Targets.Length > 0) {
+                            _debug.LogWarning($"could not find any targets after filtering by distance -> {_attackRadius}");
+                            nearbyTargets = e.Targets;
+                        }
+
                     } else {
                         nearbyTargets = e.Targets;
                     }
+
 
                     HitTargets(e.Attacker, ref hitPosition, nearbyTargets, ref newFacingDirection, e.InteractionType, e.AttackProperties);
 
@@ -957,6 +964,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             targets = targetsList.ToArray();
             return;
         }
+
+        private bool IsAlive(IInteractableBody interactableBody) => interactableBody.GetHpPercent() > 0;
 
         private void RegisterInteractionEvent(Character2DController attacker, ref Vector2 moveToPosition, ref IInteractableBody[] interactedColliders, ref int newFacingDirection, ref AttackAbility attackAbility, ref AttackBaseStats attackProperties) {
 
