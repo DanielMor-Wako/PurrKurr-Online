@@ -80,7 +80,7 @@ SpriteMask:
   m_FrontSortingLayer: -1
   m_BackSortingLayer: -1
   m_FrontSortingOrder: 10
-  m_BackSortingOrder: 9
+  m_BackSortingOrder: 8
   m_IsCustomRangeActive: 1
   m_SpriteSortPoint: 0
 --- !u!1 &142994974125223364
@@ -897,6 +897,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5556951cfa0935b45bf6bba245c5d54d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _startingLevelIndex: 0
+  _attackRadius: 2
   _xDistanceFrommClingPoint: 0.8
   _cam: {fileID: 4039740569464446090}
   _mainHero: {fileID: 7784759249914515740}
@@ -11159,7 +11161,7 @@ MonoBehaviour:
     AirborneMaxSpeed: 5
     MultiTargetsDistance: 0
     BodySize: 1
-    AttackDurationInMilliseconds: 0
+    MoveAnimDurationInMilliseconds: 0
   _effectOverrides:
     _data: []
   _rigidbody: {fileID: 8396869029664855247}
@@ -12335,7 +12337,7 @@ MonoBehaviour:
     AirborneMaxSpeed: 5
     MultiTargetsDistance: 0
     BodySize: 1
-    AttackDurationInMilliseconds: 0
+    MoveAnimDurationInMilliseconds: 0
   _effectOverrides:
     _data: []
   _rigidbody: {fileID: 3846399197657143409}
@@ -18648,7 +18650,7 @@ MonoBehaviour:
     AirborneMaxSpeed: 5
     MultiTargetsDistance: 0
     BodySize: 1
-    AttackDurationInMilliseconds: 0
+    MoveAnimDurationInMilliseconds: 0
   _effectOverrides:
     _data: []
   _rigidbody: {fileID: 1018173121233991745}
