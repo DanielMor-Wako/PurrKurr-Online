@@ -14,16 +14,29 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
 
         [Tooltip("When ref exist to scriptable object, it overrides the windowData from the scriptable data")]
         [SerializeField] private OverlayWindowDataSO _scriptableObjectData;
+        [SerializeField] private OverlayWindowConditions _conditions;
         [Tooltip("Sets the max activation for the window. 0 counts as infinite activations")]
         [SerializeField][Min(0)] private int _activationLimit = 0;
         [Tooltip("Sets the View state to active and deactive")]
         [SerializeField] private MultiStateView _state;
+        
+        private IGameEventCondition _condition;
 
         private GameplayController _gameplayController;
         private int _activationsCount = 0;
 
         public void TurnOffWindow() {
             UpdateStateView(false);
+        }
+
+        public IGameEventCondition GetCondition(int pageIndex = 0) {
+
+            if (_conditions == null) {
+                return null;
+            }
+
+            _condition = _conditions.GetEventCondition(pageIndex);
+            return _condition;
         }
 
         protected override void Clean() {
@@ -72,10 +85,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
             }
 
             if (_gameplayController.OnExitDetectionZone(this, triggeredCollider)) {
+
                 _activationsCount++;
+                _condition?.EndCheckingCondition();
             }
 
             UpdateStateView(false);
+
         }
 
         private void handleColliderEntered(Collider2D triggeredCollider) {
@@ -130,6 +146,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
 
             _state.ChangeState(activeState ? 0 : !HasReachedMaxCount() ? 1 : 2);
         }
+        
     }
 
 }
