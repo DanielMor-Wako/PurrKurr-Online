@@ -196,11 +196,11 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
             _pageCountText.SetText(Model.PageCount);
         }
 
-        private static GenericButtonData GetButtonDataByType(List<GenericButtonData> buttonData, GenericButtonType typeTypeMatch) {
+        private static GenericButtonData GetButtonDataByType(List<GenericButtonData> buttonData, GenericButtonType typeMatch) {
 
             foreach (var data in buttonData) {
 
-                if (data.ButtonType != typeTypeMatch) {
+                if (data.ButtonType != typeMatch) {
                     continue;
                 }
 
