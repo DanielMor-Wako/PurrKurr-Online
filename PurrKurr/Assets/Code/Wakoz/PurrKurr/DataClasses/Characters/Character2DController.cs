@@ -211,6 +211,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 linePoints[i] = new Vector3(points[i][0], points[i][1], 0);
             }
 
+            endPosition = (Vector2)points[points.Count-1];
+
             // Create a rotation using the calculated angle by Atan2
             //var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90;
             //linePoints = Quaternion.AngleAxis(angle, Vector3.forward);
@@ -739,7 +741,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         private RaycastHit2D FreeFallRayCast(Vector3 startPos, Vector3 direction, float distanceToCheckWhenFreeFalling) {
 
-            return Physics2D.Raycast(startPos, direction, distanceToCheckWhenFreeFalling, _whatIsSolid);
+            return Physics2D.Raycast(startPos, direction, distanceToCheckWhenFreeFalling, _whatIsSurface);
         }
 
         public void SetNavigationDir(Definitions.NavigationType inputDirection) => State.SetNavigationDir(inputDirection);
