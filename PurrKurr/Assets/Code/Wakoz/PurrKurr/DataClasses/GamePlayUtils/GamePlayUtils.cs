@@ -17,7 +17,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
         [SerializeField][Range(0.1f, 1f)] public float _defaultTimeScale = 1f;
         [SerializeField] private bool _affectTimeScale = true;
         [SerializeField][Min(0)] public float _transitionDuration = 0.2f;
-        [SerializeField][Range(0.075f, 1f)] public float _slomoTimeScale = 0.5f;
+        [SerializeField][Range(0f, 1f)] public float _slomoTimeScale = 0.5f;
 
         private float _timeScaleTarget;
         private Coroutine _timeScaleTransitionCoroutine;
