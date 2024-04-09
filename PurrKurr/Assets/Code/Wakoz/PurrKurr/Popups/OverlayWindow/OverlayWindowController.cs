@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,6 +36,27 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
         public void HideWindow() {
 
             SetModel();
+        }
+
+        public void ShowNextPage(bool hideWindowAfterLastPage) {
+
+            if (_model is null) {
+                return;
+            }
+
+            if (!hideWindowAfterLastPage) {
+                return;
+            }
+
+            if (_pageIndex >= _pageData.Count - 1) {
+
+                if (hideWindowAfterLastPage) {
+                    HideWindow();
+                }
+                return;
+            }
+
+            HandleNextPage();
         }
 
         private void SetModel(string title = null, string bodyContent = null, Sprite bodyPicture = null, List<GenericButtonData> buttons = null, string pageCount = null) {
