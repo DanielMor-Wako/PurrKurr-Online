@@ -13,9 +13,13 @@ MonoBehaviour:
   m_Name: AdvancedJump
   m_EditorClassIdentifier: 
   overlayWindowData:
-  - Title: Charge Jump
-    BodyContent: Hold the Down key to Crouch,\n Swipe the Jump Button to aim,\n Release
-      the Jump key to jump
+  - Title: Aim Jump
+    BodyContent: Hold the Down key to Crouch,\nSwipe the Jump Button to aim
+    BodyPicture: {fileID: 0}
+    ButtonsRawData: []
+    PageCount: 1/3
+  - Title: 
+    BodyContent: Great! now release the Jump key to jump
     BodyPicture: {fileID: 0}
     ButtonsRawData: []
     PageCount: 1/3
