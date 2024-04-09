@@ -42,12 +42,11 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
         private Vector3 newPosition;
         private bool _isFreeFalling;
         private bool _isTopEdge, _isBottomEdge, _isLeftEdge, _isRightEdge;
-        private List<Transform> _previousTargets = new();
         private float _zoom;
         private float _newZoom;
         const int camFixedZPosition = -10;
         private float _screenHeight, _screenWidth;
-
+        private Vector3 _focusPoint = Vector2.zero;
 
         private void Start()  {
         
@@ -66,6 +65,9 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
             _isFreeFalling = isFreeFallingHitPoint != Vector3.zero && mainTarget.Velocity.y < -MinVelocityToSetFallingYOffset;
             if (_isFreeFalling) {
                 cameraFocus.transform.position = isFreeFallingHitPoint;
+            
+            } else if (_focusPoint != Vector3.zero) {
+                cameraFocus.transform.position = (Vector3)_focusPoint;
             }
 
             UpdateScreenEdge();
@@ -208,20 +210,27 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
         }
 
         private void SwitchSingleTargetToTheClosetGround(bool isFreeFalling) {
-        
-            if (isFreeFalling && SingleTargetIsMainTarget()) {
-                _previousTargets.Clear();
-                _previousTargets.AddRange(targets);
-                targets.Clear();
-                AddToTargetList(cameraFocus);
-            
-            } else if (!isFreeFalling && (targets[0] == null || targets[0] != mainTarget.transform)) {
 
-                targets.Clear();
-                if (_previousTargets.Count > 1) {
-                    targets.AddRange(_previousTargets);
-                
-                } else {
+            var isMainTargetFocused = SingleTargetIsMainTarget();
+
+            if (isFreeFalling /*&& SingleTargetIsMainTarget()*/) {
+                if (!isMainTargetFocused) {
+                    targets.Clear();
+                    AddToTargetList(cameraFocus);
+                }
+            
+            } else { //if (!isFreeFalling) {
+
+                if (_focusPoint != Vector3.zero) {
+                    if (isMainTargetFocused) {
+                        targets.Clear();
+                        AddToTargetList(mainTarget.transform);
+                        AddToTargetList(cameraFocus);
+                    }
+
+                } else if (!isMainTargetFocused) {//{ if ((targets[0] == null || targets[0] != mainTarget.transform)) {
+
+                    targets.Clear();
                     AddToTargetList(mainTarget.transform);
                 }
             
@@ -237,7 +246,11 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
 
             var smoothing = Mathf.Abs(velocity.magnitude) < MinScreenVelocityForXCenterSmoothing && Mathf.Abs(mainTarget.Velocity.magnitude) < 20f ? XBackToCenterSmoothing : smoothTime;
 
+            if (Time.timeScale < 0.75) {
+                smoothing = 0.05f;
+            }
             transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, smoothing);
+
         }
 
         void Zoom() {
@@ -321,6 +334,11 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
 
         public void ShakeScreen(int force, float duration) {
             // todo: set screen shake
+        }
+
+        public void SetFocusPoint(Vector2 newPos) {
+
+            _focusPoint = newPos;
         }
     }
 }
