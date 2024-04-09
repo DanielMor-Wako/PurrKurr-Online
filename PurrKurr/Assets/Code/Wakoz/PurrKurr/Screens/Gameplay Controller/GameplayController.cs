@@ -131,7 +131,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             var x = triggeredCollider.GetComponent<IInteractable>();
             var character = x.GetInteractable();
-            
+
             if (character != (IInteractableBody)_hero) {
                 return false;
             }
@@ -163,11 +163,27 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         confirmButtons.ClickedAction = () => windowTrigger.TurnOffWindow();
                     }
                 }
+
+                CheckForConditionalGameEvent(character, windowTrigger);
             }
 
             GetController<OverlayWindowController>().ShowWindow(windowPageData);
 
             return true;
+        }
+
+        private void CheckForConditionalGameEvent(IInteractableBody character, OverlayWindowTrigger windowTrigger, int pageIndex = 0) {
+
+            var condition = windowTrigger.GetCondition(pageIndex);
+            if (condition != null) {
+                condition.StartCheckingCondition(character,
+                    () => OnGameEventConditionMet(character, windowTrigger, pageIndex));
+            }
+        }
+
+        private void OnGameEventConditionMet(IInteractableBody character, OverlayWindowTrigger windowTrigger, int pageIndex) {
+            GetController<OverlayWindowController>().ShowNextPage(true);
+            //CheckForConditionalGameEvent(character, windowTrigger, pageIndex++);
         }
 
         public bool OnExitDetectionZone(DetectionZoneTrigger zone, Collider2D triggeredCollider) {
@@ -1312,6 +1328,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             state.SetAiming(10f);
 
             Vector2 newPos = Vector2.zero;
+            Vector2 endPos = Vector2.zero;
             float distancePercentReached = 1;
             Quaternion rotation = Quaternion.identity;
             Vector3[] linePoints = null;
@@ -1325,29 +1342,32 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 if (isRope) {
                     hasHitData = character.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPos, ref distancePercentReached);
                     newPos = cursorPos;
+                    endPos = cursorPos;
 
                 } else if (isProjectile) {
-                    hasHitData = character.TryGetProjectileDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, ref distancePercentReached);
+                    hasHitData = character.TryGetProjectileDirection(actionInput.NormalizedDirection, ref endPos, ref rotation, ref distancePercentReached);
                     newPos = character.LegsPosition;
 
                 } else if (isJumpAim) {
                     linePoints = new Vector3[] { Vector3.zero, Vector2.one };
                     var forceDir = actionInput.NormalizedDirection * character.Stats.JumpForce;
-                    hasHitData = character.TryGetJumpTrajectory(forceDir, ref newPos, ref linePoints);
+                    hasHitData = character.TryGetJumpTrajectory(forceDir, ref endPos, ref linePoints);
                     newPos = character.LegsPosition;
                 }
 
                 if (hasAimDir) {
                     _gameplayUtils.ActivateUtil(actionType, newPos, rotation, hasHitData, linePoints);
+                    _cam.SetFocusPoint(endPos);
 
                 } else {
                     _gameplayUtils.DeactivateUtil(actionType);
 
                 }
 
-                await Task.Delay(TimeSpan.FromMilliseconds(10));
+                await Task.Delay(TimeSpan.FromMilliseconds(5));
             }
 
+            _cam.SetFocusPoint(Vector2.zero);
             _gameplayUtils.DeactivateUtil(actionType);
 
         }
