@@ -19,7 +19,7 @@ MonoBehaviour:
     ButtonsRawData: []
     PageCount: 1/3
   - Title: Crouching
-    BodyContent: Swipe right to move while crouching and pass through the gap by
+    BodyContent: Swipe right to move while crouching and pass through the gap
     BodyPicture: {fileID: 0}
     ButtonsRawData: []
     PageCount: 1/3
