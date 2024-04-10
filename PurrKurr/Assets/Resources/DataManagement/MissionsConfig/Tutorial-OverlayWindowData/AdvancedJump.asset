@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlayWindowData:
   - Title: Aim Jump
-    BodyContent: Hold the Down key to Crouch,\nSwipe the Jump Button to aim
+    BodyContent: Hold Down to Crouch,<br><br>Hold the Jump Button and swipe in any
+      direction to aim
     BodyPicture: {fileID: 0}
     ButtonsRawData: []
     PageCount: 1/3
