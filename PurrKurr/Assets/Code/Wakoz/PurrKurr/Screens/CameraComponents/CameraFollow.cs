@@ -214,7 +214,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
             var isMainTargetFocused = SingleTargetIsMainTarget();
 
             if (isFreeFalling /*&& SingleTargetIsMainTarget()*/) {
-                if (!isMainTargetFocused) {
+                if (isMainTargetFocused) {
                     targets.Clear();
                     AddToTargetList(cameraFocus);
                 }
@@ -246,7 +246,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
 
             var smoothing = Mathf.Abs(velocity.magnitude) < MinScreenVelocityForXCenterSmoothing && Mathf.Abs(mainTarget.Velocity.magnitude) < 20f ? XBackToCenterSmoothing : smoothTime;
 
-            if (Time.timeScale < 0.75) {
+            if (mainTarget.State.IsAiming() && Time.timeScale < 0.75) {
                 smoothing = 0.05f;
             }
             transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, smoothing);
