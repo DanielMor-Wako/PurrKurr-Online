@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6196160566306257942}
   - component: {fileID: 858279619992025210}
   - component: {fileID: 7434590532821839692}
+  - component: {fileID: 5959390720327021970}
   - component: {fileID: 3894263281346163277}
   m_Layer: 5
   m_Name: Pointer-ShadeMask
@@ -107,6 +108,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5959390720327021970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 665712129400271646}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d72defb0682d2804ca1d1b8fad78f721, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animator: {fileID: 3894263281346163277}
+  _pointerHolder: {fileID: 1546606424590319026}
 --- !u!95 &3894263281346163277
 Animator:
   serializedVersion: 5
