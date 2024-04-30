@@ -23,6 +23,7 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors;
 using Code.Wakoz.PurrKurr.Popups.OverlayWindow;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger;
+using Code.Wakoz.PurrKurr.UI.Instructions;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
@@ -164,12 +165,17 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     }
                 }
 
-                CheckForConditionalGameEvent(character, windowTrigger);
+                CheckForPageModoficators(character, windowTrigger);
             }
 
             GetController<OverlayWindowController>().ShowWindow(windowPageData);
 
             return true;
+        }
+
+        private void CheckForPageModoficators(IInteractableBody character, OverlayWindowTrigger windowTrigger, int pageIndex = 0) {
+            CheckForConditionalGameEvent(character, windowTrigger);
+            CheckForAnimationEvent(character, windowTrigger);
         }
 
         private void CheckForConditionalGameEvent(IInteractableBody character, OverlayWindowTrigger windowTrigger, int pageIndex = 0) {
@@ -181,9 +187,29 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
         }
 
+        private void CheckForAnimationEvent(IInteractableBody character, OverlayWindowTrigger windowTrigger, int pageIndex = 0) {
+
+            var clickAnimationData = windowTrigger.GetAnimationData(pageIndex);
+            if (clickAnimationData != null) {
+                foreach (var animation in clickAnimationData) {
+                    var target = animation.CursorTarget;
+                    if (target != null) {
+                        // todo: call the CursorTutorial animation to start new animation
+                        Debug.Log($"Starting animation of target {target.name} - Angle: {animation.SwipeAngle} -> HoldSwipe: {animation.IsHoldSwipe}");
+                        var newInstruction = new OverlayInstructionModel(animation);
+                        GetController<OverlayInstructionsController>().StartInstruction(newInstruction);
+                    }
+                }
+            }
+        }
+
         private void OnGameEventConditionMet(IInteractableBody character, OverlayWindowTrigger windowTrigger, int pageIndex) {
             GetController<OverlayWindowController>().ShowNextPage(true);
             //CheckForConditionalGameEvent(character, windowTrigger, pageIndex++);
+
+            Debug.Log($"Stopping any previous animations");
+            GetController<OverlayInstructionsController>().StopInstructions();
+            // todo: call the CursorTutorial animation to stop previous animations
         }
 
         public bool OnExitDetectionZone(DetectionZoneTrigger zone, Collider2D triggeredCollider) {
@@ -196,6 +222,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
 
             GetController<OverlayWindowController>().HideWindow();
+            GetController<OverlayInstructionsController>().StopInstructions();
 
             return true;
         }
