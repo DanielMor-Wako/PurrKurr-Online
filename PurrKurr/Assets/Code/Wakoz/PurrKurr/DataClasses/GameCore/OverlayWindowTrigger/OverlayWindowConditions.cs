@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Code.Wakoz.PurrKurr.UI.Instructions;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +11,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
 
         public IGameEventCondition GetEventCondition(int pageIndex) {
             return _conditionsPerPage.ContainsKey(pageIndex) ? _conditionsPerPage[pageIndex] : null;
+        }
+
+        public List<OverlayWindowAnimationData> GetAnimationData(int pageIndex) {
+            return _conditions.Count > 0 && _conditions[0].AnimatedAction.Count > (pageIndex) ? _conditions[pageIndex].AnimatedAction : null;
         }
 
         private void Awake() {
@@ -34,11 +38,5 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
                 _conditionsPerPage.Add(i, eventCondition);
             }
         }
-    }
-
-    [Serializable]
-    public class OverlayWindowConditionData {
-        [SerializeField] public int PageIndex;
-        [SerializeField] public Component ConditionRef;
     }
 }
