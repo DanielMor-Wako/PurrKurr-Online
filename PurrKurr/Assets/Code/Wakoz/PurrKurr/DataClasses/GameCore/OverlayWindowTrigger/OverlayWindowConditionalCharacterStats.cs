@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
+﻿namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
     public class OverlayWindowConditionalCharacterStats : OverlayWindowCondition<int> {
 
         /// <summary>
