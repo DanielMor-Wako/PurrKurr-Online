@@ -2,6 +2,7 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using Code.Wakoz.PurrKurr.Popups.OverlayWindow;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
+using Code.Wakoz.PurrKurr.UI.Instructions;
 using Code.Wakoz.PurrKurr.Views;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -37,6 +38,15 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
 
             _condition = _conditions.GetEventCondition(pageIndex);
             return _condition;
+        }
+
+        public List<OverlayWindowAnimationData> GetAnimationData(int pageIndex = 0) {
+
+            if (_conditions == null) {
+                return null;
+            }
+
+            return _conditions.GetAnimationData(pageIndex);
         }
 
         protected override void Clean() {
