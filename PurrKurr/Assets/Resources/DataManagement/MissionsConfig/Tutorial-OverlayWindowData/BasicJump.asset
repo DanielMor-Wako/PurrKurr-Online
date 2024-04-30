@@ -14,9 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlayWindowData:
   - Title: Jump Basics
-    BodyContent: Press the button on the bottom right to initiate jump when standing
-      on any surface <br><br>The longer the jump button is pressed, the longer the
-      jump
+    BodyContent: Press to jump while holding left or right to jump in any direction<br><br>Hold
+      Jump to reach higher
     BodyPicture: {fileID: 0}
     ButtonsRawData: []
     PageCount: 1/3
