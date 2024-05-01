@@ -10,6 +10,7 @@ namespace Code.Wakoz.PurrKurr.UI.Instructions {
         public static int ActiveHash = Animator.StringToHash("Active");
         public static int IsSwipeHash = Animator.StringToHash("IsSwipe");
         public static int HoldSwipeHash = Animator.StringToHash("HoldSwipe");
+        public static int IsAimHash = Animator.StringToHash("IsAim");
 
         public void UpdateAnimatorValues(OverlayInstructionModel data) {
 
@@ -17,6 +18,7 @@ namespace Code.Wakoz.PurrKurr.UI.Instructions {
             UpdateActiveState(data.IsActive);
             _animator.SetBool(IsSwipeHash, animationData?.SwipeAngle != -1);
             _animator.SetBool(HoldSwipeHash, animationData.IsHoldSwipe);
+            _animator.SetBool(IsAimHash, animationData.IsAim);
 
             var eulr = _pointerHolder.eulerAngles;
             eulr.z = animationData.SwipeAngle > -1 ? animationData.SwipeAngle : 0;

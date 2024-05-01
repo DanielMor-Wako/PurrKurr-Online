@@ -10,5 +10,7 @@ namespace Code.Wakoz.PurrKurr.UI.Instructions {
         [SerializeField][Range(-1, 360)] public int SwipeAngle = -1;
         [Tooltip("Animates the swipe only once and does not loop")]
         [SerializeField] public bool IsHoldSwipe;
+        [Tooltip("Animates the swipe to indicate aiming and then release to initiate")]
+        [SerializeField] public bool IsAim;
     }
 }
