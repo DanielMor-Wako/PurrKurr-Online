@@ -19,6 +19,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
         [SerializeField][Min(0)] public float _transitionDuration = 0.2f;
         [SerializeField][Range(0f, 1f)] public float _slomoTimeScale = 0.5f;
 
+        [Header("Gravity Settings")]
+        [SerializeField][Min(0f)] public float _gravityForce = 9.81f;
+        [SerializeField][Range(-1f, 1f)] public float _gravityXDirection = 0f;
+        [SerializeField][Range(-1f, 1f)] public float _gravityYDirection = -1f;
+
         private float _timeScaleTarget;
         private Coroutine _timeScaleTransitionCoroutine;
 
@@ -29,6 +34,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
             Time.timeScale = _defaultTimeScale;
 
             return Task.CompletedTask;
+        }
+
+        [ContextMenu("Set Gravity Direction")]
+        public void RandomizeGravity() {
+            Physics2D.gravity = new Vector2(_gravityXDirection, _gravityYDirection) * _gravityForce;
         }
 
         public void ToggleSlomoGameAssist() => _affectTimeScale = !_affectTimeScale;
