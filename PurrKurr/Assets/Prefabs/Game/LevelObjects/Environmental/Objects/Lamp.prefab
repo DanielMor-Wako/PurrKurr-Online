@@ -238,8 +238,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.049999952, y: 1.7247001, z: 0}
-    m_Extent: {x: 2.8934, y: 3.3018003, z: 0}
+    m_Center: {x: 0.04369998, y: 1.72235, z: 0}
+    m_Extent: {x: 2.884, y: 3.3032498, z: 0}
   m_PointLightInnerAngle: 57.04565
   m_PointLightOuterAngle: 57.04565
   m_PointLightInnerRadius: 0
@@ -570,9 +570,9 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!255 &720356490385159941
 FixedJoint2D:
@@ -590,9 +590,9 @@ FixedJoint2D:
   m_BreakAction: 3
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: -2.34}
-  m_ConnectedAnchor: {x: 4.87, y: -2.4599998}
+  m_ConnectedAnchor: {x: 25.59, y: 6.24}
   m_DampingRatio: 1
-  m_Frequency: 20
+  m_Frequency: 10
 --- !u!61 &2501787200015410358
 BoxCollider2D:
   m_ObjectHideFlags: 0

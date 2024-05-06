@@ -263,6 +263,7 @@ GameObject:
   - component: {fileID: 7370256754717961062}
   - component: {fileID: 8317276226949465384}
   - component: {fileID: 8915267141830203440}
+  - component: {fileID: 1126627062367352817}
   m_Layer: 7
   m_Name: CartoonBox
   m_TagString: Untagged
@@ -378,7 +379,26 @@ Rigidbody2D:
   m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 0
+  m_Constraints: 1
+--- !u!255 &1126627062367352817
+FixedJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6086582362970426271}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_EnableCollision: 0
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_BreakAction: 3
+  m_AutoConfigureConnectedAnchor: 0
+  m_Anchor: {x: 0, y: -1}
+  m_ConnectedAnchor: {x: -10.390001, y: -2.5}
+  m_DampingRatio: 0
+  m_Frequency: 2.5
 --- !u!1 &7067737894241714407
 GameObject:
   m_ObjectHideFlags: 0
