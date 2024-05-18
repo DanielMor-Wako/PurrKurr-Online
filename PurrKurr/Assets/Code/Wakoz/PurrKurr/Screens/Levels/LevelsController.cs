@@ -1,5 +1,6 @@
 using Code.Wakoz.PurrKurr.DataClasses.Characters;
 using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
+using Code.Wakoz.PurrKurr.Screens.PersistentGameObjects;
 using Code.Wakoz.PurrKurr.Views;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Levels {
 
         private InteractablesController _interactablesPool;
         private int _currentLevelIndex = -1;
-
+        private PersistentGameObjectsManager _persistentGameObjectsManager;
 
         public void InitInteractablePools(InteractablesController interactablesPool) {
 
@@ -58,6 +59,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Levels {
 
         protected override void Clean() {
 
+            CleanPersistentGameObjectsManager();
+
             if (_interactablesPool == null) {
                 return;
             }
@@ -66,6 +69,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Levels {
         }
 
         protected override Task Initialize() {
+
+            InitPersistentGameObjectsManager();
+
             return Task.CompletedTask;
         }
 
@@ -86,5 +92,15 @@ namespace Code.Wakoz.PurrKurr.Screens.Levels {
             _levels.ChangeState(levelToLoad);
         }
 
+        private void InitPersistentGameObjectsManager() {
+
+            _persistentGameObjectsManager ??= new PersistentGameObjectsManager();
+        }
+
+        private void CleanPersistentGameObjectsManager() {
+
+            _persistentGameObjectsManager.Dispose();
+        }
     }
+
 }
