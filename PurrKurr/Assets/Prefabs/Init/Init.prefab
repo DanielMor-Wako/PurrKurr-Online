@@ -137,6 +137,9 @@ MonoBehaviour:
   _affectTimeScale: 1
   _transitionDuration: 0.1
   _slomoTimeScale: 0.08
+  _gravityForce: 9.81
+  _gravityXDirection: 0
+  _gravityYDirection: -1
 --- !u!1 &293837778027124760
 GameObject:
   m_ObjectHideFlags: 0
