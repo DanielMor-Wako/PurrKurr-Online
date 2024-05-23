@@ -30,9 +30,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
 
             _conditionsPerPage = new();
             for (int i = 0; i < _conditions.Count; i++) {
-                var eventCondition = _conditions[i].ConditionRef.GetComponent<IGameEventCondition>();
+                var eventConditionRef = _conditions[i].ConditionRef;
+                var eventCondition = eventConditionRef != null ? eventConditionRef.GetComponent<IGameEventCondition>() : null;
                 if (eventCondition == null) {
-                    Debug.LogWarning("Component ref Must be of type IGameEventCondition");
                     continue;
                 }
                 _conditionsPerPage.Add(i, eventCondition);
