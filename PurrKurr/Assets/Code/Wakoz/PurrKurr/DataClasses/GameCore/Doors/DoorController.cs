@@ -1,21 +1,26 @@
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
+using Code.Wakoz.PurrKurr.DataClasses.Objectives;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
+using Code.Wakoz.PurrKurr.Screens.PersistentGameObjects;
+using Code.Wakoz.Utils.Attributes;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
 
     [DefaultExecutionOrder(15)]
+    [TypeMarkerMultiClass(typeof(ReachTargetZoneObjective))]
     public class DoorController : DetectionZoneTrigger {
 
-        [SerializeField] private bool isDoorEntrance = true;
-        [SerializeField] private int roomIndex;
-        [SerializeField] private DoorController NextDoor;
+        [SerializeField] private bool _isDoorEntrance = true;
+        [SerializeField] private int _roomIndex;
+        [SerializeField] private DoorController _nextDoor;
 
         private GameplayController _gameplayController;
 
-        public int GetRoomIndex() => roomIndex;
-        public DoorController GetNextDoor() => NextDoor;
+        public int GetRoomIndex() => _roomIndex;
+        public DoorController GetNextDoor() => _nextDoor;
+        public bool IsDoorEntrance() => _isDoorEntrance;
 
         protected override void Clean() {
             base.Clean();
@@ -31,6 +36,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
 
             OnColliderEntered += handleColliderEntered;
             OnColliderExited += handleColliderExited;
+
+            var SaveableObject = gameObject.AddComponent<PersistentGameObject>();
+
+            SaveableObject.Init(typeof(DoorController));
 
             return Task.CompletedTask;
         }
@@ -56,5 +65,4 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
         }
 
     }
-
 }
