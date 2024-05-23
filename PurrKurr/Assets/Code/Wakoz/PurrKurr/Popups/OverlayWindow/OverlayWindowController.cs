@@ -21,7 +21,6 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
             _pageIndex = 0;
             var firstPage = windowPageData.FirstOrDefault();
             if (firstPage == null) {
-                Debug.LogWarning("No data for window popup");
                 HideWindow();
                 return;
             }
