@@ -41,6 +41,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         public event Action<ActionInput> OnTouchPadUp;
         public event Action<InteractableObject2DState> OnStateChanged;
         public event Action<List<DisplayedableStatData>> OnStatsChanged;
+        public event Action<DetectionZoneTrigger> OnHeroEnterDetectionZone;
 
         [SerializeField] private CameraFollow _cam;
         [SerializeField] private Character2DController _mainHero;
@@ -125,6 +126,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             _levelsController.InitInteractablePools(_interactables);
 
+            _levelsController.BindEvents(this);
+
             LoadLevel(_startingLevelIndex);
         }
 
@@ -148,7 +151,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         page.ButtonsRawData.Where(obj => obj.ButtonType == GenericButtonType.Confirm).FirstOrDefault();
 
                     if (confirmButtons != null) {
-                        confirmButtons.ClickedAction = () => LoadLevel(door.GetRoomIndex(), door.GetNextDoor());
+                        var nextDoor = door.GetNextDoor();
+                        var nextDoorPosition = nextDoor != null ? nextDoor.gameObject : null;
+                        confirmButtons.ClickedAction = () => LoadLevel(door.GetRoomIndex(), nextDoorPosition);
                     }
                 }
 
@@ -165,15 +170,17 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     }
                 }
 
-                CheckForPageModoficators(character, windowTrigger);
+                CheckForPageModificators(character, windowTrigger);
             }
 
             GetController<OverlayWindowController>().ShowWindow(windowPageData);
 
+            OnHeroEnterDetectionZone?.Invoke(zone);
+
             return true;
         }
 
-        private void CheckForPageModoficators(IInteractableBody character, OverlayWindowTrigger windowTrigger, int pageIndex = 0) {
+        private void CheckForPageModificators(IInteractableBody character, OverlayWindowTrigger windowTrigger, int pageIndex = 0) {
             CheckForConditionalGameEvent(character, windowTrigger);
             CheckForAnimationEvent(character, windowTrigger);
         }
@@ -227,12 +234,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             return true;
         }
 
-        public void LoadLevel(int levelToLoad, DoorController nextDoor = null) {
+        public void LoadLevel(int levelToLoad, GameObject heroSpawnPoint = null) {
 
             _levelsController.LoadLevel(levelToLoad);
 
-            if (nextDoor != null) {
-                var newPosition = nextDoor.transform.position;
+            if (heroSpawnPoint != null) {
+                var newPosition = heroSpawnPoint.transform.position;
                 _hero.transform.position = newPosition + (Vector3.up * _hero.LegsRadius *.5f );
                 _hero.SetTargetPosition(newPosition + (Vector3.up * _hero.LegsRadius ));
             }
