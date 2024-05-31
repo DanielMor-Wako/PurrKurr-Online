@@ -9,7 +9,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives {
         private List<IObjective> _objectives;
         private List<string> _completedObjectivesId;
 
-        public List<string> GetCompletedObjectivesIds() => _completedObjectivesId;
+        public List<string> GetObjectives() {
+            var res = new List<string>();
+            foreach (var objective in _objectives) {
+                res.Add(objective.GetUniqueId());
+            }
+            return res;
+        }
 
         public void Initialize(List<IObjective> objectivesList, ref List<string> completedObjectivesList) {
 

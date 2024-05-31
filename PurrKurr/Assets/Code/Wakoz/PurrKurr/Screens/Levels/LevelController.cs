@@ -105,7 +105,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Levels {
                 return null;
             }
 
-            return _objectivesManager.GetCompletedObjectivesIds();
+            return _objectivesManager.GetObjectives();
         }
     }
 
