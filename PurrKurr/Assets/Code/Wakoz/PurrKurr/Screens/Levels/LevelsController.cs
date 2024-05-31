@@ -41,6 +41,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Levels {
 
         public void BindEvents(GameplayController gameplayController)
         {
+            UnBindEvents();
             _gameplayController = gameplayController;
             _gameplayController.OnHeroEnterDetectionZone += HandleHeroEnterDetectionZone;
         }
