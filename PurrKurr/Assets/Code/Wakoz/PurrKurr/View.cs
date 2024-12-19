@@ -41,6 +41,7 @@ namespace Code.Wakoz.PurrKurr {
             }
             _destroyed = true;
         }
+        
         private void ModelHasChanged() {
             try {
                 ModelChanged();
@@ -48,6 +49,7 @@ namespace Code.Wakoz.PurrKurr {
                 Debug.LogException(e);
             }
         }
+
         private void InternalInitialized() {
             // Debug.Log(GetType().Name + " initialized");
             Initialize();

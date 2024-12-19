@@ -34,7 +34,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         [SerializeField][Min(0)] private int _startingLevelIndex = 0;
         [SerializeField][Min(0)] private float _attackRadius = 2f;
-        [SerializeField] private float _xDistanceFrommClingPoint = 0.8f;
+        [SerializeField] private float _xDistanceFromClingPoint = 0.8f;
 
         public event Action<ActionInput> OnTouchPadDown;
         public event Action<ActionInput> OnTouchPadClick;
@@ -703,7 +703,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             var xHorizontalOffsetFromWall = new Vector2(isWallPositionedRightToThePlayer ? -1 : 1, 0); //Quaternion.Inverse(character.State.ReturnForwardDirByTerrainQuaternion())
             //Vector2 offsetAngleFromWall = xOffsetFromWall * character.LegsRadius * 0.75f; // legsRadius * 0.9f, position the character right next the edge of the collider
-            wallPoint += xHorizontalOffsetFromWall * character.LegsRadius * _xDistanceFrommClingPoint;
+            wallPoint += xHorizontalOffsetFromWall * character.LegsRadius * _xDistanceFromClingPoint;
             character.SetAsClinging(edges, wallPoint);
 
             _debug.DrawLine(edgesClosestPoint, wallPoint, Color.magenta, 1f);
