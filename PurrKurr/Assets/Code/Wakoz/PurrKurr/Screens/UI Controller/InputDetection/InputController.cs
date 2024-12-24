@@ -253,7 +253,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
 
         private bool TryAddTouch(Definitions.ActionType actionType, out ActionInput newTouchData) {
 
-            var touches = GetTouches();
+            var touches = Input.touches;
 
             foreach (var touch in touches) {
                 
@@ -275,7 +275,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
 
         private bool TryUpdateTouch(Definitions.ActionType actionType, out ActionInput newTouchData, bool killAfterUpdate, ref bool wasKilled) {
 
-            var touches = GetTouches();
+            var touches = Input.touches;
             foreach (var touch in touches) {
                 
                 // todo: check if adding the condition of touch.phase is TouchPhase.Began, solves the quick min jump delay bug
@@ -311,27 +311,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection {
             return false;
         }
 
-        private IEnumerable<Touch> GetTouches() {
-            
-            var retVal = new List<Touch>();
-            for(var i = 0; i < Input.touchCount; ++i) {
-                retVal.Add(Input.GetTouch(i));
-            }
-            return retVal;
-        }
-
-        private ActionInput GetPadTouchData(Definitions.ActionType actionType, Vector2 inputPosition) {
-            
-            // todo: combine the two calls to abilities logic into a single call, might combine them into PadTouchConfig, PadTouch
+        private ActionInput GetPadTouchData(Definitions.ActionType actionType, Vector2 inputPosition) 
+        {
             var minMaxSwipeDistance = _abilitiesLogic.GetSwipeDistanceForActionPad(actionType);
             var minSwipeVelocity = _abilitiesLogic.GetSwipeVelocityForActionPad(actionType);
             var actionGroupType = _abilitiesLogic.GetActionTypeGroup(actionType);
             return new ActionInput(actionType, actionGroupType, inputPosition, Time.time, minMaxSwipeDistance, minSwipeVelocity);
         }
 
-        private ActionInput GetSingleTouchByPadType(Definitions.ActionTypeGroup groupType) {
-            return groupType == Definitions.ActionTypeGroup.Navigation ? ref _movementSingleTouchData : ref _actionSingleTouchData;
-        } 
+        private ActionInput GetSingleTouchByPadType(Definitions.ActionTypeGroup groupType) 
+            => groupType == Definitions.ActionTypeGroup.Navigation ? ref _movementSingleTouchData : ref _actionSingleTouchData;
 
         private bool LockSingleTouch(ActionInput touchData) {
 
