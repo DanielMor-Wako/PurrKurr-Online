@@ -25,15 +25,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller
 
         protected override void Clean() {}
 
-        public void InitUiForCharacter(Character2DController hero = null) {
-
+        public void InitUiForCharacter(Character2DController hero = null)
+        {
             _padsController.Init(hero);
             _barsController.Init(hero);
         }
 
-
-        public bool TryBindToCharacterController(GameplayController character) {
-
+        public bool TryBindToCharacterController(GameplayController character) 
+        {
             var isPadsInitialized = _padsController.TryBindToCharacter(character);
             var isBarsInitialized = _barsController.TryBindToCharacter(character);
 

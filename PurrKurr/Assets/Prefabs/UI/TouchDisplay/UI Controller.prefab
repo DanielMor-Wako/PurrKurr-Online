@@ -15543,6 +15543,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4448972296533493892}
     m_Modifications:
+    - target: {fileID: 176179603704255067, guid: 8224b02f11c40c648bdabcafc744fb83, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2919777274368761786, guid: 8224b02f11c40c648bdabcafc744fb83, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483004846431739867, guid: 8224b02f11c40c648bdabcafc744fb83, type: 3}
+      propertyPath: _multiStateSymbol
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5458176374120034309, guid: 8224b02f11c40c648bdabcafc744fb83, type: 3}
       propertyPath: m_Name
       value: Nav pad (Aim pad)
@@ -15634,13 +15646,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 176179603704255067, guid: 8224b02f11c40c648bdabcafc744fb83, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6856800939548207804}
   m_SourcePrefab: {fileID: 100100000, guid: 8224b02f11c40c648bdabcafc744fb83, type: 3}
 --- !u!224 &3894684794384761669 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7133630735492376957, guid: 8224b02f11c40c648bdabcafc744fb83, type: 3}
   m_PrefabInstance: {fileID: 6121250011868015160}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &6233797853941708899 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 176179603704255067, guid: 8224b02f11c40c648bdabcafc744fb83, type: 3}
+  m_PrefabInstance: {fileID: 6121250011868015160}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6856800939548207804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6233797853941708899}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06cd21108f064524949ef64273608517, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dependants:
+  - {fileID: 8968405744940332418}
 --- !u!114 &7693794492684744163 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4483004846431739867, guid: 8224b02f11c40c648bdabcafc744fb83, type: 3}
@@ -15652,6 +15686,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f349c175d48d79d4ab3c7773cc8be627, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &8968405744940332418 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2919777274368761786, guid: 8224b02f11c40c648bdabcafc744fb83, type: 3}
+  m_PrefabInstance: {fileID: 6121250011868015160}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6736437203705099339
 PrefabInstance:
   m_ObjectHideFlags: 0
