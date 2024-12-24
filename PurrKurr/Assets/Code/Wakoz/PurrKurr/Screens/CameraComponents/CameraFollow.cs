@@ -10,17 +10,16 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
     
         [SerializeField] private Camera cam;
         [SerializeField] private Character2DController mainTarget;
-        [SerializeField] private Transform CameraFocusPrefab;
         [SerializeField] private Transform cameraFocus;
         public List<Transform> targets;
 
-        public float XMaxOffsetWhenLookingForward = 5f;
+        public float XMaxOffsetWhenLookingForward = 1100f;
         public float XMaxVelocityToLookForwardByScreenSize = 4f;
         public float YMaxOffsetWhenCloseCenter = 2.2f;
-        public float YMinZoomToAddOffset = 4f;
+        public float YMinZoomToAddOffset = 2.5f;
         [Min(0)] public float MinVelocityToSetFallingYOffset = 10;
         public float FallingYOffset = -5;
-        [SerializeField] [Min(0)] private float distanceToCheckWhenFreeFalling = 2;
+        [SerializeField] [Min(0)] private float distanceToCheckWhenFreeFalling = 40;
         [SerializeField] private Vector3 offset;
         [Min(1)] public float maxYDistanceToResetYOffset = 5f;
 
@@ -28,14 +27,14 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents {
         [SerializeField] private float xSightDistanceMultiplier = 4f;
         [SerializeField] [Range(0.05f, 2f)] private float adjustFocusSpeed = 0.1f;
 
-        public float smoothTime = 0.3f;
+        public float smoothTime = 0.25f;
         public float MinScreenVelocityForXCenterSmoothing = 5f;
-        public float XBackToCenterSmoothing = 2f;
+        public float XBackToCenterSmoothing = 0.5f;
         public float minZoom = 30f;
-        public float maxZoom = 9f;
+        public float maxZoom = 4f;
         public float singleObjectZoom = 7f;
-        public float zoomLimiter = 65f;
-        [Min(1)] public float zoomLerpSpeed = 3;
+        public float zoomLimiter = 100f;
+        [Min(1)] public float zoomLerpSpeed = 8;
 
         private Vector3 velocity;
         private Vector3 centerPoint;
