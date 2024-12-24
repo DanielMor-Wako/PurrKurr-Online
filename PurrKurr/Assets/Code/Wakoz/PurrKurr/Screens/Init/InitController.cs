@@ -14,8 +14,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Init {
 
         private const int DEFAULT_TARGET_FRAME_RATE = 60;
         
-        private void Awake() {
-
+        private void Awake()
+        {
             SetTargtFrameRate();
             SetScreenOrientation();
 #if !UNITY_EDITOR
@@ -23,34 +23,27 @@ namespace Code.Wakoz.PurrKurr.Screens.Init {
 #endif
         }
 
-        public void SetTimeScaleMin() => Time.timeScale = 0.1f;
-        public void SetTimeScaleLow() => Time.timeScale = 0.25f;
-        public void SetTimeScaleMed() => Time.timeScale = 0.5f;
-        public void SetTimeScaleHigh() => Time.timeScale = 0.75f;
-        public void SetTimeScaleMax() => Time.timeScale = 1f;
-
-
-        private void SetTargtFrameRate() {
-            
+        private void SetTargtFrameRate() 
+        {
             Application.targetFrameRate = _testTargetFrameRate > 0 ? _testTargetFrameRate : DEFAULT_TARGET_FRAME_RATE;
         }
 
-        private static void SetScreenOrientation() {
-            
+        private static void SetScreenOrientation() 
+        {    
             Screen.orientation = ScreenOrientation.LandscapeLeft;
             Screen.autorotateToPortrait = false;
             Screen.orientation = ScreenOrientation.AutoRotation;
         }
 
-        private static void SetLocalization() {
-
+        private static void SetLocalization() 
+        {
 #if UNITY_ANDROID || UNITY_IPHONE
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 #endif
         }
 
-        private void Start() {
-            
+        private void Start() 
+        {
             if (_destroyScriptOnLoad) {
 
                 if (_keepGameObjectOnDestroy) {
@@ -64,7 +57,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Init {
         }
 
         /*
-        void OnApplicationQuit() {
+        void OnApplicationQuit() 
+        {
 #if UNITY_EDITOR
             var constructor = SynchronizationContext.Current.GetType().GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(int) }, null);
             var newContext = constructor.Invoke(new object[] { Thread.CurrentThread.ManagedThreadId });

@@ -49,9 +49,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }*/
 
             state.SetCrouchOrStandingByUpDownInput(navigationDir);
-            var isInvalidState = state.CurrentState is Definitions.ObjectState.Blocking or Definitions.ObjectState.AimingRope or Definitions.ObjectState.AimingProjectile or Definitions.ObjectState.AimingJump;
-            var isCrouchingState = !isInvalidState && state.CurrentState != Definitions.ObjectState.Running && state.IsCrouchingAndNotFallingNearWall();
-            var isStandingState = !isInvalidState && state.CurrentState != Definitions.ObjectState.Running && (state.IsStandingUp() || isGrabbing);
+            var isInvalidMovementState = state.CurrentState is Definitions.ObjectState.Blocking or Definitions.ObjectState.AimingRope or Definitions.ObjectState.AimingProjectile or Definitions.ObjectState.AimingJump;
+            var isCrouchingState = !isInvalidMovementState && state.CurrentState != Definitions.ObjectState.Running && state.IsCrouchingAndNotFallingNearWall();
+            var isStandingState = !isInvalidMovementState && state.CurrentState != Definitions.ObjectState.Running && (state.IsStandingUp() || isGrabbing);
 
             /*if (state.IsInCrouchArea() && !isCrouchingState) {
                 Debug.Log("character's coll radius should be set smaller than normal when crouching");
@@ -60,7 +60,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             // full charge towards walls when any nav pad is held
             //if (!isGrabbing && (state.IsCeiling() || state.IsFrontWall()) && navigationDir != Definitions.NavigationType.None) {
-            if (!isInvalidState && !isGrabbing && !isCrouchingState && !isStandingState && state.HasAnySurfaceAround() && navigationDir != Definitions.NavigationType.None && state.CanPerformContinousRunning()) {
+            if (!isInvalidMovementState && !isGrabbing && !isCrouchingState && !isStandingState && state.HasAnySurfaceAround() && navigationDir != Definitions.NavigationType.None && state.CanPerformContinousRunning()) {
 
                 if ( (state.IsCeiling() || state.IsFrontWall()) && _inputLogic.IsNavigationDirValidAsUp(navigationDir)
                     || _gameplayLogic.IsStateConsideredAsRunning(state.CurrentState, state.Velocity.magnitude) && state.IsBackWall() 
@@ -70,7 +70,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     
                     return true;
                 } else if (navigationDir is not (Definitions.NavigationType.Up or Definitions.NavigationType.Down or Definitions.NavigationType.DownRight or Definitions.NavigationType.DownLeft)) {
-                    moveSpeed = actionInput.SwipeDistanceTraveledInPercentage * -stats.SprintSpeed * (_inputLogic.IsNavigationDirValidAsRight(navigationDir) ? 1 : -1);
+                    Debug.Log($"(swipe velocity:) {actionInput.SwipeVelocity} > (min:) {_inputLogic.MinSwipeVelocity}");
+                    var maxSpeed = (actionInput.SwipeDistanceTraveledInPercentage == 1) ? stats.SprintSpeed : stats.RunSpeed;
+                    moveSpeed = actionInput.SwipeDistanceTraveledInPercentage * -maxSpeed * (_inputLogic.IsNavigationDirValidAsRight(navigationDir) ? 1 : -1);
                     
                     return true;
                 }
@@ -104,21 +106,21 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                 }
 
-            } else if (!isInvalidState && !state.IsCeiling() &&
+            } else if (!isInvalidMovementState && !state.IsCeiling() &&
                 (state.IsTouchingAnySurface() && state.CanMoveOnSurface() || state.IsBackWall() || state.IsFrontWall() && state.Velocity.magnitude < 0.2f)) {
 
                 // case where user has landed on wall, check for ground beneath and mark as landed
                 // todo: move the special case when -> if (state.IsFrontWall() && state.Velocity.magnitude < 0.2f && !state.CanMoveOnSurface()) { }
 
                 switch (navigationDir) {
-                    case var _ when isStandingState && _inputLogic.IsNavigationDirValidAsLeft(navigationDir):
+                    /*case var _ when isStandingState && _inputLogic.IsNavigationDirValidAsLeft(navigationDir):
                         moveSpeed = stats.WalkSpeed;
                         break;
 
                     case var _ when isStandingState && _inputLogic.IsNavigationDirValidAsRight(navigationDir):
                         moveSpeed = -stats.WalkSpeed;
                         break;
-
+*/
                     case var _ when isCrouchingState && navigationDir == Definitions.NavigationType.DownLeft:
                         moveSpeed = stats.WalkSpeed;
                         break;
@@ -126,7 +128,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     case var _ when isCrouchingState && navigationDir == Definitions.NavigationType.DownRight:
                         moveSpeed = -stats.WalkSpeed;
                         break;
-                
+
                     case Definitions.NavigationType.Right:
                         moveSpeed = -actionInput.SwipeDistanceTraveledInPercentage * stats.SprintSpeed;
                         break;

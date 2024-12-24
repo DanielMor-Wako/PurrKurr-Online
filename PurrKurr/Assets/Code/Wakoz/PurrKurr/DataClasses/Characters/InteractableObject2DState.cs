@@ -384,9 +384,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 return false;
             }
 
-            if (IsFrontWall() && _velocity.magnitude < 20) {
+            /*if (IsFrontWall() && _velocity.magnitude < 20) {
                 return false;
-            }
+            }*/
 
             return true;
         }

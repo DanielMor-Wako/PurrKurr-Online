@@ -33,6 +33,7 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
 
             InputLogic = null;
             AbilitiesLogic = null;
+            GameplayLogic = null;
         }
 
         /// <summary>

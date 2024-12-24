@@ -41,6 +41,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
             Physics2D.gravity = new Vector2(_gravityXDirection, _gravityYDirection) * _gravityForce;
         }
 
+        public void SetTimeScaleMin() => Time.timeScale = 0.1f;
+        public void SetTimeScaleLow() => Time.timeScale = 0.25f;
+        public void SetTimeScaleMed() => Time.timeScale = 0.5f;
+        public void SetTimeScaleHigh() => Time.timeScale = 0.6f;
+        public void SetTimeScaleMax() => Time.timeScale = 1f;
+
         public void ToggleSlomoGameAssist() => _affectTimeScale = !_affectTimeScale;
 
         public void ActivateUtil(Definitions.ActionType actionType, Vector2 position, Quaternion quaternion, bool hasHitData, Vector3[] linePoints) => 

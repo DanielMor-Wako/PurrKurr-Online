@@ -468,31 +468,27 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             UpdateCharacterState();
 
 
-            if (ForceDirToSetOnFixedUpdate != Vector2.zero) {
+            /*if (ForceDirToSetOnFixedUpdate != Vector2.zero) {
 
                 //SwitchRigidBodyType(RigidbodyType2D.Dynamic, false);
                 //_transformMover.EndMove();
                 _rigidbody.velocity = ForceDirToSetOnFixedUpdate;
                 ForceDirToSetOnFixedUpdate = Vector2.zero;
-            }
+            }*/
 
-            UpdateAnimatorRigRotation();
+            //UpdateAnimatorRigRotation();
         }
 
-        /*private void FixedUpdate() {
-            
-            if (ForceDirToSetOnFixedUpdate != Vector2.zero) {
-
-                SwitchRigidBodyType(RigidbodyType2D.Dynamic, false);
-                _transformMover.EndMove();
+        private void FixedUpdate()
+        {
+            if (ForceDirToSetOnFixedUpdate != Vector2.zero)
+            {
                 _rigidbody.velocity = ForceDirToSetOnFixedUpdate;
                 ForceDirToSetOnFixedUpdate = Vector2.zero;
             }
-            
             UpdateAnimatorRigRotation();
-            
-        }*/
-        
+        }
+
         public void SetProjectileState(bool isActive) {
             
             if (_bodyDamager == null) {
