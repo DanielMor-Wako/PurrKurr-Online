@@ -1,7 +1,10 @@
-namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
-    public class Definitions {
+namespace Code.Wakoz.PurrKurr.DataClasses.Enums
+{
+    public class Definitions
+    {
 
-        public enum ActionType {
+        public enum ActionType
+        {
             Empty = 0,
             Movement = 1,
             Jump = 2,
@@ -12,24 +15,28 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             Rope = 7,
             Special = 8
         }
-        
-        public enum ActionTypeGroup {
+
+        public enum ActionTypeGroup
+        {
             Navigation = 0,
             Action = 1
         }
 
-        public enum PadType {
+        public enum PadType
+        {
             Fixed = 0,
             Flexible = 1
         }
-        
-        public enum SwipeDistanceType {
+
+        public enum SwipeDistanceType
+        {
             Short = 0,
             Medium = 1,
             Long = 2
         }
-        
-        public enum NavigationType {
+
+        public enum NavigationType
+        {
             None = 0,
             Up = 1,
             Down = 2,
@@ -40,8 +47,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             DownRight = 7,
             DownLeft = 8
         }
-        
-        public enum CharacterAbility {
+
+        public enum CharacterAbility
+        {
             None = 0,
             Crouch = 1,
             StandUp = 2,
@@ -52,8 +60,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             RopeCling = 7,
             AirGlide = 8,
         }
-        
-        public enum AttackAbility {
+
+        public enum AttackAbility
+        {
             LightAttackAlsoDefaultAttack = 0,
             MediumAttack = 1, // attack with up key
             HeavyAttack = 2, // attack with down key
@@ -66,7 +75,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             LightBlock = 9, // absorbs damage but can be grabbed
         }
 
-        public enum AttackProperty {
+        public enum AttackProperty
+        {
             StunResist = 0,
             StunOnHit = 1,
             StunOnBlock = 2,
@@ -89,8 +99,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             ApplyBleedOnBlock = 19,
             CriticalChanceOnHit = 20,
         }
-        
-        public enum CharacterBuff {
+
+        public enum CharacterBuff
+        {
             PhysicalResist,
             BlockResist,
             StunResist,
@@ -99,20 +110,23 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             PushbackResist,
             CriticalResist,
         }
-        public enum CharacterStatType { // stats that are displayed on the ui
+        public enum CharacterStatType
+        { // stats that are displayed on the ui
             Health = 0,
             Pawer = 1,
             Supurr = 2,
         }
 
-        public enum Character2DFacingRightType {
+        public enum Character2DFacingRightType
+        {
             Auto = 0,
             FixedLeft = 1,
             FixedRight = 2,
         }
 
         // InteractableState?
-        public enum ObjectState {
+        public enum ObjectState
+        {
             Alive,
             UninterruptibleAnimation,
             Dead,
@@ -143,7 +157,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             Dodging
         }
 
-        public enum Effect2DType {
+        public enum Effect2DType
+        {
             None = -1,
             GainHp = 0,
             GainTimer = 1,
@@ -178,7 +193,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             DetectedInteractible = 29,
         }
 
-        public enum CollectableTypes {
+        public enum CollectableTypes
+        {
             RealMoney = 0,
             Gold = 1,
             Bones = 2,
@@ -190,15 +206,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             Suppur = 7,
         }
 
-        public enum GameMode {
+        public enum GameMode
+        {
             Tutorial = 0,
             SinglePlayer = 1,
             OnlineMission = 2,
             PvP = 3,
             TeamRaid = 4
         }
-        
-        public enum NonePlayableCharacterType {
+
+        public enum NonePlayableCharacterType
+        {
             Mentor,
             Nemesis,
             Merchandiser, // fly, garbage beetle
@@ -207,25 +225,29 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             QuestGiver,
             HintGiver,
         }
-        
-        public enum SenseType {
+
+        public enum SenseType
+        {
             Sight,
             Sound,
             Smell
         }
-        
-        public enum FoodType {
+
+        public enum FoodType
+        {
             Carnivore,
             Omnivore
         }
-        
-        public enum MovementType {
+
+        public enum MovementType
+        {
             Ground = 0,
             Air = 1,
             Water = 2,
         }
-        
-        public enum PlayableCharacterType {
+
+        public enum PlayableCharacterType
+        {
             Cat,
             Mouse,
             Rat,
@@ -244,7 +266,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             Hedgehog
         }
 
-        public enum ObjectiveTypes {
+        public enum ObjectiveTypes
+        {
             ReachLocation, //GetGold 60%
             DefeatFoes,  //GetBones 80%, Hidden for explorers 20%,
             Collect,
@@ -254,21 +277,24 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums {
             ReachAbilityLevel,
             UnlockCharacter,
         }
-        
-        public enum AchievementTypes {
+
+        public enum AchievementTypes
+        {
             ExploreLocation, //Hidden treasure for explorers : Extra Gold 20%, Extra Bones 20%
             DefeatEveryone,  //Hidden bonus for action thrillers : Extra Gold 20%, Extra Bones 20%
             UnlockCoreAbilities, // attack, block, grab
             BreedNewCharacter
         }
 
-        public enum AiGoals {
+        public enum AiGoals
+        {
             Explore,
             Protect,
             Fight
         }
 
-        public enum CharacterDisplayableStat {
+        public enum CharacterDisplayableStat
+        {
             Health, Timer, Pawer, Supurr
         }
     }

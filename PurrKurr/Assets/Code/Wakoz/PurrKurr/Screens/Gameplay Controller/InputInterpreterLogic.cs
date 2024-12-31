@@ -66,11 +66,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     || _gameplayLogic.IsStateConsideredAsRunning(state.CurrentState, state.Velocity.magnitude) && state.IsBackWall() 
                     && ( state.IsFacingRight() && _inputLogic.IsNavigationDirValidAsLeft(navigationDir) || !state.IsFacingRight() && _inputLogic.IsNavigationDirValidAsRight(navigationDir))
                     ) {
+                    
                     moveSpeed = -stats.SprintSpeed * state.GetFacingRightAsInt();
                     
                     return true;
                 } else if (navigationDir is not (Definitions.NavigationType.Up or Definitions.NavigationType.Down or Definitions.NavigationType.DownRight or Definitions.NavigationType.DownLeft)) {
-                    Debug.Log($"(swipe velocity:) {actionInput.SwipeVelocity} > (min:) {_inputLogic.MinSwipeVelocity}");
+                    
                     var maxSpeed = (actionInput.SwipeDistanceTraveledInPercentage == 1) ? stats.SprintSpeed : stats.RunSpeed;
                     moveSpeed = actionInput.SwipeDistanceTraveledInPercentage * -maxSpeed * (_inputLogic.IsNavigationDirValidAsRight(navigationDir) ? 1 : -1);
                     

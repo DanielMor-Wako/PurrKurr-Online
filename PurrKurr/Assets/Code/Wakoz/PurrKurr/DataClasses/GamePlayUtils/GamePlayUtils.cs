@@ -17,6 +17,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
         [SerializeField][Range(0.1f, 1f)] public float _defaultTimeScale = 1f;
         [SerializeField] private bool _affectTimeScale = true;
         [SerializeField][Min(0)] public float _transitionDuration = 0.2f;
+        [Tooltip("Target timescale when aimimg. 0.08 = slow motion. 0.01 = nearly pause")]
         [SerializeField][Range(0f, 1f)] public float _slomoTimeScale = 0.5f;
 
         [Header("Gravity Settings")]

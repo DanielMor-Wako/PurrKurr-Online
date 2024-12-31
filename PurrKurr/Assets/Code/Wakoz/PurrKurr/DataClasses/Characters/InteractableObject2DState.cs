@@ -307,6 +307,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public void StopClinging() => SetClinging(null);
 
         private float _aimingEndTime;
+
         public bool IsAiming() => Time.time < _aimingEndTime;
         public void SetAiming(float durationInMilliseconds) => _aimingEndTime = Time.time + durationInMilliseconds;
         public void StopAiming() => SetAiming(0);
