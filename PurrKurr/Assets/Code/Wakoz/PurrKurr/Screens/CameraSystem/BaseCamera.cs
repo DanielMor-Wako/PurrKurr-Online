@@ -4,13 +4,13 @@ using System;
 
 namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 {
+    // todo: implement the derived BaseCamera classes
     public sealed class FollowSingleTarget : BaseCamera
     {
         public FollowSingleTarget(CameraData data, Func<Action> processActionCallback = null) : base(data, processActionCallback)
         {
 
         }
-
     }
     public sealed class FollowMultipleTargets : BaseCamera
     {
@@ -18,15 +18,15 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         {
 
         }
-
     }
     public abstract class BaseCamera : ICamera
     {
-        protected float _startTime;
-
         protected CameraData _data;
-
         protected readonly Func<Action> _processActionCallback;
+
+        protected float _startTime;
+        protected float _currentZoom;
+        protected Vector3 _newPosition;
 
         public BaseCamera(CameraData data, Func<Action> processActionCallback = null)
         {
@@ -66,18 +66,17 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             {
                 offset = Vector2.Lerp(offset, _data.OffsetData.TargetOffset, _data.OffsetData.SmoothSpeed * Time.deltaTime);
 
-                Vector3 centerPoint = CameraUtils.GetCenterPoint(_data.Targets);
-                Vector3 newPosition = centerPoint + offset;
-                newPosition.z = cameraTransform.position.z; // Maintain the camera's Z position
+                _newPosition = CameraUtils.GetCenterPoint(_data.Targets) + offset;
+                _newPosition.z = cameraTransform.position.z; // Maintain the camera's Z position
 
-                cameraTransform.position = Vector3.Lerp(cameraTransform.position, newPosition, _data.Transitions.SmoothSpeed * Time.deltaTime);
+                cameraTransform.position = Vector3.Lerp(cameraTransform.position, _newPosition, _data.Transitions.SmoothSpeed * Time.deltaTime);
             }
         }
 
         public virtual void AdjustZoom(Camera cam)
         {
-            float currentZoom = Mathf.Lerp(_data.Transitions.MaxZoom, _data.Transitions.MinZoom, CameraUtils.GetGreatestDistance(_data.Targets) / _data.Transitions.ZoomLimiter);
-            cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, currentZoom, Time.deltaTime * _data.Transitions.ZoomSpeed);
+            _currentZoom = Mathf.Lerp(_data.Transitions.MaxZoom, _data.Transitions.MinZoom, CameraUtils.GetGreatestDistance(_data.Targets) / _data.Transitions.ZoomLimiter);
+            cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, _currentZoom, Time.deltaTime * _data.Transitions.ZoomSpeed);
         }
 
         public void SetTargetOffset(Vector3 targetOffset)
