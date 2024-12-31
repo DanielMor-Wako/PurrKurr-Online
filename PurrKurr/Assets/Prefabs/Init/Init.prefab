@@ -133,7 +133,7 @@ MonoBehaviour:
   _cursor: {fileID: 133848036909616884}
   _angle: {fileID: 228212626260989112}
   _trajectory: {fileID: 7113463177468501051}
-  _defaultTimeScale: 0.75
+  _defaultTimeScale: 0.6
   _affectTimeScale: 1
   _transitionDuration: 0.1
   _slomoTimeScale: 0.08
@@ -903,7 +903,7 @@ MonoBehaviour:
   _startingLevelIndex: 0
   _attackRadius: 3
   _xDistanceFromClingPoint: 0.8
-  _cam: {fileID: 4039740569464446090}
+  _camController: {fileID: 195657431583735696}
   _mainHero: {fileID: 7784759249914515740}
 --- !u!1 &1107854503883947925
 GameObject:
@@ -11911,7 +11911,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1850936058124199180}
-  - component: {fileID: 4039740569464446090}
+  - component: {fileID: 195657431583735696}
+  - component: {fileID: 6200469914087294195}
   - component: {fileID: 7779578158065701831}
   - component: {fileID: 173446182898593062}
   m_Layer: 0
@@ -11936,7 +11937,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1123419551742920428}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4039740569464446090
+--- !u!114 &195657431583735696
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -11945,34 +11946,41 @@ MonoBehaviour:
   m_GameObject: {fileID: 3734556733782300651}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c3e322cfeb0f26489e417d81bbbe742, type: 3}
+  m_Script: {fileID: 11500000, guid: ad21fd77721c3c04da06667ed98f3fd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 7779578158065701831}
-  mainTarget: {fileID: 0}
-  CameraFocusPrefab: {fileID: 0}
-  cameraFocus: {fileID: 7784608116505765649}
-  targets: []
-  XMaxOffsetWhenLookingForward: 1100
-  XMaxVelocityToLookForwardByScreenSize: 4
-  YMaxOffsetWhenCloseCenter: 2.2
-  YMinZoomToAddOffset: 2.5
-  MinVelocityToSetFallingYOffset: 10
-  FallingYOffset: -5
-  distanceToCheckWhenFreeFalling: 40
-  offset: {x: 0, y: 0, z: 0}
-  maxYDistanceToResetYOffset: 5
-  ySightDistanceMultiplier: 2
-  xSightDistanceMultiplier: 4
-  adjustFocusSpeed: 0.1
-  smoothTime: 0.25
-  MinScreenVelocityForXCenterSmoothing: 5
-  XBackToCenterSmoothing: 0.5
-  minZoom: 30
-  maxZoom: 4
-  singleObjectZoom: 7
-  zoomLimiter: 100
-  zoomLerpSpeed: 8
+  _cam: {fileID: 7779578158065701831}
+  _cameraFocus: {fileID: 7784608116505765649}
+--- !u!114 &6200469914087294195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3734556733782300651}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e39956b2b881464e843329ef279a16a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camController: {fileID: 195657431583735696}
+  _currentOffset: {x: 0, y: 0}
+  _camerasInQueue: 0
+  _currentCamera:
+    Duration:
+      MinimumDuration: 0
+    TargetsCount: 0
+    Transitions:
+      SmoothSpeed: 8
+      MinZoom: 25
+      MaxZoom: 6
+      SingleTargetFocus: 7
+      ZoomLimiter: 65
+      ZoomSpeed: 3
+    OffsetData:
+      TargetOffset: {x: 0, y: 0}
+      SmoothSpeed: 1
+  _targetsList: []
 --- !u!20 &7779578158065701831
 Camera:
   m_ObjectHideFlags: 0
@@ -20605,7 +20613,7 @@ PrefabInstance:
       objectReference: {fileID: 1916745089048627728}
     - target: {fileID: 739120429229760473, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -726.62885
+      value: -726.6289
       objectReference: {fileID: 0}
     - target: {fileID: 889343130334115896, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_AnchorMax.y
@@ -20913,7 +20921,7 @@ PrefabInstance:
       objectReference: {fileID: 1916745089048627728}
     - target: {fileID: 7600501571068317291, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -584.99994
+      value: -585
       objectReference: {fileID: 0}
     - target: {fileID: 8156656911675872482, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
