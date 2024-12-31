@@ -645,7 +645,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             if (shouldCallStateChange) {
 
                 OnStateChanged?.Invoke(_state);
-
+                
                 // Additional specific states:
                 // Resets rigidbody velocity when player has landed
                 if (_state.CurrentState == Definitions.ObjectState.Landed && ForceDirToSetOnFixedUpdate != Vector2.zero) {

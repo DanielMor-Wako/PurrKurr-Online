@@ -21,11 +21,10 @@ namespace Code.Wakoz.Utils.Extensions {
         
     }
     
-    // save the json fromJson utils
-    
+    // Save the json fromJson utils
     
     public static class DataClassesExtensions  {
-        // takes a class and attempts to insert data into a new instance of the class
+        // Takes a class and attempts to insert data into a new instance of the class
         public static T Adapt<T, U>(this Data<U> self) where T : Model {
             return (T)System.Activator.CreateInstance(typeof(T), self);
         }
