@@ -11,7 +11,7 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles;
 using Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils;
-using Code.Wakoz.PurrKurr.Screens.CameraComponents;
+using Code.Wakoz.PurrKurr.Screens.CameraSystem;
 using Code.Wakoz.PurrKurr.Screens.Init;
 using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller;
@@ -39,11 +39,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         public event Action<ActionInput> OnTouchPadDown;
         public event Action<ActionInput> OnTouchPadClick;
         public event Action<ActionInput> OnTouchPadUp;
+        public event Action<ActionType, Vector2, Quaternion, bool, Vector3[]> OnAimingAction;
+        public event Action<ActionType> OnAimingActionEnd;
+        public event Action<Character2DController> OnNewHero;
+        public event Action<Vector2> OnCameraFocusPoint;
+        public event Action<List<Transform>> OnCameraFocusTargets;
         public event Action<InteractableObject2DState> OnStateChanged;
         public event Action<List<DisplayedableStatData>> OnStatsChanged;
         public event Action<DetectionZoneTrigger> OnHeroEnterDetectionZone;
 
-        [SerializeField] private CameraFollow _cam;
+        [SerializeField] private CameraController _camController;
         [SerializeField] private Character2DController _mainHero;
         private Character2DController _hero;
 
@@ -85,8 +90,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         protected override Task Initialize() {
 
-            _cam ??= Camera.main.GetComponent<CameraFollow>();
-            
+            _camController ??= Camera.main.GetComponent<CameraController>();
+
             _input = GetController<InputController>();
             _logic = GetController<LogicController>();
             _timelineEventManager = new TimelineEventManager();
@@ -288,13 +293,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             
             _hero = hero;
 
-            _cam.SetMainHero(_hero, true);
+            _camController?.BindCharacter(_hero.transform, this);
+            OnNewHero?.Invoke(_hero);
 
             _hero.OnStateChanged += OnStateChanged;
             _hero.OnUpdatedStats += UpdateOrInitUiDisplayForCharacter;
 
             _firstTimeInitialized = true;
-
             _heroInitialized = true;
 
             return true;
@@ -384,9 +389,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, true, false, _hero,
                             out var moveSpeed, out Vector2 forceDirNavigation, out var navigationDir)) {
 
-                        // save for later to be called on tick?
                         _hero.DoMove(moveSpeed);
-                        _hero.SetForceDir(forceDirNavigation); // used for airborne, probably more accurate after the diagnosis
+                        _hero.SetForceDir(forceDirNavigation);
                         _hero.SetNavigationDir(navigationDir);
                         if (_hero.IsGrabbed()) {
                             FaceCharacterByNavigationDir(navigationDir);
@@ -911,7 +915,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         }*/
 
-        public void SetCameraScreenShake() => _cam.ShakeScreen(1, 0.5f);
+        public void SetCameraScreenShake()
+        {
+            // call screen shake event 
+            // or call shake object (screenTransform)
+        }
 
         private void CombatLogic(Character2DController attacker, ActionType actionType, Vector2 moveToPosition, Collider2D[] interactedColliders) {
 
@@ -1247,7 +1255,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                     //foe.SetTargetPosition(endPosition);
 
-                    _cam.RemoveFromTargetList(foe.GetTransform());
                     _debug.DrawRay(moveToPosition, Vector2.up * 10, Color.grey, 4);
                     _debug.DrawRay(endPosition, Vector2.up * 10, Color.yellow, 4);
 
@@ -1391,21 +1398,21 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                 if (hasAimDir) {
                     _gameplayUtils.ActivateUtil(actionType, newPos, rotation, hasHitData, linePoints);
-                    _cam.SetFocusPoint(endPos);
+                    OnAimingAction?.Invoke(actionType, newPos, rotation, hasHitData, linePoints);
 
                 } else {
                     _gameplayUtils.DeactivateUtil(actionType);
-
+                    OnAimingActionEnd?.Invoke(actionType);
                 }
 
                 await Task.Delay(TimeSpan.FromMilliseconds(5));
             }
 
-            _cam.SetFocusPoint(Vector2.zero);
+            OnAimingActionEnd?.Invoke(actionType);
             _gameplayUtils.DeactivateUtil(actionType);
 
         }
-
+        
         private void ApplyEffectForDuration(Character2DController character, Effect2DType effectType, List<Effect2DType> stopWhenAnyEffectStarts = null) {
             ApplyEffectForDurationAndSetRotation(character, effectType, Quaternion.identity, stopWhenAnyEffectStarts);
         }
@@ -1601,7 +1608,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             var ifDamageableIsGrabbedThenIgnoreAddToTargetsList = damageableBody.IsGrabbed();
             if (!ifDamageableIsGrabbedThenIgnoreAddToTargetsList) {
-                _cam.AddToTargetList(damageableBody.GetTransform());
+                //_cam?.AddToTargetList(damageableBody.GetTransform());
             }
             
             //foeRigidBody.constraints = RigidbodyConstraints2D.FreezeAll;
@@ -1634,7 +1641,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
 
             if (damageableBody != null) {
-                _cam.RemoveFromTargetList(damageableBody.GetTransform());
+                //_cam?.RemoveFromTargetList(damageableBody.GetTransform());
             }
             
         }
@@ -1646,7 +1653,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             return new Vector2(xDirection, yDirection);
         }
 
-        private async void ApplyGrabOnFoeWithDelay(IInteractableBody grabbed, IInteractableBody grabber, Vector2 position, int delayInMilliseconds = 0) {
+        private void ApplyGrabOnFoeWithDelay(IInteractableBody grabbed, IInteractableBody grabber, Vector2 position, int delayInMilliseconds = 0) {
 
             /*if (delayInMilliseconds > 0) {
                 await Task.Delay(TimeSpan.FromMilliseconds(delayInMilliseconds));
