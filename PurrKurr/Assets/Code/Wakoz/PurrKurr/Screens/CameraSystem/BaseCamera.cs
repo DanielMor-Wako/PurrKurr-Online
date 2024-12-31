@@ -1,0 +1,96 @@
+﻿using UnityEngine;
+using Code.Wakoz.Utils.CameraUtils;
+using System;
+
+namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
+{
+    public sealed class FollowSingleTarget : BaseCamera
+    {
+        public FollowSingleTarget(CameraData data, Func<Action> processActionCallback = null) : base(data, processActionCallback)
+        {
+
+        }
+
+    }
+    public sealed class FollowMultipleTargets : BaseCamera
+    {
+        public FollowMultipleTargets(CameraData data, Func<Action> processActionCallback = null) : base(data, processActionCallback)
+        {
+
+        }
+
+    }
+    public abstract class BaseCamera : ICamera
+    {
+        protected float _startTime;
+
+        protected CameraData _data;
+
+        protected readonly Func<Action> _processActionCallback;
+
+        public BaseCamera(CameraData data, Func<Action> processActionCallback = null)
+        {
+            _data = data;
+            _processActionCallback = processActionCallback;
+            _startTime = Time.time;
+        }
+
+        public CameraData Data => _data;
+
+        public virtual void Initialize()
+        {
+            _startTime = Time.time;
+        }
+
+        public void SwitchData(CameraData data)
+        {
+            _data = data;
+        }
+
+        public void Process()
+        {
+            _processActionCallback?.Invoke();
+        }
+
+        public virtual void Clean()
+        {
+
+        }
+
+        public bool IsMinDurationElapsed() 
+            => (Time.time - _startTime) >= _data.Duration.MinimumDuration;
+        
+        public virtual void UpdatePosition(Transform cameraTransform, ref Vector3 offset)
+        {
+            if (_data.TargetsCount > 0)
+            {
+                offset = Vector2.Lerp(offset, _data.OffsetData.TargetOffset, _data.OffsetData.SmoothSpeed * Time.deltaTime);
+
+                Vector3 centerPoint = CameraUtils.GetCenterPoint(_data.Targets);
+                Vector3 newPosition = centerPoint + offset;
+                newPosition.z = cameraTransform.position.z; // Maintain the camera's Z position
+
+                cameraTransform.position = Vector3.Lerp(cameraTransform.position, newPosition, _data.Transitions.SmoothSpeed * Time.deltaTime);
+            }
+        }
+
+        public virtual void AdjustZoom(Camera cam)
+        {
+            float currentZoom = Mathf.Lerp(_data.Transitions.MaxZoom, _data.Transitions.MinZoom, CameraUtils.GetGreatestDistance(_data.Targets) / _data.Transitions.ZoomLimiter);
+            cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, currentZoom, Time.deltaTime * _data.Transitions.ZoomSpeed);
+        }
+
+        public void SetTargetOffset(Vector3 targetOffset)
+        {
+            _data.OffsetData.TargetOffset = targetOffset;
+        }
+
+        public void SetZoom(float zoomSpeed, float minZoom, float maxZoom)
+        {
+            _data.Transitions.ZoomSpeed = zoomSpeed;
+            _data.Transitions.MinZoom = minZoom;
+            _data.Transitions.MaxZoom = maxZoom;
+        }
+
+    }
+}
