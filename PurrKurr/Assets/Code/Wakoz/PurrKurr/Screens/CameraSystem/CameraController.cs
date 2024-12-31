@@ -2,7 +2,7 @@
 using System;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 
-namespace Code.Wakoz.PurrKurr.Screens.CameraComponents
+namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 {
     [RequireComponent(typeof(Camera))]
     public class CameraController : MonoBehaviour
@@ -20,7 +20,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraComponents
 
             _characterMediator?.UnbindEvents();
             
-            _characterMediator = new CameraCharacterMediator(_cameraHandler, gameEvents, _cameraFocus, character);
+            _characterMediator = new CameraCharacterHandler(_cameraHandler, gameEvents, _cameraFocus, character);
             _characterMediator.BindEvents();
         }
 

@@ -1,4 +1,4 @@
-using Code.Wakoz.PurrKurr.Screens.CameraComponents;
+using Code.Wakoz.PurrKurr.Screens.CameraSystem;
 using System.Collections.Generic;
 using UnityEngine;
 
