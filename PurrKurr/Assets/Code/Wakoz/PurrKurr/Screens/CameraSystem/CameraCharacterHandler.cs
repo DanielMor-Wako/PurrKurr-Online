@@ -119,7 +119,6 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             {
                 case Definitions.ActionType.Rope:
                     FocusTransform.transform.position = position;
-                    Debug.Log("AimRope data");
                 break;
 
                 case Definitions.ActionType.Jump:
@@ -129,12 +128,10 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                     totalLinesCount > 6 ?
                     lineTrajectory[totalLinesCount - 1]
                     : CharacterTransform.position;
-                    Debug.Log("AimRope data");
                 break;
 
                 case Definitions.ActionType.Projectile:
                     FocusTransform.transform.position = position;
-                    Debug.Log("AimProjectile data");
                 break;
             }
         }
@@ -159,6 +156,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                 return;
             }
 
+            // todo: break to small functions. GetCameraData(state). GetActionForState(state)
             switch (state.CurrentState)
             {
                 case Definitions.ObjectState.Jumping:
@@ -184,8 +182,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                     break;
                 
                 case var _ when state.CurrentState is Definitions.ObjectState.Grounded:
-                    FocusTransform.position = CharacterTransform.position;
-                    var CenterOnPlayerSpeed = 2f;
+                    var CenterOnPlayerSpeed = 3f;
                     CameraHandler.EnqueueCamera(
                         new CameraData(_characterAndFocusSet,
                         _defaultLifeCycle,
@@ -194,7 +191,9 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                             () => MoveTarget(FocusTransform, CharacterTransform, CenterOnPlayerSpeed));
                     break;
 
-                case var _ when state.CurrentState is Definitions.ObjectState.Running or Definitions.ObjectState.RopeClinging or Definitions.ObjectState.TraversalRunning:
+                case Definitions.ObjectState.Running:
+                case Definitions.ObjectState.RopeClinging:
+                case Definitions.ObjectState.TraversalRunning:
                     FocusTransform.position = CharacterTransform.position;
                     CameraHandler.EnqueueCamera(
                         new CameraData(_characterAndFocusSet,
@@ -262,6 +261,9 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                         new CameraOffsetData() { SmoothSpeed = 10f, TargetOffset = Vector3.up * 3 }),
                             () => MoveTargetAxis(FocusTransform, CharacterTransform, smoothSpeed, false, false));
                 break;
+
+                //case var _ when state.CurrentState is Definitions.ObjectState.Running or Definitions.ObjectState.RopeClinging or Definitions.ObjectState.TraversalRunning:
+                //break;
 
                 default:
                     break;
@@ -351,13 +353,6 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             var mag = (CharacterTransform.position - FocusTransform.position).magnitude / 15;
             var targetMaxZoom = lowVelocityMaxZoom + mag * (highVelocityMaxZoom - lowVelocityMaxZoom);
             CameraHandler.CurrentCamera.SetZoom(2, lowVelocityMaxZoom, targetMaxZoom);
-        }
-
-        private Action UpdateFocusByAiming()
-        {
-            var futurePosition = (Vector2)CharacterController.transform.position + CharacterController.Velocity;
-            //LerpToTargetPosition(focusPoint, futurePosition, speed);
-            return () => { };
         }
     }
 }
