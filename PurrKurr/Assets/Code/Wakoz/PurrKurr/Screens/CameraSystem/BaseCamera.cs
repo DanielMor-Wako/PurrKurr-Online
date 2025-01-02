@@ -64,19 +64,19 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         {
             if (_data.TargetsCount > 0)
             {
-                offset = Vector2.Lerp(offset, _data.OffsetData.TargetOffset, _data.OffsetData.SmoothSpeed * Time.deltaTime);
+                offset = Vector2.Lerp(offset, _data.OffsetData.TargetOffset, _data.OffsetData.SmoothSpeed * Time.unscaledDeltaTime);
 
                 _newPosition = CameraUtils.GetCenterPoint(_data.Targets) + offset;
                 _newPosition.z = cameraTransform.position.z; // Maintain the camera's Z position
 
-                cameraTransform.position = Vector3.Lerp(cameraTransform.position, _newPosition, _data.Transitions.SmoothSpeed * Time.deltaTime);
+                cameraTransform.position = Vector3.Lerp(cameraTransform.position, _newPosition, _data.Transitions.SmoothSpeed * Time.unscaledDeltaTime);
             }
         }
 
         public virtual void AdjustZoom(Camera cam)
         {
             _currentZoom = Mathf.Lerp(_data.Transitions.MaxZoom, _data.Transitions.MinZoom, CameraUtils.GetGreatestDistance(_data.Targets) / _data.Transitions.ZoomLimiter);
-            cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, _currentZoom, Time.deltaTime * _data.Transitions.ZoomSpeed);
+            cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, _currentZoom, Time.unscaledDeltaTime * _data.Transitions.ZoomSpeed);
         }
 
         public void SetTargetOffset(Vector3 targetOffset)

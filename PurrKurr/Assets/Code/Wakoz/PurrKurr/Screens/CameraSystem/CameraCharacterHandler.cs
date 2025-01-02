@@ -21,6 +21,9 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         private readonly List<Transform> _characterAndFocusSet;
         private readonly LifeCycleData _defaultLifeCycle = new();
 
+        [Tooltip("Regulates the value of velocity by the player, used to calculate future position of the player")]
+        private readonly float _velocityMulti = 0.5f;
+
         public CameraCharacterHandler(CameraHandler cameraHandler, GameplayController gameEvents, Transform CameraFocusTransform, Transform mainCharacter)
         {
             FocusTransform = CameraFocusTransform;
@@ -160,18 +163,18 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             switch (state.CurrentState)
             {
                 case Definitions.ObjectState.Jumping:
-                    FocusTransform.position = CharacterTransform.position;
+                    //FocusTransform.position = CharacterTransform.position;
                     float followSpeed = 2f;
                     CameraHandler.EnqueueCamera(
                         new CameraData(_characterAndFocusSet,
-                        new LifeCycleData(0.2f),
-                        new CameraTransitionsData() { SmoothSpeed = 5f, MaxZoom = 6, MinZoom = 5 },
+                        _defaultLifeCycle,
+                        new CameraTransitionsData() { SmoothSpeed = 10f, MaxZoom = 6, MinZoom = 8 },
                         new CameraOffsetData() { SmoothSpeed = 1f, TargetOffset = Vector3.up * 2 }), 
                             () => MoveTarget(FocusTransform, CharacterTransform, followSpeed));
                     break;
                 
                 case Definitions.ObjectState.Falling:
-                    FocusTransform.position = CharacterTransform.position;
+                    //FocusTransform.position = CharacterTransform.position;
                     float distanceToCheckWhenFreeFalling = 80f;
                     CameraHandler.EnqueueCamera(
                         new CameraData(_characterAndFocusSet,
@@ -182,31 +185,35 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                     break;
                 
                 case var _ when state.CurrentState is Definitions.ObjectState.Grounded:
-                    var CenterOnPlayerSpeed = 3f;
+                    var centerOnPlayerSmoothSpeed = 5f;
                     CameraHandler.EnqueueCamera(
                         new CameraData(_characterAndFocusSet,
                         _defaultLifeCycle,
-                        new CameraTransitionsData() { SmoothSpeed = 5f, MaxZoom = 6, MinZoom = 6 },
+                        new CameraTransitionsData() { SmoothSpeed = 5f, MaxZoom = 6, MinZoom = 25, ZoomSpeed = 2 },
                         new CameraOffsetData() { SmoothSpeed = 5, TargetOffset = Vector3.up * 3 }),
-                            () => MoveTarget(FocusTransform, CharacterTransform, CenterOnPlayerSpeed));
+                            () => {
+                                //UpdateZoomByVelocity(1f, 6f, 25f);
+                                return MoveTarget(FocusTransform, CharacterTransform, centerOnPlayerSmoothSpeed);
+                            });
                     break;
 
                 case Definitions.ObjectState.Running:
                 case Definitions.ObjectState.RopeClinging:
                 case Definitions.ObjectState.TraversalRunning:
-                    FocusTransform.position = CharacterTransform.position;
+                    var trackingSmoothSpeed = 10f;
                     CameraHandler.EnqueueCamera(
                         new CameraData(_characterAndFocusSet,
                         _defaultLifeCycle,
-                        new CameraTransitionsData() { SmoothSpeed = 10f, MaxZoom = 6, MinZoom = 6 },
+                        new CameraTransitionsData() { SmoothSpeed = 8f, MaxZoom = 6, MinZoom = 25, ZoomSpeed = 2 },
                         new CameraOffsetData() { TargetOffset = Vector3.up * 3 }),
                             () => {
-                                UpdateMaxZoomByVelocity(6f, 8f);
-                                return UpdateFocusByVelocityDirWhenNoFrontWallOrCeiling(FocusTransform, 2f, 5f);
+                                //UpdateZoomByVelocity(1f, 8f, 25f);
+                                return UpdateFocusByVelocityDirWhenNoFrontWallOrCeiling(FocusTransform, trackingSmoothSpeed, 5f);
                             });
                 break;
 
                 case Definitions.ObjectState.StandingUp:
+                    FocusTransform.position = CharacterTransform.position;
                     CameraHandler.EnqueueCamera(
                         new CameraData(_characterSet,
                         _defaultLifeCycle,
@@ -215,6 +222,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                     break;
 
                 case Definitions.ObjectState.Crouching:
+                    FocusTransform.position = CharacterTransform.position;
                     CameraHandler.EnqueueCamera(
                         new CameraData(_characterSet,
                         _defaultLifeCycle,
@@ -277,7 +285,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         private Action MoveTarget(Transform transform, Transform targetTransform, float speed)
         {
-            LerpToTargetPosition(transform, ((Vector2)targetTransform.position + CharacterController.Velocity), speed);
+            LerpToTargetPosition(transform, ((Vector2)targetTransform.position + (CharacterController.Velocity * _velocityMulti)), speed);
 
             return () => { };
         }
@@ -295,32 +303,33 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         private Action UpdateFocusByFalling(float distanceToCheckWhenFreeFalling)
         {
-            var minDistanceBetweenCharacterToFocus = 25f;
+            var minDistanceBetweenCharacterToFocus = 22f;
             var freeFallingHitPoint = CharacterController.IsFreeFalling(distanceToCheckWhenFreeFalling);
             var isLargeFallingDistance = (CharacterController.LegsPosition.y - freeFallingHitPoint.y) > minDistanceBetweenCharacterToFocus;
-            var isFallingHighVelocity = CharacterController.Velocity.y <= -24;
+            var isFallingHighVelocity = CharacterController.Velocity.y <= -20;
 
             if (freeFallingHitPoint != Vector3.zero)
             {
-                LerpToTargetPosition(FocusTransform, freeFallingHitPoint, 5);
+                LerpToTargetPosition(FocusTransform, freeFallingHitPoint, 3);
             }
             
-            var newZoomSpeed = isLargeFallingDistance || isFallingHighVelocity ? 5 : 2;
+            var newZoomSpeed = isLargeFallingDistance && isFallingHighVelocity ? 5 : 2;
             // minZoom as default 6 is the same as the player normal minZoom size , 25 is the highest zoom so camera can scale up
-            var minZoom = isFallingHighVelocity && isLargeFallingDistance ? 25 : 6;
+            var minZoom = isFallingHighVelocity && isLargeFallingDistance ? 35 : 6;
+            minZoom = 35;
 
             var currentCameraData = CameraHandler.CurrentCamera;
-            currentCameraData.SetZoom(newZoomSpeed, minZoom, minZoom);
+            currentCameraData.SetZoom(newZoomSpeed, minZoom, 6);
             currentCameraData.SetTargetOffset(isFallingHighVelocity && isLargeFallingDistance ? Vector3.down * 3 : Vector3.up * 2);
             
-            if (!isLargeFallingDistance && isFallingHighVelocity && currentCameraData.Data.TargetsCount > 1)
+            /*if (!isLargeFallingDistance && isFallingHighVelocity && currentCameraData.Data.TargetsCount > 1)
             {
                 currentCameraData.SwitchData(
                     new CameraData(_focusSet,
                     _defaultLifeCycle,
                     new CameraTransitionsData() { SmoothSpeed = 6f, MaxZoom = 7, ZoomSpeed = 5 },
                     new CameraOffsetData() { SmoothSpeed = 10f, TargetOffset = Vector3.up * 2 }));
-            }
+            }*/
 
             return () => { };
         }
@@ -336,7 +345,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
             if (!isFrontWallOrCeiling)
             {
-                endPosition += CharacterController.Velocity;
+                endPosition += CharacterController.Velocity * _velocityMulti;
             }
             else if (isCeiling)
             {
@@ -348,11 +357,11 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             return () => { };
         }
 
-        private void UpdateMaxZoomByVelocity(float lowVelocityMaxZoom = 6, float highVelocityMaxZoom = 8)
+        private void UpdateZoomByVelocity(float zoomSpeed = 2, float lowVelocityMaxZoom = 6, float highVelocityMaxZoom = 25)
         {
             var mag = (CharacterTransform.position - FocusTransform.position).magnitude / 15;
             var targetMaxZoom = lowVelocityMaxZoom + mag * (highVelocityMaxZoom - lowVelocityMaxZoom);
-            CameraHandler.CurrentCamera.SetZoom(2, lowVelocityMaxZoom, targetMaxZoom);
+            CameraHandler.CurrentCamera.SetZoom(zoomSpeed, lowVelocityMaxZoom, targetMaxZoom);
         }
     }
 }
