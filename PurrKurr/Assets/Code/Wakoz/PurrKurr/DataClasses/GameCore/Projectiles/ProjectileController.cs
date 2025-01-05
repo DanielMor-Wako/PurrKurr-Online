@@ -38,6 +38,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
 
         public Collider2D GetCollider() => _legsCollider ?? null;
         public Transform GetTransform() => transform;
+        public Transform GetCharacterRigTransform() => null;
         public Definitions.ObjectState GetCurrentState() => Definitions.ObjectState.Falling;
         public Vector3 GetCenterPosition() => transform.position;
 

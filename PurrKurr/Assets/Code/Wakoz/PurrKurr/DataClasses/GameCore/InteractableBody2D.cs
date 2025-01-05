@@ -1,5 +1,6 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
+using Code.Wakoz.PurrKurr.Screens.Shaker;
 using Code.Wakoz.Utils.GraphicUtils.TransformUtils;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -40,6 +41,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
 
         public Collider2D GetCollider() => _legsCollider ?? null;
         public Transform GetTransform() => transform;
+        public Transform GetCharacterRigTransform() => null;
         public Definitions.ObjectState GetCurrentState() => Definitions.ObjectState.Grounded;
         public Vector3 GetCenterPosition() => transform != null ? transform.position : Vector3.zero;
 

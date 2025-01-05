@@ -362,6 +362,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public Collider2D GetCollider() => this != null ? _legsCollider ?? null : null;
         public Transform GetTransform() => this != null ? transform ?? null : null;
+        public Transform GetCharacterRigTransform() => this != null ? _rigAnimator.transform ?? null : null;
         public Definitions.ObjectState GetCurrentState() => _state.CurrentState;
 
         public Vector3 GetCenterPosition() => LegsPosition;

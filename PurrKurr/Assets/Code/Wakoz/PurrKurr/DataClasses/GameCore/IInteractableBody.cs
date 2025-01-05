@@ -1,4 +1,5 @@
-﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
+﻿using Code.Wakoz.PurrKurr.DataClasses.Characters;
+using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
@@ -7,6 +8,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
 
         public abstract Collider2D GetCollider();
         public abstract Transform GetTransform();
+        public abstract Transform GetCharacterRigTransform();
         public abstract Definitions.ObjectState GetCurrentState();
         public abstract Vector3 GetCenterPosition();
         public abstract Vector2 GetVelocity();

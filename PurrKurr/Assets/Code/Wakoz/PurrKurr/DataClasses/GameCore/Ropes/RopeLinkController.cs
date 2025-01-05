@@ -42,6 +42,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
 
         public Transform GetTransform() => transform;
 
+        public Transform GetCharacterRigTransform() => null;
+
         public Definitions.ObjectState GetCurrentState() =>
             IsChainConnected() ? Definitions.ObjectState.Alive : Definitions.ObjectState.Dead;
 
