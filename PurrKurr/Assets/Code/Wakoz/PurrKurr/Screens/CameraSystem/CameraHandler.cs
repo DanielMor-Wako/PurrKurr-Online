@@ -25,7 +25,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             _currentOffset = Vector3.zero;
         }
 
-        public void EnqueueCamera(CameraData data, Func<Action> processActionCallback = null)
+        public void EnqueueCamera(CameraData data, Action processActionCallback = null)
         {
             ICamera newCamera = 
                 (data.TargetsCount == 1) ? new FollowSingleTarget(data, processActionCallback) 
@@ -42,6 +42,13 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         }
 
         public int CamerasQueueCount() => _camerasQueueCount;
+
+        public void UpdatePositionAndSize(Vector3 position, float size = 0)
+        {
+            position.z = -10f;
+            _cam.transform.position = position;
+            _cam.orthographicSize = size;
+        }
 
         public void UpdateCurrent()
         {

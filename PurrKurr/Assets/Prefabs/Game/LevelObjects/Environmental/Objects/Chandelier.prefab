@@ -181,7 +181,7 @@ GameObject:
   - component: {fileID: 9150366944821622206}
   - component: {fileID: 4410618102878028840}
   - component: {fileID: 6234839499333560918}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Chandelier
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -303,8 +303,8 @@ FixedJoint2D:
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
   m_ConnectedAnchor: {x: -23.852999, y: 13.3029995}
-  m_DampingRatio: 0
-  m_Frequency: 0
+  m_DampingRatio: 1
+  m_Frequency: 2
 --- !u!61 &6234839499333560918
 BoxCollider2D:
   m_ObjectHideFlags: 0

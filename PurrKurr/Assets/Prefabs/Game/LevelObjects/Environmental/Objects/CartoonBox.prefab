@@ -264,7 +264,7 @@ GameObject:
   - component: {fileID: 8317276226949465384}
   - component: {fileID: 8915267141830203440}
   - component: {fileID: 1126627062367352817}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: CartoonBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}

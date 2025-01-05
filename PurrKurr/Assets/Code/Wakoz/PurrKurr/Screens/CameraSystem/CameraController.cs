@@ -10,21 +10,21 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         [SerializeField] private Transform _cameraFocus;
 
         private CameraHandler _cameraHandler;
-        private ICameraCharacterMediator _characterMediator;
+        private CameraCharacterHandler _characterMediator;
 
-        public ICameraCharacterMediator CharacterMediator => _characterMediator;
+        public CameraCharacterHandler CharacterMediator => _characterMediator;
 
         public void BindCharacter(Transform character, GameplayController gameEvents)
         {
             _cameraHandler ??= new CameraHandler(this);
 
-            _characterMediator?.UnbindEvents();
+            _characterMediator?.Unbind();
             
             _characterMediator = new CameraCharacterHandler(_cameraHandler, gameEvents, _cameraFocus, character);
-            _characterMediator.BindEvents();
+            _characterMediator.Bind();
         }
 
-        public void AddCamera(CameraData data, Func<Action> processActionCallback = null)
+        public void AddCamera(CameraData data, Action processActionCallback = null)
         {
             _cameraHandler ??= new CameraHandler(this);
             _cameraHandler.EnqueueCamera(data, processActionCallback);
@@ -42,7 +42,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         private void OnDestroy()
         {
-            _characterMediator?.UnbindEvents();
+            _characterMediator?.Unbind();
         }
     }
 }

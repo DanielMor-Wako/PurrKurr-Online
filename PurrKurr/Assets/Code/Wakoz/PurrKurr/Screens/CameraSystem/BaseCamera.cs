@@ -7,14 +7,14 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
     // todo: implement the derived BaseCamera classes
     public sealed class FollowSingleTarget : BaseCamera
     {
-        public FollowSingleTarget(CameraData data, Func<Action> processActionCallback = null) : base(data, processActionCallback)
+        public FollowSingleTarget(CameraData data, Action processActionCallback = null) : base(data, processActionCallback)
         {
 
         }
     }
     public sealed class FollowMultipleTargets : BaseCamera
     {
-        public FollowMultipleTargets(CameraData data, Func<Action> processActionCallback = null) : base(data, processActionCallback)
+        public FollowMultipleTargets(CameraData data, Action processActionCallback = null) : base(data, processActionCallback)
         {
 
         }
@@ -22,13 +22,13 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
     public abstract class BaseCamera : ICamera
     {
         protected CameraData _data;
-        protected readonly Func<Action> _processActionCallback;
+        protected readonly Action _processActionCallback;
 
         protected float _startTime;
         protected float _currentZoom;
         protected Vector3 _newPosition;
 
-        public BaseCamera(CameraData data, Func<Action> processActionCallback = null)
+        public BaseCamera(CameraData data, Action processActionCallback = null)
         {
             _data = data;
             _processActionCallback = processActionCallback;

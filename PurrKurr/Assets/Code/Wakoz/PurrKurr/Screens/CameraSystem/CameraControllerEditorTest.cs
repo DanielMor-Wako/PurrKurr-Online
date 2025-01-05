@@ -15,7 +15,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         [Header("Refresh Rate")]
         [Tooltip("Value affects the refresh of inspecting current data. 0 = no limit")]
-        [Min(0)] private int _limitRefreshRate = 1;
+        [SerializeField][Min(0)] private int _refreshRateLimit = 0;
 
         [Header("Inspect Current Data")]
         [SerializeField] private Vector2 _currentOffset;
@@ -36,7 +36,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             _camController ??= GetComponent<CameraController>();
         }
 
-        private void AddCamera(CameraData data, Func<Action> processActionCallback = null)
+        private void AddCamera(CameraData data, Action processActionCallback = null)
         {
             _camController.AddCamera(data, processActionCallback);
         }
@@ -53,14 +53,14 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         
         private bool CanRefreshValues()
         {
-            if (_refreshRate < _limitRefreshRate)
+            if (_refreshRate >= _refreshRateLimit)
             {
-                _refreshRate ++;
-                return false;
+                _refreshRate = 0;
+                return true;
             }
 
-            _refreshRate = _limitRefreshRate;
-            return true;
+            _refreshRate++;
+            return false;
         }
 
         private void UpdateCurrentCameraValues()

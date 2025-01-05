@@ -7,7 +7,7 @@ using Code.Wakoz.PurrKurr.DataClasses.Enums;
 
 namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 {
-    public sealed class CameraCharacterHandler : ICameraCharacterMediator
+    public sealed class CameraCharacterHandler : IBindable, ICameraNotifier
     {
         public Transform FocusTransform { get; private set; }
         public Transform CharacterTransform { get; private set; }
@@ -41,12 +41,13 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             CameraHandler.EnqueueCamera(camera);
         }
 
-        public void UnbindEvents()
+        public void Unbind()
         {
             if (GameEvents == null)
                 return;
 
             GameEvents.OnNewHero -= HandleNewHero;
+            GameEvents.OnHeroReposition -= HandleReposition;
             GameEvents.OnCameraFocusPoint -= HandleCameraFocusPoint;
             GameEvents.OnCameraFocusTargets -= HandleCameraFocusTargets;
             GameEvents.OnStateChanged -= HandleStateChanged;
@@ -56,12 +57,13 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             GameEvents = null;
         }
 
-        public void BindEvents()
+        public void Bind()
         {
             if (GameEvents == null)
                 return;
 
             GameEvents.OnNewHero += HandleNewHero;
+            GameEvents.OnHeroReposition += HandleReposition;
             GameEvents.OnCameraFocusPoint += HandleCameraFocusPoint;
             GameEvents.OnCameraFocusTargets += HandleCameraFocusTargets;
             GameEvents.OnStateChanged += HandleStateChanged;
@@ -69,7 +71,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             GameEvents.OnAimingActionEnd += HandleAimingDefault;
         }
 
-        private void UpdateHandler(CameraData data, Func<Action> processActionCallback = null)
+        private void UpdateHandler(CameraData data, Action processActionCallback = null)
         {
             CameraHandler.EnqueueCamera(data, processActionCallback);
         }
@@ -107,6 +109,13 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             CharacterController = characterController;
 
             FollowSingleTarget(CharacterTransform);
+        }
+
+        private void HandleReposition(Vector3 newPosition)
+        {
+            CharacterTransform.position = newPosition;
+            FocusTransform.position = newPosition;
+            CameraHandler.UpdatePositionAndSize(newPosition, 0);
         }
 
         private void HandleAiming(Definitions.ActionType type, Vector2 position, Quaternion quaternion, bool hitData, Vector3[] lineTrajectory)
@@ -193,7 +202,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                         new CameraOffsetData() { SmoothSpeed = 5, TargetOffset = Vector3.up * 3 }),
                             () => {
                                 //UpdateZoomByVelocity(1f, 6f, 25f);
-                                return MoveTarget(FocusTransform, CharacterTransform, centerOnPlayerSmoothSpeed);
+                                MoveTarget(FocusTransform, CharacterTransform, centerOnPlayerSmoothSpeed);
                             });
                     break;
 
@@ -208,7 +217,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                         new CameraOffsetData() { TargetOffset = Vector3.up * 3 }),
                             () => {
                                 //UpdateZoomByVelocity(1f, 8f, 25f);
-                                return UpdateFocusByVelocityDirWhenNoFrontWallOrCeiling(FocusTransform, trackingSmoothSpeed, 5f);
+                                UpdateFocusByVelocityDirWhenNoFrontWallOrCeiling(FocusTransform, trackingSmoothSpeed, 5f);
                             });
                 break;
 
@@ -283,14 +292,12 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             target.position = Vector2.Lerp(target.position, endPosition, speed * Time.deltaTime);
         }
 
-        private Action MoveTarget(Transform transform, Transform targetTransform, float speed)
+        private void MoveTarget(Transform transform, Transform targetTransform, float speed)
         {
             LerpToTargetPosition(transform, ((Vector2)targetTransform.position + (CharacterController.Velocity * _velocityMulti)), speed);
-
-            return () => { };
         }
 
-        private Action MoveTargetAxis(Transform target, Transform endTarget, float speed, bool lockXAxis = false, bool lockYAxis = false)
+        private void MoveTargetAxis(Transform target, Transform endTarget, float speed, bool lockXAxis = false, bool lockYAxis = false)
         {
             Vector3 endPosition = new Vector3()
             {
@@ -298,10 +305,10 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                 y = lockYAxis ? target.position.y : endTarget.position.y
             };
 
-            return () => LerpToTargetPosition(target, endPosition, speed);
+            LerpToTargetPosition(target, endPosition, speed);
         }
 
-        private Action UpdateFocusByFalling(float distanceToCheckWhenFreeFalling)
+        private void UpdateFocusByFalling(float distanceToCheckWhenFreeFalling)
         {
             var minDistanceBetweenCharacterToFocus = 22f;
             var freeFallingHitPoint = CharacterController.IsFreeFalling(distanceToCheckWhenFreeFalling);
@@ -330,11 +337,9 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                     new CameraTransitionsData() { SmoothSpeed = 6f, MaxZoom = 7, ZoomSpeed = 5 },
                     new CameraOffsetData() { SmoothSpeed = 10f, TargetOffset = Vector3.up * 2 }));
             }*/
-
-            return () => { };
         }
 
-        private Action UpdateFocusByVelocityDirWhenNoFrontWallOrCeiling(Transform transform, float speedWhenOnSurface, float speedBackToCenter)
+        private void UpdateFocusByVelocityDirWhenNoFrontWallOrCeiling(Transform transform, float speedWhenOnSurface, float speedBackToCenter)
         {
             var endPosition = (Vector2)CharacterTransform.position;
             var state = CharacterController.State;
@@ -353,8 +358,6 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             }
             
             LerpToTargetPosition(transform, endPosition, !isFrontWallOrCeiling ? speedWhenOnSurface : speedBackToCenter);
-
-            return () => { };
         }
 
         private void UpdateZoomByVelocity(float zoomSpeed = 2, float lowVelocityMaxZoom = 6, float highVelocityMaxZoom = 25)
