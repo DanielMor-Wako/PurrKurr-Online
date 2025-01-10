@@ -44,7 +44,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
 
         public void SetTimeScaleMin() => Time.timeScale = 0.1f;
         public void SetTimeScaleLow() => Time.timeScale = 0.25f;
-        public void SetTimeScaleMed() => Time.timeScale = 0.5f;
+        public void SetTimeScaleMed() => Time.timeScale = 0.4f;
         public void SetTimeScaleHigh() => Time.timeScale = 0.6f;
         public void SetTimeScaleMax() => Time.timeScale = 1f;
 
