@@ -25,9 +25,10 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger;
 using Code.Wakoz.PurrKurr.UI.Instructions;
 using Code.Wakoz.PurrKurr.Screens.Shaker;
+using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers;
 
-namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
-
+namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
+{
     [DefaultExecutionOrder(14)]
     public sealed class GameplayController : SingleController {
 
@@ -51,6 +52,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         public event Action<List<DisplayedableStatData>> OnStatsChanged;
         public event Action<DetectionZoneTrigger> OnHeroEnterDetectionZone;
 
+        public HandlersCoordinator Handlers { get; private set; }
         [SerializeField] private CameraController _camController;
         [SerializeField] private Character2DController _mainHero;
         private Character2DController _hero;
@@ -67,7 +69,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
         private GameplayLogic _gameplayLogic;
         private GamePlayUtils _gameplayUtils;
         private EffectsController _effects;
-        private ShakeHandler _shakeHandler;
         private LevelsController _levelsController;
         private InteractablesController _interactables;
         private DebugController _debug;
@@ -90,9 +91,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             }
             _hero.OnStateChanged -= OnStateChanged;
             _hero.OnUpdatedStats -= UpdateOrInitUiDisplayForCharacter;
+
+            CleanBindableHandlers();
         }
 
-        protected override Task Initialize() {
+        protected override Task Initialize()
+        {
 
             _camController ??= Camera.main.GetComponent<CameraController>();
 
@@ -101,19 +105,22 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             _timelineEventManager = new TimelineEventManager();
             _inputInterpreterLogic = new InputInterpreterLogic(_logic.InputLogic, _logic.GameplayLogic);
             _gameplayLogic = _logic.GameplayLogic;
-            _shakeHandler = new ShakeHandler();
+            InitHandlers();
             _levelsController = GetController<LevelsController>();
             _interactables = GetController<InteractablesController>();
             _debug = GetController<DebugController>();
 
             _ui ??= GetController<UIController>();
-            if (_ui.TryBindToCharacterController(this)) {
+            if (_ui.TryBindToCharacterController(this))
+            {
                 RegisterInputEvents();
-            } else {
+            }
+            else
+            {
                 _ui = null;
                 _debug.LogWarning("Something went wrong, there is no active ref to PadsDisplayController");
             }
-            
+
             _whatIsSurface = _gameplayLogic.GetSurfaces();
             _whatIsSolid = _gameplayLogic.GetSolidSurfaces();
             _whatIsPlatform = _gameplayLogic.GetPlatformSurfaces();
@@ -131,6 +138,29 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
             return Task.CompletedTask;
         }
+
+        private void InitHandlers()
+        {
+            Handlers = new HandlersCoordinator();
+
+            var handlers = new List<IUpdateProcessHandler>
+            {
+                new ShakeHandler(),
+                new CameraHandler(_camController)
+            };
+            Handlers.AddHandlers(handlers);
+        }
+
+        private void InitBindableHandlers()
+        {
+            var bindableHandlers = new List<IBindableHandler>
+            {
+                new CameraCharacterHandler(Handlers.GetHandler<CameraHandler>(), this, _camController.CameraFocusTransform, _hero.transform),
+            };
+            Handlers.BindHandlers(bindableHandlers);
+        }
+
+        private void CleanBindableHandlers() => Handlers.Dispose();
 
         private void InitLevel() {
 
@@ -298,20 +328,24 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         public void SetNewHero(Character2DController hero) => TryInitHero(hero);
 
-        private bool TryInitHero(Character2DController hero) {
+        private bool TryInitHero(Character2DController hero)
+        {
 
-            if (hero == null) {
+            if (hero == null)
+            {
                 return false;
             }
 
-            if (_hero != null && _heroInitialized) {
+            if (_hero != null && _heroInitialized)
+            {
                 _hero.OnStateChanged -= OnStateChanged;
                 _hero.OnUpdatedStats -= UpdateOrInitUiDisplayForCharacter;
             }
-            
+
             _hero = hero;
 
-            _camController?.BindCharacter(_hero.transform, this);
+            InitBindableHandlers();
+
             OnNewHero?.Invoke(_hero);
 
             _hero.OnStateChanged += OnStateChanged;
@@ -925,7 +959,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                 }
             }
 
-            _shakeHandler.ProcessShakes(Time.deltaTime);
+            Handlers.UpdateHandlers();
         }
 
         /*private void FixedUpdate()
@@ -935,8 +969,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
         public void SetCameraScreenShake()
         {
-            // call screen shake event 
-            // or call shake object (screenTransform)
+            var camTransform = _camController.transform;
+            var curve = AnimationCurve.Linear(0, 0, 1, 0);
+            curve.AddKey(0.3f, 1);
+            Handlers.GetHandler<ShakeHandler>().TriggerShake(camTransform, 
+                new ShakeData(ShakeStyle.Circular, 0.3f, 0.4f, curve, 
+                new Vector3(camTransform.position.x, camTransform.position.y, -10)));
         }
 
         private void CombatLogic(Character2DController attacker, ActionType actionType, Vector2 moveToPosition, Collider2D[] interactedColliders) {
@@ -1177,7 +1215,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                     attackStats.ForceDir.y = -Mathf.Abs(attackStats.ForceDir.y);
                     ApplyForceOnFoeWithDelay(foe, attackStats, Effect2DType.ImpactCritical);
-                    _shakeHandler.TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.VerticalCircular));
+                    Handlers.GetHandler<ShakeHandler>().TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.VerticalCircular));
 
                     // todo: make the aerial attack turn into grab to groundsmash, and turn aerial grab into throwing the opponent
                     // ApplyProjectileStateWhenThrown(foe, attackStats.Damage, interactedCollider);
@@ -1211,7 +1249,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         attackStats.ForceDir = averageDirBetweenGroundAndHit.normalized * (Vector2.one * 0.5f * foeCharacter.Stats.PushbackForce);
                     }
                     ApplyForceOnFoeWithDelay(foe, attackStats, Effect2DType.ImpactLight);
-                    _shakeHandler.TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.HorizontalCircular));
+                    Handlers.GetHandler<ShakeHandler>().TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.HorizontalCircular));
 
                 } else if (properties.Contains(AttackProperty.PushUpOnHit) ||
                             properties.Contains(AttackProperty.PushUpOnBlock) && isFoeBlocking) {
@@ -1226,7 +1264,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     ApplyForceOnFoeWithDelay(foe, attackStats, Effect2DType.ImpactHeavy);
                     var curve = AnimationCurve.Linear(0, 0, 1, 0);
                     curve.AddKey(0.25f, 1);
-                    _shakeHandler.TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.VerticalCircular, 0.2f, 0.3f, curve));
+                    Handlers.GetHandler<ShakeHandler>().TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.VerticalCircular, 0.15f, 0.4f, curve));
 
                 } else if (properties.Contains(AttackProperty.PushDiagonalOnHit) ||
                             properties.Contains(AttackProperty.PushDiagonalOnBlock) && isFoeBlocking) {
@@ -1240,7 +1278,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     attackStats.ForceDir.x *= 0.5f;
 
                     ApplyForceOnFoeWithDelay(foe, attackStats, Effect2DType.ImpactMed);
-                    _shakeHandler.TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.Random));
+                    Handlers.GetHandler<ShakeHandler>().TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.Random));
 
                 }
 
@@ -1268,7 +1306,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     ApplyForceOnFoeWithDelay(foe, throwStats, Effect2DType.DustCloud);
                     attackerAsInteractable.SetAsGrabbing(null);
                     ApplyProjectileStateWhenThrown(foe, throwStats.Damage, attackerAsInteractable);
-                    _shakeHandler.TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.Circular));
+                    Handlers.GetHandler<ShakeHandler>().TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.Circular));
 
                     //_timelineEventManager.RegisterInteractionEvent(attacker, new IInteractableBody[] { foe }, Time.time, attacker.Stats.AttackDurationInMilliseconds, attackStats, attackAbility);
 
@@ -1355,11 +1393,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     PerformSuper(character, superActionProperties);
                 }
 
-                _shakeHandler.TriggerShake(charRigTransform, new ShakeData(ShakeStyle.Random, 0.25f, 0.3f));
-
+                //Handlers.GetHandler<ShakeHandler>().TriggerShake(charRigTransform, new ShakeData(ShakeStyle.Random, 0.3f, 0.2f));
+                
                 await Task.Delay(TimeSpan.FromMilliseconds(500));
             }
-
+            SetCameraScreenShake();
         }
 
         // todo: make the function get properties and iterate on each one to generate a super, currently only gets true instead of property
@@ -1711,7 +1749,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             ApplyGrabOnFoeWithDelay(grabbed, null, grabbed.GetCenterPosition());
             ApplyForceOnFoeWithDelay(grabbed, attackStats, Effect2DType.ImpactCritical);
             ApplyProjectileStateWhenThrown(grabbed, attackStats.Damage, grabber);
-            _shakeHandler.TriggerShake(grabbed.GetCharacterRigTransform(), new ShakeData(ShakeStyle.Random));
+            Handlers.GetHandler<ShakeHandler>().TriggerShake(grabbed.GetCharacterRigTransform(), new ShakeData(ShakeStyle.Random));
         }
 
     }
