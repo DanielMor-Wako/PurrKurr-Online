@@ -4,10 +4,11 @@ using System;
 using Code.Wakoz.PurrKurr.DataClasses.Characters;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
+using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers;
 
 namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 {
-    public sealed class CameraCharacterHandler : IBindable, ICameraNotifier
+    public sealed class CameraCharacterHandler : IBindableHandler, ICameraNotifier
     {
         public Transform FocusTransform { get; private set; }
         public Transform CharacterTransform { get; private set; }
