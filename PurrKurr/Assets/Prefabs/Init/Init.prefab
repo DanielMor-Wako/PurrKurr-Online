@@ -11949,7 +11949,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad21fd77721c3c04da06667ed98f3fd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cam: {fileID: 7779578158065701831}
   _cameraFocus: {fileID: 7784608116505765649}
 --- !u!114 &6200469914087294195
 MonoBehaviour:
@@ -11964,6 +11963,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _camController: {fileID: 195657431583735696}
+  _refreshRateLimit: 0
   _currentOffset: {x: 0, y: 0}
   _camerasInQueue: 0
   _currentCamera:
@@ -11974,7 +11974,6 @@ MonoBehaviour:
       SmoothSpeed: 8
       MinZoom: 25
       MaxZoom: 6
-      SingleTargetFocus: 7
       ZoomLimiter: 65
       ZoomSpeed: 3
     OffsetData:
