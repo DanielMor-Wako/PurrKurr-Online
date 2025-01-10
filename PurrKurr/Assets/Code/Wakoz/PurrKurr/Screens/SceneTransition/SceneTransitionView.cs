@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Code.Wakoz.PurrKurr.Views;
+using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -7,45 +9,113 @@ namespace Code.Wakoz.PurrKurr.Screens.SceneTransition
     [Serializable]
     public class SceneTransitionView : View
     {
-        [SerializeField]
-        public CanvasGroup Fader;
+        [SerializeField] private TMP_Text _textField;
+        [SerializeField] private CanvasGroupFader _canvasGroupFader;
+        [SerializeField] private RectTransformScaler _transformScaler;
 
-        [SerializeField]
-        private TMP_Text _textField;
+        [Header("Blink Delay")]
+        [SerializeField] [Min(0)] private float _preDelayBeforeBlinking = 0.2f;
+        [Header("Blink Rate - Random between Min Max")]
+        [SerializeField] [Min(0)] private float _randomMinBlink = 1f;
+        [SerializeField] [Min(0)] private float _randomMaxBlink = 3f;
 
-        public void SetTitle(string newTitle = "")
+        private Coroutine _transformScalerCoroutine;
+        private Func<float, float, IEnumerator> _transformScalerDelegate;
+
+        public void StartTransition(Action callback = null, string newTitle = "")
         {
-            if (_textField == null || string.IsNullOrEmpty(newTitle))
+            SetTitle(newTitle);
+            SetNoShade();
+            SetEyesClosed();
+            StartBlinking();
+            _canvasGroupFader.StartTransition(callback);
+        }
+
+        public void EndTransition(Action callback = null)
+        {
+            _canvasGroupFader.EndTransition(callback);
+
+            _transformScaler.SetTransitionDuration(_transformScaler.TransitionDuration);
+            CloseEyes();
+            if (_transformScalerCoroutine != null)
             {
-                return;
+                StopCoroutine(_transformScalerCoroutine);
+            }
+        }
+
+        private void StartBlinking()
+        {
+            if (_transformScalerCoroutine != null)
+            {
+                StopCoroutine(_transformScalerCoroutine);
             }
 
-            _textField.SetText(newTitle);
+            _transformScalerDelegate ??= RepeatBlinking;
+            _transformScalerCoroutine = StartCoroutine(_transformScalerDelegate(_randomMinBlink, _randomMaxBlink));
         }
 
-        public void StartTransition(System.Action callback = null)
+        private IEnumerator RepeatBlinking(float minRandom, float maxRandom)
         {
-            FadeTo(1, callback);
-        }
+            var blinkDuration = _transformScaler.TransitionDuration;
 
-        public void EndTransition(System.Action callback = null)
-        {
-            FadeTo(0, callback);
-        }
+            yield return new WaitForSeconds(_preDelayBeforeBlinking);
 
-        private void FadeTo(float targetValue, System.Action callback = null)
-        {
-            if (Fader == null)
+            _transformScaler.SetTransitionDuration(0.5f);
+            OpenEyes();
+
+            yield return new WaitForSeconds(1);
+
+            _transformScaler.SetTransitionDuration(blinkDuration);
+
+            while (true)
             {
-                return;
+                OpenEyes();
+
+                float waitTimeClose = UnityEngine.Random.Range(minRandom, maxRandom);
+                yield return new WaitForSeconds(waitTimeClose);
+
+                CloseEyes();
+
+                yield return new WaitForSeconds(blinkDuration);
             }
-            Fader.alpha = (targetValue);
-            callback?.Invoke();
         }
 
-        protected override void ModelChanged()
+        private void OpenEyes()
         {
-
+            _transformScaler.StartTransition();
         }
+
+        private void CloseEyes()
+        {
+            _transformScaler.EndTransition();
+        }
+
+        private void SetNoShade()
+        {
+            _canvasGroupFader.CanvasTarget.alpha = 0f;
+        }
+
+        private void SetEyesClosed()
+        {
+            _transformScaler.TargetRectTransform.localScale = _transformScaler.MinScale;
+        }
+
+        private void SetTitle(string newTitle = "")
+        {
+            _textField?.SetText(newTitle);
+        }
+
+        protected override void Clean()
+        {
+            if (_transformScalerCoroutine != null)
+            {
+                StopCoroutine(_transformScalerCoroutine);
+            }
+
+            _transformScalerCoroutine = null;
+            _transformScalerDelegate = null;
+        }
+
+        protected override void ModelChanged() { }
     }
 }

@@ -23,50 +23,54 @@ namespace Code.Wakoz.PurrKurr.Screens.SceneTransition
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            _view.SetTitle();
+            Debug.Log($"New Scene '{scene.name}' has loaded | index {scene.buildIndex}");
+            if (scene.buildIndex == 0)
+            {
+                return;
+            }
+
             _view.EndTransition();
         }
 
-        public Task LoadSceneByIndex(int index, Action onEndAnimation = null)
+        public void LoadSceneByIndex(int index, Action onEndAnimation = null)
         {
             if (index < 0 || index >= SceneManager.sceneCountInBuildSettings)
             {
                 Debug.LogError("Invalid build index: " + index);
-                return Task.CompletedTask;
             }
 
-            _view.SetTitle("Loading");
-            DoAnimAndLoadScene(index, onEndAnimation);
-            return Task.CompletedTask;
+            DoAnimAndLoadScene(index, onEndAnimation, $"Loading {index}");
         }
 
-        private void DoAnimAndLoadScene(int index, Action onEndAnimation = null)
+        private void DoAnimAndLoadScene(int index, Action onEndAnimation = null, string newTitle = "")
         {
             _view.StartTransition(() =>
             {
                 SceneManager.LoadScene(index);
                 onEndAnimation?.Invoke();
-            });
+            },
+            newTitle);
         }
 
-        [ContextMenu("Test - Scene Transition (5 seconds)")]
-        public Task TestSceneTransition()
+        #region Inspector Test
+        private void TestSceneTransition(float durationInSeconds)
         {
-            Action onEndAnimation = () => 
+            Action onEndAnimation = () =>
             {
-                _view.SetTitle();
                 _view.EndTransition();
             };
 
-            _view.SetTitle("Loading");
             _view.StartTransition(async () =>
             {
-                await Task.Delay(TimeSpan.FromSeconds(5));
+                await Task.Delay(TimeSpan.FromSeconds(durationInSeconds));
                 onEndAnimation?.Invoke();
-            });
-
-            return Task.CompletedTask;
+            },
+            $"{durationInSeconds} Sec Transition Test");
         }
 
+        [ContextMenu("Test - Scene Transition (0 seconds)")]
+        public void TestSceneTransition5Seconds() 
+            => TestSceneTransition(UnityEngine.Random.Range(0, 10));
+        #endregion
     }
 }
