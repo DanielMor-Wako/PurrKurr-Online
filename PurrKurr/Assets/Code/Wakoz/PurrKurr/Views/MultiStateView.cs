@@ -1,12 +1,14 @@
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.Views {
+namespace Code.Wakoz.PurrKurr.Views
+{
     public class MultiStateView : View {
         
         [SerializeField] private GameObject[] _states;
         [SerializeField] private GameObject _currentState;
+
         public int? CurrentState => GetCurrentState();
-        protected override void ModelChanged() {}
+        
         public void ChangeState(int state) {
             for(int i = 0; i < _states.Length; i++) {
                 if(_states[i] != null) {
@@ -21,7 +23,7 @@ namespace Code.Wakoz.PurrKurr.Views {
                 }
             }
         }
-
+        
         private int? GetCurrentState() {
             for (int i = 0; i < _states.Length; i++) {
                 if (_states[i] == _currentState)
@@ -29,6 +31,8 @@ namespace Code.Wakoz.PurrKurr.Views {
             }
             return null;
         }
+
+        protected override void ModelChanged() {}
 
         #region Editor
 #if UNITY_EDITOR
@@ -58,5 +62,4 @@ namespace Code.Wakoz.PurrKurr.Views {
 #endif
         #endregion
     }
-
 }
