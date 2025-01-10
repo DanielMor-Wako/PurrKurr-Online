@@ -173,7 +173,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             //force = Mathf.Clamp(force, minForce, maxForce);
             Vector2 jumpDir = new Vector2(xcomponent, ycomponent);
             Vector2 u = jumpDir * (force);
-            Vector2 g = new Vector2(0f, -10f);
+            Vector2 g = new Vector2(0f, -9.81f);
             Vector2 p1 = LegsPosition;
             points.Add(p1);
 
