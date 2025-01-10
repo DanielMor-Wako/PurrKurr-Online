@@ -10,8 +10,8 @@ namespace Code.Wakoz.PurrKurr.Screens.SceneTransition
     public class SceneTransitionView : View
     {
         [SerializeField] private TMP_Text _textField;
-        [SerializeField] private CanvasGroupFader _canvasGroupFader;
-        [SerializeField] private RectTransformScaler _transformScaler;
+        [SerializeField] private CanvasGroupFaderView _canvasGroupFader;
+        [SerializeField] private RectTransformScalerView _transformScaler;
 
         [Header("Blink Delay")]
         [SerializeField] [Min(0)] private float _preDelayBeforeBlinking = 0.2f;
