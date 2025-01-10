@@ -42,14 +42,14 @@ MonoBehaviour:
     - _elementName: Med Attack
       _attackAbility: 1
       _actionDuration: 0.15
-      _actionCooldownDuration: 0.3
+      _actionCooldownDuration: 0.25
       _properties: 0100000008000000
       _characterStateCondition: 05000000
       _opponentStateCondition: 00000000
     - _elementName: Heavy Attack
       _attackAbility: 2
       _actionDuration: 0.15
-      _actionCooldownDuration: 0.4
+      _actionCooldownDuration: 0.35
       _properties: 01000000020000000600000007000000
       _characterStateCondition: 04000000
       _opponentStateCondition: 0300000000000000
