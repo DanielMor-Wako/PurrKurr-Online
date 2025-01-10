@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers;
 
 namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 {
-    public sealed class CameraHandler
+    public sealed class CameraHandler : IUpdateProcessHandler
     {
         public ICamera CurrentCamera => _currentCamera;
         public Vector3 CurrentOffset => _currentOffset;
@@ -50,7 +51,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             _cam.orthographicSize = size;
         }
 
-        public void UpdateCurrent()
+        public void UpdateProcess(float deltaTime)
         {
             if (_currentCamera == null || _currentCamera != null && _currentCamera.IsMinDurationElapsed())
             {

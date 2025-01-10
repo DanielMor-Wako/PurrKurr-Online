@@ -4,10 +4,4 @@
     {
         void NotifyCameraChange(BaseCamera camera);
     }
-    public interface IBindable
-    {
-        // todo: move thos class to more common namespace
-        void Bind();
-        void Unbind();
-    }
 }
