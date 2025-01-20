@@ -6,11 +6,11 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
     [System.Serializable]
     public struct CameraData
     {
+        public CameraOffsetData OffsetData;
+        public CameraTransitionsData Transitions;
         public LifeCycleData Duration;
         public IEnumerable<Transform> Targets;
         public int TargetsCount;
-        public CameraTransitionsData Transitions;
-        public CameraOffsetData OffsetData;
 
         public CameraData(IEnumerable<Transform> targets, LifeCycleData Duration = null, CameraTransitionsData transitionsData = null, CameraOffsetData offsetData = null)
         {
