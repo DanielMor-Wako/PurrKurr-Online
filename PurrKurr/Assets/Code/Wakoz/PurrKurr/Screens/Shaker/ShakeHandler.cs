@@ -10,7 +10,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Shaker
         private readonly Dictionary<Transform, (ShakeData shakeData, float elapsedTime)> _activeShakes = new();
         private readonly Dictionary<Transform, (ShakeData shakeData, float elapsedTime)> _updatedShakes = new();
 
-        private IShakeable shakeable;
+        private IShakeable _shakeable;
         private List<Transform> _keysToRemove = new();
 
         public ShakeHandler()
@@ -71,9 +71,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Shaker
 
         private void PerformShake(ref Transform targetTransform, ShakeData shakeData, float elapsedTime)
         {
-            if (_shakeableImplementations.TryGetValue(shakeData.ShakeStyle, out shakeable))
+            if (_shakeableImplementations.TryGetValue(shakeData.ShakeStyle, out _shakeable))
             {
-                shakeable.PerformShake(ref targetTransform, shakeData, elapsedTime);
+                _shakeable.PerformShake(ref targetTransform, shakeData, elapsedTime);
             }
         }
 
