@@ -2,8 +2,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
 {
     public class Definitions
     {
-
-        public enum ActionType
+        // todo: Check optimization with -> enum : byte
+        public enum ActionType //: byte
         {
             Empty = 0,
             Movement = 1,
@@ -16,26 +16,26 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             Special = 8
         }
 
-        public enum ActionTypeGroup
+        public enum ActionTypeGroup //: byte
         {
             Navigation = 0,
             Action = 1
         }
 
-        public enum PadType
+        public enum PadType //: byte
         {
             Fixed = 0,
             Flexible = 1
         }
 
-        public enum SwipeDistanceType
+        public enum SwipeDistanceType //: byte
         {
             Short = 0,
             Medium = 1,
             Long = 2
         }
 
-        public enum NavigationType
+        public enum NavigationType //: byte
         {
             None = 0,
             Up = 1,
@@ -48,7 +48,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             DownLeft = 8
         }
 
-        public enum CharacterAbility
+        public enum CharacterAbility //: byte
         {
             None = 0,
             Crouch = 1,
@@ -61,7 +61,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             AirGlide = 8,
         }
 
-        public enum AttackAbility
+        public enum AttackAbility //: byte
         {
             LightAttackAlsoDefaultAttack = 0,
             MediumAttack = 1, // attack with up key
@@ -75,7 +75,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             LightBlock = 9, // absorbs damage but can be grabbed
         }
 
-        public enum AttackProperty
+        public enum AttackProperty //: byte
         {
             StunResist = 0,
             StunOnHit = 1,
@@ -100,7 +100,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             CriticalChanceOnHit = 20,
         }
 
-        public enum CharacterBuff
+        public enum CharacterBuff //: byte
         {
             PhysicalResist,
             BlockResist,
@@ -110,14 +110,16 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             PushbackResist,
             CriticalResist,
         }
-        public enum CharacterStatType
-        { // stats that are displayed on the ui
+
+        // stats that are displayed on the ui
+        public enum CharacterStatType //: byte
+        { 
             Health = 0,
             Pawer = 1,
             Supurr = 2,
         }
 
-        public enum Character2DFacingRightType
+        public enum Character2DFacingRightType //: byte
         {
             Auto = 0,
             FixedLeft = 1,
@@ -125,7 +127,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
         }
 
         // InteractableState?
-        public enum ObjectState
+        public enum ObjectState //: byte
         {
             Alive,
             UninterruptibleAnimation,
@@ -157,7 +159,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             Dodging
         }
 
-        public enum Effect2DType
+        public enum Effect2DType //: byte
         {
             None = -1,
             GainHp = 0,
@@ -193,7 +195,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             DetectedInteractible = 29,
         }
 
-        public enum CollectableTypes
+        public enum CollectableTypes //: byte
         {
             RealMoney = 0,
             Gold = 1,
@@ -206,7 +208,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             Suppur = 7,
         }
 
-        public enum GameMode
+        public enum GameMode //: byte
         {
             Tutorial = 0,
             SinglePlayer = 1,
@@ -215,7 +217,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             TeamRaid = 4
         }
 
-        public enum NonePlayableCharacterType
+        public enum NonePlayableCharacterType //: byte
         {
             Mentor,
             Nemesis,
@@ -226,27 +228,27 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             HintGiver,
         }
 
-        public enum SenseType
+        public enum SenseType //: byte
         {
             Sight,
             Sound,
             Smell
         }
 
-        public enum FoodType
+        public enum FoodType //: byte
         {
             Carnivore,
             Omnivore
         }
 
-        public enum MovementType
+        public enum MovementType //: byte
         {
             Ground = 0,
             Air = 1,
             Water = 2,
         }
 
-        public enum PlayableCharacterType
+        public enum PlayableCharacterType //: byte
         {
             Cat,
             Mouse,
@@ -266,7 +268,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             Hedgehog
         }
 
-        public enum ObjectiveTypes
+        public enum ObjectiveTypes //: byte
         {
             ReachLocation, //GetGold 60%
             DefeatFoes,  //GetBones 80%, Hidden for explorers 20%,
@@ -286,14 +288,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             BreedNewCharacter
         }
 
-        public enum AiGoals
+        public enum AiGoals //: byte
         {
             Explore,
             Protect,
             Fight
         }
 
-        public enum CharacterDisplayableStat
+        public enum CharacterDisplayableStat //: byte
         {
             Health, Timer, Pawer, Supurr
         }
