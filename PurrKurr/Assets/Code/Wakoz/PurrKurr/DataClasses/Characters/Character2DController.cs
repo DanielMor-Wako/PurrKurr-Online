@@ -20,6 +20,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public event Action<List<DisplayedableStatData>> OnUpdatedStats;
         public event Action<InteractableObject2DState> OnStateChanged;
+        public event Action<Collider2D> OnColliderEntered;
+        public event Action<Collider2D> OnColliderExited;
 
         [SerializeField] private CharacterStats _stats;
         [Tooltip("Effects to be used instead of the default effect")]
@@ -326,6 +328,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             if (_senses == null) {
                 Debug.LogWarning($"character {name} is missing _senses collider");
             }
+            else
+            {
+                _senses.OnColliderEntered += OnNearInteractable;
+                _senses.OnColliderExited += OnAwayFromInteractable;
+            }
 
             UpdateStats();
             _stats.InitUpgrades();
@@ -339,8 +346,31 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             return Task.CompletedTask;
         }
 
-        protected override void Clean() {
+        protected override void Clean()
+        {
+            if (_senses != null)
+            {
+                _senses.OnColliderEntered -= OnNearInteractable;
+                _senses.OnColliderExited -= OnAwayFromInteractable;
+            }
+        }
 
+        private void OnNearInteractable(Collider2D d)
+        {
+            if (d == _legsCollider)
+            {
+                return;
+            }
+            OnColliderEntered?.Invoke(d);
+        }
+
+        private void OnAwayFromInteractable(Collider2D d)
+        {
+            if (d == _legsCollider)
+            {
+                return;
+            }
+            OnColliderExited?.Invoke(d);
         }
 
         private float GetPlayerLegsHeight() => _legs.anchor.y;
@@ -479,6 +509,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             //UpdateAnimatorRigRotation();
         }
+        [Min(10)] public float _maxFallingVelocity = 30;
+        private Vector2 _fallingVelocity;
 
         private void FixedUpdate()
         {
@@ -486,6 +518,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             {
                 _rigidbody.velocity = ForceDirToSetOnFixedUpdate;
                 ForceDirToSetOnFixedUpdate = Vector2.zero;
+            }
+            else if (_rigidbody.velocity.y < -_maxFallingVelocity)
+            {
+                _fallingVelocity.Set(_rigidbody.velocity.x, -_maxFallingVelocity);
+                _rigidbody.velocity = _fallingVelocity;
             }
             UpdateAnimatorRigRotation();
         }
