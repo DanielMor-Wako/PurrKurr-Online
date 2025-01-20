@@ -51,6 +51,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         public event Action<InteractableObject2DState> OnStateChanged;
         public event Action<List<DisplayedableStatData>> OnStatsChanged;
         public event Action<DetectionZoneTrigger> OnHeroEnterDetectionZone;
+        public event Action<Collider2D> OnInteractablesEntered;
+        public event Action<Collider2D> OnInteractablesExited;
 
         public HandlersCoordinator Handlers { get; private set; }
         [SerializeField] private CameraController _camController;
@@ -91,6 +93,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
             _hero.OnStateChanged -= OnStateChanged;
             _hero.OnUpdatedStats -= UpdateOrInitUiDisplayForCharacter;
+            _hero.OnColliderEntered -= OnInteractablesEntered;
+            _hero.OnColliderExited -= OnInteractablesExited;
 
             CleanBindableHandlers();
         }
@@ -168,6 +172,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             _levelsController.BindEvents(this);
 
+#if !UNITY_EDITOR
+            _startingLevelIndex = 0;
+#endif
             LoadLevel(_startingLevelIndex);
         }
 
@@ -228,9 +235,22 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         private void CheckForConditionalGameEvent(IInteractableBody character, OverlayWindowTrigger windowTrigger, int pageIndex = 0) {
 
             var condition = windowTrigger.GetCondition(pageIndex);
-            if (condition != null) {
-                condition.StartCheckingCondition(character,
-                    () => OnGameEventConditionMet(character, windowTrigger, pageIndex));
+             if (condition != null) {
+                var applySlowMotion = windowTrigger.IsAffectingTimeScale();
+                if (applySlowMotion)
+                {
+                    _gameplayUtils ??= GetController<GamePlayUtils>();
+                    _gameplayUtils.LerpToTargetTimeScale(0);
+                }
+                condition.StartCheck(character,
+                    () =>
+                    {
+                        if (applySlowMotion)
+                        {
+                            _gameplayUtils.LerpToTargetTimeScale();
+                        }
+                        OnGameEventConditionMet(character, windowTrigger, pageIndex);
+                    });
             }
         }
 
@@ -257,6 +277,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             Debug.Log($"Stopping any previous animations");
             GetController<OverlayInstructionsController>().StopInstructions();
             // todo: call the CursorTutorial animation to stop previous animations
+
+            _gameplayUtils?.LerpToTargetTimeScale();
         }
 
         public bool OnExitDetectionZone(DetectionZoneTrigger zone, Collider2D triggeredCollider) {
@@ -340,6 +362,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             {
                 _hero.OnStateChanged -= OnStateChanged;
                 _hero.OnUpdatedStats -= UpdateOrInitUiDisplayForCharacter;
+                _hero.OnColliderEntered -= OnInteractablesEntered;
+                _hero.OnColliderExited -= OnInteractablesExited;
             }
 
             _hero = hero;
@@ -350,6 +374,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             _hero.OnStateChanged += OnStateChanged;
             _hero.OnUpdatedStats += UpdateOrInitUiDisplayForCharacter;
+            _hero.OnColliderEntered += OnInteractablesEntered;
+            _hero.OnColliderExited += OnInteractablesExited;
 
             _firstTimeInitialized = true;
             _heroInitialized = true;
@@ -701,6 +727,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
 
             //ApplyEffectForDuration(character, Effect2DType.DustCloud);
+            SetCameraScreenShake(0.12f, 0.15f);
         }
 
         private void ApplyClingingAction(Character2DController character, Collider2D coll) {
@@ -777,7 +804,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             var nextLink = rope?.GetNextChainedLink(ropeLink, 1);
             if (nextLink != null) {
                 nextLink.DealDamage(1); // updating the rope is called thru the link event
-            }
+            };
         }
 
         private void DisconnectFromRope(IInteractableBody character) {
@@ -967,13 +994,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             //DoTick();
         }*/
 
-        public void SetCameraScreenShake()
+        public void SetCameraScreenShake(float duration = 0.3f, float intensity = 0.4f)
         {
             var camTransform = _camController.transform;
             var curve = AnimationCurve.Linear(0, 0, 1, 0);
             curve.AddKey(0.3f, 1);
             Handlers.GetHandler<ShakeHandler>().TriggerShake(camTransform, 
-                new ShakeData(ShakeStyle.Circular, 0.3f, 0.4f, curve, 
+                new ShakeData(ShakeStyle.Circular, duration, intensity, curve, 
                 new Vector3(camTransform.position.x, camTransform.position.y, -10)));
         }
 
@@ -1410,7 +1437,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
         }
 
-        private async void ApplyAimingAction(Character2DController character, ActionInput actionInput) {
+        private async Task ApplyAimingAction(Character2DController character, ActionInput actionInput) {
 
             var actionType = actionInput.ActionType;
 
@@ -1491,7 +1518,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             _effects?.PlayEffect(effectData, character.transform, initialRotation, stopWhenAnyEffectStarts);
         }
 
-        private async void ApplyProjectileStateWhenThrown(IInteractableBody grabbed, int damage, IInteractableBody thrower, Func<Task> actionOnEnd = null) {
+        private async Task ApplyProjectileStateWhenThrown(IInteractableBody grabbed, int damage, IInteractableBody thrower, Func<Task> actionOnEnd = null) {
 
             _debug.Log("trying as damager -> damage: " + damage);
 
