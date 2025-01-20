@@ -5,6 +5,8 @@ using Code.Wakoz.PurrKurr.DataClasses.Characters;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers;
+using Code.Wakoz.Utils.CameraUtils;
+using System.Linq;
 
 namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 {
@@ -16,14 +18,17 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         private Character2DController CharacterController;
         private GameplayController GameEvents;
+        private Camera _cam;
 
-        private readonly List<Transform> _characterSet;
-        private readonly List<Transform> _focusSet;
-        private readonly List<Transform> _characterAndFocusSet;
+        private List<Transform> _characterSet;
+        private List<Transform> _focusSet;
+        private List<Transform> _characterAndFocusSet;
+        private List<Transform> _nearbyInteractables;
         private readonly LifeCycleData _defaultLifeCycle = new();
 
         [Tooltip("Regulates the value of velocity by the player, used to calculate future position of the player")]
         private readonly float _velocityMulti = 0.5f;
+        private readonly float yOffsetFromCenterWhenCeiling = 25;
 
         public CameraCharacterHandler(CameraHandler cameraHandler, GameplayController gameEvents, Transform CameraFocusTransform, Transform mainCharacter)
         {
@@ -31,10 +36,12 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             CharacterTransform = mainCharacter;
             GameEvents = gameEvents;
             CameraHandler = cameraHandler;
+            _cam = CameraHandler.CameraComponent;
 
             _characterSet = new List<Transform> { CharacterTransform };
             _focusSet = new List<Transform> { FocusTransform };
             _characterAndFocusSet = new List<Transform> { CharacterTransform, FocusTransform };
+            _nearbyInteractables = new List<Transform>();
         }
 
         public void NotifyCameraChange(BaseCamera camera)
@@ -51,6 +58,8 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             GameEvents.OnHeroReposition -= HandleReposition;
             GameEvents.OnCameraFocusPoint -= HandleCameraFocusPoint;
             GameEvents.OnCameraFocusTargets -= HandleCameraFocusTargets;
+            GameEvents.OnInteractablesEntered -= HandleNearbyTargetEntered;
+            GameEvents.OnInteractablesExited -= HandleNearbyTargetExited;
             GameEvents.OnStateChanged -= HandleStateChanged;
             GameEvents.OnAimingAction -= HandleAiming;
             GameEvents.OnAimingActionEnd -= HandleAimingDefault;
@@ -67,6 +76,8 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             GameEvents.OnHeroReposition += HandleReposition;
             GameEvents.OnCameraFocusPoint += HandleCameraFocusPoint;
             GameEvents.OnCameraFocusTargets += HandleCameraFocusTargets;
+            GameEvents.OnInteractablesEntered += HandleNearbyTargetEntered;
+            GameEvents.OnInteractablesExited += HandleNearbyTargetExited;
             GameEvents.OnStateChanged += HandleStateChanged;
             GameEvents.OnAimingAction += HandleAiming;
             GameEvents.OnAimingActionEnd += HandleAimingDefault;
@@ -116,7 +127,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         {
             CharacterTransform.position = newPosition;
             FocusTransform.position = newPosition;
-            CameraHandler.UpdatePositionAndSize(newPosition, 0);
+            CameraHandler.SetPositionAndSize(newPosition, 0);
         }
 
         private void HandleAiming(Definitions.ActionType type, Vector2 position, Quaternion quaternion, bool hitData, Vector3[] lineTrajectory)
@@ -160,6 +171,21 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             }
         }
 
+
+        private void HandleNearbyTargetEntered(Collider2D d)
+        {
+            //Debug.Log("GameEvent: Handle Nearby Target Entered " + d.transform.name);
+            _nearbyInteractables.Add(d.transform);
+            //HandleStateChanged(CharacterController.State);
+        }
+
+        private void HandleNearbyTargetExited(Collider2D d)
+        {
+            //Debug.Log("GameEvent: Handle Nearby Target Exited " + d.transform.name);
+            _nearbyInteractables.Remove(d.transform);
+            //HandleStateChanged(CharacterController.State);
+        }
+
         private void HandleStateChanged(InteractableObject2DState state)
         {
             // Debug.Log("GameEvent: new state "+ state.CurrentState);
@@ -178,9 +204,14 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                     CameraHandler.EnqueueCamera(
                         new CameraData(_characterAndFocusSet,
                         _defaultLifeCycle,
-                        new CameraTransitionsData() { SmoothSpeed = 10f, MaxZoom = 6, MinZoom = 8 },
-                        new CameraOffsetData() { SmoothSpeed = 1f, TargetOffset = Vector3.up * 2 }), 
-                            () => MoveTarget(FocusTransform, CharacterTransform, followSpeed));
+                        //new CameraTransitionsData() { SmoothSpeed = 10f, MaxZoom = 6, MinZoom = 8 },
+                        new CameraTransitionsData() { SmoothSpeed = 5f, MaxZoom = 6, MinZoom = 25, ZoomSpeed = 2 },
+                        new CameraOffsetData() { SmoothSpeed = 1f, TargetOffset = Vector3.up * 2 }),
+                            () =>
+                            {
+                                UpdateFocusByVelocityDirWhenNoFrontWallOrCeiling(FocusTransform, 5, 5f);
+                                //MoveTarget(FocusTransform, CharacterTransform, followSpeed);
+                            });
                     break;
                 
                 case Definitions.ObjectState.Falling:
@@ -199,7 +230,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                     CameraHandler.EnqueueCamera(
                         new CameraData(_characterAndFocusSet,
                         _defaultLifeCycle,
-                        new CameraTransitionsData() { SmoothSpeed = 5f, MaxZoom = 6, MinZoom = 25, ZoomSpeed = 2 },
+                        new CameraTransitionsData() { SmoothSpeed = 2f/*5f*/, MaxZoom = 6, MinZoom = 25, ZoomSpeed = 2 },
                         new CameraOffsetData() { SmoothSpeed = 5, TargetOffset = Vector3.up * 3 }),
                             () => {
                                 //UpdateZoomByVelocity(1f, 6f, 25f);
@@ -214,7 +245,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                     CameraHandler.EnqueueCamera(
                         new CameraData(_characterAndFocusSet,
                         _defaultLifeCycle,
-                        new CameraTransitionsData() { SmoothSpeed = 8f, MaxZoom = 6, MinZoom = 25, ZoomSpeed = 2 },
+                        new CameraTransitionsData() { SmoothSpeed = 2f/*8f*/, MaxZoom = 6, MinZoom = 25, ZoomSpeed = 2 },
                         new CameraOffsetData() { TargetOffset = Vector3.up * 3 }),
                             () => {
                                 //UpdateZoomByVelocity(1f, 8f, 25f);
@@ -288,6 +319,16 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             }
         }
 
+        private IEnumerable<Transform> GetWithNearbyTargets(ref List<Transform> initialSet)
+        {
+            if (_nearbyInteractables.Count == 0)
+            {
+                return initialSet;
+            }
+
+            return initialSet.Concat(_nearbyInteractables);
+        }
+
         private void LerpToTargetPosition(Transform target, Vector3 endPosition, float speed)
         {
             target.position = Vector2.Lerp(target.position, endPosition, speed * Time.deltaTime);
@@ -295,7 +336,18 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         private void MoveTarget(Transform transform, Transform targetTransform, float speed)
         {
-            LerpToTargetPosition(transform, ((Vector2)targetTransform.position + (CharacterController.Velocity * _velocityMulti)), speed);
+            var newPos = Vector2.zero;
+
+            if (_nearbyInteractables.Count > 0)
+            {
+                newPos = CameraUtils.GetAveragePoint(ref _nearbyInteractables);
+            }
+            else
+            {
+                newPos = (Vector2)targetTransform.position + (CharacterController.Velocity * _velocityMulti);
+            }
+
+            LerpToTargetPosition(transform, newPos, speed);
         }
 
         private void MoveTargetAxis(Transform target, Transform endTarget, float speed, bool lockXAxis = false, bool lockYAxis = false)
@@ -318,7 +370,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
             if (freeFallingHitPoint != Vector3.zero)
             {
-                LerpToTargetPosition(FocusTransform, freeFallingHitPoint, 3);
+                LerpToTargetPosition(FocusTransform, freeFallingHitPoint, 4);
             }
             
             var newZoomSpeed = isLargeFallingDistance && isFallingHighVelocity ? 5 : 2;
@@ -355,7 +407,8 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             }
             else if (isCeiling)
             {
-                endPosition.y -= 15;
+                var offsetFromCenter = CameraUtils.GetOffsetFromCenter(endPosition, ref _cam);
+                endPosition.y += yOffsetFromCenterWhenCeiling * offsetFromCenter.y;
             }
             
             LerpToTargetPosition(transform, endPosition, !isFrontWallOrCeiling ? speedWhenOnSurface : speedBackToCenter);
