@@ -17,7 +17,7 @@ namespace Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool {
         public List<Character2DController> _heroes;
         public List<ProjectileController> _projectiles;
         public List<RopeController> _ropes;
-        // todo: make all these to ObjectPoolsController
+        // todo: make all these to ObjectPoolsHandler
         private Dictionary<System.Type, object> objectPools = new Dictionary<System.Type, object>();
 
         protected override void Clean() { }
