@@ -1,6 +1,5 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
-using Code.Wakoz.PurrKurr.Screens.Shaker;
 using Code.Wakoz.Utils.GraphicUtils.TransformUtils;
 using System.Threading.Tasks;
 using UnityEngine;
