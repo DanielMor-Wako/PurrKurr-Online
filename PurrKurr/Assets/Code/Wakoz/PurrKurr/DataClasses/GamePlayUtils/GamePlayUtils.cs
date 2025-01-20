@@ -25,7 +25,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
         [SerializeField][Range(-1f, 1f)] public float _gravityXDirection = 0f;
         [SerializeField][Range(-1f, 1f)] public float _gravityYDirection = -1f;
 
-        private float _timeScaleTarget;
+        private float _targetTimeScale;
         private Coroutine _timeScaleTransitionCoroutine;
 
         protected override void Clean() { }
@@ -38,7 +38,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
         }
 
         [ContextMenu("Set Gravity Direction")]
-        public void RandomizeGravity() {
+        public void SetGravity() {
             Physics2D.gravity = new Vector2(_gravityXDirection, _gravityYDirection) * _gravityForce;
         }
 
@@ -108,16 +108,28 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
             utilState.ChangeState(isActive ? 1 : 0);
         }
 
-        private void TimeScaleTransition(bool slomoActive) {
+        private void TimeScaleTransition(bool slomoActive)
+        {
 
-            _timeScaleTarget = slomoActive ? _slomoTimeScale : _defaultTimeScale;
+            _targetTimeScale = slomoActive ? _slomoTimeScale : _defaultTimeScale;
 
-            if (_timeScaleTransitionCoroutine != null) {
+            LerpToTargetTimeScale(_targetTimeScale);
+        }
+
+        public void LerpToTargetTimeScale(float targetTimeScale = -1)
+        {
+            if (targetTimeScale == -1)
+            {
+                targetTimeScale = _defaultTimeScale;
+            }
+
+            if (_timeScaleTransitionCoroutine != null)
+            {
                 StopCoroutine(_timeScaleTransitionCoroutine);
                 _timeScaleTransitionCoroutine = null;
             }
-            
-            _timeScaleTransitionCoroutine = StartCoroutine(TransitionTimeScale(_timeScaleTarget));
+
+            _timeScaleTransitionCoroutine = StartCoroutine(TransitionTimeScale(targetTimeScale));
         }
 
         private IEnumerator TransitionTimeScale(float timeScaleTarget) {
