@@ -154,6 +154,7 @@ GameObject:
   - component: {fileID: 1546606424590319026}
   - component: {fileID: 234548457247127939}
   - component: {fileID: 7255469623214153063}
+  - component: {fileID: 2140453249870538017}
   m_Layer: 5
   m_Name: PointerHolder
   m_TagString: Untagged
@@ -201,6 +202,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eddc1fbd4bd796345832996a9560b9bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!225 &2140453249870538017
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3993758976113689436}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &5566125310465126287
 GameObject:
   m_ObjectHideFlags: 0
