@@ -19,6 +19,8 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         private CameraController _camController;
         private Camera _cam;
 
+        public Camera CameraComponent => _cam;
+
         public CameraHandler(CameraController controller)
         {
             _camController = controller;
@@ -44,7 +46,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         public int CamerasQueueCount() => _camerasQueueCount;
 
-        public void UpdatePositionAndSize(Vector3 position, float size = 0)
+        public void SetPositionAndSize(Vector3 position, float size = 0)
         {
             position.z = -10f;
             _cam.transform.position = position;
