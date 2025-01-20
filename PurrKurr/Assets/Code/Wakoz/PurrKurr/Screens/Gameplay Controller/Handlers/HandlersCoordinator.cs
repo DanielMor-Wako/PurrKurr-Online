@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
         }
 
         /// <summary>
-        /// Add Handlers individually or as collection
+        /// Add Handlers individually or as a collection
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="handlers"></param>
@@ -33,26 +34,20 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
         }
 
         /// <summary>
-        /// Get the handler from the Dictionary By class type that implements IHandler
+        /// Get the handler from the Dictionary by class type that implements IHandler
         /// Return null for reference types or default value for value types
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public T GetHandler<T>() where T : class, IHandler
         {
-            var typeToMatch = typeof(T);
-            foreach (var kvp in _handlers)
-            {
-                if (kvp.Key.GetType() == typeToMatch)
-                {
-                    return kvp.Key as T;
-                }
-            }
-            return default;
+            return _handlers.Keys
+                .OfType<T>()
+                .FirstOrDefault();
         }
 
         /// <summary>
-        /// Updates all the handlers that require frequent update loop
+        /// Updates all the handlers that require a frequent update loop
         /// </summary>
         public void UpdateHandlers()
         {
@@ -73,7 +68,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
             foreach (var handler in _bindableHandlers)
             {
                 AddHandler(handler);
-
                 handler.Bind();
             }
         }
@@ -83,7 +77,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
         /// </summary>
         private void UnbindHandlers()
         {
-            foreach (var handler in _handlers.Values.OfType<IBindableHandler>())
+            foreach (var handler in _handlers.Keys.OfType<IBindableHandler>())
             {
                 handler?.Unbind();
             }
@@ -95,8 +89,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
         public void Dispose()
         {
             UnbindHandlers();
-            
-            _handlers = null;
+            _handlers.Clear();
         }
     }
 }
