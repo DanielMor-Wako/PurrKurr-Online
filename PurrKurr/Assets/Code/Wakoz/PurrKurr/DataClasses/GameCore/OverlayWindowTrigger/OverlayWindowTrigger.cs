@@ -8,7 +8,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
+namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
+{
 
     [DefaultExecutionOrder(15)]
     public class OverlayWindowTrigger : DetectionZoneTrigger {
@@ -21,7 +22,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
         [Tooltip("Sets the View state to active and deactive")]
         [SerializeField] private MultiStateView _state;
         
-        private IGameEventCondition _condition;
+        private IConditionChecker _condition;
 
         private GameplayController _gameplayController;
         private int _activationsCount = 0;
@@ -30,7 +31,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
             UpdateStateView(false);
         }
 
-        public IGameEventCondition GetCondition(int pageIndex = 0) {
+        public IConditionChecker GetCondition(int pageIndex = 0) {
 
             if (_conditions == null) {
                 return null;
@@ -47,6 +48,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
             }
 
             return _conditions.GetAnimationData(pageIndex);
+        }
+
+        public bool IsAffectingTimeScale(int pageIndex = 0)
+        {
+
+            if (_conditions == null)
+            {
+                return false;
+            }
+
+            return _conditions.IsApplyingSlowMotion();
         }
 
         protected override void Clean() {
@@ -97,7 +109,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
             if (_gameplayController.OnExitDetectionZone(this, triggeredCollider)) {
 
                 _activationsCount++;
-                _condition?.EndCheckingCondition();
+                _condition?.EndCheck();
             }
 
             UpdateStateView(false);
@@ -158,5 +170,4 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger {
         }
         
     }
-
 }
