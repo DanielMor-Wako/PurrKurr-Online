@@ -35,6 +35,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
         }
 
         private void SetAnchor() {
+            if (_cling == null)
+            {
+                return;
+            }
+
             _cling.connectedBody = SingleController.GetController<AnchorsController>().GetAnchorRigidbody(_anchor);
         }
 
