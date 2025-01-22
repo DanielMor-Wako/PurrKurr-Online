@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 7897149326237880893}
   - component: {fileID: 5272395028810765300}
   m_Layer: 0
-  m_Name: GamePlayUtils
+  m_Name: Aiming Visualizer Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11181,6 +11181,7 @@ MonoBehaviour:
   GroundCheck_PosOffset: {x: 0.65, y: 0}
   _solidColliders: []
   _traversableColliders: []
+  _maxFallingVelocity: 30
 --- !u!114 &3439874394616061124
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11967,18 +11968,18 @@ MonoBehaviour:
   _currentOffset: {x: 0, y: 0}
   _camerasInQueue: 0
   _currentCamera:
-    Duration:
-      MinimumDuration: 0
-    TargetsCount: 0
+    OffsetData:
+      TargetOffset: {x: 0, y: 0}
+      SmoothSpeed: 1
     Transitions:
       SmoothSpeed: 8
       MinZoom: 25
       MaxZoom: 6
       ZoomLimiter: 65
       ZoomSpeed: 3
-    OffsetData:
-      TargetOffset: {x: 0, y: 0}
-      SmoothSpeed: 1
+    Duration:
+      MinimumDuration: 0
+    TargetsCount: 0
   _targetsList: []
 --- !u!20 &7779578158065701831
 Camera:
@@ -12364,6 +12365,7 @@ MonoBehaviour:
   GroundCheck_PosOffset: {x: 0.65, y: 0}
   _solidColliders: []
   _traversableColliders: []
+  _maxFallingVelocity: 30
 --- !u!114 &5581913081289377731
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18677,6 +18679,7 @@ MonoBehaviour:
   GroundCheck_PosOffset: {x: 0.65, y: 0}
   _solidColliders: []
   _traversableColliders: []
+  _maxFallingVelocity: 30
 --- !u!114 &2357304460092227264
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20692,7 +20695,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2842913602912303923, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -949.08875
+      value: -949.08887
       objectReference: {fileID: 0}
     - target: {fileID: 3355604091668540396, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_Pivot.x
@@ -20918,6 +20921,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1916745089048627728}
+    - target: {fileID: 7419877846744020591, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 3.6529999
+      objectReference: {fileID: 0}
     - target: {fileID: 7600501571068317291, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -585
