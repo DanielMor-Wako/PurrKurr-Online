@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection {
+namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection
+{
 
     [DefaultExecutionOrder(15)]
     public class DetectionZoneTrigger : Controller {
@@ -52,5 +53,4 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection {
         private void handleColliderEntered(Collider2D triggeredCollider) => OnColliderEntered?.Invoke(triggeredCollider);
 
     }
-
 }

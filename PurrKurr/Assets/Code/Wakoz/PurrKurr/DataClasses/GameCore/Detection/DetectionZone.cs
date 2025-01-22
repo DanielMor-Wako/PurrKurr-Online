@@ -8,36 +8,43 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection
     [RequireComponent(typeof(Collider2D))]
     public class DetectionZone : MonoBehaviour
     {
-
         public event Action<Collider2D> OnColliderEntered;
         public event Action<Collider2D> OnColliderExited;
 
-        private List<Collider2D> _overlappingColliders = new();
+        private readonly HashSet<Collider2D> _colliders = new();
+
+        private Collider2D[] _collArray;
+        private bool _isDirty = true;
 
         public Collider2D[] GetColliders()
         {
-            if (_overlappingColliders == null)
+            if (!_isDirty)
             {
-                return null;
+                return _collArray;
             }
 
-            return _overlappingColliders.ToArray();
+            _isDirty = false;
+
+            _collArray = new Collider2D[_colliders.Count];
+            _colliders.CopyTo(_collArray);
+
+            return _collArray;
         }
 
         private void OnTriggerEnter2D(Collider2D coll)
         {
-            if (!_overlappingColliders.Contains(coll))
+            if (_colliders.Add(coll))
             {
-                _overlappingColliders.Add(coll);
+                _isDirty = true;
                 OnColliderEntered?.Invoke(coll);
             }
         }
 
         private void OnTriggerExit2D(Collider2D coll)
         {
-            if (_overlappingColliders.Contains(coll))
+            if (_colliders.Remove(coll))
             {
-                _overlappingColliders.Remove(coll);
+                _isDirty = true;
                 OnColliderExited?.Invoke(coll);
             }
         }
