@@ -1,14 +1,16 @@
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
+using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Views;
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
+namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils
+{
 
-    [DefaultExecutionOrder(12)]
-    public sealed class GamePlayUtils : SingleController {
-
+    [DefaultExecutionOrder(15)]
+    public sealed class AimingVisualizerController : SingleController
+    {
         [SerializeField] private MultiStateView _cursor;
         [SerializeField] private MultiStateView _angle;
         [SerializeField] private LineRenderer _trajectory;
@@ -25,20 +27,41 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
         [SerializeField][Range(-1f, 1f)] public float _gravityXDirection = 0f;
         [SerializeField][Range(-1f, 1f)] public float _gravityYDirection = -1f;
 
+        private GameplayController _gameplayController;
         private float _targetTimeScale;
         private Coroutine _timeScaleTransitionCoroutine;
 
-        protected override void Clean() { }
+        protected override void Clean() 
+        {
+            if (_gameplayController != null)
+            {
+                _gameplayController.OnAimingAction -= ActivateVisualizer;
+                _gameplayController.OnAimingActionEnd -= DeactivateVisualizer;
+                _gameplayController.OnTimeScaleChanged -= LerpToTargetTimeScale;
+                _gameplayController.OnTimeScaleDefault -= LerpToDefaultTimeScale;
+            }
+        }
 
-        protected override Task Initialize() {
-
+        protected override Task Initialize()
+        {
             Time.timeScale = _defaultTimeScale;
+
+            _gameplayController ??= GetController<GameplayController>();
+
+            if (_gameplayController != null)
+            {
+                _gameplayController.OnAimingAction += ActivateVisualizer;
+                _gameplayController.OnAimingActionEnd += DeactivateVisualizer;
+                _gameplayController.OnTimeScaleChanged += LerpToTargetTimeScale;
+                _gameplayController.OnTimeScaleDefault += LerpToDefaultTimeScale;
+            }
 
             return Task.CompletedTask;
         }
 
         [ContextMenu("Set Gravity Direction")]
-        public void SetGravity() {
+        public void SetGravity()
+        {
             Physics2D.gravity = new Vector2(_gravityXDirection, _gravityYDirection) * _gravityForce;
         }
 
@@ -50,31 +73,32 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
 
         public void ToggleSlomoGameAssist() => _affectTimeScale = !_affectTimeScale;
 
-        public void ActivateUtil(Definitions.ActionType actionType, Vector2 position, Quaternion quaternion, bool hasHitData, Vector3[] linePoints) => 
-            UpdateUtilByActionType(actionType, true, position, quaternion, hasHitData, linePoints);
+        private void ActivateVisualizer(Definitions.ActionType actionType, Vector2 position, Quaternion quaternion, bool hasHitData, Vector3[] linePoints) =>
+            UpdateByActionType(actionType, true, position, quaternion, hasHitData, linePoints);
 
-        public void DeactivateUtil(Definitions.ActionType actionType) =>
-            UpdateUtilByActionType(actionType, false, Vector2.zero, Quaternion.identity);
+        private void DeactivateVisualizer(Definitions.ActionType actionType) =>
+            UpdateByActionType(actionType, false, Vector2.zero, Quaternion.identity);
 
-        private void UpdateUtilByActionType(Definitions.ActionType actionType, bool isActive, Vector2 position, Quaternion quaternion, bool hasHitData = false, Vector3[] linePoints = null) {
-
+        private void UpdateByActionType(Definitions.ActionType actionType, bool isActive, Vector2 position, Quaternion quaternion, bool hasHitData = false, Vector3[] linePoints = null)
+        {
             TimeScaleTransition(_affectTimeScale && isActive);
 
-            switch (actionType) {
-
+            switch (actionType)
+            {
                 case Definitions.ActionType.Rope:
-                    UpdateUtil(_cursor?.transform, isActive, position, quaternion);
-                    UpdateUtilState(_cursor, hasHitData);
+                    UpdatePosAndRotation(_cursor?.transform, isActive, position, quaternion);
+                    UpdateState(_cursor, hasHitData);
                     break;
 
                 case Definitions.ActionType.Projectile:
-                    UpdateUtil(_angle?.transform, isActive, position, quaternion);
-                    UpdateUtilState(_angle, hasHitData);
+                    UpdatePosAndRotation(_angle?.transform, isActive, position, quaternion);
+                    UpdateState(_angle, hasHitData);
                     break;
 
                 case Definitions.ActionType.Jump:
-                    UpdateUtil(_trajectory?.transform, isActive, position, quaternion);
-                    if (linePoints != null && _trajectory != null) {
+                    UpdatePosAndRotation(_trajectory?.transform, isActive, position, quaternion);
+                    if (linePoints != null && _trajectory != null)
+                    {
                         _trajectory.positionCount = linePoints.Length;
                         _trajectory.SetPositions(linePoints);
                     }
@@ -86,22 +110,25 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
 
         }
 
-        private void UpdateUtil(Transform utilTransform, bool isActive, Vector2 position, Quaternion quaternion) {
-            
-            if (utilTransform == null) {
+        private void UpdatePosAndRotation(Transform utilTransform, bool isActive, Vector2 position, Quaternion quaternion)
+        {
+            if (utilTransform == null)
+            {
                 return;
             }
 
-            if (isActive) {
+            if (isActive)
+            {
                 utilTransform.transform.SetPositionAndRotation(position, quaternion);
             }
 
             utilTransform.gameObject.SetActive(isActive);
         }
 
-        private void UpdateUtilState(MultiStateView utilState, bool isActive) {
-
-            if (utilState == null) {
+        private void UpdateState(MultiStateView utilState, bool isActive)
+        {
+            if (utilState == null)
+            {
                 return;
             }
 
@@ -110,17 +137,16 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
 
         private void TimeScaleTransition(bool slomoActive)
         {
-
             _targetTimeScale = slomoActive ? _slomoTimeScale : _defaultTimeScale;
 
             LerpToTargetTimeScale(_targetTimeScale);
         }
 
-        public void LerpToTargetTimeScale(float targetTimeScale = -1)
+        private void LerpToTargetTimeScale(float targetTimeScale)
         {
-            if (targetTimeScale == -1)
+            if (!_affectTimeScale || targetTimeScale < 0)
             {
-                targetTimeScale = _defaultTimeScale;
+                return;
             }
 
             if (_timeScaleTransitionCoroutine != null)
@@ -132,13 +158,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils {
             _timeScaleTransitionCoroutine = StartCoroutine(TransitionTimeScale(targetTimeScale));
         }
 
-        private IEnumerator TransitionTimeScale(float timeScaleTarget) {
+        private void LerpToDefaultTimeScale() 
+            => LerpToTargetTimeScale(_defaultTimeScale);
 
+        private IEnumerator TransitionTimeScale(float timeScaleTarget)
+        {
             float elapsedTime = 0f;
             float initialTimeScale = Time.timeScale;
             float target = timeScaleTarget;
 
-            while (elapsedTime < _transitionDuration) {
+            while (elapsedTime < _transitionDuration)
+            {
                 Time.timeScale = Mathf.Lerp(initialTimeScale, target, elapsedTime / _transitionDuration);
                 elapsedTime += Time.unscaledDeltaTime;
                 yield return null;
