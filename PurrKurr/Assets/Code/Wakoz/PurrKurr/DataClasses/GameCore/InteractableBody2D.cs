@@ -4,7 +4,8 @@ using Code.Wakoz.Utils.GraphicUtils.TransformUtils;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
+namespace Code.Wakoz.PurrKurr.DataClasses.GameCore
+{
 
     [DefaultExecutionOrder(15)]
     public class InteractableBody2D : Controller, IInteractableBody {
@@ -82,7 +83,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
 
         public bool IsGrabbing() => _grabbedBody != null;
 
-        public bool IsGrabbed() => _cling.connectedBody.simulated && _grabbedBody != null;
+        public bool IsGrabbed() => _cling != null && _cling.connectedBody.simulated && _grabbedBody != null;
 
         public IInteractableBody GetGrabbedTarget() => _grabbedBody;
 
