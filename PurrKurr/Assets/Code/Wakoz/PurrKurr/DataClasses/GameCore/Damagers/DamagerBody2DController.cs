@@ -72,12 +72,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Damagers
                 return;
             }
 
-            var interactableBody = interactable.GetInteractable();
+            var interactableBody = interactable.GetInteractableBody();
             if (interactableBody == null)
             {
                 return;
             }
-            Debug.Log($"interactable coll state {interactableBody.GetCurrentState()}");
+            //Debug.Log($"interactable coll state {interactableBody.GetCurrentState()}");
             // Apply force
             if (interactableBody.GetCurrentState() is not Enums.Definitions.ObjectState.Blocking)
             {
