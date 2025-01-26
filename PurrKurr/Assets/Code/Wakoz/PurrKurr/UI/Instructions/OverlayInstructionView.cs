@@ -1,9 +1,10 @@
 ﻿using Code.Wakoz.Utils.Extensions;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.UI.Instructions {
-    public class OverlayInstructionView : MonoBehaviour {
-
+namespace Code.Wakoz.PurrKurr.UI.Instructions
+{
+    public class OverlayInstructionView : MonoBehaviour
+    {
         [SerializeField] private Animator _animator;
         [SerializeField] private Transform _pointerHolder;
 
@@ -12,8 +13,8 @@ namespace Code.Wakoz.PurrKurr.UI.Instructions {
         public static int HoldSwipeHash = Animator.StringToHash("HoldSwipe");
         public static int IsAimHash = Animator.StringToHash("IsAim");
 
-        public void UpdateAnimatorValues(OverlayInstructionModel data) {
-
+        public void UpdateAnimatorValues(OverlayInstructionModel data)
+        {
             var animationData = data._animationData;
             UpdateActiveState(data.IsActive);
             _animator.SetBool(IsSwipeHash, animationData?.SwipeAngle != -1);
@@ -24,14 +25,15 @@ namespace Code.Wakoz.PurrKurr.UI.Instructions {
             eulr.z = animationData.SwipeAngle > -1 ? animationData.SwipeAngle : 0;
             _pointerHolder.eulerAngles = eulr;
 
-            if (animationData?.CursorTarget) {
+            if (animationData?.CursorTarget)
+            {
                 transform.position = animationData.CursorTarget.transform.position;
             }
 
         }
 
-        public void UpdateActiveState(bool isActive) {
-
+        public void UpdateActiveState(bool isActive)
+        {
             _animator.SetBool(ActiveHash, isActive);
         }
 
