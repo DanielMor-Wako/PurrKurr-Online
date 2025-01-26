@@ -6,7 +6,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
 
         [SerializeField] private IInteractableBody _damageableBody;
        
-        public IInteractableBody GetInteractable() => _damageableBody;
+        public IInteractableBody GetInteractableBody() => _damageableBody;
 
         private void Awake() {
             

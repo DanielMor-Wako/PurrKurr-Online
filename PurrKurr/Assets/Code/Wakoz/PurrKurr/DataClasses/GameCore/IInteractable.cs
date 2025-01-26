@@ -1,7 +1,7 @@
 ﻿namespace Code.Wakoz.PurrKurr.DataClasses.GameCore
 {
-    public interface IInteractable {
-
-        IInteractableBody GetInteractable();
+    public interface IInteractable 
+    {
+        IInteractableBody GetInteractableBody();
     }
 }
