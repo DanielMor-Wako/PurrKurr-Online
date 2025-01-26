@@ -1,6 +1,5 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
 using Code.Wakoz.PurrKurr.Views;
-using System;
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -8,7 +7,7 @@ using UnityEngine;
 namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
 {
     [DefaultExecutionOrder(15)]
-    public class ObjectDetectionTrigger : DetectionZoneTrigger
+    public class CollisionImpactTrigger : DetectionZoneTrigger
     {
         [Tooltip("Sets the max activation count the trigger. 0 = infinite activations")]
         [SerializeField][Min(0)] private int _activationLimit = 0;
