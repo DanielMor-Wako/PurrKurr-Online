@@ -232,9 +232,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
 
                     if (ended) {
                         isActionPerformed = true;
-                        // todo: get dodge direction from inputAction and set as jump with active dodge time
                         character.TryGetDodgeDirection(actionInput.NormalizedDirection * 5, ref newPositionToSetOnFixedUpdate);
-
                         return true;
                     }
 
