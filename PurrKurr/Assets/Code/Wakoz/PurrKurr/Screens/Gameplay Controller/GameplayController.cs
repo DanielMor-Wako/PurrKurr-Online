@@ -10,7 +10,6 @@ using Code.Wakoz.PurrKurr.DataClasses.Characters;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles;
-using Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils;
 using Code.Wakoz.PurrKurr.Screens.CameraSystem;
 using Code.Wakoz.PurrKurr.Screens.Init;
 using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
@@ -26,6 +25,7 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger;
 using Code.Wakoz.PurrKurr.UI.Instructions;
 using Code.Wakoz.PurrKurr.Screens.Shaker;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers;
+using UnityEngine.TextCore.Text;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 {
@@ -50,6 +50,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         public event Action<InteractableObject2DState> OnStateChanged;
         public event Action<List<DisplayedableStatData>> OnStatsChanged;
         public event Action<DetectionZoneTrigger> OnHeroEnterDetectionZone;
+        public event Action<DetectionZoneTrigger> OnHeroExitDetectionZone;
+        //public event Action<DetectionZoneTrigger> OnHeroConditionCheck;
+        public event Action<DetectionZoneTrigger> OnHeroConditionMet;
         public event Action<Collider2D> OnInteractablesEntered;
         public event Action<Collider2D> OnInteractablesExited;
         public event Action<float> OnTimeScaleChanged;
@@ -178,61 +181,86 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             LoadLevel(_startingLevelIndex);
         }
 
-        public bool OnEnterDetectionZone(DetectionZoneTrigger zone, Collider2D triggeredCollider) {
-
-            var interactable = triggeredCollider.GetComponent<IInteractable>();
-            var interactableBody = interactable.GetInteractable();
-
-            if (interactableBody != (IInteractableBody)_hero) {
+        private bool IsInteractableBodyTheMainHero(IInteractable interactable)
+        {
+            if (interactable == null)
                 return false;
-            }
 
-            var windowPageData = zone.GetWindowData();
+            var interactableBody = interactable.GetInteractableBody();
+            return interactableBody == (IInteractableBody)_hero;
+        }
 
-            if (zone is DoorController) {
+        public bool OnExitDetectionZone(DetectionZoneTrigger zone, Collider2D triggeredCollider)
+        {
+            if (!IsInteractableBodyTheMainHero(triggeredCollider.GetComponent<IInteractable>()))
+                return false;
 
-                var door = zone as DoorController;
-                foreach (var page in windowPageData) {
+            OnHeroExitDetectionZone?.Invoke(zone);
 
-                    var confirmButtons =
-                        page.ButtonsRawData.Where(obj => obj.ButtonType == GenericButtonType.Confirm).FirstOrDefault();
+            return true;
+        }
 
-                    if (confirmButtons != null) {
-                        var nextDoor = door.GetNextDoor();
-                        var nextDoorPosition = nextDoor != null ? nextDoor.gameObject : null;
-                        confirmButtons.ClickedAction = () => LoadLevel(door.GetRoomIndex(), nextDoorPosition);
-                    }
-                }
+        public bool OnEnterDetectionZone(DetectionZoneTrigger zone, Collider2D triggeredCollider)
+        {
+            var interactable = triggeredCollider.GetComponent<IInteractable>();
+            if (!IsInteractableBodyTheMainHero(interactable))
+                return false;
 
-            } else if (zone is OverlayWindowTrigger) {
-
-                var windowTrigger = zone as OverlayWindowTrigger;
-                foreach (var page in windowPageData) {
-
-                    var confirmButtons =
-                        page.ButtonsRawData.Where(obj => obj.ButtonType is GenericButtonType.Confirm or GenericButtonType.Close).FirstOrDefault();
-
-                    if (confirmButtons != null) {
-                        confirmButtons.ClickedAction = () => windowTrigger.TurnOffWindow();
-                    }
-                }
-
-                CheckForPageModificators(interactableBody, windowTrigger);
-            }
-
-            GetController<OverlayWindowController>().ShowWindow(windowPageData);
+            SetButtonsActionByDetectionZone(zone);
+            CheckForConditionalGameEvent(interactable.GetInteractableBody(), zone);
 
             OnHeroEnterDetectionZone?.Invoke(zone);
 
             return true;
         }
 
-        private void CheckForPageModificators(IInteractableBody character, OverlayWindowTrigger windowTrigger, int pageIndex = 0) {
-            CheckForConditionalGameEvent(character, windowTrigger);
-            CheckForAnimationEvent(character, windowTrigger);
+        // todo: move this to a handler script of windowOverlayButtonsHandler
+        private void SetButtonsActionByDetectionZone(DetectionZoneTrigger zone)
+        {
+            var windowPageData = zone.GetWindowData();
+
+            if (zone is DoorController)
+            {
+                var door = zone as DoorController;
+                for (var i = 0; i < windowPageData.Count; i++)
+                {
+                    var page = windowPageData[i];
+                    var confirmButtons =
+                        page.ButtonsRawData.Where(obj => obj.ButtonType == GenericButtonType.Confirm).FirstOrDefault();
+
+                    if (confirmButtons != null)
+                    {
+                        var nextDoor = door.GetNextDoor();
+                        var nextDoorPosition = nextDoor != null ? nextDoor.gameObject : null;
+                        confirmButtons.ClickedAction = () => LoadLevel(door.GetRoomIndex(), nextDoorPosition);
+                    }
+                }
+
+            }
+            else if (zone is OverlayWindowTrigger)
+            {
+                var windowTrigger = zone as OverlayWindowTrigger;
+
+                for (var i = 0; i < windowPageData.Count; i++)
+                {
+                    OverlayWindowData page = windowPageData[i];
+                    var confirmButtons =
+                        page.ButtonsRawData.Where(obj => obj.ButtonType is GenericButtonType.Confirm or GenericButtonType.Close).FirstOrDefault();
+
+                    if (confirmButtons != null)
+                    {
+                        confirmButtons.ClickedAction = () => windowTrigger.TurnOffWindow();
+                    }
+                }
+            }
         }
 
-        private void CheckForConditionalGameEvent(IInteractableBody character, OverlayWindowTrigger windowTrigger, int pageIndex = 0) {
+        private void CheckForConditionalGameEvent(IInteractableBody character, DetectionZoneTrigger zone, int pageIndex = 0) {
+
+            if (character == null || zone is not OverlayWindowTrigger)
+                return;
+
+            var windowTrigger = zone as OverlayWindowTrigger;
 
             var condition = windowTrigger.GetCondition(pageIndex);
              if (condition != null) {
@@ -240,8 +268,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 if (applySlowMotion)
                 {
                     OnTimeScaleChanged?.Invoke(0);
-                    //_gameplayUtils ??= GetController<GamePlayUtils>();
-                    //_gameplayUtils.LerpToTargetTimeScale(0);
                 }
                 condition.StartCheck(character,
                     () =>
@@ -249,54 +275,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         if (applySlowMotion)
                         {
                             OnTimeScaleDefault?.Invoke();
-                            //_gameplayUtils.LerpToTargetTimeScale();
                         }
-                        OnGameEventConditionMet(character, windowTrigger, pageIndex);
+                        OnHeroConditionMet?.Invoke(zone);
                     });
             }
-        }
-
-        private void CheckForAnimationEvent(IInteractableBody character, OverlayWindowTrigger windowTrigger, int pageIndex = 0) {
-
-            var clickAnimationData = windowTrigger.GetAnimationData(pageIndex);
-            if (clickAnimationData != null) {
-                foreach (var animation in clickAnimationData) {
-                    var target = animation.CursorTarget;
-                    if (target != null) {
-                        // todo: call the CursorTutorial animation to start new animation
-                        Debug.Log($"Starting animation of target {target.name} - Angle: {animation.SwipeAngle} -> HoldSwipe: {animation.IsHoldSwipe}");
-                        var newInstruction = new OverlayInstructionModel(animation);
-                        GetController<OverlayInstructionsController>().StartInstruction(newInstruction);
-                    }
-                }
-            }
-        }
-
-        private void OnGameEventConditionMet(IInteractableBody character, OverlayWindowTrigger windowTrigger, int pageIndex) {
-            GetController<OverlayWindowController>().ShowNextPage(true);
-            //CheckForConditionalGameEvent(character, windowTrigger, pageIndex++);
-
-            Debug.Log($"Stopping any previous animations");
-            GetController<OverlayInstructionsController>().StopInstructions();
-            // todo: call the CursorTutorial animation to stop previous animations
-
-            //OnDefaultTimeScale?.Invoke();
-            //_gameplayUtils?.LerpToTargetTimeScale();
-        }
-
-        public bool OnExitDetectionZone(DetectionZoneTrigger zone, Collider2D triggeredCollider) {
-
-            var x = triggeredCollider.GetComponent<IInteractable>();
-            var character = x.GetInteractable();
-
-            if (character != (IInteractableBody)_hero) {
-                return false;
-            }
-
-            GetController<OverlayWindowController>().HideWindow();
-            GetController<OverlayInstructionsController>().StopInstructions();
-
-            return true;
         }
 
         public void LoadLevel(int levelToLoad, GameObject heroSpawnPoint = null)
@@ -1080,7 +1062,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                 var interactable = col.GetComponent<IInteractable>();
 
-                var interactableBody = interactable?.GetInteractable();
+                var interactableBody = interactable?.GetInteractableBody();
 
                 if (interactableBody == null) {
                     continue;
@@ -1562,7 +1544,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         continue;
                     }
 
-                    var interactableBody = damagee.GetInteractable();
+                    var interactableBody = damagee.GetInteractableBody();
                     if (interactableBody != null && !damagees.Contains(interactable)) {
 
                         objClosestPosition = interactable.ClosestPoint(legsPosition);
