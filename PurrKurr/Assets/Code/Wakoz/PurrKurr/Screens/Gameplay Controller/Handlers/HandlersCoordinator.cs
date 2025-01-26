@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,11 +7,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
 {
     public sealed class HandlersCoordinator : IDisposable
     {
-        private Dictionary<IHandler, Type> _handlers;
+        private static readonly Dictionary<IHandler, Type> _handlers = new();
 
         public HandlersCoordinator()
         {
-            _handlers = new Dictionary<IHandler, Type>();
+            //_handlers = new Dictionary<IHandler, Type>();
         }
 
         /// <summary>
@@ -44,6 +43,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
             return _handlers.Keys
                 .OfType<T>()
                 .FirstOrDefault();
+        }
+        public T GetHandlerLinq<T>() where T : class, IHandler
+        {
+            return _handlers.Keys.Where((x) => x.GetType() == typeof(T)) as T;
         }
 
         /// <summary>
