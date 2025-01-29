@@ -6,12 +6,13 @@ using Code.Wakoz.Utils.Attributes;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
+namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors
+{
 
     [DefaultExecutionOrder(15)]
     [TypeMarkerMultiClass(typeof(ReachTargetZoneObjective))]
-    public class DoorController : DetectionZoneTrigger {
-
+    public class DoorController : DetectionZoneTrigger
+    {
         [SerializeField] private bool _isDoorEntrance = true;
         [SerializeField] private int _roomIndex;
         [SerializeField] private DoorController _nextDoor;
@@ -22,20 +23,22 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
         public DoorController GetNextDoor() => _nextDoor;
         public bool IsDoorEntrance() => _isDoorEntrance;
 
-        protected override void Clean() {
+        protected override void Clean()
+        {
             base.Clean();
 
-            OnColliderEntered -= handleColliderEntered;
-            OnColliderExited -= handleColliderExited;
+            OnColliderEntered -= HandleColliderEntered;
+            OnColliderExited -= HandleColliderExited;
         }
 
-        protected override Task Initialize() {
+        protected override Task Initialize()
+        {
             base.Initialize();
 
             _gameplayController ??= SingleController.GetController<GameplayController>();
 
-            OnColliderEntered += handleColliderEntered;
-            OnColliderExited += handleColliderExited;
+            OnColliderEntered += HandleColliderEntered;
+            OnColliderExited += HandleColliderExited;
 
             var SaveableObject = gameObject.AddComponent<PersistentGameObject>();
 
@@ -44,9 +47,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
             return Task.CompletedTask;
         }
 
-        public void handleColliderExited(Collider2D triggeredCollider) {
-
-            if (_gameplayController == null) {
+        public void HandleColliderExited(Collider2D triggeredCollider)
+        {
+            if (_gameplayController == null)
+            {
                 Debug.LogError("_gameplayController is missing");
                 return;
             }
@@ -54,9 +58,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors {
             _gameplayController.OnExitDetectionZone(this, triggeredCollider);
         }
 
-        public void handleColliderEntered(Collider2D triggeredCollider) {
-
-            if (_gameplayController == null) {
+        public void HandleColliderEntered(Collider2D triggeredCollider)
+        {
+            if (_gameplayController == null)
+            {
                 Debug.LogError("_gameplayController is missing");
                 return;
             }

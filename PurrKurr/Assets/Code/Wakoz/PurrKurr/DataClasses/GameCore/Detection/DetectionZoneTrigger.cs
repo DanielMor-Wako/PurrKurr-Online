@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection
 {
@@ -14,10 +13,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection
         public event Action<Collider2D> OnColliderEntered;
         public event Action<Collider2D> OnColliderExited;
 
-        [FormerlySerializedAs("overlayWindowData")]
         [SerializeField] private List<OverlayWindowData> _overlayWindowData;
 
-        [FormerlySerializedAs("zone")]
         [SerializeField] private DetectionZone _zone;
 
         public List<OverlayWindowData> GetWindowData() => _overlayWindowData;

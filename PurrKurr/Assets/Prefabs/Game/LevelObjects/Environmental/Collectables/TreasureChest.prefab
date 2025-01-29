@@ -215,8 +215,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 348a3d78257d33f40a32ab39ad4be8bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overlayWindowData: []
-  zone: {fileID: 1242518664844291233}
+  _overlayWindowData: []
+  _zone: {fileID: 1242518664844291233}
   _itemId: TreasureChest
   _quantity: 1
   _state: {fileID: 3688199967398477194}

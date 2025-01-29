@@ -5,11 +5,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection
 {
     public class EyeballTracker : DetectionZoneTracker
     {
-        [SerializeField][Min(0.1f)] private float _eyeDiaationSpeed = 4f;
-        [SerializeField][Range(0, 1)] private float _diaalationMinScale = 0.5f;
-        [SerializeField][Range(0, 1)] private float _diaalationMaxScale = 0.9f;
-        [Tooltip("Additional Radius beyond maxRadius to start diaalite process")]
+        [Tooltip("Radius to start the diaalite process , value range between MaxScale to MinScale")]
         [SerializeField][Min(0f)] private float _diaalationRadius = .5f;
+
+        [Tooltip("Scale to range between Min to Max Scale, when targets are beyond the diaalation Radius\nAdjusted by the closest target")]
+        [SerializeField][Range(0, 1)] private float _diaalationMinScale = 0.5f;
+
+        [Tooltip("Scale to set when targets are witin the diaalation Radius")]
+        [SerializeField][Range(0, 1)] private float _diaalationMaxScale = 0.9f;
+
+        [Tooltip("The diaalite speed, affecting the Scale of the trackerTransform")]
+        [SerializeField][Min(0.1f)] private float _eyeDiaationSpeed = 4f;
 
         private float _maxDistance = 1f;
 
@@ -34,9 +40,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection
 
         private Vector3 GetDiaalationScaleByDistanceToClosestTarget()
         {
-            /*var newDiaalationScale =
-                (HasAnyObjectsBelowDistance(_diaalationRadius) ? _diaalationMaxScale : _diaalationMinScale)
-                * Vector3.one;*/
             var newDiaalationScale = _diaalationMaxScale;
 
             if (!HasAnyTargetBelowDistance(_diaalationRadius))
@@ -59,5 +62,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection
                 _maxDistance = newDistance;
             }
         }
+
+        protected override bool HasNoTargetsAndTrackerIsNotCentered()
+        {
+            return base.HasNoTargetsAndTrackerIsNotCentered() && IsApproximatelyMaxScaled(_trackerTransform.localScale);
+        }
+
+        private bool IsApproximatelyMaxScaled(Vector3 scale)
+            => (_diaalationMaxScale - scale.x) < 0.01f;
+
     }
 }

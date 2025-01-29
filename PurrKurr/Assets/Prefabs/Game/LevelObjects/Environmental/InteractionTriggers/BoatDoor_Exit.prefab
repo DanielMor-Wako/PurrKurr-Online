@@ -110,19 +110,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5455686088609922252, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_LocalBounds.m_Center.x
-      value: 0.049050093
+      value: 0.047299862
       objectReference: {fileID: 0}
     - target: {fileID: 5455686088609922252, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_LocalBounds.m_Center.y
-      value: 1.7299001
+      value: 1.7218001
       objectReference: {fileID: 0}
     - target: {fileID: 5455686088609922252, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_LocalBounds.m_Extent.x
-      value: 5.26245
+      value: 5.249
       objectReference: {fileID: 0}
     - target: {fileID: 5455686088609922252, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_LocalBounds.m_Extent.y
-      value: 5.6702003
+      value: 5.6719
       objectReference: {fileID: 0}
     - target: {fileID: 5529914720566783832, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_IsActive
@@ -146,6 +146,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: overlayWindowData.Array.data[0].Title
+      value: Complete!
+      objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: _overlayWindowData.Array.data[0].Title
       value: Complete!
       objectReference: {fileID: 0}
     - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}

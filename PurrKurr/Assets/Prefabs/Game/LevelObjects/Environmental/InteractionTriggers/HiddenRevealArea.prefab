@@ -132,9 +132,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9ec4c36dd65579489ebccac4d4e865a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overlayWindowData: []
-  zone: {fileID: 4625066690352291017}
+  _overlayWindowData: []
+  _zone: {fileID: 4625066690352291017}
   _scriptableObjectData: {fileID: 0}
+  _conditions: {fileID: 0}
   _activationLimit: 1
   _state: {fileID: 4516229012026859957}
 --- !u!114 &4516229012026859957

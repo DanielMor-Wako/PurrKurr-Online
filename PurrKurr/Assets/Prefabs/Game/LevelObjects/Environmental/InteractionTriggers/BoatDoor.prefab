@@ -788,18 +788,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a050bdd6b8a4396429dcedb5dec7f24f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overlayWindowData:
-  - Title: Enter The Room?
+  _overlayWindowData:
+  - Title: 
     BodyContent: 
     BodyPicture: {fileID: 0}
     ButtonsRawData:
     - ButtonType: 0
       ButtonText: Purr
     PageCount: 
-  zone: {fileID: 3025956858762521297}
-  isDoorEntrance: 1
-  roomIndex: 0
-  NextDoor: {fileID: 0}
+  _zone: {fileID: 3025956858762521297}
+  _isDoorEntrance: 1
+  _roomIndex: 0
+  _nextDoor: {fileID: 0}
 --- !u!1 &6697323531793075308
 GameObject:
   m_ObjectHideFlags: 0
@@ -1003,8 +1003,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.049599886, y: 1.7267001, z: 0}
-    m_Extent: {x: 5.2488003, y: 5.6673, z: 0}
+    m_Center: {x: 0.052899837, y: 1.72705, z: 0}
+    m_Extent: {x: 5.2609, y: 5.67665, z: 0}
   m_PointLightInnerAngle: 57.04565
   m_PointLightOuterAngle: 57.04565
   m_PointLightInnerRadius: 0
