@@ -21,6 +21,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection
         [SerializeField][Min(0.1f)] protected float _maxRadius = 1f;
 
         private Coroutine _trackingCoroutine;
+        private bool _hasAnyTarget;
         private Collider2D _closestTarget;
         private float _closestTargetDistance;
 
@@ -72,7 +73,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection
         {
             if (_zone.GetColliders().Length == 0)
             {
-                StopTracking();
+                //StopTracking();
+                _hasAnyTarget = false;
             }
 
         }
@@ -98,6 +100,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection
         {
             float elapsedTime = _refreshDurationInSeconds;
             _closestTarget = null;
+            _hasAnyTarget = true;
 
             while (true)
             {
@@ -107,16 +110,39 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection
                 {
                     elapsedTime = 0f;
 
-                    var targetsOrderedByClosestDistance = _zone.GetColliders().
-                    OrderBy(obj => (obj.transform.position - transform.position).sqrMagnitude).ToArray();
-
-                    _closestTarget = targetsOrderedByClosestDistance.FirstOrDefault();
+                    GetTargetByClosestDistance(ref _closestTarget);
                 }
 
                 TrackTarget();
+                
+                if (HasNoTargetsAndTrackerIsNotCentered())
+                {
+                    StopTracking();
+                }
 
                 yield return null;
             }
+        }
+
+        protected virtual bool HasNoTargetsAndTrackerIsNotCentered()
+        {
+            if (_hasAnyTarget)
+            {
+                return false;
+            }
+
+            return IsApproximatelyCentered(_trackerTransform.localPosition);
+        }
+
+        private bool IsApproximatelyCentered(Vector3 localPos) 
+            => (Mathf.Abs(localPos.x) + Mathf.Abs(localPos.y)) < 0.01f;
+
+        private void GetTargetByClosestDistance(ref Collider2D closestTarget)
+        {
+            var targetsByClosestDistance = _zone.GetColliders().
+                    OrderBy(obj => (obj.transform.position - transform.position).sqrMagnitude).ToArray();
+
+            closestTarget = targetsByClosestDistance.FirstOrDefault();
         }
 
         protected virtual void TrackTarget()
