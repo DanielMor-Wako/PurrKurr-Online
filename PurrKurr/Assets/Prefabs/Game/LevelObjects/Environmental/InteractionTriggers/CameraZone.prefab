@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4011861969210656153}
   - component: {fileID: 4689305128849989609}
   m_Layer: 7
-  m_Name: CameraFocusZone
+  m_Name: CameraZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
