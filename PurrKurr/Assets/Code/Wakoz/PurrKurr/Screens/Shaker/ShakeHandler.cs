@@ -33,7 +33,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Shaker
                 return;
             }
 
-            Debug.Log("Shake Triggered on target " + target.name);
             _activeShakes[target] = (shakeData, 0f);
         }
 
@@ -61,7 +60,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Shaker
                 }
 
                 PerformShake(ref target, shakeData, elapsedTime);
-                _updatedShakes[target] = (shakeData, elapsedTime); // Store updated shake data
+                _updatedShakes[target] = (shakeData, elapsedTime);
             }
 
             UpdateActiveShakes();
