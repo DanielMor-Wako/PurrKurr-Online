@@ -7,6 +7,7 @@ using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers;
 using Code.Wakoz.Utils.CameraUtils;
 using System.Linq;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore;
 
 namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 {
@@ -24,6 +25,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         private List<Transform> _focusSet;
         private List<Transform> _characterAndFocusSet;
         private List<Transform> _nearbyInteractables;
+        private List<Transform> _cameraZones;
         private readonly LifeCycleData _defaultLifeCycle = new();
 
         [Tooltip("Regulates the value of velocity by the player, used to calculate future position of the player")]
@@ -42,6 +44,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             _focusSet = new List<Transform> { FocusTransform };
             _characterAndFocusSet = new List<Transform> { CharacterTransform, FocusTransform };
             _nearbyInteractables = new List<Transform>();
+            _cameraZones = new List<Transform>();
         }
 
         public void NotifyCameraChange(BaseCamera camera)
@@ -172,18 +175,51 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         }
 
 
-        private void HandleNearbyTargetEntered(Collider2D d)
+        private void HandleNearbyTargetEntered(Collider2D coll)
         {
             //Debug.Log("GameEvent: Handle Nearby Target Entered " + d.transform.name);
-            _nearbyInteractables.Add(d.transform);
+            var cameraZone = coll.GetComponent<ICameraZoneNotifier>();
+            if (cameraZone is not null)
+            {
+                _cameraZones.Add(coll.transform);
+
+                SetCameraZone(cameraZone);
+                return;
+            }
+
+            _nearbyInteractables.Add(coll.transform);
+            
             //HandleStateChanged(CharacterController.State);
         }
 
-        private void HandleNearbyTargetExited(Collider2D d)
+        private void HandleNearbyTargetExited(Collider2D coll)
         {
             //Debug.Log("GameEvent: Handle Nearby Target Exited " + d.transform.name);
-            _nearbyInteractables.Remove(d.transform);
-            //HandleStateChanged(CharacterController.State);
+            if (_cameraZones.Contains(coll.transform))
+            {
+                _cameraZones.Remove(coll.transform);
+                var totalZones = _cameraZones.Count;
+
+                if (totalZones == 0)
+                {
+                    HandleStateChanged(CharacterController.State);
+                }
+                else
+                {
+                    var cameraZone = _cameraZones[totalZones - 1] as ICameraZoneNotifier;
+                    SetCameraZone(cameraZone);
+                }
+                return;
+            }
+            
+            _nearbyInteractables.Remove(coll.transform);
+        }
+
+        private void SetCameraZone(ICameraZoneNotifier cameraZone)
+        {
+            var cameraData = cameraZone.GetCameraData();
+
+            CameraHandler.EnqueueCamera(cameraData);
         }
 
         private void HandleStateChanged(InteractableObject2DState state)
@@ -192,6 +228,11 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             if (CameraHandler == null)
             {
                 Debug.LogError("camera handler is missing");
+                return;
+            }
+
+            if (_cameraZones.Count > 0)
+            {
                 return;
             }
 
