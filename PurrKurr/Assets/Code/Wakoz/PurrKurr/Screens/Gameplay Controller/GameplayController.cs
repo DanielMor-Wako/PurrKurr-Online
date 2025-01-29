@@ -186,8 +186,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             if (interactable == null)
                 return false;
 
-            var interactableBody = interactable.GetInteractableBody();
-            return interactableBody == (IInteractableBody)_hero;
+            return interactable.GetInteractableBody() == (IInteractableBody)_hero;
         }
 
         public bool OnExitDetectionZone(DetectionZoneTrigger zone, Collider2D triggeredCollider)
