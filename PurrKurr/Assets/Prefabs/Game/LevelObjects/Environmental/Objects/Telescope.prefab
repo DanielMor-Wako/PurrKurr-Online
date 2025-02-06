@@ -54,6 +54,7 @@ MonoBehaviour:
   _transformMover: {fileID: 7766125459099495963}
   _legsCollider: {fileID: 3633811701488445585}
   _cling: {fileID: 2235321921256652269}
+  _maxHealth: 3
 --- !u!114 &7940227696294395438
 MonoBehaviour:
   m_ObjectHideFlags: 0

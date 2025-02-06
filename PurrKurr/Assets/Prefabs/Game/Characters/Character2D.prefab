@@ -300,7 +300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _stats:
-    _baseStats: {fileID: 11400000, guid: 842a5e61608f7e144ad787589074fa8b, type: 2}
+    _baseStats: {fileID: 11400000, guid: 7d9b22fcbd7df5f429ecf5b007ac9e9e, type: 2}
     _unlockedAbilities:
       _actionsPool: 02000000030000000400000005000000060000000700000008000000
       _abilitiesPool: 04000000
@@ -339,6 +339,7 @@ MonoBehaviour:
   GroundCheck_PosOffset: {x: 0.85, y: 0}
   _solidColliders: []
   _traversableColliders: []
+  _maxFallingVelocity: 30
 --- !u!114 &1599996382888620125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -919,7 +920,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &99311023737679536
 Transform:
   m_ObjectHideFlags: 0
