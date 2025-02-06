@@ -34,7 +34,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection
         private void OnTriggerEnter2D(Collider2D coll)
         {
             if (_colliders.Add(coll))
-            {
+            { //Debug.Log(this.name);
                 _isDirty = true;
                 OnColliderEntered?.Invoke(coll);
             }

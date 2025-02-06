@@ -87,7 +87,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             var isFalling = state.CurrentState == Definitions.ObjectState.Falling;
             //var isTraversableRunning = state.CurrentState == Definitions.ObjectState.TraversalRunning;
 
-            if (rigidbodyVelocity.y < -1f && isFalling) {
+            // if (rigidbodyVelocity.y < -1f && isFalling) {
+            if (isFalling) {
                 var yVelocity = rigidbodyVelocity.y;
 
                 if (isNavRightDir || isNavLeftDir) {

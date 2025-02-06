@@ -20,7 +20,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
             timelineHistory = new();
         }
 
-        public void RegisterInteractionEvent(Character2DController attacker, IInteractableBody[] targets, float startTime, AttackData attackData, AttackAbility interactionAction, Vector2 interactionPosition, AttackBaseStats attackProperties) {
+        public void RegisterInteractionEvent(Character2DController attacker, IInteractableBody[] targets, float startTime, AttackData
+            attackData, AttackAbility interactionAction, Vector2 interactionPosition, AttackBaseStats attackProperties) {
 
             var newEvent = new TimelineEvent(attacker, targets, startTime, attackProperties.ActionDuration, interactionPosition, attackData, interactionAction, attackProperties);
 
