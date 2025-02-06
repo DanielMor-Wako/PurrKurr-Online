@@ -18,9 +18,15 @@ MonoBehaviour:
   WhatIsCharacter:
     serializedVersion: 2
     m_Bits: 256
+  WhatIsDamager:
+    serializedVersion: 2
+    m_Bits: 1024
   WhatIsSolid:
     serializedVersion: 2
     m_Bits: 2048
+  WhatIsSolidForProjectile:
+    serializedVersion: 2
+    m_Bits: 0
   WhatIsPlatform:
     serializedVersion: 2
     m_Bits: 4096
@@ -36,6 +42,9 @@ MonoBehaviour:
   WhatIsTraversableCrouch:
     serializedVersion: 2
     m_Bits: 65536
+  WhatIsRaycastBlocker:
+    serializedVersion: 2
+    m_Bits: 64
   _effects:
     _data:
     - DurationInSeconds: 0.1
@@ -74,6 +83,6 @@ MonoBehaviour:
       EffectType: 21
       Effect: {fileID: 5186544280080545649, guid: f250d794808043942b95c348d184dcb3, type: 3}
       TrackPosition: 0
-  CharacterStatesConsideredAsGrounded: 0300000004000000050000000b00000019000000
-  CharacterStatesConsideredAsAerial: 0c0000000d000000
+  CharacterStatesConsideredAsGrounded: 000304050b19
+  CharacterStatesConsideredAsAerial: 0c0d
   MinMagnitudeConsideredAsRunnin: 25

@@ -26,87 +26,87 @@ MonoBehaviour:
     _airborneSpeedMinToMax: {x: 5, y: 7}
     _airborneMaxSpeedMinToMax: {x: 5, y: 10}
     _multiTargetsDistanceBasevalues: {x: 4, y: 7}
-    _movementTypes: 00000000
-    _baseActions: 01000000
-    _baseAbilities: 01000000020000000500000007000000
-    _baseAttacks: 00000000
+    _movementTypes: 00
+    _baseActions: 01
+    _baseAbilities: 01020507
+    _baseAttacks: 00
     _baseBuffs: []
     _baseAttackMoves:
     - _elementName: Light Attack
       _attackAbility: 0
       _actionDuration: 0.15
       _actionCooldownDuration: 0.15
-      _properties: 04000000
+      _properties: 04
       _characterStateCondition: 
-      _opponentStateCondition: 00000000
+      _opponentStateCondition: 00
     - _elementName: Med Attack
       _attackAbility: 1
       _actionDuration: 0.15
       _actionCooldownDuration: 0.25
-      _properties: 0100000008000000
-      _characterStateCondition: 05000000
-      _opponentStateCondition: 00000000
+      _properties: 0801
+      _characterStateCondition: 0500
+      _opponentStateCondition: 00
     - _elementName: Heavy Attack
       _attackAbility: 2
       _actionDuration: 0.15
       _actionCooldownDuration: 0.35
-      _properties: 01000000020000000600000007000000
-      _characterStateCondition: 04000000
-      _opponentStateCondition: 0300000000000000
+      _properties: 01020607
+      _characterStateCondition: 0400
+      _opponentStateCondition: 0300
     - _elementName: Roll Attack
       _attackAbility: 3
       _actionDuration: 0.15
       _actionCooldownDuration: 0.2
-      _properties: 01000000080000000b000000
-      _characterStateCondition: 0b000000
-      _opponentStateCondition: 0300000000000000
+      _properties: 01080b
+      _characterStateCondition: 0b00
+      _opponentStateCondition: 0300
     - _elementName: Aerial Attack
       _attackAbility: 4
       _actionDuration: 0.15
       _actionCooldownDuration: 0.5
-      _properties: 0b0000000e00000008000000
-      _characterStateCondition: 0c000000
-      _opponentStateCondition: 00000000
+      _properties: 0b0e08
+      _characterStateCondition: 0c00
+      _opponentStateCondition: 00
     - _elementName: Light Grab
       _attackAbility: 5
       _actionDuration: 0.15
       _actionCooldownDuration: 0
-      _properties: 010000000200000003000000
-      _characterStateCondition: 03000000
-      _opponentStateCondition: 03000000
+      _properties: 010203
+      _characterStateCondition: 0300
+      _opponentStateCondition: 
     - _elementName: Med Grab
       _attackAbility: 6
       _actionDuration: 0.15
       _actionCooldownDuration: 0
-      _properties: 01000000020000000d00000000000000
-      _characterStateCondition: 05000000
-      _opponentStateCondition: 03000000
+      _properties: 01020d
+      _characterStateCondition: 0500
+      _opponentStateCondition: 
     - _elementName: Heavy Grab
       _attackAbility: 7
       _actionDuration: 0.15
       _actionCooldownDuration: 0.2
-      _properties: 0000000001000000000000000a000000
-      _characterStateCondition: 04000000
-      _opponentStateCondition: 03000000
+      _properties: 000a
+      _characterStateCondition: 0400
+      _opponentStateCondition: 0003
     - _elementName: Aerial Grab
       _attackAbility: 8
       _actionDuration: 0.15
       _actionCooldownDuration: 0.5
-      _properties: 01000000020000000c000000
-      _characterStateCondition: 
-      _opponentStateCondition: 0c00000000000000
+      _properties: 01020c
+      _characterStateCondition: 0c00
+      _opponentStateCondition: 00
     - _elementName: Light Block
       _attackAbility: 9
       _actionDuration: 0.15
       _actionCooldownDuration: 0.1
-      _properties: 00000000
+      _properties: 05
       _characterStateCondition: 
       _opponentStateCondition: 
     _abilitiesPool:
-      _actionsPool: 0100000002000000030000000400000005000000060000000700000008000000
-      _abilitiesPool: 0100000002000000030000000400000005000000060000000700000008000000
-      _attackPool: 00000000010000000200000003000000040000000500000006000000070000000800000009000000
+      _actionsPool: 0102030405060708
+      _abilitiesPool: 0102030405060708
+      _attackPool: 000102030406070809
       _buffsPool: []
-  _senses: 000000000100000002000000
+  _senses: 000102
   _aggressivenessToOthersAnimals: 0.7
   _aggressivenessToSameAnimals: 0.3
