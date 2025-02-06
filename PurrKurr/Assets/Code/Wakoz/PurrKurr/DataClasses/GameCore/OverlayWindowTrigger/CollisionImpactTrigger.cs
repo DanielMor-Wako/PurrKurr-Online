@@ -11,16 +11,18 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
     {
         [Tooltip("Sets the max activation count the trigger. 0 = infinite activations")]
         [SerializeField][Min(0)] private int _activationLimit = 0;
+        
         [Tooltip("Sets the View state to active and deactive")]
         [SerializeField] private MultiStateView _state;
+
         [Tooltip("Min magnitude to register the detection")]
         [SerializeField][Min(0)] private float MinMagnitudeOnDetection = 20;
 
-        private int _activationsCount = 0;
-
         [Tooltip("Min duration to keep active state alive before auto-changing\nDefault as 0, does not take delay into consideration and waits for Collision Exit")]
-        [SerializeField][Min(0)] private float MinSecondsAsActiveState;
-        private Coroutine _checkConditionCO;
+        [SerializeField][Min(0)] private float HoldDurationAsActiveStateInSeconds = 1;
+
+        private Coroutine _activeStateCO;
+        private int _activationsCount = 0;
 
         protected override void Clean()
         {
@@ -85,26 +87,25 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
             if (activeState && IsUsingCountdownOnActiveState())
             {
                 ClearExistingCO();
-                _checkConditionCO = StartCoroutine(ChangeStateToFalseWithDelay());
+                _activeStateCO = StartCoroutine(ChangeStateToFalseWithDelay());
             }
-
         }
 
         private bool IsUsingCountdownOnActiveState()
-            => MinSecondsAsActiveState > 0;
+            => HoldDurationAsActiveStateInSeconds > 0;
 
         private void ClearExistingCO()
         {
-            if (_checkConditionCO != null)
+            if (_activeStateCO != null)
             {
-                StopCoroutine(_checkConditionCO);
-                _checkConditionCO = null;
+                StopCoroutine(_activeStateCO);
+                _activeStateCO = null;
             }
         }
 
         private IEnumerator ChangeStateToFalseWithDelay()
         {
-            yield return new WaitForSecondsRealtime(MinSecondsAsActiveState);
+            yield return new WaitForSecondsRealtime(HoldDurationAsActiveStateInSeconds);
 
             UpdateStateView(false);
         }

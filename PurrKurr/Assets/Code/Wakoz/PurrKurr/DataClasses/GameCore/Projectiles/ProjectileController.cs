@@ -31,9 +31,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
             SetForceDir(forceDir);
         }
 
-        public int DealDamage(int damage) {
+        public void DealDamage(int damage) {
             // todo: deal damage to projectile?
-            return 1;
+            //return 1;
         }
 
         public Collider2D GetCollider() => _legsCollider ?? null;

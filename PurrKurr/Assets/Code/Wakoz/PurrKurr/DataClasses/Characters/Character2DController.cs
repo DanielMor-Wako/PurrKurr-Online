@@ -51,6 +51,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private LayerMask _whatIsPlatform;
         private LayerMask _whatIsTraversable;
         private LayerMask _whatIsTraversableCrouch;
+        private LayerMask _whatIsSolidForProjectile;
         private LayerMask _whatIsDamageableCharacter;
         private LayerMask _whatIsDamageable;
 
@@ -140,7 +141,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public bool TryGetRopeDirection(Vector2 dir, ref Vector2 endPosition, ref Quaternion rotation, out Vector2 cursorPosition, ref float distancePercentReached) {
 
             var distance = 17;
-            var result = RaycastAgainstSolid(dir, distance, out var hitPosition, ref distancePercentReached);
+            var result = RaycastAgainstSurface(_whatIsSolid, dir, distance, out var hitPosition, ref distancePercentReached);
             endPosition = result ? hitPosition : (Vector2)LegsPosition + dir.normalized * distance;
 
             rotation = Quaternion.identity;
@@ -153,8 +154,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public bool TryGetProjectileDirection(Vector2 dir, ref Vector2 endPosition, ref Quaternion rotation, ref float distancePercentReached) {
 
             var distance = 9;
-            var result = RaycastAgainstSolid(dir, distance, out var hitPosition, ref distancePercentReached);
+            var result = RaycastAgainstSurface(_whatIsSolidForProjectile, dir, distance, out var hitPosition, ref distancePercentReached);
             endPosition = hitPosition;
+
+            /*var blockingObjectsInAttackDirection = Physics2D.Raycast(LegsPosition,
+                    dir,
+                    distance, _whatIsSolidForProjectile);
+
+            if (blockingObjectsInAttackDirection.collider != null)
+            {
+                endPosition = blockingObjectsInAttackDirection.point;
+            }*/
 
             // Create a rotation using the calculated angle by Atan2
             var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90;
@@ -222,12 +232,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             return hasObjectBlockingTrajectory;
         }
 
-        private bool RaycastAgainstSolid(Vector2 dir, int distance, out Vector2 endPosition, ref float distancePercentReached) {
+        private bool RaycastAgainstSurface(LayerMask _raycastAgainstLayer, Vector2 dir, int distance, out Vector2 endPosition, ref float distancePercentReached) {
 
             var TargetDir = dir.normalized * distance;
             var TargetPoint = (Vector2)LegsPosition + TargetDir;
-            var hit = Physics2D.Raycast((Vector2)LegsPosition, dir, TargetDir.magnitude, _whatIsSolid);
-
+            var hit = Physics2D.Raycast((Vector2)LegsPosition, dir, TargetDir.magnitude, _raycastAgainstLayer);
+            
             var hitFound = hit.collider != null;
 
             endPosition = hitFound ? hit.collider.ClosestPoint(hit.point) : TargetPoint;
@@ -316,6 +326,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _whatIsPlatform = gamePlayerLogic.GetPlatformSurfaces();
             _whatIsTraversable = gamePlayerLogic.GetTraversableSurfaces();
             _whatIsTraversableCrouch = gamePlayerLogic.GetTraversableCrouchAreas();
+            _whatIsSolidForProjectile = gamePlayerLogic.GetSolidSurfacesForProjectile();
             _whatIsDamageableCharacter = gamePlayerLogic.GetDamageables();
             _state = new InteractableObject2DState();
 
@@ -401,7 +412,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public float GetHpPercent() => _stats.GetHealthPercentage();
 
-        public int DealDamage(int damage) {
+        public void DealDamage(int damage) {
 
             var newHealthPoint = Mathf.Clamp(_stats.Health - damage, 0, Stats.MaxHealth);
             _stats.UpdateHealth(newHealthPoint);
@@ -415,7 +426,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             OnUpdatedStats?.Invoke(new List<DisplayedableStatData>() { new DisplayedableStatData(Definitions.CharacterDisplayableStat.Health , Stats.GetHealthPercentage()) });
 
-            return newHealthPoint;
+            //return newHealthPoint;
         }
 
         public void SetSpriteOrder(int orderLayer) {
@@ -517,6 +528,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             if (ForceDirToSetOnFixedUpdate != Vector2.zero)
             {
                 _rigidbody.velocity = ForceDirToSetOnFixedUpdate;
+                //_rigidbody.AddForce(ForceDirToSetOnFixedUpdate);
                 ForceDirToSetOnFixedUpdate = Vector2.zero;
             }
             else if (_rigidbody.velocity.y < -_maxFallingVelocity)

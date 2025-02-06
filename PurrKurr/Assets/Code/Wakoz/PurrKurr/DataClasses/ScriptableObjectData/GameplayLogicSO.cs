@@ -9,14 +9,18 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
     public class GameplayLogicSO : ScriptableObject {
         
         [Header("Environmental Surfaces")]
-        [SerializeField] private LayerMask WhatIsInteractable; // add this
+        [SerializeField] private LayerMask WhatIsInteractable; // todo: should be used or can be removed?
         [SerializeField] private LayerMask WhatIsCharacter;
+        [SerializeField] private LayerMask WhatIsDamager;
         [SerializeField] private LayerMask WhatIsSolid;
         [SerializeField] private LayerMask WhatIsPlatform;
         [SerializeField] private LayerMask WhatIsTraversable;
         [SerializeField] private LayerMask WhatIsClingable;
         [SerializeField] private LayerMask WhatIsTraversableClingable;
         [SerializeField] private LayerMask WhatIsTraversableCrouch;
+
+        [Tooltip("Surfaces that block a the character from performing an action like attack or grab.\nProjectile do not collide with this layer")]
+        [SerializeField] private LayerMask WhatIsRaycastBlocker;
 
         [Header("Effects Definition")]
         [SerializeField] private EffectsData _effects;
@@ -26,8 +30,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
         [SerializeField] private List<Definitions.ObjectState> CharacterStatesConsideredAsAerial;
         [SerializeField][Min(0)] private float MinMagnitudeConsideredAsRunnin = 20;
 
-        public LayerMask GetSolidSurfaces() =>
+        public LayerMask GetSolidSurfacesForProjectile() =>
             WhatIsSolid | WhatIsClingable;
+
+        public LayerMask GetSolidSurfaces() =>
+            WhatIsSolid | WhatIsClingable | WhatIsRaycastBlocker;
 
         public LayerMask GetPlatformSurfaces() =>
             WhatIsPlatform;
@@ -42,10 +49,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
             WhatIsClingable;
 
         public LayerMask GetSurfaces() =>
-            WhatIsSolid | WhatIsClingable | WhatIsTraversable | WhatIsTraversableClingable | WhatIsInteractable | WhatIsPlatform | WhatIsTraversableCrouch;
+            WhatIsSolid | WhatIsClingable | WhatIsTraversable | WhatIsTraversableClingable | WhatIsInteractable | WhatIsPlatform | WhatIsTraversableCrouch | WhatIsRaycastBlocker;
 
         public LayerMask GetDamageables() =>
-            WhatIsCharacter | WhatIsInteractable;
+            WhatIsCharacter | WhatIsInteractable | WhatIsDamager;
 
         public EffectData GetEffectByType(Definitions.Effect2DType effectType) => _effects.GetDataByType(effectType);
 

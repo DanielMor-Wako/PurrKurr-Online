@@ -12,7 +12,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore {
         public Vector3 GetCenterPosition();
         public Vector2 GetVelocity();
         public float GetHpPercent();
-        public int DealDamage(int damage);
+        public void DealDamage(int damage);
         public void ApplyForce(Vector2 forceDir);
         public void SetTargetPosition(Vector2 position, float percentToPerform = 1);
 

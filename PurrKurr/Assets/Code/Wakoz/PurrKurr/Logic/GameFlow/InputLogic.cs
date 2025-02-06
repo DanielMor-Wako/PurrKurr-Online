@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.Logic.GameFlow
 {
+
     public sealed class InputLogic : SOData<PlayerInputDataSO>
     {
         public InputLogic(string assetName) : base(assetName) { }
@@ -15,15 +16,13 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow
         public float SwipeDistanceMedium => Data.MediumSwipeDistance;
         public float SwipeDistanceLong => Data.LongSwipeDistance;
 
-        public float GetSwipeDistance(Definitions.SwipeDistanceType swipeDistance)
-        {
-            return swipeDistance switch
+        public float GetSwipeDistance(Definitions.SwipeDistanceType swipeDistance) 
+            => swipeDistance switch
             {
                 Definitions.SwipeDistanceType.Short => SwipeDistanceShort,
                 Definitions.SwipeDistanceType.Medium => SwipeDistanceMedium,
                 _ => SwipeDistanceLong
             };
-        }
 
         public int GetNavigationDirAsFacingRightInt(Definitions.NavigationType navigationDirection) =>
             IsNavigationDirValidAsLeft(navigationDirection) ? -1
@@ -110,8 +109,6 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow
 
             return Definitions.NavigationType.None;
         }
-
-
 
     }
 }

@@ -4,15 +4,18 @@ using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using UnityEngine;
 using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
-namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
-    public sealed class GameplayLogic : SOData<GameplayLogicSO> {
+namespace Code.Wakoz.PurrKurr.Logic.GameFlow 
+{
 
+    public sealed class GameplayLogic : SOData<GameplayLogicSO> 
+    {
         public GameplayLogic(string assetName) : base(assetName) { }
 
         protected override void Init() {}
 
         public LayerMask GetSurfaces() => Data.GetSurfaces();
 
+        public LayerMask GetSolidSurfacesForProjectile() => Data.GetSolidSurfacesForProjectile();
         public LayerMask GetSolidSurfaces() => Data.GetSolidSurfaces();
 
         public LayerMask GetPlatformSurfaces() => Data.GetPlatformSurfaces();

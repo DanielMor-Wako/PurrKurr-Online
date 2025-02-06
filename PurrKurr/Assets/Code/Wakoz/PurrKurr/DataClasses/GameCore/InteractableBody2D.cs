@@ -22,11 +22,22 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore
 
         private IInteractableBody _grabbedBody;
 
+        [Header("Stats")]
+        [Tooltip("Maximum health points.\nValue as -1 prevents dealing any damage (aka indestructible)")]
+        [SerializeField] [Min(-1)] private int _maxHealth = 1;
+
+        private float _health;
+
         protected override void Clean() {}
         protected override Task Initialize() {
 
-            _anchor = gameObject.AddComponent<AnchorHandler>();
-            SetAnchor();
+            if (_cling != null)
+            {
+                _anchor = gameObject.AddComponent<AnchorHandler>();
+                SetAnchor();
+            }
+
+            _health = _maxHealth;
 
             return Task.CompletedTask;
         }
@@ -47,14 +58,29 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore
         public Collider2D GetCollider() => _legsCollider ?? null;
         public Transform GetTransform() => transform;
         public Transform GetCharacterRigTransform() => null;
-        public Definitions.ObjectState GetCurrentState() => Definitions.ObjectState.Grounded;
+        public Definitions.ObjectState GetCurrentState() 
+            => _health > 0 ? Definitions.ObjectState.Alive : Definitions.ObjectState.Dead;
         public Vector3 GetCenterPosition() => transform != null ? transform.position : Vector3.zero;
 
         public Vector2 GetVelocity() => _rigidbody.velocity;
-        public float GetHpPercent() => 1;
-        public int DealDamage(int damage) {
-            // todo: deal damage?
-            return 1;
+        public float GetHpPercent() 
+            => _maxHealth > 0 ? 
+            Mathf.Clamp(_health / _maxHealth, 0, _maxHealth) : 0;
+
+        public void DealDamage(int damage)
+        {
+            if (damage == 0 || _health == -1)
+            {
+                return;
+            }
+
+            // Deal damage
+            _health = Mathf.Clamp(_health - damage, 0, _maxHealth);
+
+            if (_health == 0)
+            {
+                gameObject.SetActive(false);
+            }
         }
 
         public void ApplyForce(Vector2 forceDir) {
@@ -72,11 +98,29 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore
 
         public void SetAsGrabbed(IInteractableBody anchorParent, Vector2 position) {
 
-            _transformMover.EndMove();
-            transform.position = position;
+            var hasGrabber = anchorParent != null;
 
-            _anchor.ModifyAnchor(position, anchorParent?.GetTransform());
-            _cling.connectedBody.simulated = anchorParent != null;
+            if (_transformMover != null)
+            {
+                _transformMover.EndMove();
+                transform.position = position;
+            }
+
+            if (_cling != null)
+            {
+                _anchor.ModifyAnchor(position, anchorParent?.GetTransform());
+                _cling.connectedBody.simulated = hasGrabber;
+            }
+
+            if (_legsCollider != null)
+            {
+                _legsCollider.isTrigger = hasGrabber;
+            }
+
+            if (hasGrabber && _rigidbody != null)
+            {
+                _rigidbody.angularVelocity = 0;
+            }
 
             _grabbedBody = anchorParent;
         }

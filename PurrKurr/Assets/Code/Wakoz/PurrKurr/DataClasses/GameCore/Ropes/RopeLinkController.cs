@@ -54,17 +54,15 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes {
         public float GetHpPercent() =>
             IsChainConnected() ? 1 : 0;
 
-        public int DealDamage(int damage) {
+        public void DealDamage(int damage) {
 
-            if (damage == 0) {
-                return 1;
+            if (damage == 0)
+            {
+                return ;
             }
 
             ConnectJointTo(null);
             OnLinkStateChanged?.Invoke(this);
-
-            var totalHp = 0;
-            return totalHp;
         }
 
         public void ApplyForce(Vector2 forceDir) {
