@@ -1,0 +1,761 @@
+fileFormatVersion: 2
+guid: cb1f2a9f6c888a24aa898ddb345e406d
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 12
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 1000
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: MamaBird_Body
+      rect:
+        serializedVersion: 2
+        x: 173
+        y: 2284
+        width: 5150
+        height: 1555
+      alignment: 9
+      pivot: {x: 0.714549, y: 0.48939472}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7780723ebcfdde4d852ab502d12fb28
+      internalID: -907459476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mask_MamaBird_EyeSocket
+      rect:
+        serializedVersion: 2
+        x: 5430
+        y: 3517
+        width: 150
+        height: 175
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48684d84bd428044fa8d1e69e3e5011d
+      internalID: -751794910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_EyeSocket
+      rect:
+        serializedVersion: 2
+        x: 5610
+        y: 3517
+        width: 150
+        height: 175
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45552ec0ecfbb0947bb06315fad98c6b
+      internalID: 334364702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_6
+      rect:
+        serializedVersion: 2
+        x: 5731
+        y: 3690
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2642ad2ff4c1384ca51a4171b9d7674
+      internalID: 56559904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_EyeBall
+      rect:
+        serializedVersion: 2
+        x: 5786
+        y: 3539
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad74972e4ee2d544b9cf9aa117432099
+      internalID: 440020816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_8
+      rect:
+        serializedVersion: 2
+        x: 5576
+        y: 3617
+        width: 10
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35e4b996a9586a649a8b4a8b7b1dc022
+      internalID: 1420900695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_10
+      rect:
+        serializedVersion: 2
+        x: 5731
+        y: 3479
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe309bebec6545e4cb16b1154b704064
+      internalID: -1641183739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_11
+      rect:
+        serializedVersion: 2
+        x: 5836
+        y: 3479
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 026688e4f750e97429da4c05e6eb583b
+      internalID: -1125561181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_12
+      rect:
+        serializedVersion: 2
+        x: 1441
+        y: 2179
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d58ea18725477db4d8e8c8a1cd7dafca
+      internalID: -2080150234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Wing
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 76
+        width: 3041
+        height: 2070
+      alignment: 9
+      pivot: {x: 0.50000006, y: 0.78282434}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e02f7e5f85eec834fa73191c65d405c5
+      internalID: 1317662387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_14
+      rect:
+        serializedVersion: 2
+        x: 4568
+        y: 1889
+        width: 28
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4248339060cd0774eb4b2c38c6b50ff0
+      internalID: 1242212456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_15
+      rect:
+        serializedVersion: 2
+        x: 4781
+        y: 1862
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 025ad039377e45d469e5d119044a4852
+      internalID: 610960365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_16
+      rect:
+        serializedVersion: 2
+        x: 4008
+        y: 1757
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 978f0827083cf214f85ef341b0ea4945
+      internalID: -1413594339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_BeakTop
+      rect:
+        serializedVersion: 2
+        x: 4017
+        y: 958
+        width: 1775
+        height: 930
+      alignment: 9
+      pivot: {x: 0.0048804744, y: 0.60721856}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae262d3227bd6c74d87080385d5b011c
+      internalID: -1022668180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_BeakBottom
+      rect:
+        serializedVersion: 2
+        x: 4028
+        y: 144
+        width: 1775
+        height: 702
+      alignment: 9
+      pivot: {x: -0.00016010123, y: 0.9982924}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58ebd5d7457314d4f90ab47f7ef070a1
+      internalID: 1145970513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_19
+      rect:
+        serializedVersion: 2
+        x: 4043
+        y: 843
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d8ed4a01eb4f7240ba6bccfee782b2c
+      internalID: -1770946745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_20
+      rect:
+        serializedVersion: 2
+        x: 4430
+        y: 843
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbbd261aa2faf8440aac6a84d4d3d04c
+      internalID: 1782661766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_21
+      rect:
+        serializedVersion: 2
+        x: 4008
+        y: 668
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 611617285ea76964ab01753f8b8321f1
+      internalID: -215890695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_22
+      rect:
+        serializedVersion: 2
+        x: 3973
+        y: 562
+        width: 35
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f16f551f94abd0643b5155379538752c
+      internalID: -420379020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_23
+      rect:
+        serializedVersion: 2
+        x: 316
+        y: 422
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7ad0e6ee4d841147b93a1575eacbf36
+      internalID: -1517605837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_24
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 387
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 819b183bc6b8c2c479d0c831875229dc
+      internalID: -2136161201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_25
+      rect:
+        serializedVersion: 2
+        x: 5801
+        y: 316
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 011cb52bd9011cb44b51a1fb9191f442
+      internalID: -1493125472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_26
+      rect:
+        serializedVersion: 2
+        x: 5801
+        y: 105
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3585a52288ece9c44a3fcfa0367f54ef
+      internalID: -2103973688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_27
+      rect:
+        serializedVersion: 2
+        x: 809
+        y: 70
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0131887482d79944962cdc497571194
+      internalID: -1759969370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_28
+      rect:
+        serializedVersion: 2
+        x: 949
+        y: 70
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9be9573fc6f6bab44a541b37a80c686e
+      internalID: 486126231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_29
+      rect:
+        serializedVersion: 2
+        x: 1266
+        y: 70
+        width: 55
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fda066b69acb814c9a241b426809f61
+      internalID: 838586812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_30
+      rect:
+        serializedVersion: 2
+        x: 879
+        y: 35
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0df72287c6fd5564bbc509a0f4909dae
+      internalID: -1128049212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MamaBird_Rig_31
+      rect:
+        serializedVersion: 2
+        x: 1301
+        y: 35
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec85b5d9518ffee418b8d30192fc0711
+      internalID: 1231682407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      MamaBird_BeakBottom: 1145970513
+      MamaBird_BeakTop: -1022668180
+      MamaBird_Body: -907459476
+      MamaBird_EyeBall: 440020816
+      MamaBird_EyeSocket: 334364702
+      MamaBird_Rig_0: -461285873
+      MamaBird_Rig_10: -1641183739
+      MamaBird_Rig_11: -1125561181
+      MamaBird_Rig_12: -2080150234
+      MamaBird_Rig_14: 1242212456
+      MamaBird_Rig_15: 610960365
+      MamaBird_Rig_16: -1413594339
+      MamaBird_Rig_19: -1770946745
+      MamaBird_Rig_2: 785884586
+      MamaBird_Rig_20: 1782661766
+      MamaBird_Rig_21: -215890695
+      MamaBird_Rig_22: -420379020
+      MamaBird_Rig_23: -1517605837
+      MamaBird_Rig_24: -2136161201
+      MamaBird_Rig_25: -1493125472
+      MamaBird_Rig_26: -2103973688
+      MamaBird_Rig_27: -1759969370
+      MamaBird_Rig_28: 486126231
+      MamaBird_Rig_29: 838586812
+      MamaBird_Rig_3: 168009341
+      MamaBird_Rig_30: -1128049212
+      MamaBird_Rig_31: 1231682407
+      MamaBird_Rig_32: 773027216
+      MamaBird_Rig_6: 56559904
+      MamaBird_Rig_8: 1420900695
+      MamaBird_Rig_9: -170952066
+      MamaBird_Wing: 1317662387
+      Mask_MamaBird_EyeSocket: -751794910
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

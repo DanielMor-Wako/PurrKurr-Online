@@ -542,7 +542,7 @@ GameObject:
   - component: {fileID: 9144451657156924542}
   - component: {fileID: 2823189959154721986}
   m_Layer: 0
-  m_Name: TrackingEye
+  m_Name: KrakenTrackingEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
