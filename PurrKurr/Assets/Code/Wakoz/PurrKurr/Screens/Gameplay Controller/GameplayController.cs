@@ -498,7 +498,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                                 _hero.SetJumping(Time.time + .05f);
                                 _hero.SetForceDir(forceDir);
                                 _hero.DoMove(0); // might conflict with the TryPerformInputNavigation when the moveSpeed is already set by Navigation
-                                ApplyEffectForDurationAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
+                                ApplyEffectAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
 
                             } else if (actionInput.ActionType == ActionType.Block) {
                                 ApplyEffectOnCharacter(_hero, Effect2DType.BlockActive);
@@ -624,7 +624,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                             if (isBlockingEnded) {
                                 ApplyEffectOnCharacter(_hero, Effect2DType.DodgeActive);
-                                ApplyEffectForDurationAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
+                                ApplyEffectAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
 
                             } else {
 
@@ -642,7 +642,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                                     // apply jump aim in trajectory dir
                                     _hero.SetJumping(Time.time + .1f);
                                     forceDir = actionInput.NormalizedDirection * _hero.Stats.JumpForce;
-                                    ApplyEffectForDurationAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
+                                    ApplyEffectAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
                                 }
                             }
                         }
@@ -1518,10 +1518,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         }
         
         private void ApplyEffectOnCharacter(Character2DController character, Effect2DType effectType, List<Effect2DType> stopWhenAnyEffectStarts = null) {
-            ApplyEffectForDurationAndSetRotation(character, effectType, Quaternion.identity, stopWhenAnyEffectStarts);
+            ApplyEffectAndSetRotation(character, effectType, Quaternion.identity, stopWhenAnyEffectStarts);
         }
 
-        private void ApplyEffectForDurationAndSetRotation(Character2DController character, Effect2DType effectType, Quaternion initialRotation, List<Effect2DType> stopWhenAnyEffectStarts = null) {
+        private void ApplyEffectAndSetRotation(Character2DController character, Effect2DType effectType, Quaternion initialRotation, List<Effect2DType> stopWhenAnyEffectStarts = null) {
             
             _effects ??= GetController<EffectsController>();
             var effectData = character.GetEffectOverride(effectType) ?? _gameplayLogic.GetEffects(effectType);

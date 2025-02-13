@@ -105,7 +105,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
 
         private IEnumerator ChangeStateToFalseWithDelay()
         {
-            yield return new WaitForSecondsRealtime(HoldDurationAsActiveStateInSeconds);
+            yield return new WaitForSeconds(HoldDurationAsActiveStateInSeconds);
 
             UpdateStateView(false);
         }

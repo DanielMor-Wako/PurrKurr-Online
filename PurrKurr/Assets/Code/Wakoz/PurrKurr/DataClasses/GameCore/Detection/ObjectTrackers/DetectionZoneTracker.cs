@@ -18,7 +18,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection
         [SerializeField][Min(0.1f)] private float _trackingSpeed = 2f;
 
         [Tooltip("Max radius to move inside")]
-        [SerializeField][Min(0.1f)] protected float _maxRadius = 1f;
+        [SerializeField][Min(0.01f)] protected float _maxRadius = 1f;
 
         private Coroutine _trackingCoroutine;
         private bool _hasAnyTarget;
@@ -78,6 +78,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection
             }
 
         }
+
         private void StartTracking()
         {
             if (_trackingCoroutine != null)
