@@ -1,6 +1,9 @@
-﻿namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
+﻿using System;
+
+namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
 {
-    public interface IBindableHandler : IHandler
+    // todo: perhaps remove IDisposible and just not ref the gameEvents
+    public interface IBindableHandler : IHandler, IDisposable
     {
         void Bind();
         void Unbind();
