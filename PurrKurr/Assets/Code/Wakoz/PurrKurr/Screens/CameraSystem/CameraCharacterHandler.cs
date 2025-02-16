@@ -17,8 +17,8 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         public Transform CharacterTransform { get; private set; }
         public CameraHandler CameraHandler { get; private set; }
 
-        private Character2DController CharacterController;
-        private GameplayController GameEvents;
+        private Character2DController _characterController;
+        private GameplayController _gameEvents;
         private Camera _cam;
 
         private List<Transform> _characterSet;
@@ -36,7 +36,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         {
             FocusTransform = CameraFocusTransform;
             CharacterTransform = mainCharacter;
-            GameEvents = gameEvents;
+            _gameEvents = gameEvents;
             CameraHandler = cameraHandler;
             _cam = CameraHandler.CameraComponent;
 
@@ -54,36 +54,39 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         public void Unbind()
         {
-            if (GameEvents == null)
+            if (_gameEvents == null)
                 return;
 
-            GameEvents.OnNewHero -= HandleNewHero;
-            GameEvents.OnHeroReposition -= HandleReposition;
-            GameEvents.OnCameraFocusPoint -= HandleCameraFocusPoint;
-            GameEvents.OnCameraFocusTargets -= HandleCameraFocusTargets;
-            GameEvents.OnInteractablesEntered -= HandleNearbyTargetEntered;
-            GameEvents.OnInteractablesExited -= HandleNearbyTargetExited;
-            GameEvents.OnStateChanged -= HandleStateChanged;
-            GameEvents.OnAimingAction -= HandleAiming;
-            GameEvents.OnAimingActionEnd -= HandleAimingDefault;
-
-            GameEvents = null;
+            _gameEvents.OnNewHero -= HandleNewHero;
+            _gameEvents.OnHeroReposition -= HandleReposition;
+            _gameEvents.OnCameraFocusPoint -= HandleCameraFocusPoint;
+            _gameEvents.OnCameraFocusTargets -= HandleCameraFocusTargets;
+            _gameEvents.OnInteractablesEntered -= HandleNearbyTargetEntered;
+            _gameEvents.OnInteractablesExited -= HandleNearbyTargetExited;
+            _gameEvents.OnStateChanged -= HandleStateChanged;
+            _gameEvents.OnAimingAction -= HandleAiming;
+            _gameEvents.OnAimingActionEnd -= HandleAimingDefault;
         }
 
         public void Bind()
         {
-            if (GameEvents == null)
+            if (_gameEvents == null)
                 return;
 
-            GameEvents.OnNewHero += HandleNewHero;
-            GameEvents.OnHeroReposition += HandleReposition;
-            GameEvents.OnCameraFocusPoint += HandleCameraFocusPoint;
-            GameEvents.OnCameraFocusTargets += HandleCameraFocusTargets;
-            GameEvents.OnInteractablesEntered += HandleNearbyTargetEntered;
-            GameEvents.OnInteractablesExited += HandleNearbyTargetExited;
-            GameEvents.OnStateChanged += HandleStateChanged;
-            GameEvents.OnAimingAction += HandleAiming;
-            GameEvents.OnAimingActionEnd += HandleAimingDefault;
+            _gameEvents.OnNewHero += HandleNewHero;
+            _gameEvents.OnHeroReposition += HandleReposition;
+            _gameEvents.OnCameraFocusPoint += HandleCameraFocusPoint;
+            _gameEvents.OnCameraFocusTargets += HandleCameraFocusTargets;
+            _gameEvents.OnInteractablesEntered += HandleNearbyTargetEntered;
+            _gameEvents.OnInteractablesExited += HandleNearbyTargetExited;
+            _gameEvents.OnStateChanged += HandleStateChanged;
+            _gameEvents.OnAimingAction += HandleAiming;
+            _gameEvents.OnAimingActionEnd += HandleAimingDefault;
+        }
+
+        public void Dispose()
+        {
+            _gameEvents = null;
         }
 
         private void UpdateHandler(CameraData data, Action processActionCallback = null)
@@ -121,7 +124,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         {
             Debug.Log("GameEvent: new hero");
             CharacterTransform = characterController.transform;
-            CharacterController = characterController;
+            _characterController = characterController;
 
             FollowSingleTarget(CharacterTransform);
         }
@@ -202,7 +205,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
                 if (totalZones == 0)
                 {
-                    HandleStateChanged(CharacterController.State);
+                    HandleStateChanged(_characterController.State);
                 }
                 else
                 {
@@ -385,7 +388,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             }
             else
             {
-                newPos = (Vector2)targetTransform.position + (CharacterController.Velocity * _velocityMulti);
+                newPos = (Vector2)targetTransform.position + (_characterController.Velocity * _velocityMulti);
             }
 
             LerpToTargetPosition(transform, newPos, speed);
@@ -405,9 +408,9 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         private void UpdateFocusByFalling(float distanceToCheckWhenFreeFalling)
         {
             var minDistanceBetweenCharacterToFocus = 22f;
-            var freeFallingHitPoint = CharacterController.IsFreeFalling(distanceToCheckWhenFreeFalling);
-            var isLargeFallingDistance = (CharacterController.LegsPosition.y - freeFallingHitPoint.y) > minDistanceBetweenCharacterToFocus;
-            var isFallingHighVelocity = CharacterController.Velocity.y <= -20;
+            var freeFallingHitPoint = _characterController.IsFreeFalling(distanceToCheckWhenFreeFalling);
+            var isLargeFallingDistance = (_characterController.LegsPosition.y - freeFallingHitPoint.y) > minDistanceBetweenCharacterToFocus;
+            var isFallingHighVelocity = _characterController.Velocity.y <= -20;
 
             if (freeFallingHitPoint != Vector3.zero)
             {
@@ -436,7 +439,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         private void UpdateFocusByVelocityDirWhenNoFrontWallOrCeiling(Transform transform, float speedWhenOnSurface, float speedBackToCenter)
         {
             var endPosition = (Vector2)CharacterTransform.position;
-            var state = CharacterController.State;
+            var state = _characterController.State;
             var isCeiling = state.IsCeiling();
             var isFrontWallOrCeiling =
                 state.IsFrontWall() && isCeiling
@@ -444,7 +447,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
             if (!isFrontWallOrCeiling)
             {
-                endPosition += CharacterController.Velocity * _velocityMulti;
+                endPosition += _characterController.Velocity * _velocityMulti;
             }
             else if (isCeiling)
             {
