@@ -1,9 +1,10 @@
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
+using System;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller {
+    [Serializable]
     public class ActionInput {
-
         public Definitions.ActionType ActionType { get; private set; }
         public Definitions.ActionTypeGroup ActionGroupType { get; private set; }
         public Vector2 NormalizedDirection { get; private set; }
