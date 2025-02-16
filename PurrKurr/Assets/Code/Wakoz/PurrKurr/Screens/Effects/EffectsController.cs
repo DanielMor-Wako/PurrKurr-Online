@@ -5,11 +5,12 @@ using UnityEngine;
 using UnityEngine.Pool;
 using Code.Wakoz.PurrKurr.DataClasses.Effects;
 using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
+using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
 
 namespace Code.Wakoz.PurrKurr.Screens.Effects {
 
-    [DefaultExecutionOrder(12)]
+    [DefaultExecutionOrder(15)]
     public sealed class EffectsController : SingleController {
 
         // Wait 1 second after emission ends and before turning off the gameobject to allow particles to die
@@ -21,12 +22,21 @@ namespace Code.Wakoz.PurrKurr.Screens.Effects {
 
         private static List<GameObject> _effectsLayers;
 
+        private GameplayController _gameEvents;
+
         protected override Task Initialize() {
 
             _effectsLayers = new List<GameObject>();
             // todo: use the object pool class instead of this xxxxxxxxxx
             //_pool ??= SingleController.GetController<InteractablesController>();
             //_pool.CreateObjectPool(_continousLink, 6, 100, "Effects");
+
+            _gameEvents = GetController<GameplayController>();
+
+            if (_gameEvents != null)
+            {
+                _gameEvents.OnNewEffect += PlayEffect;
+            }
 
             return Task.CompletedTask;
         }
@@ -35,7 +45,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Effects {
             CleanUp();
         }
 
-        public void PlayEffect(EffectData effectData, Transform assignedObject, Quaternion initialRotation, List<Effect2DType> stopWhenAnyEffectStarts) {
+        public void PlayEffect(EffectData effectData, Transform assignedObject, Quaternion initialRotation) {
             
             if (!activeEffects.ContainsKey(assignedObject)) {
                 activeEffects.Add(assignedObject, new List<EffectData> { effectData });
@@ -44,7 +54,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Effects {
                 activeEffects[assignedObject].Add(effectData);
             }
 
-            StartCoroutine(PlayEffectAndReturn(effectData, assignedObject, initialRotation, stopWhenAnyEffectStarts)); 
+            StartCoroutine(PlayEffectAndReturn(effectData, assignedObject, initialRotation)); 
         }
 
         private void SetEmission(ParticleSystem particleSystem, bool isEnabled) {
@@ -60,7 +70,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Effects {
 
         }
 
-        private IEnumerator PlayEffectAndReturn(EffectData effect, Transform assignedObject, Quaternion _initialRotation, List<Effect2DType> effectsThatKillTheProcess) {
+        private IEnumerator PlayEffectAndReturn(EffectData effect, Transform assignedObject, Quaternion _initialRotation) {
 
             float duration = effect.DurationInSeconds;
             var particleSystem = GetEffectInstance(effect.Effect);
@@ -80,10 +90,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Effects {
             SetEmission(particleSystem, true);
             var endTime = Time.time + duration;
 
-            var hasProcessKillers = effectsThatKillTheProcess != null;
-
-            while (Time.time < endTime && assignedObject != null &&
-                (!hasProcessKillers || hasProcessKillers && !IsEffectTypePlayedForAssignedObject(assignedObject, effectsThatKillTheProcess))) {
+            while (Time.time < endTime && assignedObject != null) {
                 
                 if (effect.TrackPosition) {
                     particleSystem.transform.position = assignedObject.transform.position;
@@ -94,11 +101,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Effects {
 
             SetEmission(particleSystem, false);
 
-            var wasKilledEarly = hasProcessKillers && Time.time < endTime;
+            var wasKilledEarly = Time.time < endTime;
 
             yield return new WaitForSeconds(effect.DurationInSeconds);
 
-            if (!wasKilledEarly) {
+            if (!wasKilledEarly)
+            {
                 yield return new WaitForSeconds(DelayBeforeGameObjectIsDeactivated);
             }
 
@@ -148,50 +156,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Effects {
             particleSystemPools[particleSystem].Release(instance);
             instance.gameObject.SetActive(false);
         }
-
-        private bool IsEffectTypePlayedForAssignedObject(Transform assignedObject, List<Effect2DType> effectsThatKillTheProcess) {
-
-            ParticleSystem particleSystemInstance;
-
-            if (effectsThatKillTheProcess == null) {
-                return false;
-            }
-
-            foreach (var kvp in activeEffects) {
-
-                if (kvp.Key != assignedObject) {
-                    continue;
-                }
-
-                foreach (var effectData in kvp.Value) {
-
-                    if (effectData == null || effectData.Effect == null) {
-                        continue;
-                    }
-
-                    if (effectsThatKillTheProcess.Contains(effectData.EffectType)) {
-                        Debug.Log($"effect {effectData.EffectType} was active and marked to kill process on assigned {assignedObject.name}");
-                        // get the active instance for the assignedObject from a list and validate that gameobject.activeSelf is false
-                        //effectData.Effect.gameObject.SetActive(false);
-                        //particleSystemPools[effectData.Effect].Release(effectData.Effect); // Release the ParticleSystem instance back to the pool
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
+       
         public void CleanUp() {
 
-            /*foreach (var kvp in activeEffects) {
-                foreach (var effectData in kvp.Value) {
-                    if (effectData != null && effectData.Effect != null) {
-                        effectData.Effect.gameObject.SetActive(false);
-                        particleSystemPools[effectData.Effect].Release(effectData.Effect); // Release the ParticleSystem instance back to the pool
-                    }
-                }
-            }*/
+            if (_gameEvents != null)
+            {
+                _gameEvents.OnNewEffect -= PlayEffect;
+                _gameEvents = null;
+            }
 
             foreach (var effectsLayer in _effectsLayers) {
                 if (effectsLayer != null) {
