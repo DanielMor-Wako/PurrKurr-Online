@@ -59,12 +59,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore
         public Transform GetTransform() => transform;
         public Transform GetCharacterRigTransform() => null;
         public Definitions.ObjectState GetCurrentState() 
-            => _health > 0 ? Definitions.ObjectState.Alive : Definitions.ObjectState.Dead;
+            => _health != 0 ? Definitions.ObjectState.Alive : Definitions.ObjectState.Dead;
         public Vector3 GetCenterPosition() => transform != null ? transform.position : Vector3.zero;
 
         public Vector2 GetVelocity() => _rigidbody.velocity;
-        public float GetHpPercent() 
-            => _maxHealth > 0 ? 
+        public float GetHpPercent() => 
+            _health == -1 ? 1 :
+            _maxHealth > 0 ? 
             Mathf.Clamp(_health / _maxHealth, 0, _maxHealth) : 0;
 
         public void DealDamage(int damage)
