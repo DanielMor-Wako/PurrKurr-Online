@@ -15,7 +15,6 @@ using Code.Wakoz.PurrKurr.Screens.Init;
 using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDetection;
-using Code.Wakoz.PurrKurr.Screens.Effects;
 using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 using Code.Wakoz.PurrKurr.Screens.Levels;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors;
@@ -25,7 +24,8 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger;
 using Code.Wakoz.PurrKurr.Screens.Shaker;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
-using UnityEngine.TextCore.Text;
+using Code.Wakoz.PurrKurr.DataClasses.Effects;
+using Code.Wakoz.PurrKurr.DataClasses.Objectives;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 {
@@ -55,6 +55,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         public event Action<DetectionZoneTrigger> OnHeroConditionMet;
         public event Action<Collider2D> OnInteractablesEntered;
         public event Action<Collider2D> OnInteractablesExited;
+        public event Action<EffectData, Transform, Quaternion> OnNewEffect;
         public event Action<float> OnTimeScaleChanged;
         public event Action OnTimeScaleDefault;
 
@@ -73,7 +74,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         private InputInterpreterLogic _inputInterpreterLogic; 
         private UIController _ui;
         private GameplayLogic _gameplayLogic;
-        private EffectsController _effects;
+        //private EffectsController _effects;
         private LevelsController _levelsController;
         private InteractablesController _interactables;
         private DebugController _debug;
@@ -151,7 +152,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         private void InitHandlers()
         {
             Handlers = new HandlersCoordinator();
+            InitUpdateProcessHandlers();
+            InitBindableHandlers();
+        }
 
+        private void InitUpdateProcessHandlers()
+        {
             var handlers = new List<IUpdateProcessHandler>
             {
                 new ShakeHandler(),
@@ -164,9 +170,18 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         {
             var bindableHandlers = new List<IBindableHandler>
             {
+                new ObjectivesHandler(this)
+            };
+            Handlers.AddBindableHandlers(bindableHandlers);
+        }
+
+        private void InitBindableHandlersForMainHero()
+        {
+            var bindableHandlers = new List<IBindableHandler>
+            {
                 new CameraCharacterHandler(Handlers.GetHandler<CameraHandler>(), this, _camController.CameraFocusTransform, _hero.transform),
             };
-            Handlers.BindHandlers(bindableHandlers);
+            Handlers.AddBindableHandlers(bindableHandlers);
         }
 
         private void CleanBindableHandlers() => Handlers.Dispose();
@@ -174,8 +189,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         private void InitLevel() {
 
             _levelsController.InitInteractablePools(_interactables);
-
-            _levelsController.BindEvents(this);
 
 #if !UNITY_EDITOR
             _startingLevelIndex = 0;
@@ -294,10 +307,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 _hero.SetTargetPosition(newPosition + (Vector3.up * _hero.LegsRadius ));
             }
 
-            var isLeadingToDoorWithinTheSameLevel = _levelsController._currentLevelIndex == levelToLoad;
+            var isLeadingToDoorWithinTheSameLevel = _levelsController.CurrentLevelIndex == levelToLoad;
             if (!isLeadingToDoorWithinTheSameLevel)
             {
                 _levelsController.LoadLevel(levelToLoad);
+                var levelObjectivesData = _levelsController.GetLevel(levelToLoad).GetObjectivesData();
+                Handlers.GetHandler<ObjectivesHandler>().Create(levelObjectivesData);
                 if (hasSpawnPoint)
                 {
                     OnHeroReposition?.Invoke(newPosition);
@@ -354,7 +369,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             _hero = hero;
 
-            InitBindableHandlers();
+            InitBindableHandlersForMainHero();
 
             OnNewHero?.Invoke(_hero);
 
@@ -498,7 +513,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                                 _hero.SetJumping(Time.time + .05f);
                                 _hero.SetForceDir(forceDir);
                                 _hero.DoMove(0); // might conflict with the TryPerformInputNavigation when the moveSpeed is already set by Navigation
-                                ApplyEffectAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
+                                ApplyEffectOnCharacter(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
 
                             } else if (actionInput.ActionType == ActionType.Block) {
                                 ApplyEffectOnCharacter(_hero, Effect2DType.BlockActive);
@@ -624,7 +639,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                             if (isBlockingEnded) {
                                 ApplyEffectOnCharacter(_hero, Effect2DType.DodgeActive);
-                                ApplyEffectAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
+                                ApplyEffectOnCharacter(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
 
                             } else {
 
@@ -642,7 +657,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                                     // apply jump aim in trajectory dir
                                     _hero.SetJumping(Time.time + .1f);
                                     forceDir = actionInput.NormalizedDirection * _hero.Stats.JumpForce;
-                                    ApplyEffectAndSetRotation(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
+                                    ApplyEffectOnCharacter(_hero, Effect2DType.DustCloud, _hero.State.ReturnForwardDirByTerrainQuaternion());
                                 }
                             }
                         }
@@ -1098,6 +1113,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             var canMultiHit = attackProperties.Properties.Count > 0 && attackProperties.Properties.Contains(AttackProperty.MultiTargetOnSurfaceHit);
             IInteractableBody latestInteraction = null;
+            List<IInteractableBody> validInteractables = new();
 
             AttackData attackStats = null;
 
@@ -1109,6 +1125,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                     newFacingDirection = validAttack;
                     latestInteraction = col;
+                    validInteractables.Add(col);
 
                     if (!canMultiHit) {
                         break;
@@ -1118,7 +1135,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             if (latestInteraction != null) {
 
-                _timelineEventManager.RegisterInteractionEvent(attacker, interactedColliders, Time.time, attackStats, attackAbility, moveToPosition, attackProperties);
+                _timelineEventManager.RegisterInteractionEvent(attacker, validInteractables.ToArray(), Time.time, attackStats, attackAbility, moveToPosition, attackProperties);
             }
 
             attacker.State.MarkLatestInteraction(latestInteraction);
@@ -1517,16 +1534,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             OnAimingActionEnd?.Invoke(actionType);
         }
         
-        private void ApplyEffectOnCharacter(Character2DController character, Effect2DType effectType, List<Effect2DType> stopWhenAnyEffectStarts = null) {
-            ApplyEffectAndSetRotation(character, effectType, Quaternion.identity, stopWhenAnyEffectStarts);
-        }
-
-        private void ApplyEffectAndSetRotation(Character2DController character, Effect2DType effectType, Quaternion initialRotation, List<Effect2DType> stopWhenAnyEffectStarts = null) {
-            
-            _effects ??= GetController<EffectsController>();
-            var effectData = character.GetEffectOverride(effectType) ?? _gameplayLogic.GetEffects(effectType);
-            _effects?.PlayEffect(effectData, character.transform, initialRotation, stopWhenAnyEffectStarts);
-        }
         List<Collider2D> damagees = new() ;
         private async Task ApplyProjectileStateWhenThrown(IInteractableBody grabbed, int damage, IInteractableBody thrower, Func<Task> actionOnEnd = null) {
 
@@ -1700,11 +1707,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             foreach (var condition in attack.OpponentStateConditions) {
                 
                 switch (condition) {
-                    // todo: change this to check when a player is grounded but is considered flying type, so the state of the opponent is grounded when in midair and not falling
-                    /*case CharacterState.Falling or CharacterState.Jumping or CharacterState.Grounded
-                        when opponentState is (CharacterState.Falling or CharacterState.Jumping or CharacterState.Grounded) :
-                        return true;*/
-                    
                     case ObjectState.Alive when interactable.GetHpPercent() <= 0:
                     case ObjectState.Running when opponentState != ObjectState.Running:
                     case ObjectState.Jumping or ObjectState.Falling when !(_logic.GameplayLogic.IsStateConsideredAsAerial(opponentState)):
@@ -1761,11 +1763,19 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
             else
             {
-                // fix: remove the if check and replace it by only checking for effect ovverides on the object (currently exist on the CharacterController2D)
-                _effects ??= GetController<EffectsController>();
-                _effects.PlayEffect(_gameplayLogic.GetEffects(effectOnImpact), damageableBody.GetTransform(), Quaternion.identity, null);
+                OnNewEffect?.Invoke(_gameplayLogic.GetEffectData(effectOnImpact), damageableBody.GetTransform(), Quaternion.identity);
             }
+        }
 
+        private void ApplyEffectOnCharacter(Character2DController character, Effect2DType effectType)
+        {
+            ApplyEffectOnCharacter(character, effectType, Quaternion.identity);
+        }
+
+        private void ApplyEffectOnCharacter(Character2DController character, Effect2DType effectType, Quaternion initialRotation)
+        {
+            var effectData = character.GetEffectOverride(effectType) ?? _gameplayLogic.GetEffectData(effectType);
+            OnNewEffect?.Invoke(effectData, character.transform, initialRotation);
         }
 
         private Vector2 AlterDirectionToMaxForce(Vector2 forceDirAction) {
