@@ -11,7 +11,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
 
         public HandlersCoordinator()
         {
-            //_handlers = new Dictionary<IHandler, Type>();
         }
 
         /// <summary>
@@ -64,19 +63,21 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
         /// Set new Bindable Handlers, also unbind previous handlers
         /// </summary>
         /// <param name="_bindableHandlers"></param>
-        public void BindHandlers(IEnumerable<IBindableHandler> _bindableHandlers)
+        public void AddBindableHandlers(IEnumerable<IBindableHandler> _bindableHandlers)
         {
             UnbindHandlers();
 
-            foreach (var handler in _bindableHandlers)
+            AddHandlers(_bindableHandlers);
+
+            foreach (var handler in _handlers.Keys.OfType<IBindableHandler>())
             {
-                AddHandler(handler);
                 handler.Bind();
             }
+
         }
 
         /// <summary>
-        /// Clean the bindable Handlers
+        /// Unbind Handlers
         /// </summary>
         private void UnbindHandlers()
         {
@@ -87,11 +88,23 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
         }
 
         /// <summary>
+        /// Clean the bindable Handlers
+        /// </summary>
+        private void DisposeBindableHandlers()
+        {
+            foreach (var handler in _handlers.Keys.OfType<IBindableHandler>())
+            {
+                handler?.Dispose();
+            }
+        }
+
+        /// <summary>
         /// Clean up
         /// </summary>
         public void Dispose()
         {
             UnbindHandlers();
+            DisposeBindableHandlers();
             _handlers.Clear();
         }
     }
