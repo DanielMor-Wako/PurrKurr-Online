@@ -25,7 +25,7 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow
 
         public LayerMask GetDamageables() => Data.GetDamageables();
         
-        public EffectData GetEffects(Effect2DType effectType) => Data.GetEffectByType(effectType);
+        public EffectData GetEffectData(Effect2DType effectType) => Data.GetEffectByType(effectType);
 
         public bool IsStateConsideredAsGrounded(Definitions.ObjectState specificState) =>
             Data.IsStateConsideredAsGrounded(specificState);
