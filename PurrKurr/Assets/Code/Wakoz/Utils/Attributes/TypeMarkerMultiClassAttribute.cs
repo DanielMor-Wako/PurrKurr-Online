@@ -2,13 +2,13 @@
 
 namespace Code.Wakoz.Utils.Attributes {
 
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class TypeMarkerMultiClassAttribute : Attribute {
 
         public Type type { get; }
 
-        public TypeMarkerMultiClassAttribute(Type objectiveType) {
-            type = objectiveType;
+        public TypeMarkerMultiClassAttribute(Type attributeType) {
+            type = attributeType;
         }
     }
 }
