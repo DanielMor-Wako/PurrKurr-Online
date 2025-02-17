@@ -20,8 +20,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems {
         private GameplayController _gameplayController;
         private bool _isCollected = false;
 
-        public string GetItemId() => _itemId;
-        public int GetItemQuantity() => _quantity;
+        public string GetId() => _itemId;
+        public int GetQuantity() => _quantity;
 
         protected override void Clean() {
             base.Clean();

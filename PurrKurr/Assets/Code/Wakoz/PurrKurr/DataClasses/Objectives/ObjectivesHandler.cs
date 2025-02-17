@@ -5,32 +5,25 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers;
-using Code.Wakoz.Utils.Attributes;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.Objectives {
+namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
+{
 
     public class ObjectivesHandler : IBindableHandler
     {
-
-        private List<IObjective> _objectives;
-        private List<string> _completedObjectivesId = new();
-
+        private ObjectiveFactory _objectiveFactory; // Handles objective creation
+        private List<IObjective> _objectives = new();
+        private HashSet<string> _completedObjectivesId = new(); // Tracks completed objectives efficiently
+        
         private GameplayController _gameEvents;
 
         public ObjectivesHandler(GameplayController gameEvents)
         {
             _gameEvents = gameEvents;
-        }
-
-        public void Unbind()
-        {
-            if (_gameEvents == null)
-                return;
-
-            _gameEvents.OnHeroEnterDetectionZone -= HandleHeroEnterDetectionZone;
+            _objectiveFactory = new ObjectiveFactory();
         }
 
         public void Bind()
@@ -41,69 +34,89 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives {
             _gameEvents.OnHeroEnterDetectionZone += HandleHeroEnterDetectionZone;
         }
 
+        public void Unbind()
+        {
+            if (_gameEvents == null)
+                return;
+
+            _gameEvents.OnHeroEnterDetectionZone -= HandleHeroEnterDetectionZone;
+        }
+
         public void Dispose()
         {
             _gameEvents = null;
         }
 
-        public void Create(List<ObjectiveDataSO> objectives)
+        /// <summary>
+        /// Initializes objectives for the level.
+        /// Marks completed objectives after creation as finished.
+        /// </summary>
+        public void Initialize(List<ObjectiveDataSO> objectivesData)
         {
-            var objectivesList = new List<IObjective>();
-            foreach (var data in objectives)
+            _objectives.Clear();
+
+            foreach (var data in objectivesData)
             {
-                // todo: use objective id for marking something as done?
-                if (_completedObjectivesId.Contains(data.uniqueId))
-                {
-                    Debug.Log($"objective {data.uniqueId} marked as completed");
-                    continue;
-                }
-                IObjective objective = CreateObjective(data);
+                var objective = _objectiveFactory.Create(data);
                 if (objective != null)
                 {
                     objective.Initialize(data);
-                    objectivesList.Add(objective);
+                    _objectives.Add(objective);
+
+                    // Marks the objective as completed
+                    if (_completedObjectivesId.Contains(data.Objective.UniqueId))
+                    {
+                        Debug.Log($"Objective {data.Objective.UniqueId} is already completed. Marking as complete.");
+                        objective.Finish();
+                    }
                 }
             }
-
-            Initialize(objectivesList, ref _completedObjectivesId);
         }
 
-        private IObjective CreateObjective(ObjectiveDataSO data)
+        /// <summary>
+        /// Updates the progress of objectives related to a specific collectable type.
+        /// </summary>
+        public void UpdateObjectiveOfCollectableType(string collectableType, int amountToAdd)
         {
-            Type objectiveType = GetObjectiveType(data);
-            if (objectiveType != null)
+            foreach (var objective in _objectives)
             {
-                if (typeof(IObjective).IsAssignableFrom(objectiveType))
+                if (objective.GetObjectType() == collectableType && !_completedObjectivesId.Contains(objective.GetUniqueId()))
                 {
-                    IObjective objective = (IObjective)Activator.CreateInstance(objectiveType);
-                    return objective;
-                }
-                else
-                {
-                    Debug.LogError("Invalid objective type: " + objectiveType.Name);
+                    Debug.Log($"Updating Objective: increased by {amountToAdd} for {objective.GetObjectiveDescription()} ");
+                    objective.UpdateProgress(amountToAdd);
                 }
             }
-            else
-            {
-                Debug.LogError("Failed to determine objective type for: " + data.GetType().Name);
-            }
-            return null;
+            UpdateCompletedObjectives();
         }
 
-        private Type GetObjectiveType(ObjectiveDataSO data)
+        /// <summary>
+        /// Marks objectives of a specific type as complete.
+        /// </summary>
+        public void CompleteObjectiveOfType(Type type)
         {
-
-            Type objectiveDataType = data.GetType();
-            var attribute = (TypeMarkerMultiClassAttribute)Attribute.GetCustomAttribute(objectiveDataType, typeof(TypeMarkerMultiClassAttribute));
-
-            if (attribute != null)
+            foreach (var objective in _objectives)
             {
-                return attribute.type;
+                if (objective.GetType() == type && !_completedObjectivesId.Contains(objective.GetUniqueId()))
+                {
+                    Debug.Log($"Force completing Objective: {objective.GetObjectiveDescription()}");
+                    objective.Finish();
+                    _completedObjectivesId.Add(objective.GetUniqueId());
+                }
             }
-            else
+        }
+
+        /// <summary>
+        /// Updates the list of completed objectives.
+        /// </summary>
+        public void UpdateCompletedObjectives()
+        {
+            foreach (var objective in _objectives)
             {
-                Debug.LogError("No ObjectiveTypeAttribute found for ObjectiveDataSO: " + objectiveDataType.Name);
-                return null;
+                if (objective.IsComplete() && !_completedObjectivesId.Contains(objective.GetUniqueId()))
+                {
+                    Debug.Log($"Objective Completed: {objective.GetObjectiveDescription()}");
+                    _completedObjectivesId.Add(objective.GetUniqueId());
+                }
             }
         }
 
@@ -111,101 +124,36 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives {
         {
             switch (zone)
             {
-                case DoorController:
-                {
-
-                    var door = zone as DoorController;
+                case DoorController door:
 
                     if (!door.IsDoorEntrance())
                     {
-                        // _currentLevelIndex ??= door.GetNextDoor().GetRoomIndex()
                         CompleteObjectiveOfType(typeof(ReachTargetZoneObjective));
                     }
-
                     break;
-                }
 
-                case CollectableItemController:
-                {
-
-                    var collectableItem = zone as CollectableItemController;
-
-                    UpdateObjectiveOfCollectableType(collectableItem.GetItemId(), collectableItem.GetItemQuantity());
-
+                case CollectableItemController collectableItem:
+                    UpdateObjectiveOfCollectableType(collectableItem.GetId(), collectableItem.GetQuantity());
                     break;
-                }
 
                 case not OverlayWindowTrigger:
-                Debug.Log("No explicit interpreter for " + zone.GetType());
-                break;
-            }
-        }
-
-        public List<string> GetObjectives() 
-        {
-            var res = new List<string>();
-            foreach (var objective in _objectives) {
-                res.Add(objective.GetUniqueId());
-            }
-            return res;
-        }
-
-        public void Initialize(List<IObjective> objectivesList, ref List<string> completedObjectivesList) {
-
-            _objectives = objectivesList;
-            _completedObjectivesId = completedObjectivesList;
-        }
-
-        public void UpdateObjectiveOfCollectableType(string collectableType, int amountToAdd) {
-
-            foreach (var objective in _objectives) {
-
-                if (objective.GetObjectType() != collectableType) {
-                    continue;
-                }
-
-                if (!objective.IsComplete() || !_completedObjectivesId.Contains(objective.GetUniqueId())) {
-
-                    Debug.Log($"Objective: {objective.GetObjectiveDescription()} updated by {amountToAdd}");
-                    objective.UpdateProgress(amountToAdd);
-
+                    Debug.Log($"Unhandled detection zone type: {zone.GetType()}");
                     break;
-                }
             }
-            UpdateCompletedObjectives();
         }
 
-        public void UpdateCompletedObjectives()
+        /// <summary>
+        /// Gets all objective by their IDs for saving progression
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetObjectives()
         {
+            var result = new List<string>();
             foreach (var objective in _objectives)
             {
-
-                if (objective.IsComplete() && !_completedObjectivesId.Contains(objective.GetUniqueId()))
-                {
-
-                    _completedObjectivesId.Add(objective.GetUniqueId());
-                    Debug.Log($"Objective: {objective.GetObjectiveDescription()} completed");
-                }
+                result.Add(objective.GetUniqueId());
             }
+            return result;
         }
-
-        public void CompleteObjectiveOfType(Type type) {
-
-            foreach (var objective in _objectives) {
-
-                if (objective.GetType() != type) {
-                    continue;
-                }
-
-                if (!objective.IsComplete() || !_completedObjectivesId.Contains(objective.GetUniqueId())) {
-
-                    Debug.Log($"Objective: {objective.GetObjectiveDescription()} force completed");
-                    objective.Finish();
-
-                    _completedObjectivesId.Add(objective.GetUniqueId());
-                }
-            }
-        }
-
     }
 }

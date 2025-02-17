@@ -10,7 +10,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors
 {
 
     [DefaultExecutionOrder(15)]
-    [TypeMarkerMultiClass(typeof(ReachTargetZoneObjective))]
+    //[TypeMarkerMultiClass(typeof(ReachTargetZoneObjective))]
     public class DoorController : DetectionZoneTrigger
     {
         [SerializeField] private bool _isDoorEntrance = true;

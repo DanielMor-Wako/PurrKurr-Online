@@ -311,8 +311,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             if (!isLeadingToDoorWithinTheSameLevel)
             {
                 _levelsController.LoadLevel(levelToLoad);
-                var levelObjectivesData = _levelsController.GetLevel(levelToLoad).GetObjectivesData();
-                Handlers.GetHandler<ObjectivesHandler>().Create(levelObjectivesData);
+                var levelObjectivesData = _levelsController.GetLevel(levelToLoad).GetObjectives();
+                Handlers.GetHandler<ObjectivesHandler>().Initialize(levelObjectivesData);
                 if (hasSpawnPoint)
                 {
                     OnHeroReposition?.Invoke(newPosition);

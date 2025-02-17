@@ -1,6 +1,7 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.Objectives {
+namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
+{
     public abstract class Objective<T> : IObjective where T : ObjectiveDataSO {
 
         protected T _data;
@@ -16,18 +17,26 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives {
             InitializeSpecific();
         }
 
-        public abstract bool IsComplete();
+        public virtual bool IsComplete() 
+            => _data.Objective.CurrentQuantity >= _data.Objective.RequiredQuantity;
 
-        public abstract void UpdateProgress(int amount);
+        public virtual void UpdateProgress(int amountToAdd) 
+            => _data.Objective.CurrentQuantity += amountToAdd;
 
         public abstract string GetObjectiveDescription();
 
-        protected abstract void InitializeSpecific();
+        protected virtual void InitializeSpecific()
+        {
+            _data.Objective.CurrentQuantity = 0;
+        }
 
-        public abstract void Finish();
+        public virtual void Finish() 
+            => _data.Objective.CurrentQuantity = _data.Objective.RequiredQuantity;
 
-        public string GetUniqueId() => _data.uniqueId;
+        public string GetUniqueId() 
+            => _data.Objective.UniqueId;
 
-        public string GetObjectType() => _data.targetObjectType;
+        public string GetObjectType() 
+            => _data.Objective.TargetObjectType;
     }
 }

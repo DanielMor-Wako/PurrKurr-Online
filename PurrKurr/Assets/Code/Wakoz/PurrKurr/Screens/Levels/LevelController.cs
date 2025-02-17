@@ -4,12 +4,15 @@ using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using UnityEngine;
 using Code.Wakoz.Utils.Attributes;
 
-namespace Code.Wakoz.PurrKurr.Screens.Levels {
-    public class LevelController : Controller {
+namespace Code.Wakoz.PurrKurr.Screens.Levels 
+{
+
+    public class LevelController : Controller 
+    {
 
         [SerializeField] private List<ObjectiveDataSO> _objectivesData;
 
-        public List<ObjectiveDataSO> GetObjectivesData() 
+        public List<ObjectiveDataSO> GetObjectives() 
             => _objectivesData;
 
         protected override void Clean() { }
