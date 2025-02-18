@@ -15,15 +15,11 @@ namespace Code.Wakoz.PurrKurr.Views
 
         public CanvasGroup CanvasTarget => _canvasGroup;
 
-        public void StartTransition(Action callback = null)
-        {
-            FadeTo(1, callback);
-        }
+        public void StartTransition(float targetValue = 1, 
+            Action callback = null) => FadeTo(targetValue, callback);
 
-        public void EndTransition(Action callback = null)
-        {
-            FadeTo(0, callback);
-        }
+        public void EndTransition(float targetValue = 0, 
+            Action callback = null) => FadeTo(targetValue, callback);
 
         private void FadeTo(float targetValue, Action callback = null)
         {

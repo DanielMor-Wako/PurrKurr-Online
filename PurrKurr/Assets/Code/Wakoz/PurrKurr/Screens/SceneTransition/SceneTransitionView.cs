@@ -28,12 +28,12 @@ namespace Code.Wakoz.PurrKurr.Screens.SceneTransition
             SetNoShade();
             SetEyesClosed();
             StartBlinking();
-            _canvasGroupFader.StartTransition(callback);
+            _canvasGroupFader.StartTransition(1, callback);
         }
 
         public void EndTransition(Action callback = null)
         {
-            _canvasGroupFader.EndTransition(callback);
+            _canvasGroupFader.EndTransition(0, callback);
 
             _transformScaler.SetTransitionDuration(_transformScaler.TransitionDuration);
             CloseEyes();
