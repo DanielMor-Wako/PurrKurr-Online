@@ -12,6 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12a081ebce714224bafada78022caecf, type: 3}
   m_Name: ReachTargetZone2
   m_EditorClassIdentifier: 
+  _objectiveData:
+    UniqueId: Reached_Jump
+    TargetObjectType: Door
+    RequiredQuantity: 1
+    CurrentQuantity: 0
   uniqueId: Reached_Jump
   targetObjectType: Door
+  requiredQuantity: 1
+  currentQuantity: 0
   targetZoneId: 1

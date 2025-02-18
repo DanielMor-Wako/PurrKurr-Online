@@ -5,8 +5,10 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers;
+using Code.Wakoz.PurrKurr.Screens.Objectives;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
@@ -17,13 +19,16 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         private ObjectiveFactory _objectiveFactory; // Handles objective creation
         private List<IObjective> _objectives = new();
         private HashSet<string> _completedObjectivesId = new(); // Tracks completed objectives efficiently
-        
+     
         private GameplayController _gameEvents;
+        private ObjectivesController _controller;
 
-        public ObjectivesHandler(GameplayController gameEvents)
+        public ObjectivesHandler(GameplayController gameEvents, ObjectivesController controller)
         {
-            _gameEvents = gameEvents;
             _objectiveFactory = new ObjectiveFactory();
+
+            _gameEvents = gameEvents;
+            _controller = controller;
         }
 
         public void Bind()
@@ -63,7 +68,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
                     objective.Initialize(data);
                     _objectives.Add(objective);
 
-                    // Marks the objective as completed
+                    // Mark objective as completed
                     if (_completedObjectivesId.Contains(data.Objective.UniqueId))
                     {
                         Debug.Log($"Objective {data.Objective.UniqueId} is already completed. Marking as complete.");
@@ -71,6 +76,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
                     }
                 }
             }
+
+            SortObjectives();
+            NotifyNewObjectives();
+        }
+
+        private void SortObjectives()
+        {
+            _objectives = _objectives
+                .OrderByDescending(obj => !obj.IsComplete()) // Completed objectives go to the end
+                .ThenByDescending(obj => (float)obj.GetCurrentQuantity() / obj.GetRequiredQuantity()) // Sort by progress (higher progress first)
+                .ToList();
         }
 
         /// <summary>
@@ -78,13 +94,20 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         /// </summary>
         public void UpdateObjectiveOfCollectableType(string collectableType, int amountToAdd)
         {
+            var hasChanges = false;
             foreach (var objective in _objectives)
             {
                 if (objective.GetObjectType() == collectableType && !_completedObjectivesId.Contains(objective.GetUniqueId()))
                 {
                     Debug.Log($"Updating Objective: increased by {amountToAdd} for {objective.GetObjectiveDescription()} ");
                     objective.UpdateProgress(amountToAdd);
+                    hasChanges = true;
                 }
+            }
+            if (hasChanges)
+            {
+                SortObjectives();
+                NotifyNewObjectives();
             }
             UpdateCompletedObjectives();
         }
@@ -94,6 +117,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         /// </summary>
         public void CompleteObjectiveOfType(Type type)
         {
+            var hasChanges = false;
             foreach (var objective in _objectives)
             {
                 if (objective.GetType() == type && !_completedObjectivesId.Contains(objective.GetUniqueId()))
@@ -101,8 +125,24 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
                     Debug.Log($"Force completing Objective: {objective.GetObjectiveDescription()}");
                     objective.Finish();
                     _completedObjectivesId.Add(objective.GetUniqueId());
+                    hasChanges = true;
                 }
             }
+            if (hasChanges)
+            {
+                SortObjectives();
+                NotifyObjectivesChanged();
+            }
+        }
+
+        private void NotifyObjectivesChanged()
+        {
+            _controller.HandleObjectivesChanged(_objectives);
+        }
+
+        private void NotifyNewObjectives()
+        {
+            _controller.HandleNewObjectives(_objectives);
         }
 
         /// <summary>
@@ -143,17 +183,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         }
 
         /// <summary>
-        /// Gets all objective by their IDs for saving progression
+        /// Gets all active objective
         /// </summary>
         /// <returns></returns>
-        public List<string> GetObjectives()
+        public List<IObjective> GetObjectives()
         {
-            var result = new List<string>();
-            foreach (var objective in _objectives)
-            {
-                result.Add(objective.GetUniqueId());
-            }
-            return result;
+            return _objectives;
         }
     }
 }

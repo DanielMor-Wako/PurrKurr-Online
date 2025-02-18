@@ -12,6 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ca09056af55d3144b1091b2a67aaf33, type: 3}
   m_Name: CollectTreasure_Main 2
   m_EditorClassIdentifier: 
+  _objectiveData:
+    UniqueId: CollectTreasure2_Main
+    TargetObjectType: TreasureChest2
+    RequiredQuantity: 1
+    CurrentQuantity: 0
   uniqueId: CollectTreasure2_Main
   targetObjectType: TreasureChest2
   requiredQuantity: 1
+  currentQuantity: 0

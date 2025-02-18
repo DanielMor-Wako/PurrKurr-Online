@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
 using Code.Wakoz.PurrKurr.DataClasses.Effects;
-using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
 
-namespace Code.Wakoz.PurrKurr.Screens.Effects {
+namespace Code.Wakoz.PurrKurr.Screens.Effects
+{
 
     [DefaultExecutionOrder(15)]
     public sealed class EffectsController : SingleController {
@@ -41,11 +41,26 @@ namespace Code.Wakoz.PurrKurr.Screens.Effects {
             return Task.CompletedTask;
         }
 
-        protected override void Clean() {
-            CleanUp();
+        protected override void Clean()
+        {
+            if (_gameEvents != null)
+            {
+                _gameEvents.OnNewEffect -= PlayEffect;
+                _gameEvents = null;
+            }
+
+            foreach (var effectsLayer in _effectsLayers)
+            {
+                if (effectsLayer != null)
+                {
+                    Destroy(effectsLayer);
+                }
+            }
+
+            activeEffects.Clear();
         }
 
-        public void PlayEffect(EffectData effectData, Transform assignedObject, Quaternion initialRotation) {
+        private void PlayEffect(EffectData effectData, Transform assignedObject, Quaternion initialRotation) {
             
             if (!activeEffects.ContainsKey(assignedObject)) {
                 activeEffects.Add(assignedObject, new List<EffectData> { effectData });
@@ -157,22 +172,5 @@ namespace Code.Wakoz.PurrKurr.Screens.Effects {
             instance.gameObject.SetActive(false);
         }
        
-        public void CleanUp() {
-
-            if (_gameEvents != null)
-            {
-                _gameEvents.OnNewEffect -= PlayEffect;
-                _gameEvents = null;
-            }
-
-            foreach (var effectsLayer in _effectsLayers) {
-                if (effectsLayer != null) {
-                    Destroy(effectsLayer);
-                }
-            }
-
-            activeEffects.Clear();
-        }
     }
-
 }

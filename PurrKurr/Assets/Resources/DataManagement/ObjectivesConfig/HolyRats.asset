@@ -12,6 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba73621ecf98de847a691eaaca93e7a1, type: 3}
   m_Name: HolyRats
   m_EditorClassIdentifier: 
+  _objectiveData:
+    UniqueId: DefeatRats_Attack
+    TargetObjectType: Rat
+    RequiredQuantity: 1
+    CurrentQuantity: 0
   uniqueId: DefeatRats_Attack
   targetObjectType: Rat
   requiredQuantity: 1
+  currentQuantity: 0

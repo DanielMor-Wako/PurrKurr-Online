@@ -16,11 +16,5 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
         /// <returns></returns>
         public ObjectiveData GetObjectiveData() => new ObjectiveData(_objectiveData);
 
-        // Initialize only if it's null
-/*
-        private void OnValidate()
-            => data ??= new ObjectiveData();
-*/
-
     }
 }

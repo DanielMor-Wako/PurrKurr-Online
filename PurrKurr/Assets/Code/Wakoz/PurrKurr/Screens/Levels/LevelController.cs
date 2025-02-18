@@ -12,7 +12,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Levels
 
         [SerializeField] private List<ObjectiveDataSO> _objectivesData;
 
-        public List<ObjectiveDataSO> GetObjectives() 
+        public List<ObjectiveDataSO> GetObjectives()
             => _objectivesData;
 
         protected override void Clean() { }

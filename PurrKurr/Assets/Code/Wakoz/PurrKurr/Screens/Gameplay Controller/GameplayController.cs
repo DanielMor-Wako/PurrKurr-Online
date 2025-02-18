@@ -26,6 +26,7 @@ using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
 using Code.Wakoz.PurrKurr.DataClasses.Effects;
 using Code.Wakoz.PurrKurr.DataClasses.Objectives;
+using Code.Wakoz.PurrKurr.Screens.Objectives;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 {
@@ -170,7 +171,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         {
             var bindableHandlers = new List<IBindableHandler>
             {
-                new ObjectivesHandler(this)
+                new ObjectivesHandler(this, GetController<ObjectivesController>())
             };
             Handlers.AddBindableHandlers(bindableHandlers);
         }

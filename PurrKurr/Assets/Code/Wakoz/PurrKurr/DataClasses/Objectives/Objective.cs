@@ -38,5 +38,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
         public string GetObjectType() 
             => _data.Objective.TargetObjectType;
+
+        public int GetCurrentQuantity() 
+            => _data.Objective.CurrentQuantity;
+
+        public int GetRequiredQuantity() 
+            => _data.Objective.RequiredQuantity;
     }
 }
