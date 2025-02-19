@@ -107,9 +107,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             if (hasChanges)
             {
                 SortObjectives();
-                NotifyNewObjectives();
+                NotifyObjectivesChanged();
+                UpdateCompletedObjectives();
             }
-            UpdateCompletedObjectives();
         }
 
         /// <summary>
