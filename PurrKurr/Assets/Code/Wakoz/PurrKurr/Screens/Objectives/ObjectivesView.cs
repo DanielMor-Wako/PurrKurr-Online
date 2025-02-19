@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.Screens.Objectives
@@ -11,7 +12,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
         [SerializeField] private List<ObjectiveView> _objectives = new();
 
         private List<ObjectiveModel> _models = new();
-        private Queue<ObjectiveView> _pool = new(); // Pool for reusing ObjectiveView instances
+        private Queue<ObjectiveView> _pool = new();
 
         protected override void ModelReplaced()
         {
@@ -35,15 +36,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
                     // Deactivate the ObjectiveView if no data is available
                     if (objectiveView != null)
                     {
-                        ReturnToPool(objectiveView); // Return to pool for reuse
-                        _objectives[i] = null; // Clear the reference
+                        ReturnToPool(objectiveView);
+                        _objectives[i] = null;
                     }
                     continue;
                 }
 
                 if (objectiveView == null)
                 {
-                    // Get a new or reused ObjectiveView from the pool
                     objectiveView = GetOrCreateObjectiveView();
                     _objectives[i] = objectiveView;
                 }
@@ -52,7 +52,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
                 var model = new ObjectiveModel(data.InterfaceData);
                 objectiveView.SetModel(model);
                 objectiveView.gameObject.SetActive(true);
-                objectiveView.Fader.StartTransition(data.InterfaceData.IsComplete() ? 0.5f : 1);
+                objectiveView.transform.SetSiblingIndex(i);
+                objectiveView.Fader.CanvasTarget.alpha = 0;
+                objectiveView.Fader.StartTransition(data.InterfaceData.IsComplete() ? 0.25f : 1);
                 _models.Add(model);
             }
 
@@ -62,15 +64,51 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
                 if (_objectives[i] != null)
                 {
                     _objectives[i].gameObject.SetActive(false);
-                    ReturnToPool(_objectives[i]); // Return to pool for reuse
-                    _objectives[i] = null; // Clear the reference
+                    ReturnToPool(_objectives[i]);
+                    _objectives[i] = null;
                 }
             }
         }
 
         protected override void ModelChanged()
         {
-            for (var i = 0; i < _objectives.Count; i++)
+            for (var i = 0; i < Model.Objectives.Count; i++)
+            {
+                var objectiveModel = Model.Objectives[i];
+
+                var model = _models.FirstOrDefault(o => o != null && o.InterfaceData.GetUniqueId() == objectiveModel.InterfaceData.GetUniqueId());
+                if (model == null)
+                    continue;
+
+                // Find the corresponding viewItem in _objectives with the same UniqueId
+                var viewItem = _objectives.FirstOrDefault(o => o != null && o.IsViewOf(model));
+                if (viewItem == null)
+                    continue;
+
+                Action action = null;
+
+                // Set the viewItem's sibling index to match the model's index
+                var itemIndexInScene = viewItem.transform.GetSiblingIndex();
+                if (itemIndexInScene != i)
+                {
+                    var newSiblingIndex = i;
+                    action = () => {
+                        //viewItem.transform.SetSiblingIndex(newSiblingIndex);
+                        viewItem.Fader.StartTransition(objectiveModel.InterfaceData.IsComplete() ? 0.01f : 1f,
+                            () =>
+                            {
+                                viewItem.transform.SetSiblingIndex(newSiblingIndex);
+                                viewItem.Fader.StartTransition(objectiveModel.InterfaceData.IsComplete() ? 0.25f : 1);
+                            });
+                    };
+                }
+
+                // Update the model item
+                viewItem.Fader.StartTransition(objectiveModel.InterfaceData.IsComplete() ? 0.25f : 1, action);
+                model.UpdateItem();
+            }
+
+            /*for (var i = 0; i < _objectives.Count; i++)
             {
                 var viewItem = _objectives[i];
                 if (viewItem == null)
@@ -85,12 +123,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
             for (var i = 0; i < _models.Count; i++)
             {
                 _models[i].UpdateItem();
-            }
+            }*/
         }
 
         private ObjectiveView GetOrCreateObjectiveView()
         {
-            // Check if there's an available instance in the pool
             if (_pool.Count > 0)
             {
                 var reusedView = _pool.Dequeue();
@@ -98,7 +135,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
                 return reusedView;
             }
 
-            // Instantiate a new ObjectiveView if the pool is empty
             var newView = Instantiate(_objectiveViewPrefab, _parentContainer);
 
             newView.transform.SetParent(_parentContainer, false);
