@@ -936,7 +936,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d0917fed46d26d428cb0960045c90bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _transitionSpeed: 20
+  _transitionSpeed: 2
   _canvasGroup: {fileID: 6921166135970294309}
 --- !u!225 &6921166135970294309
 CanvasGroup:
