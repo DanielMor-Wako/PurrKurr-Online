@@ -14,8 +14,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.ConditionChecker
     {
         [SerializeField] protected T ValueToMatch;
 
-        [Tooltip("Reduces the check process by certain value.\n0 = no limit")]
-        [SerializeField][Min(0.01f)] protected float CheckRateLimiter = 0.2f;
+        [Tooltip("Reduces the check process by certain value.\n0 = runtime")]
+        [SerializeField][Min(0f)] protected float CheckRateLimiter = 0.2f;
 
         private protected IInteractableBody TargetBody;
 
@@ -56,7 +56,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.ConditionChecker
 
             while (!conditionMet)
             {
-                yield return new WaitForSecondsRealtime(CheckRateLimiter);
+                yield return CheckRateLimiter > 0 ? new WaitForSecondsRealtime(CheckRateLimiter) : null;
 
                 UpdateCurrentValue();
                 conditionMet = HasMetCondition();
