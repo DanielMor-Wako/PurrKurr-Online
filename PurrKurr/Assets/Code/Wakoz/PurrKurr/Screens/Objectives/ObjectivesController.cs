@@ -21,9 +21,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
             return Task.CompletedTask;
         }
 
-        protected override void Clean()
-        {
-        }
+        protected override void Clean() {}
 
         public void HandleNewObjectives(List<IObjective> objectives)
         {
@@ -35,6 +33,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
 
             _model = new ObjectivesModel(objectivesModel);
             _model.SortAction = OrderItemsByUniqueIds();
+
             _view.SetModel(_model);
         }
 
@@ -45,20 +44,22 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
             {
                 uniqueIds.Add(objectives[i].GetUniqueId());
             }
-            _model.ReorderByUniqueIdsInternal(uniqueIds);
+            _model.ReorderItemsInternal(uniqueIds);
             _model.UpdateItems(uniqueIds);
-            //_model.UpdateItems();
         }
 
+        /// <summary>
+        /// Create a dictionary to map unique IDs to their order
+        /// Then Sort the Objectives list in place based on the order in uniqueIds
+        /// </summary>
+        /// <returns></returns>
         private Action<List<string>> OrderItemsByUniqueIds() 
             => (uniqueIds) =>
             {
-                // Create a dictionary to map unique IDs to their order
                 var idOrder = uniqueIds
                     .Select((id, index) => new { id, index })
                     .ToDictionary(x => x.id, x => x.index);
 
-                // Sort the Objectives list in place based on the order in uniqueIds
                 _model.Objectives.Sort((o1, o2) =>
                 {
                     if (o1 == null || o2 == null)

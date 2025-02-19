@@ -19,7 +19,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives {
     public class ReachTargetZoneObjective : Objective<ReachTargetZoneObjectiveSO> {
 
         public override string GetObjectiveDescription() 
-            => $"Reach {_data.Objective.TargetObjectType}";
+            => $"ID {_data.targetZoneId} Reach {_data.Objective.TargetObjectType}";
 
     }
 }

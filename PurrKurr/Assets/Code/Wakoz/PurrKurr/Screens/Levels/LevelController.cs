@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using UnityEngine;
-using Code.Wakoz.Utils.Attributes;
 
 namespace Code.Wakoz.PurrKurr.Screens.Levels 
 {

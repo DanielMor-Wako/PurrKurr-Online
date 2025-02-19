@@ -42,7 +42,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
 
             var requiredQuantity = data.GetRequiredQuantity();
 
-            _counterField.gameObject.SetActive(requiredQuantity <= 1);
+            _counterField.gameObject.SetActive(requiredQuantity > 1);
             UpdateProgression(data.GetCurrentQuantity(), requiredQuantity);
 
             UpdateState(Convert.ToInt32(isComplete));
