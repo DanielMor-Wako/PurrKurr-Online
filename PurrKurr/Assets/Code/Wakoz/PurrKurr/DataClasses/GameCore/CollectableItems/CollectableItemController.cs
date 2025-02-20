@@ -54,7 +54,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems {
                 return;
             }
             
-            // stop registeration of new colliders when collectable has been collected
             if (_isCollected) {
                 return;
             }
@@ -69,7 +68,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems {
                 return;
             }
 
-            // stop registeration of new colliders when collectable has been collected
             if (_isCollected) {
                 return;
             }

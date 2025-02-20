@@ -113,9 +113,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         }
 
         /// <summary>
-        /// Marks objectives of a specific type as complete.
+        /// Marks objectives of a specific type as complete
         /// </summary>
-        public void CompleteObjectiveOfType(Type type)
+        public void CompleteObjectivesOfType(Type type)
         {
             var hasChanges = false;
             foreach (var objective in _objectives)
@@ -168,7 +168,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
                     if (!door.IsDoorEntrance())
                     {
-                        CompleteObjectiveOfType(typeof(ReachTargetZoneObjective));
+                        UpdateObjectiveOfCollectableType("Door", 1);
+                        //CompleteObjectivesOfType(typeof(ReachTargetZoneObjective));
                     }
                     break;
 
