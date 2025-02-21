@@ -9,15 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ca09056af55d3144b1091b2a67aaf33, type: 3}
-  m_Name: CollectTreasure_Main 1
+  m_Script: {fileID: 11500000, guid: 12a081ebce714224bafada78022caecf, type: 3}
+  m_Name: ReachTargetZone9
   m_EditorClassIdentifier: 
   _objectiveData:
-    UniqueId: CollectTreasure1_Main
-    TargetObjectType: TreasureChest1
+    UniqueId: Reached_Ropes
+    TargetObjectType: Door
+    TargetObjectIds:
+    - Door_Exit
     RequiredQuantity: 1
     CurrentQuantity: 0
-  uniqueId: CollectTreasure1_Main
-  targetObjectType: TreasureChest1
-  requiredQuantity: 1
-  currentQuantity: 0
+  Instructions: Reach Door

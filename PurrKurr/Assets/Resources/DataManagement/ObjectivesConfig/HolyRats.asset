@@ -15,9 +15,7 @@ MonoBehaviour:
   _objectiveData:
     UniqueId: DefeatRats_Attack
     TargetObjectType: Rat
-    RequiredQuantity: 1
+    TargetObjectIds:
+    - Rat
+    RequiredQuantity: 5
     CurrentQuantity: 0
-  uniqueId: DefeatRats_Attack
-  targetObjectType: Rat
-  requiredQuantity: 1
-  currentQuantity: 0

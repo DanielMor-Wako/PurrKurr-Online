@@ -15,10 +15,8 @@ MonoBehaviour:
   _objectiveData:
     UniqueId: Reached_Movement
     TargetObjectType: Door
+    TargetObjectIds:
+    - Door_Exit
     RequiredQuantity: 1
     CurrentQuantity: 0
-  uniqueId: Reached_Movement
-  targetObjectType: Door
-  requiredQuantity: 1
-  currentQuantity: 0
-  targetZoneId: 1
+  Instructions: Reach Door

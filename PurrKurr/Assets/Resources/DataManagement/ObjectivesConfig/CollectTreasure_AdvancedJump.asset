@@ -15,9 +15,7 @@ MonoBehaviour:
   _objectiveData:
     UniqueId: CollectTreasure_AdvancedJump
     TargetObjectType: TreasureChest
+    TargetObjectIds:
+    - TreasureChest
     RequiredQuantity: 1
     CurrentQuantity: 0
-  uniqueId: CollectTreasure_AdvancedJump
-  targetObjectType: TreasureChest
-  requiredQuantity: 1
-  currentQuantity: 0
