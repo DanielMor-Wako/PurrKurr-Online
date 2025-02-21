@@ -17,7 +17,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
 
         [Header("Icon")]
         [SerializeField] private Image _iconImage;
-        [SerializeField] private Image _iconImageFill;
+        [SerializeField] private ImageFillerView _iconImageFiller;
+        [SerializeField] private RectTransformScalerView _iconImageScaler;
 
         [Header("MultiState")]
         [SerializeField] private MultiStateView _states;
@@ -25,6 +26,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
         [Header("Fader")]
         [SerializeField] private CanvasGroupFaderView _fader;
 
+        public ImageFillerView ImageFiller => _iconImageFiller;
+        public RectTransformScalerView ImageScaler => _iconImageScaler;
         public CanvasGroupFaderView Fader => _fader;
 
         protected override void ModelChanged()
@@ -43,14 +46,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
             var requiredQuantity = data.GetRequiredQuantity();
 
             _counterField.gameObject.SetActive(requiredQuantity > 1);
-            UpdateProgression(data.GetCurrentQuantity(), requiredQuantity);
+            UpdateCounterProgression(data.GetCurrentQuantity(), requiredQuantity);
 
             UpdateState(Convert.ToInt32(isComplete));
         }
 
-        private void UpdateProgression(int step, int total)
+        private void UpdateCounterProgression(int step, int total)
         {
-            _iconImageFill.fillAmount = step / total;
             _counterField.SetText($"{step} / {total}");
         }
 

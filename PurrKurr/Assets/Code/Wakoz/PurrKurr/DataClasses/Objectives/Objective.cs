@@ -17,21 +17,21 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             InitializeSpecific();
         }
 
-        public virtual bool IsComplete() 
-            => _data.Objective.CurrentQuantity >= _data.Objective.RequiredQuantity;
-
-        public virtual void UpdateProgress(int amountToAdd) 
-            => _data.Objective.CurrentQuantity += amountToAdd;
-
-        public abstract string GetObjectiveDescription();
-
-        protected virtual void InitializeSpecific()
+        protected virtual void InitializeSpecific() 
         {
             _data.Objective.CurrentQuantity = 0;
         }
 
+        public virtual bool IsComplete() 
+            => _data.Objective.CurrentQuantity >= _data.Objective.RequiredQuantity;
+
+        public virtual void UpdateProgress(int newQuantity) 
+            => _data.Objective.CurrentQuantity = newQuantity;
+
         public virtual void Finish() 
             => _data.Objective.CurrentQuantity = _data.Objective.RequiredQuantity;
+
+        public abstract string GetObjectiveDescription();
 
         public string GetUniqueId() 
             => _data.Objective.UniqueId;
@@ -39,10 +39,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         public string GetObjectType() 
             => _data.Objective.TargetObjectType;
 
+        public string[] TargetObjectIds()
+            => _data.Objective.TargetObjectIds;
+
         public int GetCurrentQuantity() 
             => _data.Objective.CurrentQuantity;
 
         public int GetRequiredQuantity() 
             => _data.Objective.RequiredQuantity;
+
     }
 }

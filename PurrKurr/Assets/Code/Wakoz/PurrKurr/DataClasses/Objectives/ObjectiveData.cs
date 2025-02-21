@@ -6,24 +6,38 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
     public class ObjectiveData
     {
         public string UniqueId;
-        public string TargetObjectType;
+        public string TargetObjectType; // alter this to enum of collectable objects?
+        public string[] TargetObjectIds;
         [Min(1)] public int RequiredQuantity = 1;
-        [HideInInspector] public int CurrentQuantity = 0;
+        //[HideInInspector] 
+        public int CurrentQuantity = 0;
 
-        public ObjectiveData() { }
+        public ObjectiveData() {}
 
         public ObjectiveData(string uniqueId, string targetObjectType, int requiredQuantity)
         {
             UniqueId = uniqueId;
             TargetObjectType = targetObjectType;
             RequiredQuantity = requiredQuantity;
-            CurrentQuantity = 0;
         }
 
         public ObjectiveData(ObjectiveData other)
         {
+            // todo: check if this does not require to create a new for each of the other properties
             UniqueId = other.UniqueId;
             TargetObjectType = other.TargetObjectType;
+            var targetIds = other.TargetObjectIds;
+            if (targetIds != null)
+            {
+                TargetObjectIds = new string[targetIds.Length];
+                for (int i = 0; i < targetIds.Length; i++)
+                {
+                    TargetObjectIds[i] = targetIds[i]; // No need for `new string(...)`
+                }
+            } else
+            {
+                TargetObjectIds = new string[0];
+            }
             RequiredQuantity = other.RequiredQuantity;
             CurrentQuantity = other.CurrentQuantity;
         }

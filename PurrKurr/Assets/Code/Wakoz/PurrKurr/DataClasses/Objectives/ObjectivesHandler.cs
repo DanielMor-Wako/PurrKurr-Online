@@ -6,9 +6,11 @@ using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers;
 using Code.Wakoz.PurrKurr.Screens.Objectives;
+using Code.Wakoz.Utils.BitwiseUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
@@ -19,7 +21,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         private ObjectiveFactory _objectiveFactory; // Handles objective creation
         private List<IObjective> _objectives = new();
         private HashSet<string> _completedObjectivesId = new(); // Tracks completed objectives efficiently
-     
+        [Tooltip("Stores the bitmask for collected states of each item in TargetObjectIds")]
+        private Dictionary<string, int[]> _objectivesOngoing = new(); // Tracks progress of ongoing objectives
+
         private GameplayController _gameEvents;
         private ObjectivesController _controller;
 
@@ -55,6 +59,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         /// <summary>
         /// Initializes objectives for the level.
         /// Marks completed objectives after creation as finished.
+        /// If an objective has existing progress in _objectivesOngoing, it initialized with the progress.
         /// </summary>
         public void Initialize(List<ObjectiveDataSO> objectivesData)
         {
@@ -68,8 +73,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
                     objective.Initialize(data);
                     _objectives.Add(objective);
 
+                    // Check if this objective has existing progress in _objectivesOngoing
+                    if (_objectivesOngoing.TryGetValue(data.Objective.UniqueId, out var existingProgress))
+                    {
+                        objective.UpdateProgress(existingProgress.CountActiveBits());
+                    }
                     // Mark objective as completed
-                    if (_completedObjectivesId.Contains(data.Objective.UniqueId))
+                    else if (_completedObjectivesId.Contains(data.Objective.UniqueId))
                     {
                         Debug.Log($"Objective {data.Objective.UniqueId} is already completed. Marking as complete.");
                         objective.Finish();
@@ -81,26 +91,43 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             NotifyNewObjectives();
         }
 
+        /// <summary>
+        /// Sort logic for objectives.
+        /// - Completed objectives go to the end
+        /// - Sort by progress (higher progress first)
+        /// </summary>
         private void SortObjectives()
         {
             _objectives = _objectives
-                .OrderByDescending(obj => !obj.IsComplete()) // Completed objectives go to the end
-                .ThenByDescending(obj => (float)obj.GetCurrentQuantity() / obj.GetRequiredQuantity()) // Sort by progress (higher progress first)
+                .OrderByDescending(obj => !obj.IsComplete())
+                .ThenByDescending(obj => (float)obj.GetCurrentQuantity() / obj.GetRequiredQuantity())
                 .ToList();
         }
 
         /// <summary>
         /// Updates the progress of objectives related to a specific collectable type.
         /// </summary>
-        public void UpdateObjectiveOfCollectableType(string collectableType, int amountToAdd)
+        public void UpdateObjectiveOfCollectableType(string collectableId, int amountToAdd)
         {
             var hasChanges = false;
             foreach (var objective in _objectives)
             {
-                if (objective.GetObjectType() == collectableType && !_completedObjectivesId.Contains(objective.GetUniqueId()))
+                if (objective.TargetObjectIds().Contains(collectableId) && !_completedObjectivesId.Contains(objective.GetUniqueId()))
                 {
-                    Debug.Log($"Updating Objective: increased by {amountToAdd} for {objective.GetObjectiveDescription()} ");
-                    objective.UpdateProgress(amountToAdd);
+                    var indexInOnbjectiveIds = Array.IndexOf(objective.TargetObjectIds(), collectableId);
+                    var uniqueId = objective.GetUniqueId();
+                    // Get or create the bitmask array for this objective in _objectivesOngoing
+                    if (!_objectivesOngoing.TryGetValue(uniqueId, out var bitmaskArray))
+                    {
+                        bitmaskArray = new int[Mathf.CeilToInt(objective.TargetObjectIds().Length / 32f)];
+                        _objectivesOngoing[uniqueId] = bitmaskArray;
+                    }
+                    // Update the bitmask and CurrentQuantity
+                    bitmaskArray.SetBit(indexInOnbjectiveIds); // Mark item as collected
+                    //objective.CurrentQuantity = BitwiseUtility.CountActiveBits(bitmaskArray); // Update CurrentQuantity
+
+                    Debug.Log($"Updating Objective: increased by {amountToAdd} for {objective.GetObjectiveDescription()}");
+                    objective.UpdateProgress(bitmaskArray.CountActiveBits());
                     hasChanges = true;
                 }
             }
@@ -122,9 +149,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             {
                 if (objective.GetType() == type && !_completedObjectivesId.Contains(objective.GetUniqueId()))
                 {
+                    var uniqueId = objective.GetUniqueId();
+                    // Remove from ongoing objectives
+                    if (_objectivesOngoing.TryGetValue(uniqueId, out var bitmask))
+                    {
+                        _objectivesOngoing.Remove(uniqueId);
+                    }
+
                     Debug.Log($"Force completing Objective: {objective.GetObjectiveDescription()}");
                     objective.Finish();
-                    _completedObjectivesId.Add(objective.GetUniqueId());
+                    _completedObjectivesId.Add(uniqueId);
+
                     hasChanges = true;
                 }
             }
@@ -168,7 +203,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
                     if (!door.IsDoorEntrance())
                     {
-                        UpdateObjectiveOfCollectableType("Door", 1);
+                        UpdateObjectiveOfCollectableType("Door_Exit", 1);
                         //CompleteObjectivesOfType(typeof(ReachTargetZoneObjective));
                     }
                     break;

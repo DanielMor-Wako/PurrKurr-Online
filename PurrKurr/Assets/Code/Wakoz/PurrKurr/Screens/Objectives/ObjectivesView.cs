@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Code.Wakoz.PurrKurr.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,29 +8,31 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
 {
     public class ObjectivesView : View<ObjectivesModel>
     {
-        [SerializeField] private ObjectiveView _objectiveViewPrefab; 
+        [SerializeField] private ObjectiveView _objectiveViewPrefab;
         [SerializeField] private Transform _parentContainer; 
-        [SerializeField] private List<ObjectiveView> _objectives = new();
+        [SerializeField] private CanvasGroupFaderView _titleFader;
+        private List<ObjectiveView> _objectiveViews = new();
 
         private List<ObjectiveModel> _models = new();
         private Queue<ObjectiveView> _pool = new();
 
         protected override void ModelReplaced()
         {
+            var totalObjectives = Model.Objectives.Count;
+            SetTitleFader(totalObjectives);
+
             _models.Clear();
 
-            var total = Model.Objectives.Count;
-
             // Ensure the Objectives list matches the number of models
-            while (_objectives.Count < total)
+            while (_objectiveViews.Count < totalObjectives)
             {
-                _objectives.Add(GetOrCreateObjectiveView());
+                _objectiveViews.Add(GetOrCreateObjectiveView());
             }
 
-            for (var i = 0; i < total; i++)
+            for (var i = 0; i < totalObjectives; i++)
             {
                 var data = Model.Objectives[i];
-                var objectiveView = _objectives[i];
+                var objectiveView = _objectiveViews[i];
 
                 if (data == null)
                 {
@@ -37,7 +40,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
                     if (objectiveView != null)
                     {
                         ReturnToPool(objectiveView);
-                        _objectives[i] = null;
+                        _objectiveViews[i] = null;
                     }
                     continue;
                 }
@@ -45,7 +48,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
                 if (objectiveView == null)
                 {
                     objectiveView = GetOrCreateObjectiveView();
-                    _objectives[i] = objectiveView;
+                    _objectiveViews[i] = objectiveView;
                 }
 
                 // Set up the ObjectiveView with the model
@@ -55,24 +58,35 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
                 objectiveView.transform.SetSiblingIndex(i);
                 objectiveView.Fader.CanvasTarget.alpha = 0;
                 objectiveView.Fader.StartTransition(data.InterfaceData.IsComplete() ? 0.25f : 1);
+                objectiveView.ImageFiller.ImageTarget.fillAmount = (float)data.InterfaceData.GetCurrentQuantity() / data.InterfaceData.GetRequiredQuantity();
+                objectiveView.ImageFiller.StartTransition(objectiveView.ImageFiller.ImageTarget.fillAmount);
+                objectiveView.ImageScaler.EndTransition();
                 _models.Add(model);
             }
 
             // Deactivate any extra ObjectiveViews beyond the total count
-            for (var i = total; i < _objectives.Count; i++)
+            for (var i = totalObjectives; i < _objectiveViews.Count; i++)
             {
-                if (_objectives[i] != null)
+                if (_objectiveViews[i] != null)
                 {
-                    _objectives[i].gameObject.SetActive(false);
-                    ReturnToPool(_objectives[i]);
-                    _objectives[i] = null;
+                    _objectiveViews[i].gameObject.SetActive(false);
+                    ReturnToPool(_objectiveViews[i]);
+                    _objectiveViews[i] = null;
                 }
             }
         }
 
+        private void SetTitleFader(int totalObjectives)
+        {
+            _titleFader.CanvasTarget.alpha = 0;
+            _titleFader.StartTransition(totalObjectives < 1 ? 0.25f : 1);
+        }
+
         protected override void ModelChanged()
         {
-            for (var i = 0; i < Model.Objectives.Count; i++)
+            var totalObjectives = Model.Objectives.Count;
+
+            for (var i = 0; i < totalObjectives; i++)
             {
                 var objectiveModel = Model.Objectives[i];
 
@@ -81,49 +95,58 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
                     continue;
 
                 // Find the corresponding viewItem in _objectives with the same UniqueId
-                var viewItem = _objectives.FirstOrDefault(o => o != null && o.IsViewOf(model));
+                var viewItem = _objectiveViews.FirstOrDefault(o => o != null && o.IsViewOf(model));
                 if (viewItem == null)
                     continue;
 
-                Action action = null;
+                Action siblingAction = null;
+
+                var isCompleteAndImageFillIsFull = objectiveModel.InterfaceData.IsComplete() && viewItem.ImageFiller.ImageTarget.fillAmount == 1;
+
+                Action fillAction = () =>
+                {
+                    if (isCompleteAndImageFillIsFull)
+                    {
+                        model.UpdateItem();
+                        viewItem.Fader.StartTransition(0.25f);
+                    }
+                    else
+                    {
+                        viewItem.ImageScaler.StartTransition();
+                        var fillPercent = Mathf.Clamp01((float)objectiveModel.InterfaceData.GetCurrentQuantity() / objectiveModel.InterfaceData.GetRequiredQuantity());
+                        viewItem.ImageFiller.StartTransition(fillPercent, () =>
+                        {
+                            model.UpdateItem();
+                            viewItem.ImageScaler.EndTransition();
+                            viewItem.Fader.StartTransition(objectiveModel.InterfaceData.IsComplete() ? 0.25f : 1f, siblingAction);
+                        });
+                    }
+                };
 
                 // Set the viewItem's sibling index to match the model's index
                 var itemIndexInScene = viewItem.transform.GetSiblingIndex();
                 if (itemIndexInScene != i)
                 {
                     var newSiblingIndex = i;
-                    action = () => {
-                        //viewItem.transform.SetSiblingIndex(newSiblingIndex);
-                        viewItem.Fader.StartTransition(objectiveModel.InterfaceData.IsComplete() ? 0.01f : 1f,
-                            () =>
-                            {
-                                viewItem.transform.SetSiblingIndex(newSiblingIndex);
-                                viewItem.Fader.StartTransition(objectiveModel.InterfaceData.IsComplete() ? 0.25f : 1);
-                            });
+                    siblingAction = () => {
+                        if (objectiveModel.InterfaceData.IsComplete())
+                        {
+                            viewItem.transform.SetSiblingIndex(newSiblingIndex);
+                        }
+                        viewItem.Fader.StartTransition(objectiveModel.InterfaceData.IsComplete() ? 0.25f : 1);
                     };
                 }
 
                 // Update the model item
-                viewItem.Fader.StartTransition(objectiveModel.InterfaceData.IsComplete() ? 0.25f : 1, action);
-                model.UpdateItem();
+                viewItem.Fader.StartTransition(isCompleteAndImageFillIsFull ? 0.25f : 1, fillAction);
             }
 
-            /*for (var i = 0; i < _objectives.Count; i++)
-            {
-                var viewItem = _objectives[i];
-                if (viewItem == null)
-                    continue;
-
-                if (viewItem.transform.GetSiblingIndex() != i)
-                {
-                    viewItem.transform.SetSiblingIndex(i);
-                }
-            }
-
+            /* Simply refreshes all items and do not set siblingIndex
             for (var i = 0; i < _models.Count; i++)
             {
                 _models[i].UpdateItem();
-            }*/
+            }
+            */
         }
 
         private ObjectiveView GetOrCreateObjectiveView()

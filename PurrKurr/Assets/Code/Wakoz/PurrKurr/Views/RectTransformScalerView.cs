@@ -44,6 +44,11 @@ namespace Code.Wakoz.PurrKurr.Views
 
         private void ScaleTo(Vector3 targetScale, Action callback = null)
         {
+            if (_transitionDuration == 0)
+            {
+                SetTransitionDuration(_defaultTransitionDuration);
+            } 
+
             if (_scalerCoroutine != null)
             {
                 StopCoroutine(_scalerCoroutine);
