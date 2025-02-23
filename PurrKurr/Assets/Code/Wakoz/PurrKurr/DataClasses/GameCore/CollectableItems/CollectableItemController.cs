@@ -1,18 +1,18 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
-using Code.Wakoz.PurrKurr.Screens.PersistentGameObjects;
 using Code.Wakoz.PurrKurr.Views;
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems {
+namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems
+{
 
     [DefaultExecutionOrder(15)]
     //[TypeMarkerMultiClass(typeof(CollectObjective))]
     public class CollectableItemController : DetectionZoneTrigger {
 
-        [SerializeField] private string _itemId = "";
-        [SerializeField][Min(1)] private int _quantity = 1;
+        [SerializeField] private CollectableItem _collectableItem;
 
         [Tooltip("Sets the View state to active or deactive when hero has entered the zone")]
         [SerializeField] private MultiStateView _state;
@@ -20,14 +20,19 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems {
         private GameplayController _gameplayController;
         private bool _isCollected = false;
 
-        public string GetId() => _itemId;
-        public int GetQuantity() => _quantity;
+        public (string id, int quantity) GetData() 
+            => _collectableItem.GetData();
 
         protected override void Clean() {
             base.Clean();
 
             OnColliderEntered -= handleColliderEntered;
             OnColliderExited -= handleColliderExited;
+
+            if (_collectableItem != null)
+            {
+                _collectableItem.OnStateChanged -= HandleStateChange;
+            }
         }
 
         protected override Task Initialize() {
@@ -38,13 +43,23 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems {
             OnColliderEntered += handleColliderEntered;
             OnColliderExited += handleColliderExited;
 
-            //var SaveableObject = gameObject.AddComponent<PersistentGameObject>();
-
-            //SaveableObject.Init(typeof(CollectableItemController));
-
-            //todo: TryGetCurrentStateOfTheObject by external data
+            if (_collectableItem != null)
+            {
+                _collectableItem.OnStateChanged += HandleStateChange;
+            }
 
             return Task.CompletedTask;
+        }
+
+        private void HandleStateChange(bool isCollected)
+        {
+            Debug.Log($"State changed -> {isCollected} for {gameObject.name}");
+
+            if (_state == null)
+            {
+                return;
+            }
+            _state.ChangeState(Convert.ToInt32(isCollected));
         }
 
         public void handleColliderExited(Collider2D triggeredCollider) {
@@ -87,5 +102,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems {
 
             _state.ChangeState(_isCollected ? 1 : 0);
         }
+
     }
 }
