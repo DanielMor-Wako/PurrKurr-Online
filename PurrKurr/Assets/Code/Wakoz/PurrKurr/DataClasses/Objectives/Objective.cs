@@ -1,4 +1,5 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
+using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 {
@@ -9,7 +10,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         public void Initialize(ObjectiveDataSO data) {
 
             if (data is not T) {
-                UnityEngine.Debug.LogError("Invalid objective data for " + typeof(T).Name);
+                Debug.LogError("Invalid objective data for " + typeof(T).Name);
                 return;
             }
 
@@ -48,5 +49,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         public int GetRequiredQuantity() 
             => _data.Objective.RequiredQuantity;
 
+        public Sprite GetObjectiveIcon()
+            => _data.Objective.Icon;
     }
 }

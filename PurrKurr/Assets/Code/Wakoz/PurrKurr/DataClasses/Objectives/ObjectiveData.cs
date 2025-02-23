@@ -9,8 +9,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         public string TargetObjectType; // alter this to enum of collectable objects?
         public string[] TargetObjectIds;
         [Min(1)] public int RequiredQuantity = 1;
-        //[HideInInspector] 
+        //[HideInInspector]
         public int CurrentQuantity = 0;
+
+        public Sprite Icon;
 
         public ObjectiveData() {}
 

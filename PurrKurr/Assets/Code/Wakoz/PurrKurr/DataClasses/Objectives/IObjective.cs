@@ -1,4 +1,5 @@
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
+using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Objectives {
 
@@ -17,5 +18,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives {
         string GetObjectiveDescription();
         int GetCurrentQuantity();
         int GetRequiredQuantity();
+        Sprite GetObjectiveIcon();
     }
 }
