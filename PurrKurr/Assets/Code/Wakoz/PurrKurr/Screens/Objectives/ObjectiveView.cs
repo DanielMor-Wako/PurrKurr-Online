@@ -30,6 +30,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
         public RectTransformScalerView ImageScaler => _iconImageScaler;
         public CanvasGroupFaderView Fader => _fader;
 
+        protected override void ModelReplaced()
+        {
+            SetIcon();
+        }
+
         protected override void ModelChanged()
         {
             UpdateView();
@@ -68,5 +73,17 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
             _states.ChangeState(newstate);
         }
 
+
+        private void SetIcon()
+        {
+            var icon = Model.InterfaceData.GetObjectiveIcon();
+            if (icon == null)
+            {
+                return;
+            }
+
+            _iconImage.sprite = icon;
+            _iconImageFiller.ImageTarget.sprite = icon;
+        }
     }
 }
