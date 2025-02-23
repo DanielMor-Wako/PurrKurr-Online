@@ -1,15 +1,7 @@
 using Code.Wakoz.PurrKurr.DataClasses.Characters;
-using Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems;
-using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
-using Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors;
-using Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger;
-using Code.Wakoz.PurrKurr.DataClasses.Objectives;
-using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
 using Code.Wakoz.PurrKurr.Screens.PersistentGameObjects;
 using Code.Wakoz.PurrKurr.Views;
-using Code.Wakoz.Utils.Attributes;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

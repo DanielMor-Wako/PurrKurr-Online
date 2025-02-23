@@ -1,5 +1,4 @@
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
-using Code.Wakoz.PurrKurr.DataClasses.Objectives;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.PersistentGameObjects;
 using Code.Wakoz.Utils.Attributes;

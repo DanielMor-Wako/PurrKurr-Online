@@ -9,13 +9,13 @@ namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects {
 
         public static event Action<PersistentGameObject> OnPersistentObjectRemoved;
 
-        protected Type data;
+        protected Type _data;
 
-        public Type GetObjectType() => data;
+        public Type GetObjectType() => _data;
 
         public void Init(Type type) {
 
-            data = type;
+            _data = type;
 
             OnPersistentObjectAdded?.Invoke(this);
         }
