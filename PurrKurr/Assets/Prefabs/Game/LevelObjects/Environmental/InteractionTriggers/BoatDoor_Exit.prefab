@@ -110,19 +110,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5455686088609922252, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_LocalBounds.m_Center.x
-      value: 0.047299862
+      value: 0.04949999
       objectReference: {fileID: 0}
     - target: {fileID: 5455686088609922252, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_LocalBounds.m_Center.y
-      value: 1.7218001
+      value: 1.7203501
       objectReference: {fileID: 0}
     - target: {fileID: 5455686088609922252, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_LocalBounds.m_Extent.x
-      value: 5.249
+      value: 5.2602
       objectReference: {fileID: 0}
     - target: {fileID: 5455686088609922252, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_LocalBounds.m_Extent.y
-      value: 5.6719
+      value: 5.67095
       objectReference: {fileID: 0}
     - target: {fileID: 5529914720566783832, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: m_IsActive
@@ -144,6 +144,10 @@ PrefabInstance:
       propertyPath: _isDoorEntrance
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      propertyPath: _collectableItem
+      value: 
+      objectReference: {fileID: 3567186454732693101}
     - target: {fileID: 6484599662798003596, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
       propertyPath: overlayWindowData.Array.data[0].Title
       value: Complete!
@@ -179,7 +183,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5936559246725191391, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 3567186454732693101}
   m_SourcePrefab: {fileID: 100100000, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
 --- !u!4 &3745476694953324658 stripped
 Transform:
@@ -191,3 +198,23 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5529914720566783832, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
   m_PrefabInstance: {fileID: 3024088719928911037}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8905126666720604770 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5936559246725191391, guid: aa7ef3d809ecd9b4e946d45e561f7d4a, type: 3}
+  m_PrefabInstance: {fileID: 3024088719928911037}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3567186454732693101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8905126666720604770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06770c3a2668fe54ba295059d887ae3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _collectableData:
+    _itemId: Door_Exit
+    _quantity: 1

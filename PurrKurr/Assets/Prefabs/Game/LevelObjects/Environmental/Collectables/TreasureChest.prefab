@@ -177,6 +177,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5129050615408234943}
+  - component: {fileID: 6452816394521081837}
   - component: {fileID: 7884475765492843502}
   - component: {fileID: 1242518664844291233}
   - component: {fileID: 4963529786888833461}
@@ -203,6 +204,21 @@ Transform:
   - {fileID: 3507557286526336911}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6452816394521081837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6906314713464858414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06770c3a2668fe54ba295059d887ae3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _collectableData:
+    _itemId: TreasureChest
+    _quantity: 1
 --- !u!114 &7884475765492843502
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -219,6 +235,10 @@ MonoBehaviour:
   _zone: {fileID: 1242518664844291233}
   _itemId: TreasureChest
   _quantity: 1
+  _collectableItem: {fileID: 6452816394521081837}
+  _collectableData:
+    _itemId: 
+    _quantity: 1
   _state: {fileID: 3688199967398477194}
 --- !u!114 &1242518664844291233
 MonoBehaviour:
