@@ -10,14 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 12a081ebce714224bafada78022caecf, type: 3}
-  m_Name: ReachTargetZone2
+  m_Name: ReachTargetZone5 1
   m_EditorClassIdentifier: 
   _objectiveData:
-    UniqueId: Reached_Jump
-    TargetObjectType: Door
+    UniqueId: Reached_Grab_Sections
+    TargetObjectType: DestroyedTantacle
     TargetObjectIds:
-    - Door_Exit
-    RequiredQuantity: 1
-    CurrentQuantity: 0
-    Icon: {fileID: -4343348214475826980, guid: 83ca103d4f4dbf64fae06eea598b58ed, type: 3}
-  Instructions: Reach Door
+    - DestroyedTantacle1
+    - DestroyedTantacle2
+    RequiredQuantity: 2
+    CurrentQuantity: 2
+    Icon: {fileID: -1249550556, guid: 811a7e424b30b4b488dc53c2a5cb14af, type: 3}
+  Instructions: Destroy Tantacles

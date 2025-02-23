@@ -16,6 +16,8 @@ MonoBehaviour:
     UniqueId: CollectTreasure_Movement
     TargetObjectType: TreasureChest
     TargetObjectIds:
-    - TreasureChest
-    RequiredQuantity: 1
+    - TreasureChest1
+    - TreasureChest2
+    RequiredQuantity: 2
     CurrentQuantity: 0
+    Icon: {fileID: -3430613992102656276, guid: 415cb88aedae2ca44b4d339995569370, type: 3}
