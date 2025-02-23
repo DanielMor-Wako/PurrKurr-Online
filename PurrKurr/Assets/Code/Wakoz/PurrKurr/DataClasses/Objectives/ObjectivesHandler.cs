@@ -92,6 +92,50 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         }
 
         /// <summary>
+        /// Returns true if an itemId exist, therefore collected
+        /// </summary>
+        /// <param name="collectableId"></param>
+        /// <returns></returns>
+        public bool IsCollected(string itemId)
+        {
+            for (var i = _objectives.Count; i >= 0; i--)
+            {
+                var objective = _objectives[i];
+
+                if (!objective.TargetObjectIds().Contains(itemId))
+                {
+                    continue;
+                }
+
+                var uniqueId = objective.GetUniqueId();
+                if (_completedObjectivesId.Contains(uniqueId))
+                {
+                    return true;
+                }
+
+                if (!_objectivesOngoing.TryGetValue(uniqueId, out var bitmaskArray))
+                {
+                    return false;
+                }
+
+                var indexInOnbjectiveIds = Array.IndexOf(objective.TargetObjectIds(), itemId);
+
+                return bitmaskArray.IsBitSet(indexInOnbjectiveIds);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Gets all active objective
+        /// </summary>
+        /// <returns></returns>
+        public List<IObjective> GetObjectives()
+        {
+            return _objectives;
+        }
+
+        /// <summary>
         /// Sort logic for objectives.
         /// - Completed objectives go to the end
         /// - Sort by progress (higher progress first)
@@ -112,10 +156,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             var hasChanges = false;
             foreach (var objective in _objectives)
             {
-                if (objective.TargetObjectIds().Contains(collectableId) && !_completedObjectivesId.Contains(objective.GetUniqueId()))
+                var uniqueId = objective.GetUniqueId();
+                if (!_completedObjectivesId.Contains(uniqueId) && objective.TargetObjectIds().Contains(collectableId))
                 {
                     var indexInOnbjectiveIds = Array.IndexOf(objective.TargetObjectIds(), collectableId);
-                    var uniqueId = objective.GetUniqueId();
                     // Get or create the bitmask array for this objective in _objectivesOngoing
                     if (!_objectivesOngoing.TryGetValue(uniqueId, out var bitmaskArray))
                     {
@@ -183,7 +227,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         /// <summary>
         /// Updates the list of completed objectives.
         /// </summary>
-        public void UpdateCompletedObjectives()
+        private void UpdateCompletedObjectives()
         {
             foreach (var objective in _objectives)
             {
@@ -209,7 +253,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
                     break;
 
                 case CollectableItemController collectableItem:
-                    UpdateObjectiveOfCollectableType(collectableItem.GetId(), collectableItem.GetQuantity());
+                    var (id, quantity) = collectableItem.GetData();
+                    UpdateObjectiveOfCollectableType(id, quantity);
                     break;
 
                 case not OverlayWindowTrigger:
@@ -218,13 +263,5 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             }
         }
 
-        /// <summary>
-        /// Gets all active objective
-        /// </summary>
-        /// <returns></returns>
-        public List<IObjective> GetObjectives()
-        {
-            return _objectives;
-        }
     }
 }
