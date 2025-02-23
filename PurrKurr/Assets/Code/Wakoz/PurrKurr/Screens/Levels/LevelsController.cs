@@ -77,6 +77,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Levels {
             character.SetSpriteOrder(isMainHero ? 2 : isAlive ? 1 : 0);
         }
 
+        public void NotifyAllTaggedObjects()
+        {
+            _persistentGameObjectsManager.RefreshStateToAllTaggedObjects();
+        }
+
         protected override void Clean() {
 
             CleanPersistentGameObjectsManager();

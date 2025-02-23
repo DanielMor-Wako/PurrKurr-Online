@@ -318,6 +318,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 {
                     OnHeroReposition?.Invoke(newPosition);
                 }
+                _levelsController.NotifyAllTaggedObjects();
             }
 
         }
