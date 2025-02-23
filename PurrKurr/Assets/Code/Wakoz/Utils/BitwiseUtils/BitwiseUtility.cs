@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Code.Wakoz.Utils.BitwiseUtils
 {
@@ -9,18 +10,34 @@ namespace Code.Wakoz.Utils.BitwiseUtils
         private const int BitsPerInt = 32;
 
         /// <summary>
-        /// Sets a bit at the specified index to 1 (collected).
+        /// Internal function to handle validation and returning the arrayIndex and bitPosition
         /// </summary>
-        public static void SetBit(this int[] bitmaskArray, int index)
+        /// <param name="index"></param>
+        /// <param name="arrayIndex"></param>
+        /// <param name="bitPosition"></param>
+        /// <returns></returns>
+        private static bool GetIntIndex(int index, out int arrayIndex, out int bitPosition)
         {
             if (index < 0 || index >= BitsPerInt)
             {
                 Debug.LogError("Index out of range for bitmaskArray.");
-                return;
+                arrayIndex = bitPosition = 0;
+                return false;
             }
 
-            int arrayIndex = index / BitsPerInt;
-            int bitPosition = index % BitsPerInt;
+            arrayIndex = index / BitsPerInt;
+            bitPosition = index % BitsPerInt;
+            return true;
+        }
+
+        /// <summary>
+        /// Sets a bit at the specified index to 1 (collected).
+        /// </summary>
+        public static void SetBit(this int[] bitmaskArray, int index)
+        {
+            int arrayIndex, bitPosition;
+            if (!GetIntIndex(index, out arrayIndex, out bitPosition))
+                return;
 
             bitmaskArray[arrayIndex] |= (1 << bitPosition);
         }
@@ -30,8 +47,9 @@ namespace Code.Wakoz.Utils.BitwiseUtils
         /// </summary>
         public static void ClearBit(this int[] bitmaskArray, int index)
         {
-            int arrayIndex = index / BitsPerInt;
-            int bitPosition = index % BitsPerInt;
+            int arrayIndex, bitPosition;
+            if (!GetIntIndex(index, out arrayIndex, out bitPosition))
+                return;
 
             bitmaskArray[arrayIndex] &= ~(1 << bitPosition);
         }
@@ -41,8 +59,9 @@ namespace Code.Wakoz.Utils.BitwiseUtils
         /// </summary>
         public static bool IsBitSet(this int[] bitmaskArray, int index)
         {
-            int arrayIndex = index / BitsPerInt;
-            int bitPosition = index % BitsPerInt;
+            int arrayIndex, bitPosition;
+            if (!GetIntIndex(index, out arrayIndex, out bitPosition))
+                return false;
 
             return (bitmaskArray[arrayIndex] & (1 << bitPosition)) != 0;
         }
@@ -128,12 +147,34 @@ namespace Code.Wakoz.Utils.BitwiseUtils
         private const int BitsPerUlong = 64;
 
         /// <summary>
+        /// Internal function to handle validation and returning the arrayIndex and bitPosition
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="arrayIndex"></param>
+        /// <param name="bitPosition"></param>
+        /// <returns></returns>
+        private static bool GetUlongIndex(int index, out int arrayIndex, out int bitPosition)
+        {
+            if (index < 0 || index >= BitsPerUlong)
+            {
+                Debug.LogError("Index out of range for bitmaskArray.");
+                arrayIndex = bitPosition = 0;
+                return false;
+            }
+
+            arrayIndex = index / BitsPerUlong;
+            bitPosition = index % BitsPerUlong;
+            return true;
+        }
+
+        /// <summary>
         /// Sets a bit at the specified index to 1 (collected).
         /// </summary>
         public static void SetBit(this ulong[] bitmaskArray, int index)
         {
-            int arrayIndex = index / BitsPerUlong;
-            int bitPosition = index % BitsPerUlong;
+            int arrayIndex, bitPosition;
+            if (!GetUlongIndex(index, out arrayIndex, out bitPosition))
+                return;
 
             bitmaskArray[arrayIndex] |= (1UL << bitPosition);
         }
@@ -143,8 +184,9 @@ namespace Code.Wakoz.Utils.BitwiseUtils
         /// </summary>
         public static void ClearBit(this ulong[] bitmaskArray, int index)
         {
-            int arrayIndex = index / BitsPerUlong;
-            int bitPosition = index % BitsPerUlong;
+            int arrayIndex, bitPosition;
+            if (!GetUlongIndex(index, out arrayIndex, out bitPosition))
+                return;
 
             bitmaskArray[arrayIndex] &= ~(1UL << bitPosition);
         }
@@ -154,8 +196,9 @@ namespace Code.Wakoz.Utils.BitwiseUtils
         /// </summary>
         public static bool IsBitSet(this ulong[] bitmaskArray, int index)
         {
-            int arrayIndex = index / BitsPerUlong;
-            int bitPosition = index % BitsPerUlong;
+            int arrayIndex, bitPosition;
+            if (!GetUlongIndex(index, out arrayIndex, out bitPosition))
+                return false;
 
             return (bitmaskArray[arrayIndex] & (1UL << bitPosition)) != 0;
         }
