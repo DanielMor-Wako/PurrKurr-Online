@@ -1,6 +1,6 @@
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
-using Code.Wakoz.PurrKurr.Screens.PersistentGameObjects;
 using Code.Wakoz.Utils.Attributes;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -12,6 +12,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors
     //[TypeMarkerMultiClass(typeof(ReachTargetZoneObjective))]
     public class DoorController : DetectionZoneTrigger
     {
+        [SerializeField] private CollectableItem _collectableItem;
+
         [SerializeField] private bool _isDoorEntrance = true;
         [SerializeField] private int _roomIndex;
         [SerializeField] private DoorController _nextDoor;
@@ -21,6 +23,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors
         public int GetRoomIndex() => _roomIndex;
         public DoorController GetNextDoor() => _nextDoor;
         public bool IsDoorEntrance() => _isDoorEntrance;
+        public CollectableItemData CollectableData => _collectableItem.CollectableData;
 
         protected override void Clean()
         {
@@ -28,6 +31,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors
 
             OnColliderEntered -= HandleColliderEntered;
             OnColliderExited -= HandleColliderExited;
+
+            if (_collectableItem != null)
+            {
+                _collectableItem.OnStateChanged -= HandleStateChange;
+            }
         }
 
         protected override Task Initialize()
@@ -39,11 +47,24 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors
             OnColliderEntered += HandleColliderEntered;
             OnColliderExited += HandleColliderExited;
 
-            var SaveableObject = gameObject.AddComponent<PersistentGameObject>();
 
-            SaveableObject.Init(typeof(DoorController));
+            if (_collectableItem != null)
+            {
+                _collectableItem.OnStateChanged += HandleStateChange;
+            }
 
             return Task.CompletedTask;
+        }
+
+        private void HandleStateChange(bool isCollected)
+        {
+            Debug.Log($"State changed -> {isCollected} for {gameObject.name}");
+
+            /*if (_state == null)
+            {
+                return;
+            }
+            _state.ChangeState(Convert.ToInt32(isCollected));*/
         }
 
         public void HandleColliderExited(Collider2D triggeredCollider)
