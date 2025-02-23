@@ -3,26 +3,41 @@ using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects {
     [DefaultExecutionOrder(14)]
-    public class PersistentGameObject : MonoBehaviour {
+    public class PersistentGameObject : IDisposable {
 
         public static event Action<PersistentGameObject> OnPersistentObjectAdded;
 
         public static event Action<PersistentGameObject> OnPersistentObjectRemoved;
 
-        protected Type _data;
+        public event Action OnStateChanged;
 
-        public Type GetObjectType() => _data;
+        public readonly string ItemId;
+        protected Type _type;
 
-        public void Init(Type type) {
+        public Type GetObjectType() => _type;
 
-            _data = type;
+        public PersistentGameObject(Type type, string itemId)
+        {
+            _type = type;
+            ItemId = itemId;
 
-            OnPersistentObjectAdded?.Invoke(this);
+            Init();
         }
 
-        private void OnEnable() => OnPersistentObjectAdded?.Invoke(this);
+        public void ChangeState()
+        {
+            OnStateChanged?.Invoke();
+        }
 
-        private void OnDisable() => OnPersistentObjectRemoved?.Invoke(this);
+        public void Dispose()
+        {
+            OnPersistentObjectRemoved?.Invoke(this);
+        }
+
+        private void Init() 
+        {
+            OnPersistentObjectAdded?.Invoke(this);
+        }
     }
 
 }
