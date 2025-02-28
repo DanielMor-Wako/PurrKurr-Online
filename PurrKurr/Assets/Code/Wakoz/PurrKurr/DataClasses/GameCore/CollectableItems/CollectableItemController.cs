@@ -53,13 +53,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems
 
         private void HandleStateChange(bool isCollected)
         {
-            Debug.Log($"State changed -> {isCollected} for {gameObject.name}");
+            _isCollected = isCollected;
 
-            if (_state == null)
-            {
-                return;
-            }
-            _state.ChangeState(Convert.ToInt32(isCollected));
+            Debug.Log($"State changed -> {isCollected} for {gameObject.name}");
+            UpdateStateView();
         }
 
         public void handleColliderExited(Collider2D triggeredCollider) {
@@ -100,7 +97,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems
                 return;
             }
 
-            _state.ChangeState(_isCollected ? 1 : 0);
+            _state.ChangeState(Convert.ToInt32(_isCollected));
         }
 
     }
