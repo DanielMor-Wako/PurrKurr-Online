@@ -79,7 +79,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Levels {
 
         public void NotifyAllTaggedObjects()
         {
-            _persistentGameObjectsManager.RefreshStateToAllTaggedObjects();
+            _persistentGameObjectsManager.RefreshStateAll();
         }
 
         protected override void Clean() {

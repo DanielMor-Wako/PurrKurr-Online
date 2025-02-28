@@ -1,6 +1,5 @@
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +8,7 @@ using UnityEngine;
 namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow
 {
 
-    [DefaultExecutionOrder(15)] // was 12
+    [DefaultExecutionOrder(15)]
     public class OverlayWindowController : SingleController
     {
         [SerializeField] private OverlayWindowView _view;

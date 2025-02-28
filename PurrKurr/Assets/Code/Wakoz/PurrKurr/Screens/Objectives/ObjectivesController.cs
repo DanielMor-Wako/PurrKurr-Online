@@ -4,7 +4,6 @@ using Code.Wakoz.PurrKurr.DataClasses.Objectives;
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using System.Xml;
 
 namespace Code.Wakoz.PurrKurr.Screens.Objectives
 {

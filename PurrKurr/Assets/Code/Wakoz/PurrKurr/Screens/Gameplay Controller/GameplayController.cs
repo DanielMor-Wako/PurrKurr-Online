@@ -56,6 +56,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         public event Action<DetectionZoneTrigger> OnHeroConditionMet;
         public event Action<Collider2D> OnInteractablesEntered;
         public event Action<Collider2D> OnInteractablesExited;
+        public event Action<IInteractableBody> OnInteractableDestoyed;
         public event Action<EffectData, Transform, Quaternion> OnNewEffect;
         public event Action<float> OnTimeScaleChanged;
         public event Action OnTimeScaleDefault;
@@ -234,28 +235,27 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         {
             var windowPageData = zone.GetWindowData();
 
-            if (zone is DoorController)
+            switch (zone)
             {
-                var door = zone as DoorController;
-                for (var i = 0; i < windowPageData.Count; i++)
-                {
-                    var page = windowPageData[i];
-                    var confirmButtons =
-                        page.ButtonsRawData.Where(obj => obj.ButtonType == GenericButtonType.Confirm).FirstOrDefault();
+                case DoorController door:
 
-                    if (confirmButtons != null)
+                    for (var i = 0; i < windowPageData.Count; i++)
                     {
-                        var nextDoor = door.GetNextDoor();
-                        var nextDoorPosition = nextDoor != null ? nextDoor.gameObject : null;
-                        confirmButtons.ClickedAction = () => LoadLevel(door.GetRoomIndex(), nextDoorPosition);
+                        var page = windowPageData[i];
+                        var confirmButtons =
+                            page.ButtonsRawData.Where(obj => obj.ButtonType == GenericButtonType.Confirm).FirstOrDefault();
+
+                        if (confirmButtons != null)
+                        {
+                            var nextDoor = door.GetNextDoor();
+                            var nextDoorPosition = nextDoor != null ? nextDoor.gameObject : null;
+                            confirmButtons.ClickedAction = () => LoadLevel(door.GetRoomIndex(), nextDoorPosition);
+                        }
                     }
-                }
 
-            }
-            else if (zone is OverlayWindowTrigger)
-            {
-                var windowTrigger = zone as OverlayWindowTrigger;
+                break;
 
+                case ObjectiveZoneTrigger objectiveTrigger:
                 for (var i = 0; i < windowPageData.Count; i++)
                 {
                     OverlayWindowData page = windowPageData[i];
@@ -264,10 +264,30 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                     if (confirmButtons != null)
                     {
-                        confirmButtons.ClickedAction = () => windowTrigger.TurnOffWindow();
+                        confirmButtons.ClickedAction = () 
+                            => Handlers.GetHandler<ObjectivesHandler>()
+                            .RunObjectiveMission(objectiveTrigger.ObjectiveUniqueId);
                     }
                 }
+
+                break;
+
+                case OverlayWindowTrigger windowTrigger:
+                    for (var i = 0; i < windowPageData.Count; i++)
+                    {
+                        OverlayWindowData page = windowPageData[i];
+                        var confirmButtons =
+                            page.ButtonsRawData.Where(obj => obj.ButtonType is GenericButtonType.Confirm or GenericButtonType.Close).FirstOrDefault();
+
+                        if (confirmButtons != null)
+                        {
+                            confirmButtons.ClickedAction = () => windowTrigger.TurnOffWindow();
+                        }
+                    }
+
+                break;
             }
+
         }
 
         private void CheckForConditionalGameEvent(IInteractableBody character, DetectionZoneTrigger zone, int pageIndex = 0) {
@@ -803,10 +823,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 return;
             }
 
+            // updating the rope is called thru the link event
             var rope = _charactersRopes.FirstOrDefault();
             var nextLink = rope?.GetNextChainedLink(ropeLink, 1);
             if (nextLink != null) {
-                nextLink.DealDamage(1); // updating the rope is called thru the link event
+                nextLink.DealDamage(1); 
             };
         }
 
@@ -1258,7 +1279,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     attackStats.ForceDir.y = -Mathf.Abs(attackStats.ForceDir.y);
                     ApplyForce(foe, attackStats);
                     ApplyEffect(foe, Effect2DType.ImpactCritical);
-                    DealDamageAndDisconnectIfGrabbed(foe, attackStats.Damage, attacker);
+                    DealDamageAndNotifyAndDisconnectIfGrabbedIsDead(foe, attackStats.Damage, attacker);
                     Handlers.GetHandler<ShakeHandler>().TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.VerticalCircular));
 
                     // todo: make the aerial attack turn into grab to groundsmash, and turn aerial grab into throwing the opponent
@@ -1294,7 +1315,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     }
                     ApplyForce(foe, attackStats);
                     ApplyEffect(foe, Effect2DType.ImpactLight);
-                    DealDamageAndDisconnectIfGrabbed(foe, attackStats.Damage, attacker);
+                    DealDamageAndNotifyAndDisconnectIfGrabbedIsDead(foe, attackStats.Damage, (IInteractableBody)attacker);
                     Handlers.GetHandler<ShakeHandler>().TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.HorizontalCircular));
 
                 } else if (properties.Contains(AttackProperty.PushUpOnHit) ||
@@ -1309,7 +1330,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                     ApplyForce(foe, attackStats);
                     ApplyEffect(foe, Effect2DType.ImpactHeavy);
-                    DealDamageAndDisconnectIfGrabbed(foe, attackStats.Damage, attacker);
+                    DealDamageAndNotifyAndDisconnectIfGrabbedIsDead(foe, attackStats.Damage, (IInteractableBody)attacker);
                     var curve = AnimationCurve.Linear(0, 0, 1, 0);
                     curve.AddKey(0.25f, 1);
                     Handlers.GetHandler<ShakeHandler>().TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.VerticalCircular, 0.15f, 0.4f, curve));
@@ -1327,7 +1348,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                     ApplyForce(foe, attackStats);
                     ApplyEffect(foe, Effect2DType.ImpactMed);
-                    DealDamageAndDisconnectIfGrabbed(foe, attackStats.Damage, attacker);
+                    DealDamageAndNotifyAndDisconnectIfGrabbedIsDead(foe, attackStats.Damage, (IInteractableBody)attacker);
                     Handlers.GetHandler<ShakeHandler>().TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.Random));
 
                 }
@@ -1424,21 +1445,31 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             }
 
-
             return facingRightOrLeftTowardsPoint;
         }
 
-        private void DealDamageAndDisconnectIfGrabbed(IInteractableBody foe, int damage, Character2DController attacker)
+        private void DealDamageAndNotifyAndDisconnectIfGrabbedIsDead(IInteractableBody foe, int damage, IInteractableBody attacker)
         {
             if (foe == null)
             {
                 return;
             }
 
+            var wasAlive = foe.GetHpPercent() > 0;
+
             foe.DealDamage(damage);
+            Debug.Log($"damage on {foe.GetTransform().gameObject.name} by {attacker.GetTransform().gameObject.name}");
             
-            var foeIsDead = foe.GetHpPercent() <= 0;
-            if (foeIsDead && foe.IsGrabbed())
+            var interactableIsDead = foe.GetHpPercent() <= 0;
+
+            if (interactableIsDead && wasAlive
+                 // && attacker == _mainHero as IInteractableBody
+                )
+            {
+                OnInteractableDestoyed?.Invoke(foe);
+            }
+
+            if (interactableIsDead && foe.IsGrabbed())
             {
                 attacker.SetAsGrabbing(null);
                 ApplyGrabOnFoe(foe, null, foe.GetCenterPosition());
@@ -1452,7 +1483,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             if (!isActive) {
                 return;
             }
-            var charRigTransform = character.GetCharacterRigTransform();
+            
             while (character != null && character.State.isChargingSuper() && character.CanPerformSuper()) {
 
                 if (character.TryPerformSuper()) {
@@ -1460,10 +1491,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     PerformSuper(character, superActionProperties);
                 }
 
-                //Handlers.GetHandler<ShakeHandler>().TriggerShake(charRigTransform, new ShakeData(ShakeStyle.Random, 0.3f, 0.2f));
-                
                 await Task.Delay(TimeSpan.FromMilliseconds(500));
             }
+
             SetCameraScreenShake();
         }
 
@@ -1625,9 +1655,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         dir.x = directionTowardsFoe;
                         var newPositionToSetOnFixedUpdate = objClosestPosition + (Vector2)dir.normalized * -(legsRadius);
 
-                        _debug.Log($"damage on {interactableBody.GetTransform().gameObject.name} by {thrower.GetTransform().gameObject.name}");
-                        interactableBody.DealDamage(damage);
                         interactableBody.ApplyForce(dir * grabbedVelocity * 0.7f); // 0.7f is an impact damage decrease
+
+                        DealDamageAndNotifyAndDisconnectIfGrabbedIsDead(interactableBody, damage, thrower);
 
                         _debug.DrawLine(objClosestPosition, newPositionToSetOnFixedUpdate, Color.white, 3);
                     }
@@ -1813,7 +1843,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             ApplyGrabOnFoe(grabbed, null, grabbed.GetCenterPosition());
             ApplyForce(grabbed, attackStats);
             ApplyEffect(grabbed, Effect2DType.ImpactCritical);
-            grabbed.DealDamage(attackStats.Damage);
+            DealDamageAndNotifyAndDisconnectIfGrabbedIsDead(grabbed, attackStats.Damage, grabber); // was grabbed.DealDamage(attackStats.Damage);
             ApplyProjectileStateWhenThrown(grabbed, attackStats.Damage, grabber);
             Handlers.GetHandler<ShakeHandler>().TriggerShake(grabbed.GetCharacterRigTransform(), new ShakeData(ShakeStyle.Random));
         }
