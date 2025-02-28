@@ -13,14 +13,31 @@ namespace Code.Wakoz.PurrKurr.Views
 
         private Coroutine _faderCoroutine;
         private Func<float, float, Action, IEnumerator> _smoothFadeDelegate;
+        private bool _deactivateOnZeroValue;
 
         public CanvasGroup CanvasTarget => _canvasGroup;
 
-        public void StartTransition(float targetValue = 1, 
-            Action callback = null) => FadeTo(targetValue, callback);
+        /// <summary>
+        /// Transition alpha to target value, does not deactivate object when target value is 0
+        /// </summary>
+        /// <param name="targetValue"></param>
+        /// <param name="callback"></param>
+        public void StartTransition(float targetValue = 1, Action callback = null)
+        {
+            _deactivateOnZeroValue = false;
+            FadeTo(targetValue, callback);
+        }
 
-        public void EndTransition(float targetValue = 0, 
-            Action callback = null) => FadeTo(targetValue, callback);
+        /// <summary>
+        /// Transition alpha to target value, deactivate object when target value is 0
+        /// </summary>
+        /// <param name="targetValue"></param>
+        /// <param name="callback"></param>
+        public void EndTransition(float targetValue = 0, Action callback = null)
+        {
+            _deactivateOnZeroValue = true;
+            FadeTo(targetValue, callback);
+        }
 
         private void FadeTo(float targetValue, Action callback = null)
         {
@@ -50,7 +67,7 @@ namespace Code.Wakoz.PurrKurr.Views
                 }
 
                 _canvasGroup.alpha = targetAlpha;
-                _canvasGroup.gameObject.SetActive(targetAlpha > 0);
+                _canvasGroup.gameObject.SetActive( !_deactivateOnZeroValue || targetAlpha > 0);
             }
 
             callback?.Invoke();
