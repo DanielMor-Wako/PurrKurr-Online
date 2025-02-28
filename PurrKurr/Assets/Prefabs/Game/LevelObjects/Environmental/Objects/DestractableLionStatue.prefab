@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4562286461528498638}
   - component: {fileID: 8517441788816777383}
   - component: {fileID: 5038334198152609696}
+  - component: {fileID: 8471084242844604093}
   - component: {fileID: 1888595386962743366}
   m_Layer: 7
   m_Name: DestractableLionStatue
@@ -66,6 +67,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35af4b2e75184e7fb09d40ff240693e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8471084242844604093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641496336778215532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06770c3a2668fe54ba295059d887ae3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _collectableData:
+    _itemId: LionStatue
+    _quantity: 1
 --- !u!61 &1888595386962743366
 BoxCollider2D:
   m_ObjectHideFlags: 0

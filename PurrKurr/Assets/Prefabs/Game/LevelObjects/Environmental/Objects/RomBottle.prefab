@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2362429368442043767}
   - component: {fileID: 9067189655036098565}
   - component: {fileID: 443371522253167872}
+  - component: {fileID: 4475807288633539108}
   - component: {fileID: 3396959347101644214}
   - component: {fileID: 6138229966129627831}
   - component: {fileID: 2921089849582899294}
@@ -65,6 +66,21 @@ MonoBehaviour:
   _legsCollider: {fileID: 6138229966129627831}
   _cling: {fileID: 0}
   _maxHealth: 1
+--- !u!114 &4475807288633539108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1128719304899268653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06770c3a2668fe54ba295059d887ae3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _collectableData:
+    _itemId: RomBottle
+    _quantity: 1
 --- !u!212 &3396959347101644214
 SpriteRenderer:
   m_ObjectHideFlags: 0
