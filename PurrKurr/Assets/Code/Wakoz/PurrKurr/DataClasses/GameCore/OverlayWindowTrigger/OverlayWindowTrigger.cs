@@ -64,8 +64,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
         protected override void Clean() {
             base.Clean();
 
-            OnColliderEntered -= handleColliderEntered;
-            OnColliderExited -= handleColliderExited;
+            OnColliderEntered -= HandleColliderEntered;
+            OnColliderExited -= HandleColliderExited;
         }
 
         protected override Task Initialize() {
@@ -73,8 +73,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
 
             _gameplayController ??= SingleController.GetController<GameplayController>();
 
-            OnColliderEntered += handleColliderEntered;
-            OnColliderExited += handleColliderExited;
+            OnColliderEntered += HandleColliderEntered;
+            OnColliderExited += HandleColliderExited;
 
             LoadDataFromScriptableObject();
 
@@ -95,7 +95,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
             UpdateWindowData(defaultData);
         }
 
-        private void handleColliderExited(Collider2D triggeredCollider) {
+        private void HandleColliderExited(Collider2D triggeredCollider) {
 
             if (_gameplayController == null) {
                 Debug.LogError("_gameplayController is missing");
@@ -116,7 +116,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
 
         }
 
-        private void handleColliderEntered(Collider2D triggeredCollider) {
+        private void HandleColliderEntered(Collider2D triggeredCollider) {
 
             if (_gameplayController == null) {
                 Debug.LogError("_gameplayController is missing");

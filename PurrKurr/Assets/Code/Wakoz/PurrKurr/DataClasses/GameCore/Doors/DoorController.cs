@@ -23,7 +23,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors
         public int GetRoomIndex() => _roomIndex;
         public DoorController GetNextDoor() => _nextDoor;
         public bool IsDoorEntrance() => _isDoorEntrance;
-        public CollectableItemData CollectableData => _collectableItem.CollectableData;
+        public CollectableItemData CollectableData => _collectableItem != null ? _collectableItem.CollectableData : null;
 
         protected override void Clean()
         {

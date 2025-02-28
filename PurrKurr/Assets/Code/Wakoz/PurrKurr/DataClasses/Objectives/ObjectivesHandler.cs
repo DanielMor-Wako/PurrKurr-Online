@@ -1,3 +1,4 @@
+using Code.Wakoz.PurrKurr.DataClasses.GameCore;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors;
@@ -10,7 +11,6 @@ using Code.Wakoz.Utils.BitwiseUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
@@ -41,6 +41,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
                 return;
 
             _gameEvents.OnHeroEnterDetectionZone += HandleHeroEnterDetectionZone;
+            _gameEvents.OnInteractableDestoyed += HandleInteractableDestroyed;
         }
 
         public void Unbind()
@@ -49,6 +50,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
                 return;
 
             _gameEvents.OnHeroEnterDetectionZone -= HandleHeroEnterDetectionZone;
+            _gameEvents.OnInteractableDestoyed -= HandleInteractableDestroyed;
         }
 
         public void Dispose()
@@ -98,7 +100,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         /// <returns></returns>
         public bool IsCollected(string itemId)
         {
-            for (var i = _objectives.Count; i >= 0; i--)
+            for (var i = _objectives.Count - 1; i >= 0; i--)
             {
                 var objective = _objectives[i];
 
@@ -224,6 +226,25 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             _controller.HandleNewObjectives(_objectives);
         }
 
+        public void RunObjectiveMission(string objectiveUniqueId)
+        {
+            var objectiveData = _objectives.FirstOrDefault(o => o != null && o.GetUniqueId() == objectiveUniqueId);
+
+            if (objectiveData == null)
+            {
+                Debug.LogError($"Mission '{objectiveUniqueId}' is not found");
+            }
+
+            // start mission
+            var objectIds = objectiveData.TargetObjectIds();
+            Debug.Log($"Mission started: UniqueId {objectiveUniqueId} - {objectIds.Count()} ids");
+
+            foreach (var objectId in objectIds)
+            {
+                Debug.Log($"Spawning {objectId}");
+            }
+        }
+
         /// <summary>
         /// Updates the list of completed objectives.
         /// </summary>
@@ -245,10 +266,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             {
                 case DoorController door:
 
-                    if (!door.IsDoorEntrance())
-                    {
-                        UpdateObjectiveOfCollectableType("Door_Exit", 1);
-                        //CompleteObjectivesOfType(typeof(ReachTargetZoneObjective));
+                    var collectable = door.CollectableData;
+                    if (collectable != null && !string.IsNullOrEmpty(collectable.ItemId)) {
+                        UpdateObjectiveOfCollectableType(collectable.ItemId, 1);
                     }
                     break;
 
@@ -257,10 +277,27 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
                     UpdateObjectiveOfCollectableType(id, quantity);
                     break;
 
+                case ObjectiveZoneTrigger objectiveZone:
+                    // RunObjectiveMission(objectiveZone.ObjectiveUniqueId);
+                    break;
+
                 case not OverlayWindowTrigger:
                     Debug.Log($"Unhandled detection zone type: {zone.GetType()}");
                     break;
             }
+        }
+
+        private void HandleInteractableDestroyed(IInteractableBody interactableBody)
+        {
+            var collectableItem = interactableBody.GetTransform().GetComponent<CollectableItem>();
+
+            if (collectableItem == null)
+                return;
+
+            Debug.Log($"Interactable destroyed {collectableItem.gameObject.name}");
+
+            var (id, quantity) = collectableItem.GetData();
+            UpdateObjectiveOfCollectableType(id, quantity);
         }
 
     }

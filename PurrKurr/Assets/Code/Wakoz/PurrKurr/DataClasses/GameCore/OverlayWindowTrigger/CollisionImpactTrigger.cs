@@ -28,23 +28,23 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
         {
             base.Clean();
 
-            OnColliderEntered -= handleColliderEntered;
-            OnColliderExited -= handleColliderExited;
+            OnColliderEntered -= HandleColliderEntered;
+            OnColliderExited -= HandleColliderExited;
         }
 
         protected override Task Initialize()
         {
             base.Initialize();
 
-            OnColliderEntered += handleColliderEntered;
-            OnColliderExited += handleColliderExited;
+            OnColliderEntered += HandleColliderEntered;
+            OnColliderExited += HandleColliderExited;
 
             UpdateStateView(false);
 
             return Task.CompletedTask;
         }
 
-        private void handleColliderExited(Collider2D triggeredCollider)
+        private void HandleColliderExited(Collider2D triggeredCollider)
         {
             if (IsUsingCountdownOnActiveState())
             {
@@ -54,7 +54,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
             UpdateStateView(false);
         }
 
-        private void handleColliderEntered(Collider2D triggeredCollider)
+        private void HandleColliderEntered(Collider2D triggeredCollider)
         {
             if (HasReachedMaxCount())
             {
@@ -110,5 +110,4 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
             UpdateStateView(false);
         }
     }
-
 }
