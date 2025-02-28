@@ -5,7 +5,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives {
     public class SmashObjective : Objective<SmashObjectiveSO> {
 
         public override string GetObjectiveDescription() 
-            => $"Defeat {_data.Objective.TargetObjectType}";
+            => $"Smash {_data.Objective.TargetObjectType}";
 
     }
 

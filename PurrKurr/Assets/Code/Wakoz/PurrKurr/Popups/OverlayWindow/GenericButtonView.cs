@@ -16,19 +16,20 @@ namespace Code.Wakoz.PurrKurr.Popups.OverlayWindow {
 
         public GenericButtonType GetButtonType() => _buttonType;
 
-        protected override void ModelChanged() {
+        protected override void ModelChanged()
+        {
+            var hasData = Model.Data != null;
 
-            var hasNoData = Model.Data == null;
+            _text.gameObject.SetActive(hasData);
+            _button?.gameObject.SetActive(hasData);
 
-            _text.gameObject.SetActive(!hasNoData);
-            _button.gameObject.SetActive(!hasNoData);
-
-            if (hasNoData) {
+            if (!hasData) {
                 return;
             }
 
-            _text.SetText(Model.Data.ButtonText);
+            _text?.SetText(Model.Data.ButtonText);
             _button.interactable = Model.IsClickable();
         }
+
     }
 }
