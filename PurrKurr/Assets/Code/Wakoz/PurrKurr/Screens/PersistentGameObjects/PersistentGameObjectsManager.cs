@@ -18,7 +18,10 @@ namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects {
             PersistentGameObject.OnPersistentObjectRemoved -= RemoveObject;
         }
 
-        public void RefreshStateToAllTaggedObjects()
+        /// <summary>
+        /// Refresh State for all tagged objects
+        /// </summary>
+        public void RefreshStateAll()
         {
             UnityEngine.Debug.Log($"{_objects.Count} tagged objects are notified");
             foreach (var item in _objects)
@@ -44,7 +47,7 @@ namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects {
                 return;
             }
 
-            UnityEngine.Debug.Log($"Removed Tagged - {behaviour.ItemId} {behaviour.GetObjectType()}");
+            //UnityEngine.Debug.Log($"Removed Tagged - {behaviour.ItemId} {behaviour.GetObjectType()}");
             _objects.Remove(behaviour.ItemId);
         }
 
@@ -55,7 +58,7 @@ namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects {
                 return;
             }
 
-            UnityEngine.Debug.Log($"Added Tagged + {behaviour.ItemId} {behaviour.GetObjectType()}");
+            //UnityEngine.Debug.Log($"Added Tagged + {behaviour.ItemId} {behaviour.GetObjectType()}");
             _objects.Add(behaviour.ItemId, behaviour);
         }
     }
