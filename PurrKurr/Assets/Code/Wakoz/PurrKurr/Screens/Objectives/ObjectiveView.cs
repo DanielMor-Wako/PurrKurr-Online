@@ -1,5 +1,4 @@
-﻿using Code.Wakoz.PurrKurr.AnimatorBridge;
-using Code.Wakoz.PurrKurr.Views;
+﻿using Code.Wakoz.PurrKurr.Views;
 using System;
 using TMPro;
 using UnityEngine;
