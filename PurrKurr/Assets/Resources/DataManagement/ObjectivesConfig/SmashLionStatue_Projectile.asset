@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba73621ecf98de847a691eaaca93e7a1, type: 3}
+  m_Name: SmashLionStatue_Projectile
+  m_EditorClassIdentifier: 
+  _objectiveData:
+    UniqueId: SmashLionStatue_Projectile
+    TargetObjectType: LionStatue
+    TargetObjectIds:
+    - LionStatue1
+    - LionStatue2
+    - LionStatue3
+    - LionStatue4
+    - LionStatue5
+    - LionStatue6
+    - LionStatue7
+    - LionStatue8
+    - LionStatue9
+    RequiredQuantity: 9
+    CurrentQuantity: 0
+    Icon: {fileID: -167871124, guid: 11498bf491965d54c9d0f38b620da8b8, type: 3}

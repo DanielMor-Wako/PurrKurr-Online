@@ -10,17 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ba73621ecf98de847a691eaaca93e7a1, type: 3}
-  m_Name: HolyRats
+  m_Name: SmashRomBottle_Grab
   m_EditorClassIdentifier: 
   _objectiveData:
-    UniqueId: DefeatRats_Attack
-    TargetObjectType: Rat
+    UniqueId: SmashBottle_Grab
+    TargetObjectType: RomBottle
     TargetObjectIds:
-    - Rat1
-    - Rat2
-    - Rat3
-    - Rat4
-    - Rat5
-    RequiredQuantity: 5
+    - RomBottle1
+    - RomBottle2
+    RequiredQuantity: 2
     CurrentQuantity: 0
-    Icon: {fileID: 21300000, guid: 18febbbe061919243b00a6ebfe8590c8, type: 3}
+    Icon: {fileID: 2680147653974948724, guid: 415cb88aedae2ca44b4d339995569370, type: 3}

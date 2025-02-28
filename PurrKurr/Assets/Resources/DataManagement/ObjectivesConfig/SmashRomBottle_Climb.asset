@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba73621ecf98de847a691eaaca93e7a1, type: 3}
+  m_Name: SmashRomBottle_Climb
+  m_EditorClassIdentifier: 
+  _objectiveData:
+    UniqueId: SmashBottle_Climb
+    TargetObjectType: RomBottle
+    TargetObjectIds:
+    - RomBottle1
+    - RomBottle2
+    - RomBottle3
+    - RomBottle4
+    - RomBottle5
+    - RomBottle6
+    RequiredQuantity: 6
+    CurrentQuantity: 0
+    Icon: {fileID: 2680147653974948724, guid: 415cb88aedae2ca44b4d339995569370, type: 3}

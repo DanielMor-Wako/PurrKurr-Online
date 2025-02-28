@@ -10,16 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ca09056af55d3144b1091b2a67aaf33, type: 3}
-  m_Name: CollectTreasure_Main
+  m_Name: CollectTreasure_Climb 1
   m_EditorClassIdentifier: 
   _objectiveData:
-    UniqueId: CollectTreasure_Main
+    UniqueId: CollectTreasure_Projectile
     TargetObjectType: TreasureChest
     TargetObjectIds:
-    - TreasureChest1
-    - TreasureChest2
-    - TreasureChest3
-    - TreasureChest4
-    RequiredQuantity: 4
+    - TreasureChest
+    RequiredQuantity: 1
     CurrentQuantity: 0
     Icon: {fileID: -3430613992102656276, guid: 415cb88aedae2ca44b4d339995569370, type: 3}
