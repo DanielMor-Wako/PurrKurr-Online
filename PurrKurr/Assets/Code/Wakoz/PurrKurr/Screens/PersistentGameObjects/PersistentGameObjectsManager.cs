@@ -40,6 +40,17 @@ namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects {
             tagged.ChangeState();
         }
 
+        public PersistentGameObject GetTaggedObject(string itemId)
+        {
+            PersistentGameObject tagged;
+            if (!_objects.TryGetValue(itemId, out tagged))
+            {
+                UnityEngine.Debug.LogWarning($"Could not find Tagged object {itemId}");
+            }
+
+            return tagged;
+        }
+
         private void RemoveObject(PersistentGameObject behaviour) 
         {
             var objType = behaviour.GetObjectType();

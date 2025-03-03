@@ -12,14 +12,17 @@ namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects {
         public event Action OnStateChanged;
 
         public readonly string ItemId;
+        public readonly Transform ObjectTransform;
+
         protected Type _type;
 
         public Type GetObjectType() => _type;
 
-        public PersistentGameObject(Type type, string itemId)
+        public PersistentGameObject(Type type, string itemId, Transform transform)
         {
             _type = type;
             ItemId = itemId;
+            ObjectTransform = transform;
 
             Init();
         }

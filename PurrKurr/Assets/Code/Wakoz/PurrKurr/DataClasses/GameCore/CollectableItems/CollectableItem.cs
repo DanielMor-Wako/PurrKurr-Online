@@ -28,7 +28,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems
         private void OnEnable()
         {
             // register the item in the persistentGameObject
-            _taggedObject = new PersistentGameObject(typeof(CollectableItem), _collectableData.ItemId);
+            _taggedObject = new PersistentGameObject(typeof(CollectableItem), _collectableData.ItemId, transform);
             _taggedObject.OnStateChanged += NotifyStateChanged;
         }
 

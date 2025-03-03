@@ -139,8 +139,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
         /// <summary>
         /// Sort logic for objectives.
+        /// - Sort by objective progress (higher progress first)
         /// - Completed objectives go to the end
-        /// - Sort by progress (higher progress first)
         /// </summary>
         private void SortObjectives()
         {
@@ -226,23 +226,16 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             _controller.HandleNewObjectives(_objectives);
         }
 
-        public void RunObjectiveMission(string objectiveUniqueId)
+        public IObjective GetObjectiveByUniqueId(string objectiveUniqueId)
         {
             var objectiveData = _objectives.FirstOrDefault(o => o != null && o.GetUniqueId() == objectiveUniqueId);
 
             if (objectiveData == null)
             {
-                Debug.LogError($"Mission '{objectiveUniqueId}' is not found");
+                Debug.LogError($"Mission with uniqueId '{objectiveUniqueId}' is not found");
             }
 
-            // start mission
-            var objectIds = objectiveData.TargetObjectIds();
-            Debug.Log($"Mission started: UniqueId {objectiveUniqueId} - {objectIds.Count()} ids");
-
-            foreach (var objectId in objectIds)
-            {
-                Debug.Log($"Spawning {objectId}");
-            }
+            return objectiveData;
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 namespace Code.Wakoz.PurrKurr.Screens.Levels {
 
@@ -80,6 +81,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Levels {
         public void NotifyAllTaggedObjects()
         {
             _persistentGameObjectsManager.RefreshStateAll();
+        }
+        
+        public Transform GetTaggedObject(string itemId)
+        {
+            var tagged = _persistentGameObjectsManager.GetTaggedObject(itemId);
+            return tagged.ObjectTransform;
         }
 
         protected override void Clean() {
