@@ -17,10 +17,20 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
 
         protected override Task Initialize()
         {
+            _view.OnClickedToggleState += HandleToggleState;
+
             return Task.CompletedTask;
         }
 
-        protected override void Clean() {}
+        protected override void Clean()
+        {
+            _view.OnClickedToggleState -= HandleToggleState;
+        }
+
+        private void HandleToggleState()
+        {
+            _view.ToggleState();
+        }
 
         public void HandleNewObjectives(List<IObjective> objectives)
         {

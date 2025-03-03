@@ -8,8 +8,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
 {
     public class ObjectivesView : View<ObjectivesModel>
     {
+        public event Action OnClickedToggleState;
+
         [SerializeField] private ObjectiveView _objectiveViewPrefab;
-        [SerializeField] private Transform _parentContainer; 
+        [SerializeField] private Transform _parentContainer;
         [SerializeField] private CanvasGroupFaderView _titleFader;
         [SerializeField] private ImageColorChangerView _titleColor;
         [SerializeField] private MultiStateView _arrowIconState;
@@ -27,7 +29,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
         private bool _isHidingCompletedObjectives = true;
 
         /// <summary>
-        /// Exposed function to toggle hiding completed objectives, called from the inspector
+        /// Inspector exposed function for toggling hiding
+        /// </summary>
+        public void ClickedToggleState() 
+            => OnClickedToggleState?.Invoke();
+
+        /// <summary>
+        /// Toggle hiding completed objectives
         /// </summary>
         public void ToggleState()
         {
@@ -56,7 +64,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
                 viewItem.Fader.StartTransition(model.InterfaceData.IsComplete() ? GetCompletedAlpha() : FullAlpha);
             }
         }
-
 
         private void SetArrowIconState()
         {
@@ -241,13 +248,18 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
             {
                 var objectiveModel = Model.Objectives[i];
 
+                // todo: turn this into a dictionary for faster lookup table
                 var model = _models.FirstOrDefault(o => o != null && o.InterfaceData.GetUniqueId() == objectiveModel.InterfaceData.GetUniqueId());
                 if (model == null)
+                {
                     continue;
+                }
 
                 var viewItem = _objectiveViews.FirstOrDefault(o => o != null && o.IsViewOf(model));
                 if (viewItem == null)
+                {
                     continue;
+                }
 
                 Action siblingAction = null;
 
@@ -266,6 +278,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
                     {
                         // Set the viewItem's sibling index to match the model's index
                         var itemIndexInScene = viewItem.transform.GetSiblingIndex();
+                        Debug.Log($"Item sibling {itemIndexInScene} with new order as {i}");
                         if (itemIndexInScene != i)
                         {
                             var newSiblingIndex = i;
@@ -283,7 +296,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
                             model.UpdateItem();
                             viewItem.ImageScaler.EndTransition();
                             viewItem.Fader.StartTransition(objectiveModel.InterfaceData.IsComplete() ? GetCompletedAlpha() : 1f, siblingAction);
-
                         });
                     }
                 };
