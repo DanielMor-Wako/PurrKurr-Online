@@ -1,12 +1,14 @@
 using Code.Wakoz.PurrKurr.DataClasses.Characters;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.TaggedItems;
 using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
 using Code.Wakoz.PurrKurr.Screens.PersistentGameObjects;
 using Code.Wakoz.PurrKurr.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 namespace Code.Wakoz.PurrKurr.Screens.Levels {
 
@@ -82,11 +84,52 @@ namespace Code.Wakoz.PurrKurr.Screens.Levels {
         {
             _persistentGameObjectsManager.RefreshStateAll();
         }
-        
+
+        public List<Transform> GetTaggedObjectsOfType(Type type)
+        {
+            List<Transform> result= new();
+
+            var taggedObjects = _persistentGameObjectsManager.GetTaggedObjectsOfType(type);
+            foreach (var item in taggedObjects)
+            {
+                result.Add(item.ObjectTransform);
+            }
+
+            return result;
+        }
+
+        public List<Transform> GetTaggedObjectsOfType<T>() where T : ITaggable
+        {
+            List<Transform> result = new();
+
+            var taggedObjects = _persistentGameObjectsManager.GetTaggedObjectsOfType<T>();
+            foreach (var item in taggedObjects)
+            {
+                result.Add(item.ObjectTransform);
+            }
+
+            return result;
+        }
+
+        public List<Transform> GetTaggedObject(List<string> itemIds)
+        {
+            List<Transform> result = new();
+            foreach (var itemId in itemIds)
+            {
+                var item = GetTaggedObject(itemId);
+                if (item == null)
+                {
+                    continue;
+                }
+                result.Add(item);
+            }
+            return result;
+        }
+
         public Transform GetTaggedObject(string itemId)
         {
-            var tagged = _persistentGameObjectsManager.GetTaggedObject(itemId);
-            return tagged.ObjectTransform;
+            var retrievedItem = _persistentGameObjectsManager.GetTaggedObject(itemId);
+            return retrievedItem != null ? retrievedItem.ObjectTransform : null;
         }
 
         protected override void Clean() {

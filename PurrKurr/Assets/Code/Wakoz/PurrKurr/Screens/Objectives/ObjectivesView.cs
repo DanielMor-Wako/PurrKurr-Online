@@ -181,7 +181,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
                 return;
 
             _titleFader.CanvasTarget.alpha = 0;
-            _titleFader.StartTransition(totalObjectives < 1 ? CompletedAlpha : FullAlpha);
+            _titleFader.StartTransition(totalObjectives < 1 ? HiddenAlpha : FullAlpha);
         }
 
         private void TitleColorTransition()

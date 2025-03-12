@@ -90,9 +90,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
         /// <summary>
         /// Clean the bindable Handlers
         /// </summary>
-        private void DisposeBindableHandlers()
+        private void DisposeHandlers()
         {
-            foreach (var handler in _handlers.Keys.OfType<IBindableHandler>())
+            foreach (var handler in _handlers.Keys)
             {
                 handler?.Dispose();
             }
@@ -104,7 +104,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
         public void Dispose()
         {
             UnbindHandlers();
-            DisposeBindableHandlers();
+            DisposeHandlers();
             _handlers.Clear();
         }
     }

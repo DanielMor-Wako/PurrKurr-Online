@@ -28,6 +28,8 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             _currentOffset = Vector3.zero;
         }
 
+        public void Dispose() { }
+
         public void EnqueueCamera(CameraData data, Action processActionCallback = null)
         {
             ICamera newCamera = 

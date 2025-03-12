@@ -26,6 +26,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Shaker
             };
         }
 
+        public void Dispose() {}
+
         public void TriggerShake(Transform target, ShakeData shakeData)
         {
             if (target == null)

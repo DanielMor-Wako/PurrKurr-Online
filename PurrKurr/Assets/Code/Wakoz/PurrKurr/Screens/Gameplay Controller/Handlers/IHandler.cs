@@ -1,6 +1,8 @@
-﻿namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
+﻿using System;
+
+namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
 {
-    public interface IHandler
+    public interface IHandler : IDisposable
     {
 
     }
