@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
+namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData
+{
 
     public class ObjectiveDataSO : ScriptableObject {
 

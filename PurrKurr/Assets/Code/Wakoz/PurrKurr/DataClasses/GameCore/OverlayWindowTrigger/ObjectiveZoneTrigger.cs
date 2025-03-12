@@ -17,7 +17,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
         [Tooltip("When ref exist to scriptable object, it overrides the windowData from the scriptable data")]
         [SerializeField] private OverlayWindowDataSO _scriptableObjectData;
 
-        [SerializeField] private string _objectiveUniqueId;
+        [SerializeField] private ObjectiveSequenceDataSO _sequenceData;
 
         [Tooltip("Sets the View state to active and deactive")]
         [SerializeField] private MultiStateView _state;
@@ -25,7 +25,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
         private GameplayController _gameplayController;
         private Coroutine _activeStateCO;
 
-        public string ObjectiveUniqueId => _objectiveUniqueId;
+        public ObjectiveSequenceDataSO SequenceData => _sequenceData;
 
         protected override void Clean()
         {
@@ -53,7 +53,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
 
         private void LoadDataFromScriptableObject()
         {
-
             if (_scriptableObjectData == null)
             {
                 return;
@@ -80,12 +79,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
                 {
                     page.PageCount = null;
                 }
+
                 return;
             }
 
             for (int i = 0; i < pageCount; i++)
             {
-
                 var page = pagesData[i];
                 page.PageCount = $"{i + 1}/{pageCount}";
 
