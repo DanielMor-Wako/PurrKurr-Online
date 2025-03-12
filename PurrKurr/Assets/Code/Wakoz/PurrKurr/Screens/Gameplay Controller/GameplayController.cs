@@ -27,6 +27,7 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
 using Code.Wakoz.PurrKurr.DataClasses.Effects;
 using Code.Wakoz.PurrKurr.DataClasses.Objectives;
 using Code.Wakoz.PurrKurr.Screens.Objectives;
+using Code.Wakoz.PurrKurr.Agents;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 {
@@ -54,6 +55,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         public event Action<DetectionZoneTrigger> OnHeroExitDetectionZone;
         //public event Action<DetectionZoneTrigger> OnHeroConditionCheck;
         public event Action<DetectionZoneTrigger> OnHeroConditionMet;
+        public event Action<IObjective, List<ObjectiveSequenceData>> OnObjectiveMissionStarted;
         public event Action<Collider2D> OnInteractablesEntered;
         public event Action<Collider2D> OnInteractablesExited;
         public event Action<IInteractableBody> OnInteractableDestoyed;
@@ -163,7 +165,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             var handlers = new List<IUpdateProcessHandler>
             {
                 new ShakeHandler(),
-                new CameraHandler(_camController)
+                new CameraHandler(_camController),
+                new AgentsHandler()
             };
             Handlers.AddHandlers(handlers);
         }
@@ -172,7 +175,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         {
             var bindableHandlers = new List<IBindableHandler>
             {
-                new ObjectivesHandler(this, GetController<ObjectivesController>())
+                new ObjectivesHandler(this, GetController<ObjectivesController>()),
+                new ObjectivesMissionHandler(this, GetController<LevelsController>()),
             };
             Handlers.AddBindableHandlers(bindableHandlers);
         }
@@ -256,17 +260,19 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 break;
 
                 case ObjectiveZoneTrigger objectiveTrigger:
-                for (var i = 0; i < windowPageData.Count; i++)
-                {
-                    OverlayWindowData page = windowPageData[i];
-                    var confirmButtons =
-                        page.ButtonsRawData.Where(obj => obj.ButtonType is GenericButtonType.Confirm or GenericButtonType.Close).FirstOrDefault();
 
-                    if (confirmButtons != null)
+                    for (var i = 0; i < windowPageData.Count; i++)
                     {
-                        confirmButtons.ClickedAction = () 
-                            => Handlers.GetHandler<ObjectivesHandler>()
-                            .RunObjectiveMission(objectiveTrigger.ObjectiveUniqueId);
+                        OverlayWindowData page = windowPageData[i];
+                        var confirmButtons =
+                            page.ButtonsRawData.Where(obj => obj.ButtonType is GenericButtonType.Confirm or GenericButtonType.Close).FirstOrDefault();
+
+                        if (confirmButtons != null)
+                    {
+                        var objectiveData = Handlers.GetHandler<ObjectivesHandler>()
+                            .GetObjectiveByUniqueId(objectiveTrigger.SequenceData.UniqueId);
+
+                        confirmButtons.ClickedAction = () => StartObjectiveMission(objectiveData, objectiveTrigger.SequenceData);
                     }
                 }
 
@@ -288,6 +294,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 break;
             }
 
+        }
+
+        private void StartObjectiveMission(IObjective objectiveData, ObjectiveSequenceDataSO sequencSOData)
+        {
+            OnObjectiveMissionStarted?.Invoke(objectiveData, sequencSOData.SequenceData);
         }
 
         private void CheckForConditionalGameEvent(IInteractableBody character, DetectionZoneTrigger zone, int pageIndex = 0) {
@@ -981,8 +992,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     var newFacingDirection = 0;
                     var hitPosition = e.InteractionPosition;
 
-                    IInteractableBody[] nearbyTargets;
-                    if (_logic.AbilitiesLogic.IsAbilityAnAttack(e.InteractionType)) {
+                    IInteractableBody[] nearbyTargets = e.Targets;
+                    /*if (_logic.AbilitiesLogic.IsAbilityAnAttack(e.InteractionType)) {
 
                         var distanceLimiter = _attackRadius;
                         nearbyTargets = e.Targets.Where(
@@ -991,12 +1002,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                         if (nearbyTargets.Length == 0 && e.Targets != null && e.Targets.Length > 0) {
                             _debug.LogWarning($"could not find any targets after filtering by distance -> {_attackRadius}");
-                            nearbyTargets = e.Targets;
+                            // nearbyTargets = e.Targets;
+
                         }
 
                     } else {
                         nearbyTargets = e.Targets;
-                    }
+                    }*/
 
 
                     HitTargets(e.Attacker, ref hitPosition, nearbyTargets, ref newFacingDirection, e.InteractionType, e.AttackProperties);
@@ -1113,8 +1125,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 targetsList.Add(interactableBody);
             }
             
-            if (latestInteractionAvailable && latestInteractionIsInTargetsList ) { //&&
-                //targetsList.Take(2).Contains(latestInteraction)) {
+            if (latestInteractionAvailable && latestInteractionIsInTargetsList) {
 
                 var interactionPositionedRight = attacker.LegsPosition.x < latestInteraction.GetCenterPosition().x;
                 if (interactionPositionedRight && _logic.InputLogic.IsNavigationDirValidAsRight(attacker.State.NavigationDir) ||
@@ -1458,6 +1469,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             var wasAlive = foe.GetHpPercent() > 0;
 
             foe.DealDamage(damage);
+            var foeController = foe as Character2DController;
+            if (foeController != null)
+            {
+                foeController.State.MarkLatestInteraction(attacker);
+            }
             Debug.Log($"damage on {foe.GetTransform().gameObject.name} by {attacker.GetTransform().gameObject.name}");
             
             var interactableIsDead = foe.GetHpPercent() <= 0;
