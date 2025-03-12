@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.TaggedItems;
+using System;
 using System.Collections.Generic;
 
 namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects {
@@ -38,6 +40,36 @@ namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects {
             }
 
             tagged.ChangeState();
+        }
+
+        public List<PersistentGameObject> GetTaggedObjectsOfType(Type type)
+        {
+            List<PersistentGameObject> taggedObjects = new();
+
+            foreach (var item in _objects.Values)
+            {
+                if (item.GetObjectType() != type)
+                    continue;
+
+                taggedObjects.Add(item);
+            }
+
+            return taggedObjects;
+        }
+
+        public List<PersistentGameObject> GetTaggedObjectsOfType<T>() where T : ITaggable
+        {
+            List<PersistentGameObject> taggedObjects = new();
+
+            foreach (var item in _objects.Values)
+            {
+                if (item.ObjectTransform.GetComponent<ITaggable>() is not T)
+                    continue;
+
+                taggedObjects.Add(item);
+            }
+
+            return taggedObjects;
         }
 
         public PersistentGameObject GetTaggedObject(string itemId)
