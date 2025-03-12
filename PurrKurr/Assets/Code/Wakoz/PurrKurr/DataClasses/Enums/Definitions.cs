@@ -280,7 +280,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             UnlockCharacter,
         }
 
-        public enum AchievementTypes
+        public enum AchievementTypes : byte
         {
             ExploreLocation, //Hidden treasure for explorers : Extra Gold 20%, Extra Bones 20%
             DefeatEveryone,  //Hidden bonus for action thrillers : Extra Gold 20%, Extra Bones 20%
@@ -288,11 +288,18 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             BreedNewCharacter
         }
 
-        public enum AiGoals : byte
+        public enum AgentGoal : byte
         {
-            Explore,
-            Protect,
-            Fight
+            Explore = 0,
+            Protect = 1,
+            Fight = 2,
+            Run = 3
+        }
+
+        public enum GoalCondition : byte
+        {
+            HpIsAboveRange01 = 0,
+            HasNearby = 1,
         }
 
         public enum CharacterDisplayableStat : byte
