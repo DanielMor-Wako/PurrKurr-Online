@@ -1,4 +1,5 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.TaggedItems;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Views;
 using System;
@@ -12,7 +13,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems
     //[TypeMarkerMultiClass(typeof(CollectObjective))]
     public class CollectableItemController : DetectionZoneTrigger {
 
-        [SerializeField] private CollectableItem _collectableItem;
+        [SerializeField] private CollectableTaggedItem _collectableItem;
 
         [Tooltip("Sets the View state to active or deactive when hero has entered the zone")]
         [SerializeField] private MultiStateView _state;
@@ -26,8 +27,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems
         protected override void Clean() {
             base.Clean();
 
-            OnColliderEntered -= handleColliderEntered;
-            OnColliderExited -= handleColliderExited;
+            OnColliderEntered -= HandleColliderEntered;
+            OnColliderExited -= HandleColliderExited;
 
             if (_collectableItem != null)
             {
@@ -40,8 +41,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems
 
             _gameplayController ??= SingleController.GetController<GameplayController>();
 
-            OnColliderEntered += handleColliderEntered;
-            OnColliderExited += handleColliderExited;
+            OnColliderEntered += HandleColliderEntered;
+            OnColliderExited += HandleColliderExited;
 
             if (_collectableItem != null)
             {
@@ -55,11 +56,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems
         {
             _isCollected = isCollected;
 
-            Debug.Log($"State changed -> {isCollected} for {gameObject.name}");
+            Debug.Log($"{gameObject.name} State -> {isCollected}");
             UpdateStateView();
         }
 
-        public void handleColliderExited(Collider2D triggeredCollider) {
+        public void HandleColliderExited(Collider2D triggeredCollider) {
 
             if (_gameplayController == null) {
                 Debug.LogError("_gameplayController is missing");
@@ -73,7 +74,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems
             _gameplayController.OnExitDetectionZone(this, triggeredCollider);
         }
 
-        public void handleColliderEntered(Collider2D triggeredCollider) {
+        public void HandleColliderEntered(Collider2D triggeredCollider) {
 
             if (_gameplayController == null) {
                 Debug.LogError("_gameplayController is missing");

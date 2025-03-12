@@ -1,5 +1,6 @@
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.TaggedItems;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.Utils.Attributes;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors
     //[TypeMarkerMultiClass(typeof(ReachTargetZoneObjective))]
     public class DoorController : DetectionZoneTrigger
     {
-        [SerializeField] private CollectableItem _collectableItem;
+        [SerializeField] private CollectableTaggedItem _collectableItem;
 
         [SerializeField] private bool _isDoorEntrance = true;
         [SerializeField] private int _roomIndex;
