@@ -2,7 +2,8 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace Code.Wakoz.Editor {
+namespace Code.Wakoz.Editor
+{
     public static class ClearPlayerPrefs {
 
         [MenuItem("Wakoz/Clear Player Prefs", priority = 1201)]
