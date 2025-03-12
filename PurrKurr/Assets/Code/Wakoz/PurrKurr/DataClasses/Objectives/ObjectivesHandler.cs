@@ -3,6 +3,7 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.TaggedItems;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers;
@@ -282,7 +283,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
         private void HandleInteractableDestroyed(IInteractableBody interactableBody)
         {
-            var collectableItem = interactableBody.GetTransform().GetComponent<CollectableItem>();
+            var collectableItem = interactableBody.GetTransform().GetComponent<CollectableTaggedItem>();
 
             if (collectableItem == null)
                 return;
