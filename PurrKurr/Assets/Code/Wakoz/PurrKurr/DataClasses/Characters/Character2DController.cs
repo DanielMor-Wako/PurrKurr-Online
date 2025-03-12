@@ -68,6 +68,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public Collider2D[] _solidColliders;
         public Collider2D[] _traversableColliders;
 
+        public DetectionZone Senses => _senses;
+
         public Collider2D[] NearbyInteractables() {
  
             var _nearbyInteractions = _senses.GetColliders();
