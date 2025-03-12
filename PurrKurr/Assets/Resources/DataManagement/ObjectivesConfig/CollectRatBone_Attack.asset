@@ -18,10 +18,6 @@ MonoBehaviour:
     TargetObjectIds:
     - RatBone1
     - RatBone2
-    - RatBone3
-    - RatBone4
-    - RatBone5
-    - RatBone6
-    RequiredQuantity: 6
-    CurrentQuantity: 1
+    RequiredQuantity: 2
+    CurrentQuantity: 0
     Icon: {fileID: -8506704527363435205, guid: 83ca103d4f4dbf64fae06eea598b58ed, type: 3}
