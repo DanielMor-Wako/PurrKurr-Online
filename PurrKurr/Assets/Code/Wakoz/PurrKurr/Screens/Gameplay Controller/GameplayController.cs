@@ -1040,7 +1040,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 new Vector3(camTransform.position.x, camTransform.position.y, -10)));
         }
 
-        private void CombatLogic(Character2DController attacker, ActionType actionType, Vector2 moveToPosition, Collider2D[] interactedColliders) {
+        public void CombatLogic(Character2DController attacker, ActionType actionType, Vector2 moveToPosition, Collider2D[] interactedColliders) {
 
             var newFacingDirection = 0;
             var attackAbility = _logic.AbilitiesLogic.GetAttackAbility(attacker.GetNavigationDir(), actionType, attacker.State.CurrentState);
