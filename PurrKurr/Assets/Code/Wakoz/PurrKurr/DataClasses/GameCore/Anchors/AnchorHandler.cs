@@ -12,10 +12,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
 
         public event Action<AnchorHandler, Vector3, Transform> OnAnchorChanged;
 
-        public void ModifyAnchor(Vector3 Pos, Transform NewParent) => OnAnchorChanged(this, Pos, NewParent);
+        public void ModifyAnchor(Vector3 Pos, Transform NewParent) => OnAnchorChanged?.Invoke(this, Pos, NewParent);
 
-        private void OnEnable() => OnAnchorAdded(this);
+        private void OnEnable() => OnAnchorAdded?.Invoke(this);
 
-        private void OnDisable() => OnAnchorRemoved(this);
+        private void OnDisable() => OnAnchorRemoved?.Invoke(this);
     }
 }

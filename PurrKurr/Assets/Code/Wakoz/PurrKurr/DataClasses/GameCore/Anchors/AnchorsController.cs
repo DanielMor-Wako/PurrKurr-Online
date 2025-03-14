@@ -1,3 +1,4 @@
+using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -11,53 +12,70 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
 
         private Dictionary<AnchorHandler, DynamicAnchor> anchors = new Dictionary<AnchorHandler, DynamicAnchor>();
 
-        protected override void Clean() {
+        private GenericObjectPool<DynamicAnchor> _pool;
+
+        protected override void Clean()
+        {
             AnchorHandler.OnAnchorAdded -= AddAnchor;
             AnchorHandler.OnAnchorRemoved -= RemoveAnchor;
         }
 
-        protected override Task Initialize() {
+        protected override Task Initialize()
+        {
             AnchorHandler.OnAnchorAdded += AddAnchor;
             AnchorHandler.OnAnchorRemoved += RemoveAnchor;
+
+            _pool = new GenericObjectPool<DynamicAnchor>(AnchorPrefab, transform, 2, 100);
 
             return Task.CompletedTask;
         }
 
         public Rigidbody2D GetAnchorRigidbody(AnchorHandler opponentAnchor)
         {
-            if (anchors.ContainsKey(opponentAnchor)) {
-                return anchors[opponentAnchor].GetComponent<Rigidbody2D>();
+            if (anchors.TryGetValue(opponentAnchor, out DynamicAnchor anchor))
+            {
+                return anchor.GetComponent<Rigidbody2D>();
             }
-                
-            return null;
+
+            // If no anchor exists, create a new one from the pool
+            anchor = _pool.GetObjectFromPool();
+            if (anchor != null)
+            {
+                anchors[opponentAnchor] = anchor;
+            }
+            return anchor?.GetComponent<Rigidbody2D>();
+
         }
     
-        private void AddAnchor(AnchorHandler opponentAnchor) {
-            //Debug.Log("Adding anchor for "+ opponentAnchor.name);
+        private void AddAnchor(AnchorHandler opponentAnchor) 
+        {
             if (!anchors.ContainsKey(opponentAnchor)) {
-                var anchor = Instantiate(AnchorPrefab, transform);
+
+                var anchor = _pool.GetObjectFromPool();
                 anchor.name = "dynAnchor_" + opponentAnchor.name;
                 anchors.Add(opponentAnchor, anchor);
-                //anchor.Bind(opponentAnchor);
+
                 opponentAnchor.OnAnchorChanged += HandleAnchorChange;
             }
         }
 
-        private void RemoveAnchor(AnchorHandler opponentAnchor) {
+        private void RemoveAnchor(AnchorHandler opponentAnchor)
+        {
+            if (anchors.TryGetValue(opponentAnchor, out DynamicAnchor anchor))
+            {
+                opponentAnchor.OnAnchorChanged -= HandleAnchorChange;
 
-            if (anchors.ContainsKey(opponentAnchor)) {
-                if (anchors[opponentAnchor] != null && anchors[opponentAnchor].gameObject != null) {
-                    opponentAnchor.OnAnchorChanged -= HandleAnchorChange;
-                    //anchors[opponentAnchor].Unbind();
-                    Destroy(anchors[opponentAnchor].gameObject);
-                }
+                _pool.ReleaseObjectToPool(anchor);
                 anchors.Remove(opponentAnchor);
             }
         }
 
-        private void HandleAnchorChange(AnchorHandler anchor, Vector3 position, Transform anchorParent) {
+        private void HandleAnchorChange(AnchorHandler anchor, Vector3 position, Transform anchorParent)
+        {
+            if (!anchors.TryGetValue(anchor, out var dynamicAnchor))
+                return;
 
-            anchors[anchor].transform.position = position;
+            dynamicAnchor.transform.position = position;
 
             if (anchorParent != null) {
 
@@ -70,14 +88,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors {
             
         }
 
-        private void AssignAnchor(AnchorHandler anchor, Transform anchorParent) {
-
+        private void AssignAnchor(AnchorHandler anchor, Transform anchorParent)
+        {
             anchors[anchor].transform.parent = anchorParent;
         }
         
-        private void DissociateAnchor(AnchorHandler anchor) {
-
-            anchors[anchor].transform.parent = this.transform;
+        private void DissociateAnchor(AnchorHandler anchor)
+        {
+            anchors[anchor].transform.parent = transform;
         }
 
     }
