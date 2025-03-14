@@ -205,9 +205,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     
                     if (started) {
 
+                        var closestColl = closestColliders.Where(o => o.GetComponent<IInteractable>() != null).FirstOrDefault();
+                        if (closestColl == null) 
+                            return false;
+
                         isActionPerformed = true;
                         // todo: delete these calculation from here after they are move to lateon when action occur, both forceDir and newPosition
-                        var closestColl = closestColliders.FirstOrDefault();
                         var legsPosition = character.LegsPosition;
                         var closestFoePosition = closestColl.ClosestPoint(legsPosition);
                         var dir = ((Vector3)closestFoePosition - legsPosition);
@@ -221,8 +224,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                         forceDirToSetOnFixedUpdate = dir.normalized * stats.PushbackForce;
                         return true;
                     }
-                    
-                    break;
+
+                    return false;
 
                 case Definitions.ActionType.Block:
 

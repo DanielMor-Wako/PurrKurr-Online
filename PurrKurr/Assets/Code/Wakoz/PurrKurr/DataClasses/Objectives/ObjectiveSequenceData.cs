@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
@@ -26,7 +27,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
         public float WaitTimeInSeconds => _waitTimeInSeconds;
     }
-
+    
     public enum ObjectiveActionType : byte
     {
         Wait = 0,

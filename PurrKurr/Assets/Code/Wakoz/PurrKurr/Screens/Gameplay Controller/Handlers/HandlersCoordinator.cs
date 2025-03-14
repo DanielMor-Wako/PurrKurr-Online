@@ -94,7 +94,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers
         {
             foreach (var handler in _handlers.Keys)
             {
-                handler?.Dispose();
+                handler.Dispose();
             }
         }
 

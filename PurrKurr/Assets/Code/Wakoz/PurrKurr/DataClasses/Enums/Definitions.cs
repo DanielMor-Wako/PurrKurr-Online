@@ -299,7 +299,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
         public enum GoalCondition : byte
         {
             HpIsAboveRange01 = 0,
-            HasNearby = 1,
+            HasNearbyAttackers = 1,
+            HasNearbyConsumeables = 2,
         }
 
         public enum CharacterDisplayableStat : byte
