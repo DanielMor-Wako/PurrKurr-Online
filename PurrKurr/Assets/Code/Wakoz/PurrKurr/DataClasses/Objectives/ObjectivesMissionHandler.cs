@@ -8,6 +8,7 @@ using Code.Wakoz.PurrKurr.Screens.Levels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -17,6 +18,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
     {
         private GameplayController _gameEvents;
         private LevelsController _controller;
+
+        private CancellationTokenSource _cancellationTokenSource;
 
         public ObjectivesMissionHandler(GameplayController gameEvents, LevelsController controller)
         {
@@ -30,6 +33,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
                 return;
 
             _gameEvents.OnObjectiveMissionStarted += HandleMissionStarted;
+            _gameEvents.OnHeroReposition += HandleLoadingNewLevel;
         }
 
         public void Unbind()
@@ -38,6 +42,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
                 return;
 
             _gameEvents.OnObjectiveMissionStarted -= HandleMissionStarted;
+            _gameEvents.OnHeroReposition -= HandleLoadingNewLevel;
         }
 
         public void Dispose()
@@ -45,65 +50,92 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             _gameEvents = null;
         }
 
+        private void HandleLoadingNewLevel(Vector3 vector)
+        {
+            CancelMission();
+        }
+
+        private void CancelMission()
+        {
+            _cancellationTokenSource?.Cancel();
+        }
+
         private void HandleMissionStarted(IObjective objectiveData, List<ObjectiveSequenceData> data)
         {
+            CancelMission();
+
             var objectIds = objectiveData.TargetObjectIds();
             Debug.Log($"Mission started duration {TotalSequenceDuration(data)}: UniqueId {objectiveData.GetUniqueId()} - {objectIds.Count()} total ObjectIds");
-            
-            StartMission(data);
+
+            _cancellationTokenSource = new CancellationTokenSource();
+            var token = _cancellationTokenSource.Token;
+
+            _ = StartMission(data, token);
         }
 
         private float TotalSequenceDuration(List<ObjectiveSequenceData> SequenceData)
             => SequenceData.Sum(data => data.WaitTimeInSeconds);
 
-        private async Task StartMission(List<ObjectiveSequenceData> data)
+        private async Task StartMission(List<ObjectiveSequenceData> data, CancellationToken cancellationToken)
         {
             for (var i = 0; i < data.Count; i++)
             {
-                var sequenceStep = data[i];
-                Debug.Log($"Action {sequenceStep.ActionType} {sequenceStep.TargetObjectIds.Count()} {sequenceStep.StartObjectId}");
+                cancellationToken.ThrowIfCancellationRequested();
 
-                switch (sequenceStep.ActionType)
-                {
-                    case ObjectiveActionType.CameraFocus:
+                await ProcessSequenceStep(data[i], cancellationToken);
+            }
+        }
 
-                        var focusItems = _controller.GetTaggedObject(sequenceStep.TargetObjectIds).ToArray();
-                        var cameraFocus = new FollowSingleTarget(new CameraData(focusItems, new LifeCycleData(sequenceStep.WaitTimeInSeconds)));
+        private async Task ProcessSequenceStep(ObjectiveSequenceData sequenceStep, CancellationToken cancellationToken)
+        {
+            Debug.Log($"Action {sequenceStep.ActionType} {sequenceStep.TargetObjectIds.Count()} {sequenceStep.StartObjectId}");
 
-                        SingleController.GetController<GameplayController>().Handlers.GetHandler<CameraCharacterHandler>().NotifyCameraChange(cameraFocus);
-                    break;
+            switch (sequenceStep.ActionType)
+            {
+                case ObjectiveActionType.CameraFocus:
 
-                    case ObjectiveActionType.Destroy:
-                    case ObjectiveActionType.Spawn:
+                    var focusItems = _controller.GetTaggedObject(sequenceStep.TargetObjectIds).ToArray();
+                    var cameraFocus = new FollowSingleTarget(new CameraData(focusItems, new LifeCycleData(sequenceStep.WaitTimeInSeconds)));
 
-                        var itemsToSpawn = _controller.GetTaggedObject(sequenceStep.TargetObjectIds);
-                        if (itemsToSpawn == null || string.IsNullOrEmpty(sequenceStep.StartObjectId))
+                    SingleController.GetController<GameplayController>().Handlers.GetHandler<CameraCharacterHandler>().NotifyCameraChange(cameraFocus);
+                break;
+
+                case ObjectiveActionType.Destroy:
+                case ObjectiveActionType.Spawn:
+
+                    var itemsToSpawn = _controller.GetTaggedObject(sequenceStep.TargetObjectIds);
+                    if (itemsToSpawn == null)
+                        break;
+
+                    foreach (var spawned in itemsToSpawn)
+                    {
+                        if (!string.IsNullOrEmpty(sequenceStep.StartObjectId))
+                        {
+                            var spawnItem = _controller.GetTaggedObject(sequenceStep.StartObjectId);
+                            if (spawnItem != null)
+                            {
+                                spawned.transform.position = spawnItem.transform.position;
+                            }
+                        }
+
+                        if (sequenceStep.ActionType is not ObjectiveActionType.Spawn)
                             continue;
 
-                        var spawnItem = _controller.GetTaggedObject(sequenceStep.StartObjectId);
-                        
-                        foreach(var spawned in itemsToSpawn)
-                        {
-                            spawned.transform.position = spawnItem.transform.position;
+                        ResetSpawnedObject(spawned);
+                    }
+                break;
+            }
 
-                            if (sequenceStep.ActionType is not ObjectiveActionType.Spawn)
-                                continue;
-
-                            ResetSpawnedObject(spawned);
-                        }
-                    break;
-                }
-
-                var waitTime = sequenceStep.WaitTimeInSeconds;
-                if (waitTime > 0)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(waitTime));
-                }
+            var waitTime = sequenceStep.WaitTimeInSeconds;
+            if (waitTime > 0)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(waitTime));
             }
         }
 
         private void ResetSpawnedObject(Transform spawned)
         {
+            // todo: consider strategy pattern for objectsStateReset (Revival, Refill consumeable)
             if (TryReviveCharacter(spawned))
             {
                 return;
