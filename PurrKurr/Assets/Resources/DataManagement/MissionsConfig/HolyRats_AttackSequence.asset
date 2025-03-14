@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: HolyRats_AttackSequence
   m_EditorClassIdentifier: 
   _uniqueId: DefeatRats_Attack
+  _finishConditions:
+    _winConditions: []
+    _loseConditions: []
   _sequenceData:
   - _actionType: 2
     _targetObjectIds:
@@ -22,7 +25,7 @@ MonoBehaviour:
     - Rat4
     - Rat5
     _startObjectId: SpawnerPoolZone
-    _waitTimeInSeconds: 0
+    _waitTimeInSeconds: 0.1
   - _actionType: 1
     _targetObjectIds:
     - FoodPile
@@ -40,13 +43,13 @@ MonoBehaviour:
     _waitTimeInSeconds: 1
   - _actionType: 3
     _targetObjectIds:
-    - FoodPile
+    - FoodPileOverview
     _startObjectId: 
     _waitTimeInSeconds: 0
   - _actionType: 0
     _targetObjectIds: []
     _startObjectId: 
-    _waitTimeInSeconds: 2
+    _waitTimeInSeconds: 10
   - _actionType: 3
     _targetObjectIds:
     - Spawner2
@@ -64,16 +67,16 @@ MonoBehaviour:
     _waitTimeInSeconds: 1
   - _actionType: 3
     _targetObjectIds:
-    - FoodPile
+    - FoodPileOverview
     _startObjectId: 
     _waitTimeInSeconds: 0
   - _actionType: 0
     _targetObjectIds: []
     _startObjectId: 
-    _waitTimeInSeconds: 3
+    _waitTimeInSeconds: 20
   - _actionType: 3
     _targetObjectIds:
-    - FoodPile
+    - FoodPileOverview
     - Spawner1
     _startObjectId: 
     _waitTimeInSeconds: 0
@@ -84,7 +87,7 @@ MonoBehaviour:
     _waitTimeInSeconds: 1.5
   - _actionType: 3
     _targetObjectIds:
-    - FoodPile
+    - FoodPileOverview
     - Spawner2
     _startObjectId: 
     _waitTimeInSeconds: 0
@@ -95,6 +98,6 @@ MonoBehaviour:
     _waitTimeInSeconds: 1.5
   - _actionType: 3
     _targetObjectIds:
-    - FoodPile
+    - FoodPileOverview
     _startObjectId: 
     _waitTimeInSeconds: 0
