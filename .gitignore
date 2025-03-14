@@ -41,3 +41,6 @@ sysinfo.txt
 *.unitypackage
 *.log
 *.dwlt
+/PurrKurr/Assets/Plugins/
+/PurrKurr/Logs
+/PurrKurr/Logs/
