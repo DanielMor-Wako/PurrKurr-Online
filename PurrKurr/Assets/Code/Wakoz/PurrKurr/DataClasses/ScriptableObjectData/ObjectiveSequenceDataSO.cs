@@ -1,6 +1,5 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.Objectives;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData
@@ -10,9 +9,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData
     {
         [SerializeField] private string _uniqueId;
 
+        [SerializeField] private ObjectiveFinishConditionsData _finishConditions;
+
         [SerializeField] private List<ObjectiveSequenceData> _sequenceData;
 
         public string UniqueId => _uniqueId;
+
+        public ObjectiveFinishConditionsData FinishConditions => _finishConditions;
 
         public List<ObjectiveSequenceData> SequenceData => _sequenceData;
     }
