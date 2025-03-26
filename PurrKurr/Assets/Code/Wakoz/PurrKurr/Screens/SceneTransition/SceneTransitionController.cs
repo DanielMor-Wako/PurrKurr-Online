@@ -71,6 +71,21 @@ namespace Code.Wakoz.PurrKurr.Screens.SceneTransition
         [ContextMenu("Test - Scene Transition (0 seconds)")]
         public void TestSceneTransition5Seconds() 
             => TestSceneTransition(UnityEngine.Random.Range(0, 10));
+
+        public void PretendLoad(float durationInSeconds, string title = "", Action onEndAction = null)
+        {
+            Action onEndAnimation = () =>
+            {
+                _view.EndTransition();
+                onEndAction?.Invoke();
+            };
+
+            _view.StartTransition(async () =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(durationInSeconds));
+                onEndAnimation?.Invoke();
+            }, title);
+        }
         #endregion
     }
 }
