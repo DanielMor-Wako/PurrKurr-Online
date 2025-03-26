@@ -14,8 +14,11 @@ namespace Code.Wakoz.PurrKurr.Views
         private Coroutine _faderCoroutine;
         private Func<float, float, Action, IEnumerator> _smoothFadeDelegate;
         private bool _deactivateOnZeroValue;
+        private float _targetAlpha;
 
         public CanvasGroup CanvasTarget => _canvasGroup;
+
+        public float TargetValue => _targetAlpha;
 
         /// <summary>
         /// Transition alpha to target value, does not deactivate object when target value is 0
@@ -56,18 +59,19 @@ namespace Code.Wakoz.PurrKurr.Views
             {
                 float startAlpha = _canvasGroup.alpha;
                 float elapsedTime = 0f;
+                _targetAlpha = targetAlpha;
                 _canvasGroup.gameObject.SetActive(true);
 
-                while (!Mathf.Approximately(_canvasGroup.alpha, targetAlpha))
+                while (!Mathf.Approximately(_canvasGroup.alpha, _targetAlpha))
                 {
                     elapsedTime += Time.deltaTime * smoothSpeed;
-                    _canvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime);
+                    _canvasGroup.alpha = Mathf.Lerp(startAlpha, _targetAlpha, elapsedTime);
 
                     yield return null;
                 }
 
-                _canvasGroup.alpha = targetAlpha;
-                _canvasGroup.gameObject.SetActive( !_deactivateOnZeroValue || targetAlpha > 0);
+                _canvasGroup.alpha = _targetAlpha;
+                _canvasGroup.gameObject.SetActive( !_deactivateOnZeroValue || _targetAlpha > 0);
             }
 
             callback?.Invoke();

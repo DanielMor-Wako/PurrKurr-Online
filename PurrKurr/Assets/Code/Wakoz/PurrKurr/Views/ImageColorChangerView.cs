@@ -26,6 +26,12 @@ namespace Code.Wakoz.PurrKurr.Views
         public void EndTransition(Action callback = null)
             => ChangeColor(_endColor, callback);
 
+        public Color MinValue => _startColor;
+
+        public Color MaxValue => _endColor;
+
+        public Color TargetValue => _targetColor;
+
         /// <summary>
         /// Transition sprite color to the target color over time.
         /// </summary>
