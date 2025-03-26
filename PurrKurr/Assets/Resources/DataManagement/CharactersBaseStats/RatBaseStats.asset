@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a21f613207740058211b4fdbecf76d4, type: 3}
-  m_Name: CatSiemeseBaseStats
+  m_Name: RatBaseStats
   m_EditorClassIdentifier: 
-  _animal: 0
+  _animal: 2
   _diet: 0
   _data:
     _maxLevel: 100
-    _healthMinToMax: {x: 100, y: 250}
+    _healthMinToMax: {x: 50, y: 200}
     _damageMinToMax: {x: 10, y: 50}
     _pushbackForceMinToMax: {x: 35, y: 50}
     _walkSpeedMinToMax: {x: 300, y: 500}
-    _runSpeedMinToMax: {x: 700, y: 1400}
-    _sprintSpeedMinToMax: {x: 1500, y: 2500}
+    _runSpeedMinToMax: {x: 500, y: 1000}
+    _sprintSpeedMinToMax: {x: 1100, y: 2000}
     _jumpForceMinToMax: {x: 40, y: 55}
     _airborneSpeedMinToMax: {x: 5, y: 7}
     _airborneMaxSpeedMinToMax: {x: 5, y: 10}
