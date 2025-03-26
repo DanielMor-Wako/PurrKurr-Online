@@ -5,6 +5,7 @@ using Code.Wakoz.PurrKurr.Screens.Ui_Controller;
 using UnityEngine;
 using System.Linq;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
+using System.Collections.Generic;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
     public sealed class InputInterpreterLogic {
@@ -205,7 +206,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller {
                     
                     if (started) {
 
-                        var closestColl = closestColliders.Where(o => o.GetComponent<IInteractable>() != null).FirstOrDefault();
+                        var closestColl = closestColliders.Where(o => o.GetComponent<IInteractable>()?.GetInteractableBody()?.GetHpPercent() > 0).FirstOrDefault();
                         if (closestColl == null) 
                             return false;
 
