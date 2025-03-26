@@ -170,7 +170,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             }
             
             GetAttackProperties(attackAbility, ref attackStats);
-            Debug.Log("returned attackStats for " + attackAbility);
             return true;
         }
 
