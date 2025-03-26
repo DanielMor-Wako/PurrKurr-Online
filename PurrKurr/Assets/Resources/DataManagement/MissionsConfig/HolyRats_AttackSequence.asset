@@ -14,10 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _uniqueId: DefeatRats_Attack
   _finishConditions:
-    _winConditions: []
-    _loseConditions: []
-  _sequenceData:
-  - _actionType: 2
+    _winConditions:
+    - Condition: 1
+      targetObjectIds:
+      - Rat1
+      - Rat2
+      - Rat3
+      - Rat4
+      - Rat5
+    _loseConditions:
+    - Condition: 3
+      targetObjectIds:
+      - FoodPile
+      - FoodPile2
+  _initializeData:
+  - _actionType: 1
     _targetObjectIds:
     - Rat1
     - Rat2
@@ -25,12 +36,23 @@ MonoBehaviour:
     - Rat4
     - Rat5
     _startObjectId: SpawnerPoolZone
-    _waitTimeInSeconds: 0.1
+    _waitTimeInSeconds: 0
   - _actionType: 1
     _targetObjectIds:
     - FoodPile
+    - FoodPile2
     _startObjectId: 
     _waitTimeInSeconds: 0
+  - _actionType: 3
+    _targetObjectIds:
+    - FoodPileOverview
+    _startObjectId: 
+    _waitTimeInSeconds: 0
+  _sequenceData:
+  - _actionType: 0
+    _targetObjectIds: []
+    _startObjectId: 
+    _waitTimeInSeconds: 1
   - _actionType: 3
     _targetObjectIds:
     - Spawner1
@@ -40,7 +62,7 @@ MonoBehaviour:
     _targetObjectIds:
     - Rat1
     _startObjectId: Spawner1
-    _waitTimeInSeconds: 1
+    _waitTimeInSeconds: 2
   - _actionType: 3
     _targetObjectIds:
     - FoodPileOverview
@@ -73,7 +95,7 @@ MonoBehaviour:
   - _actionType: 0
     _targetObjectIds: []
     _startObjectId: 
-    _waitTimeInSeconds: 20
+    _waitTimeInSeconds: 21
   - _actionType: 3
     _targetObjectIds:
     - FoodPileOverview
@@ -101,3 +123,8 @@ MonoBehaviour:
     - FoodPileOverview
     _startObjectId: 
     _waitTimeInSeconds: 0
+  - _actionType: 0
+    _targetObjectIds:
+    - 
+    _startObjectId: 
+    _waitTimeInSeconds: 80
