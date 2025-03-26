@@ -58,6 +58,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private const float GroundedRadius = .7f;
         private const float CharacterMaxMotorTorque = 10000;
         private const float AdditionalOuterRadius = 0.3f;
+        private const float DefaultSensesRadius = 10f;
+        private float _sensesRadius;
 
         private InteractableObject2DState _state;
         private AnchorHandler _anchor;
@@ -69,6 +71,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public Collider2D[] _traversableColliders;
 
         public DetectionZone Senses => _senses;
+        public float SensesRadius()
+        {
+            if (_sensesRadius == 0) {
+                var radiusSensor = _senses.GetComponent<CircleCollider2D>();
+                _sensesRadius = radiusSensor != null ? radiusSensor.radius : DefaultSensesRadius;
+            }
+            return _sensesRadius;
+        }
 
         public Collider2D[] NearbyInteractables() {
  
@@ -426,7 +436,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 SetSpriteOrder(0);
             }
 
-            OnUpdatedStats?.Invoke(new List<DisplayedableStatData>() { new DisplayedableStatData(Definitions.CharacterDisplayableStat.Health , Stats.GetHealthPercentage()) });
+            OnUpdatedStats?.Invoke(new List<DisplayedableStatData>() { new DisplayedableStatData(Definitions.CharacterDisplayableStat.Health , Stats.GetHealthPercentage(), Stats.Health.ToString()) });
 
             //return newHealthPoint;
         }
