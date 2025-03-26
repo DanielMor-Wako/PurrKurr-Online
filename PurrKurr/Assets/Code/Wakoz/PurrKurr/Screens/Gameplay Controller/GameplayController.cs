@@ -28,6 +28,7 @@ using Code.Wakoz.PurrKurr.DataClasses.Effects;
 using Code.Wakoz.PurrKurr.DataClasses.Objectives;
 using Code.Wakoz.PurrKurr.Screens.Objectives;
 using Code.Wakoz.PurrKurr.Agents;
+using Code.Wakoz.PurrKurr.Screens.Notifications;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 {
@@ -51,15 +52,18 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         public event Action<List<Transform>> OnCameraFocusTargets;
         public event Action<InteractableObject2DState> OnStateChanged;
         public event Action<List<DisplayedableStatData>> OnStatsChanged;
+        public event Action<float, float> OnTimerChanged;
         public event Action<DetectionZoneTrigger> OnHeroEnterDetectionZone;
         public event Action<DetectionZoneTrigger> OnHeroExitDetectionZone;
         //public event Action<DetectionZoneTrigger> OnHeroConditionCheck;
         public event Action<DetectionZoneTrigger> OnHeroConditionMet;
-        public event Action<IObjective, List<ObjectiveSequenceData>> OnObjectiveMissionStarted;
+        public event Action<IObjective, ObjectiveSequenceDataSO> OnObjectiveMissionStarted;
         public event Action<Collider2D> OnInteractablesEntered;
         public event Action<Collider2D> OnInteractablesExited;
         public event Action<IInteractableBody> OnInteractableDestoyed;
+        public event Action OnHeroDeath;
         public event Action<EffectData, Transform, Quaternion> OnNewEffect;
+        public event Action<NotificationData> OnNewNotification;
         public event Action<float> OnTimeScaleChanged;
         public event Action OnTimeScaleDefault;
 
@@ -207,7 +211,27 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             if (interactable == null)
                 return false;
 
-            return interactable.GetInteractableBody() == (IInteractableBody)_hero;
+            return IsInteractableBodyTheMainHero(interactable.GetInteractableBody());
+        }
+
+        private bool IsInteractableBodyTheMainHero(IInteractableBody interactable)
+        {
+            if (interactable == null)
+                return false;
+
+            return interactable == (IInteractableBody)_hero;
+        }
+
+        public void CallNewNotification(string message, float durationInSeconds = 5) {
+            OnNewNotification?.Invoke(new NotificationData(message, durationInSeconds));
+        }
+
+        public void UpdateTimer(float secondsLeft, float totalSeconds) {
+            OnTimerChanged?.Invoke(secondsLeft, totalSeconds);
+        }
+
+        public void HideTimer() {
+            OnTimerChanged?.Invoke(0, 1);
         }
 
         public bool OnExitDetectionZone(DetectionZoneTrigger zone, Collider2D triggeredCollider)
@@ -298,7 +322,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         private void StartObjectiveMission(IObjective objectiveData, ObjectiveSequenceDataSO sequencSOData)
         {
-            OnObjectiveMissionStarted?.Invoke(objectiveData, sequencSOData.SequenceData);
+            OnObjectiveMissionStarted?.Invoke(objectiveData, sequencSOData);
         }
 
         private void CheckForConditionalGameEvent(IInteractableBody character, DetectionZoneTrigger zone, int pageIndex = 0) {
@@ -1275,7 +1299,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             facingRightOrLeftTowardsPoint = foe.GetCenterPosition().x > attacker.LegsPosition.x ? 1 : -1;
                 
             var properties = attackProperties.Properties;
-            var isFoeBlocking = foeState == ObjectState.Blocking;
+            var isFoeBlocking = foeState is ObjectState.Blocking;
 
             if (isAttackAction) {
                 
@@ -1287,6 +1311,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     (properties.Contains(AttackProperty.PushDownOnHit) ||
                     properties.Contains(AttackProperty.PushDownOnBlock) && isFoeBlocking)) {
 
+                    if (properties.Contains(AttackProperty.PushDownOnHit) && isFoeBlocking) 
+                    {
+                        ApplyEffect(foe, Effect2DType.ImpactOnBlock);
+                        return facingRightOrLeftTowardsPoint; 
+                    }
                     attackStats.ForceDir.y = -Mathf.Abs(attackStats.ForceDir.y);
                     ApplyForce(foe, attackStats);
                     ApplyEffect(foe, Effect2DType.ImpactCritical);
@@ -1298,6 +1327,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                 } else if (properties.Contains(AttackProperty.PushBackOnHit) ||
                     properties.Contains(AttackProperty.PushBackOnBlock) && isFoeBlocking) {
+
+                    if (properties.Contains(AttackProperty.PushBackOnHit) && isFoeBlocking)
+                    {
+                        ApplyEffect(foe, Effect2DType.ImpactOnBlock);
+                        return facingRightOrLeftTowardsPoint;
+                    }
 
                     var foeCharacter = foe as Character2DController;
                     if (foeCharacter != null && (_gameplayLogic.IsStateConsideredAsGrounded(foeState) || foeCharacter.State.CanMoveOnSurface())) {
@@ -1467,6 +1502,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
 
             var wasAlive = foe.GetHpPercent() > 0;
+            if (IsInteractableBodyTheMainHero(foe))
+            {
+                SetCameraScreenShake();
+            }
 
             foe.DealDamage(damage);
             var foeController = foe as Character2DController;
@@ -1483,6 +1522,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 )
             {
                 OnInteractableDestoyed?.Invoke(foe);
+                if (IsInteractableBodyTheMainHero(foe))
+                {
+                    OnHeroDeath?.Invoke();
+                }
             }
 
             if (interactableIsDead && foe.IsGrabbed())
@@ -1509,8 +1552,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                 await Task.Delay(TimeSpan.FromMilliseconds(500));
             }
-
-            SetCameraScreenShake();
         }
 
         // todo: make the function get properties and iterate on each one to generate a super, currently only gets true instead of property
