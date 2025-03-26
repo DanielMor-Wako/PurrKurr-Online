@@ -23,7 +23,7 @@ namespace Code.Wakoz.PurrKurr.Agents
 
         [SerializeField] private bool _isInitialized;
 
-        public void CurrentGoal(Definitions.AgentGoal goal)
+        public void SetCurrentGoal(Definitions.AgentGoal goal)
         {
             _isInitialized = true;
 
