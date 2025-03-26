@@ -59,7 +59,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Doors
 
         private void HandleStateChange(bool isCollected)
         {
-            Debug.Log($"State changed -> {isCollected} for {gameObject.name}");
+            Debug.Log($"{gameObject.name} State -> {isCollected}");
 
             /*if (_state == null)
             {

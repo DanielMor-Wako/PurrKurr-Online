@@ -19,11 +19,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
     public class ObjectivesHandler : IBindableHandler
     {
-        private ObjectiveFactory _objectiveFactory; // Handles objective creation
+        private ObjectiveFactory _objectiveFactory;
         private List<IObjective> _objectives = new();
-        private HashSet<string> _completedObjectivesId = new(); // Tracks completed objectives efficiently
+        private HashSet<string> _completedObjectivesId = new();
         [Tooltip("Stores the bitmask for collected states of each item in TargetObjectIds")]
-        private Dictionary<string, int[]> _objectivesOngoing = new(); // Tracks progress of ongoing objectives
+        private Dictionary<string, int[]> _objectivesOngoing = new();
 
         private GameplayController _gameEvents;
         private ObjectivesController _controller;
@@ -76,7 +76,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
                     objective.Initialize(data);
                     _objectives.Add(objective);
 
-                    // Check if this objective has existing progress in _objectivesOngoing
+                    // Check for the objective's existing progress in _objectivesOngoing
                     if (_objectivesOngoing.TryGetValue(data.Objective.UniqueId, out var existingProgress))
                     {
                         objective.UpdateProgress(existingProgress.CountActiveBits());

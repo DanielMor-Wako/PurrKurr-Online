@@ -122,7 +122,6 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         private void HandleNewHero(Character2DController characterController)
         {
-            Debug.Log("GameEvent: new hero");
             CharacterTransform = characterController.transform;
             _characterController = characterController;
 

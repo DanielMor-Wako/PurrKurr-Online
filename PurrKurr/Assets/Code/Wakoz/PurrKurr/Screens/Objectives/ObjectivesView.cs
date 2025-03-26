@@ -248,7 +248,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
             {
                 var objectiveModel = Model.Objectives[i];
 
-                // todo: turn this into a dictionary for faster lookup table
+                // todo: use dictionary for faster lookup table
                 var model = _models.FirstOrDefault(o => o != null && o.InterfaceData.GetUniqueId() == objectiveModel.InterfaceData.GetUniqueId());
                 if (model == null)
                 {
