@@ -143,6 +143,11 @@ Material:
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
     - _Surface: 0
+    - _SurfaceWaveAmplitude: 0.1
+    - _SurfaceWaveFrequency: 1000
+    - _SurfaceWaveFrequencyMultiplier: 50
+    - _SurfaceWaveMultiplier: 524590
+    - _SurfaceWaveSpeed: 2
     - _UseUIAlphaClip: 0
     - _WaterLevel: 0.965
     - _WaterTopWidth: -1

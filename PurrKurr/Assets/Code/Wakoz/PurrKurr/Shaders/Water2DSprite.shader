@@ -2,19 +2,24 @@ Shader "Wakoz/2DWaterSprite"
 {
     Properties
     {
-        _MainTex("Sprite Texture", 2D) = "white" {} // Main texture
-        _WaterTopColor("Water Top Color", Color) = (0.0, 0.5, 1.0, 1.0) // Top gradient color
-        _WaterColor("Water Color", Color) = (0.0, 0.3, 0.8, 1.0) // Main water color
-        _WaterLevel("Water Level", Range(0, 1)) = 0.5 // Water level (0 to 1)
-        _WaterTopWidth("Water Top Width", Float) = 0.1 // Width of the top gradient
+        _MainTex("Sprite Texture", 2D) = "white" {}
+        _WaterTopColor("Water Top Color", Color) = (0.0, 0.5, 1.0, 1.0)
+        _WaterColor("Water Color", Color) = (0.0, 0.3, 0.8, 1.0)
+        _WaterLevel("Water Level", Range(0, 1)) = 0.5
+        _WaterTopWidth("Water Top Width", Float) = 0.1
 
-        _WaveSpeed("Wave Speed", Float) = 1.0 // Speed of the wave animation
-        _WaveFrequency("Wave Frequency", Float) = 10.0 // Frequency of the waves
-        _WaveDepth("Wave Depth", Float) = 0.05 // Amplitude of the waves
+        _WaveSpeed("Wave Speed", Float) = 1.0
+        _WaveFrequency("Wave Frequency", Float) = 10.0
+        _WaveDepth("Wave Depth", Float) = 0.05
 
-        _ReflectionSpeed("Reflection Speed", Float) = 0.5 // Speed of the reflection animation
-        _ReflectionNoise("Reflection Noise", Float) = 0.1 // Noise in the reflection
-        _ReflectionStrength("Reflection Strength", Float) = 0.5 // Intensity of the reflection
+        _SurfaceWaveSpeed("Surface Wave Speed", Float) = 2.0 // Speed of the surface wave
+        _SurfaceWaveFrequency("Surface Wave Frequency", Float) = 15.0 // Frequency of the surface wave
+        _SurfaceWaveFrequencyMultiplier("Surface Wave Frequency Multiplier", Float) = 1.0 // Frequency Multiplier of the surface wave
+        _SurfaceWaveAmplitude("Surface Wave Amplitude", Float) = 0.1 // Amplitude of the surface wave
+
+        _ReflectionSpeed("Reflection Speed", Float) = 0.5
+        _ReflectionNoise("Reflection Noise", Float) = 0.1
+        _ReflectionStrength("Reflection Strength", Float) = 0.5
     }
 
     SubShader
@@ -55,6 +60,11 @@ Shader "Wakoz/2DWaterSprite"
             float _WaveFrequency;
             float _WaveDepth;
 
+            float _SurfaceWaveSpeed;
+            float _SurfaceWaveFrequency;
+            float _SurfaceWaveFrequencyMultiplier;
+            float _SurfaceWaveAmplitude;
+
             float _ReflectionSpeed;
             float _ReflectionNoise;
             float _ReflectionStrength;
@@ -63,13 +73,20 @@ Shader "Wakoz/2DWaterSprite"
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
+
+                // Calculate surface wave distortion
+                float surfaceWave = sin(v.vertex.x * _SurfaceWaveFrequency * _SurfaceWaveFrequencyMultiplier + _Time.y * _SurfaceWaveSpeed) * _SurfaceWaveAmplitude;
+
+                // Apply the surface wave distortion to the vertex position
+                o.vertex.y += surfaceWave;
+
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 return o;
             }
 
             fixed4 frag(v2f i) : SV_Target
             {
-                // Calculate wave distortion
+                // Calculate wave distortion for color manipulation
                 float wave = sin(i.uv.x * _WaveFrequency + _Time.y * _WaveSpeed) * _WaveDepth;
 
                 // Determine water level with wave distortion
