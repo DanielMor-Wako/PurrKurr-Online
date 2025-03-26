@@ -304,6 +304,7 @@ MonoBehaviour:
   _transformMover: {fileID: 2707650812614343258}
   _legsCollider: {fileID: 7985582518332405165}
   _cling: {fileID: 8762355312202268506}
+  _maxHealth: 1
 --- !u!114 &4740694976490126470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6056,6 +6057,7 @@ MonoBehaviour:
   _transformMover: {fileID: 6104816772555893848}
   _legsCollider: {fileID: 2389512650000695874}
   _cling: {fileID: 5517115400694940255}
+  _maxHealth: 1
 --- !u!114 &154553490880220921
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6259,7 +6261,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _levelControllers: []
   _levels: {fileID: 0}
-  _currentLevelIndex: -1
 --- !u!1 &2184821671793913574
 GameObject:
   m_ObjectHideFlags: 0
@@ -12094,6 +12095,7 @@ MonoBehaviour:
   _transformMover: {fileID: 1509302134722821163}
   _legsCollider: {fileID: 3336518336104177734}
   _cling: {fileID: 8353374077499685951}
+  _maxHealth: 1
 --- !u!114 &5035767049424503828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20921,6 +20923,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1916745089048627728}
+    - target: {fileID: 7274572389413840890, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7419877846744020591, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 3.6529999
