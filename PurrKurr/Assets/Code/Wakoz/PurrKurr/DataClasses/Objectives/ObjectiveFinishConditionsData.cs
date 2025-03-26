@@ -1,5 +1,4 @@
-﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
@@ -21,7 +20,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
     [System.Serializable]
     public class ObjectiveConditionData
     {
-        public Definitions.GoalCondition Condition;
-        public float targetValue;
+        public ObjectiveEndCondition Condition;
+        public List<string> targetObjectIds;
     }
+
+    public enum ObjectiveEndCondition : byte
+    {
+        IsAlive = 0,
+        isDead = 1,
+        IsConsumeable = 2,
+        IsConsumed = 3,
+
+    }
+
 }
