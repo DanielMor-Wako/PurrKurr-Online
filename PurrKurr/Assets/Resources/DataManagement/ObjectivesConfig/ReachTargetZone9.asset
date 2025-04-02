@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ReachTargetZone9
   m_EditorClassIdentifier: 
   _objectiveData:
-    UniqueId: Reached_Ropes
+    UniqueId: Reached_Rope
     TargetObjectType: Door
     TargetObjectIds:
     - Door_Exit

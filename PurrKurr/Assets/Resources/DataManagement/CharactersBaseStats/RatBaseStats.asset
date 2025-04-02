@@ -20,8 +20,8 @@ MonoBehaviour:
     _damageMinToMax: {x: 10, y: 50}
     _pushbackForceMinToMax: {x: 35, y: 50}
     _walkSpeedMinToMax: {x: 300, y: 500}
-    _runSpeedMinToMax: {x: 500, y: 1000}
-    _sprintSpeedMinToMax: {x: 1100, y: 2000}
+    _runSpeedMinToMax: {x: 500, y: 900}
+    _sprintSpeedMinToMax: {x: 1100, y: 1400}
     _jumpForceMinToMax: {x: 40, y: 55}
     _airborneSpeedMinToMax: {x: 5, y: 7}
     _airborneMaxSpeedMinToMax: {x: 5, y: 10}

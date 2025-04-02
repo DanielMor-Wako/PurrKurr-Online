@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ReachTargetZone6
   m_EditorClassIdentifier: 
   _objectiveData:
-    UniqueId: Reached_BlockDodge
+    UniqueId: Reached_CounterDodge
     TargetObjectType: Door
     TargetObjectIds:
     - Door_Exit

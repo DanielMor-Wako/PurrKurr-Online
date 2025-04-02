@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: HolyRats_AttackSequence
   m_EditorClassIdentifier: 
   _uniqueId: DefeatRats_Attack
+  _missionTitle: Holy Rats !
   _finishConditions:
     _winConditions:
     - Condition: 1
