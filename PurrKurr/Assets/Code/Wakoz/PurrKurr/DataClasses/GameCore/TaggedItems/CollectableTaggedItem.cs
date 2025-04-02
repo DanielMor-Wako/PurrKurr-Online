@@ -52,6 +52,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.TaggedItems
         {
             var _isCollectable = SingleController.GetController<GameplayController>().Handlers.GetHandler<ObjectivesHandler>().IsCollected(_collectableData.ItemId);
             
+            Debug.Log($"-> Notified collectable tagged object {transform.name} -> {_isCollectable} by itemId {_collectableData.ItemId}");
+
             OnStateChanged?.Invoke(_isCollectable);
         }
     }

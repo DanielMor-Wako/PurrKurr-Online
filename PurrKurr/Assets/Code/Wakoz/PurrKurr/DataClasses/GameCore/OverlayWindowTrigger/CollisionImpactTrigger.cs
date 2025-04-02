@@ -12,7 +12,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
         [Tooltip("Sets the max activation count the trigger. 0 = infinite activations")]
         [SerializeField][Min(0)] private int _activationLimit = 0;
         
-        [Tooltip("Sets the View state to active and deactive")]
+        [Tooltip("Sets the View state to active or deactive")]
         [SerializeField] private MultiStateView _state;
 
         [Tooltip("Min magnitude to register the detection")]

@@ -96,7 +96,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
             var missionDuration = (TotalSequenceDuration(data));
             Debug.Log($"Mission started duration {missionDuration}: UniqueId {objectiveData.GetUniqueId()} - {objectIds.Count()} total ObjectIds");
-            _gameEvents.CallNewNotification($"Mission Started\n{objectiveData.GetUniqueId()}");
+            _gameEvents.CallNewNotification($"New Mission\n'' {sequenceSOData.MissionTitle} ''");
 
             _cancellationTokenSource = new CancellationTokenSource();
             var token = _cancellationTokenSource.Token;

@@ -1,12 +1,14 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects {
+namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects
+{
+
     [DefaultExecutionOrder(14)]
-    public class PersistentGameObject : IDisposable {
+    public class PersistentGameObject : IDisposable
+    {
 
         public static event Action<PersistentGameObject> OnPersistentObjectAdded;
-
         public static event Action<PersistentGameObject> OnPersistentObjectRemoved;
 
         public event Action OnStateChanged;
@@ -18,8 +20,7 @@ namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects {
 
         public Type GetObjectType() => _type;
 
-        public PersistentGameObject(Type type, string itemId, Transform transform)
-        {
+        public PersistentGameObject(Type type, string itemId, Transform transform) {
             _type = type;
             ItemId = itemId;
             ObjectTransform = transform;
@@ -27,18 +28,18 @@ namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects {
             Init();
         }
 
-        public void ChangeState()
-        {
+        public void ChangeState() {
+
             OnStateChanged?.Invoke();
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
+
             OnPersistentObjectRemoved?.Invoke(this);
         }
 
-        private void Init() 
-        {
+        private void Init() {
+
             OnPersistentObjectAdded?.Invoke(this);
         }
     }

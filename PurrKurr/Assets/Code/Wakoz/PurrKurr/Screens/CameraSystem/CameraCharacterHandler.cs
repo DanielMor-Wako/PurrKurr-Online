@@ -65,7 +65,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             _gameEvents.OnInteractablesExited -= HandleNearbyTargetExited;
             _gameEvents.OnStateChanged -= HandleStateChanged;
             _gameEvents.OnAimingAction -= HandleAiming;
-            _gameEvents.OnAimingActionEnd -= HandleAimingDefault;
+            //_gameEvents.OnAimingActionEnd -= HandleAimingDefault;
         }
 
         public void Bind()
@@ -81,7 +81,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
             _gameEvents.OnInteractablesExited += HandleNearbyTargetExited;
             _gameEvents.OnStateChanged += HandleStateChanged;
             _gameEvents.OnAimingAction += HandleAiming;
-            _gameEvents.OnAimingActionEnd += HandleAimingDefault;
+            //_gameEvents.OnAimingActionEnd += HandleAimingDefault;
         }
 
         public void Dispose()
@@ -130,6 +130,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         private void HandleReposition(Vector3 newPosition)
         {
+            // Move character transform reposition, to another script handling respawn and reposition
             CharacterTransform.position = newPosition;
             FocusTransform.position = newPosition;
             CameraHandler.SetPositionAndSize(newPosition, 0);
@@ -167,7 +168,6 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         private void HandleAimingDefault(Definitions.ActionType type)
         {
-            return;
             Debug.Log("GameEvent: aiming (default) " + type);
             if (CameraHandler == null)
             {

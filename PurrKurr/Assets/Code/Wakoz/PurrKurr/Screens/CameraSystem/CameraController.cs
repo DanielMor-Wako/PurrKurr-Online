@@ -19,24 +19,8 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         public void AddCamera(CameraData data, Action processActionCallback = null)
         {
-            //_cameraHandler ??= new CameraHandler(this);
             _cameraHandler ??= SingleController.GetController<GameplayController>().Handlers.GetHandler<CameraHandler>();
             _cameraHandler.EnqueueCamera(data, processActionCallback);
         }
-/*
-        private void Start()
-        {
-            _cameraHandler ??= new CameraHandler(this);
-        }
-
-        private void Update()
-        {
-            _cameraHandler.UpdateProcess(Time.deltaTime);
-        }
-
-        private void OnDestroy()
-        {
-            _characterMediator?.Unbind();
-        }*/
     }
 }
