@@ -1,53 +1,80 @@
-﻿using Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems;
-using Code.Wakoz.PurrKurr.DataClasses.GameCore.TaggedItems;
+﻿using Code.Wakoz.PurrKurr.DataClasses.GameCore.TaggedItems;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects {
-    public class PersistentGameObjectsManager : IDisposable {
+namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects
+{
+    public class PersistentGameObjectsManager : IDisposable
+    {
 
         private Dictionary<string, PersistentGameObject> _objects = new();
+        private Dictionary<string, List<PersistentGameObject>> _dependentObjects = new();
 
-        public PersistentGameObjectsManager()
-        {
+        public PersistentGameObjectsManager() {
             PersistentGameObject.OnPersistentObjectAdded += AddObject;
             PersistentGameObject.OnPersistentObjectRemoved += RemoveObject;
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             PersistentGameObject.OnPersistentObjectAdded -= AddObject;
             PersistentGameObject.OnPersistentObjectRemoved -= RemoveObject;
         }
 
         /// <summary>
-        /// Refresh State for all tagged objects
+        /// Refresh State for all tagged objects and dependent objects
         /// </summary>
-        public void RefreshStateAll()
-        {
+        public void NotifyAll() {
+
+            // todo: remove this hell of logs
             UnityEngine.Debug.Log($"{_objects.Count} tagged objects are notified");
-            foreach (var item in _objects)
-            {
-                NotifyTaggedObject(item.Key);
+            var stringBuilder = new StringBuilder("Tagged objects Info :\n");
+            foreach (var item in _objects) {
+                item.Value.ChangeState();
+                stringBuilder.Append($"{item.Value.ItemId} | ");
             }
+            UnityEngine.Debug.Log(stringBuilder);
+
+            UnityEngine.Debug.Log($"{_dependentObjects.Count} tagged dependent objects are notified");
+            stringBuilder = new StringBuilder("Tagged dependent objects Into :\n");
+            foreach (var dependentItems in _dependentObjects) {
+                NotifyTaggedDependedObjects(dependentItems.Key);
+                foreach (var dependentItem in dependentItems.Value) {
+                    stringBuilder.Append($"{dependentItem.ItemId} | ");
+                }
+            }
+            UnityEngine.Debug.Log(stringBuilder);
         }
 
-        public void NotifyTaggedObject(string itemId)
-        {
-            PersistentGameObject tagged;
-            if (!_objects.TryGetValue(itemId, out tagged)) {
+        public void NotifyTaggedObject(string itemId) {
+
+            if (!_objects.TryGetValue(itemId, out var tagged)) {
                 return;
             }
 
             tagged.ChangeState();
         }
 
-        public List<PersistentGameObject> GetTaggedObjectsOfType(Type type)
-        {
+        /// <summary>
+        /// Notify all dependent objects by the uniqueId
+        /// </summary>
+        /// <param name="uniqueId"></param>
+        public void NotifyTaggedDependedObjects(string uniqueId) {
+
+            if (!_dependentObjects.TryGetValue(uniqueId, out var taggedDependent)) {
+                return;
+            }
+
+            foreach (var dependentItem in taggedDependent) {
+                dependentItem.ChangeState();
+            }
+        }
+
+        public List<PersistentGameObject> GetTaggedObjectsOfType(Type type) {
+
             List<PersistentGameObject> taggedObjects = new();
 
-            foreach (var item in _objects.Values)
-            {
+            foreach (var item in _objects.Values) {
                 if (item.GetObjectType() != type)
                     continue;
 
@@ -57,12 +84,11 @@ namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects {
             return taggedObjects;
         }
 
-        public List<PersistentGameObject> GetTaggedObjectsOfType<T>() where T : ITaggable
-        {
+        public List<PersistentGameObject> GetTaggedObjectsOfType<T>() where T : ITaggable {
+
             List<PersistentGameObject> taggedObjects = new();
 
-            foreach (var item in _objects.Values)
-            {
+            foreach (var item in _objects.Values) {
                 if (item.ObjectTransform.GetComponent<ITaggable>() is not T)
                     continue;
 
@@ -72,37 +98,73 @@ namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects {
             return taggedObjects;
         }
 
-        public PersistentGameObject GetTaggedObject(string itemId)
-        {
+        public PersistentGameObject GetTaggedObject(string itemId) {
+
             PersistentGameObject tagged;
-            if (!_objects.TryGetValue(itemId, out tagged))
-            {
+            if (!_objects.TryGetValue(itemId, out tagged)) {
                 UnityEngine.Debug.LogWarning($"Could not find Tagged object {itemId}");
             }
 
             return tagged;
         }
 
-        private void RemoveObject(PersistentGameObject behaviour) 
-        {
-            var objType = behaviour.GetObjectType();
+        private void RemoveObject(PersistentGameObject taggedObject) {
+
+            var objType = taggedObject.GetObjectType();
             if (objType == null) {
                 return;
             }
 
-            //UnityEngine.Debug.Log($"Removed Tagged - {behaviour.ItemId} {behaviour.GetObjectType()}");
-            _objects.Remove(behaviour.ItemId);
+            if (objType == typeof(DependentTaggedItem)) {
+                RemoveDependentObject(taggedObject);
+                return;
+            }
+
+            //UnityEngine.Debug.Log($"Removed Tagged - {taggedObject.ItemId} {taggedObject.GetObjectType()}");
+            _objects.Remove(taggedObject.ItemId);
         }
 
-        private void AddObject(PersistentGameObject behaviour) 
-        {
-            var objType = behaviour.GetObjectType();
+        private void AddObject(PersistentGameObject taggedObject) {
+
+            var objType = taggedObject.GetObjectType();
             if (objType == null) {
                 return;
             }
 
-            //UnityEngine.Debug.Log($"Added Tagged + {behaviour.ItemId} {behaviour.GetObjectType()}");
-            _objects.Add(behaviour.ItemId, behaviour);
+            if (objType == typeof(DependentTaggedItem)) {
+                AddDependentObject(taggedObject);
+                return;
+            }
+
+            //UnityEngine.Debug.Log($"Added Tagged + {taggedObject.ItemId} {taggedObject.GetObjectType()}");
+            _objects.Add(taggedObject.ItemId, taggedObject);
+        }
+
+
+        private void RemoveDependentObject(PersistentGameObject dependentObject) {
+
+            if (!_dependentObjects.ContainsKey(dependentObject.ItemId)) {
+                return;
+            }
+
+            //UnityEngine.Debug.Log($"Removed TaggedDependent - {dependentObject.ItemId} {dependentObject.GetObjectType()}");
+            _dependentObjects[dependentObject.ItemId].Remove(dependentObject);
+
+            if (_dependentObjects[dependentObject.ItemId].Count > 0) {
+                return;
+            }
+
+            _dependentObjects.Remove(dependentObject.ItemId);
+        }
+
+        private void AddDependentObject(PersistentGameObject dependentObject) {
+
+            if (!_dependentObjects.ContainsKey(dependentObject.ItemId)) {
+                _dependentObjects[dependentObject.ItemId] = new List<PersistentGameObject>();
+            }
+
+            //UnityEngine.Debug.Log($"Added TaggedDependent + {dependentObject.ItemId} {dependentObject.GetObjectType()}");
+            _dependentObjects[dependentObject.ItemId].Add(dependentObject);
         }
     }
 

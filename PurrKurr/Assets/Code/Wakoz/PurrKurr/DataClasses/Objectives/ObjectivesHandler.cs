@@ -7,6 +7,7 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore.TaggedItems;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers;
+using Code.Wakoz.PurrKurr.Screens.Levels;
 using Code.Wakoz.PurrKurr.Screens.Objectives;
 using Code.Wakoz.Utils.BitwiseUtils;
 using System;
@@ -19,6 +20,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
     public class ObjectivesHandler : IBindableHandler
     {
+        public event Action OnNewObjectives;
+        public event Action OnObjectiveUpdated;
+
         private ObjectiveFactory _objectiveFactory;
         private List<IObjective> _objectives = new();
         private HashSet<string> _completedObjectivesId = new();
@@ -28,16 +32,16 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         private GameplayController _gameEvents;
         private ObjectivesController _controller;
 
-        public ObjectivesHandler(GameplayController gameEvents, ObjectivesController controller)
-        {
+        public ObjectivesHandler(GameplayController gameEvents, ObjectivesController controller) {
+            
             _objectiveFactory = new ObjectiveFactory();
 
             _gameEvents = gameEvents;
             _controller = controller;
         }
 
-        public void Bind()
-        {
+        public void Bind() {
+            
             if (_gameEvents == null)
                 return;
 
@@ -45,8 +49,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             _gameEvents.OnInteractableDestoyed += HandleInteractableDestroyed;
         }
 
-        public void Unbind()
-        {
+        public void Unbind() {
+            
             if (_gameEvents == null)
                 return;
 
@@ -54,8 +58,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             _gameEvents.OnInteractableDestoyed -= HandleInteractableDestroyed;
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
+
             _gameEvents = null;
         }
 
@@ -64,26 +68,22 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         /// Marks completed objectives after creation as finished.
         /// If an objective has existing progress in _objectivesOngoing, it initialized with the progress.
         /// </summary>
-        public void Initialize(List<ObjectiveDataSO> objectivesData)
-        {
+        public void Initialize(List<ObjectiveDataSO> objectivesData) {
+
             _objectives.Clear();
 
-            foreach (var data in objectivesData)
-            {
+            foreach (var data in objectivesData) {
                 var objective = _objectiveFactory.Create(data);
-                if (objective != null)
-                {
+                if (objective != null) {
                     objective.Initialize(data);
                     _objectives.Add(objective);
 
                     // Check for the objective's existing progress in _objectivesOngoing
-                    if (_objectivesOngoing.TryGetValue(data.Objective.UniqueId, out var existingProgress))
-                    {
+                    if (_objectivesOngoing.TryGetValue(data.Objective.UniqueId, out var existingProgress)) {
                         objective.UpdateProgress(existingProgress.CountActiveBits());
                     }
                     // Mark objective as completed
-                    else if (_completedObjectivesId.Contains(data.Objective.UniqueId))
-                    {
+                    else if (_completedObjectivesId.Contains(data.Objective.UniqueId)) {
                         Debug.Log($"Objective {data.Objective.UniqueId} is already completed. Marking as complete.");
                         objective.Finish();
                     }
@@ -99,25 +99,21 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         /// </summary>
         /// <param name="collectableId"></param>
         /// <returns></returns>
-        public bool IsCollected(string itemId)
-        {
-            for (var i = _objectives.Count - 1; i >= 0; i--)
-            {
+        public bool IsCollected(string itemId) {
+
+            for (var i = _objectives.Count - 1; i >= 0; i--) {
                 var objective = _objectives[i];
 
-                if (!objective.TargetObjectIds().Contains(itemId))
-                {
+                if (!objective.TargetObjectIds().Contains(itemId)) {
                     continue;
                 }
 
                 var uniqueId = objective.GetUniqueId();
-                if (_completedObjectivesId.Contains(uniqueId))
-                {
+                if (IsObjectiveCompleted(uniqueId)) {
                     return true;
                 }
 
-                if (!_objectivesOngoing.TryGetValue(uniqueId, out var bitmaskArray))
-                {
+                if (!_objectivesOngoing.TryGetValue(uniqueId, out var bitmaskArray)) {
                     return false;
                 }
 
@@ -129,43 +125,44 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             return false;
         }
 
+        public bool IsObjectiveCompleted(string uniqueId) 
+            => _completedObjectivesId.Contains(uniqueId);
+
         /// <summary>
         /// Gets all active objective
         /// </summary>
         /// <returns></returns>
-        public List<IObjective> GetObjectives()
-        {
-            return _objectives;
-        }
+        public List<IObjective> GetObjectives() 
+            => _objectives;
 
         /// <summary>
-        /// Sort logic for objectives.
-        /// - Sort by objective progress (higher progress first)
-        /// - Completed objectives go to the end
+        /// Returns an objective by UniqueId
         /// </summary>
-        private void SortObjectives()
-        {
-            _objectives = _objectives
-                .OrderByDescending(obj => !obj.IsComplete())
-                .ThenByDescending(obj => (float)obj.GetCurrentQuantity() / obj.GetRequiredQuantity())
-                .ToList();
+        /// <param name="objectiveUniqueId"></param>
+        /// <returns></returns>
+        public IObjective GetObjectiveByUniqueId(string objectiveUniqueId) {
+
+            var objectiveData = _objectives.FirstOrDefault(o => o != null && o.GetUniqueId() == objectiveUniqueId);
+
+            if (objectiveData == null) {
+                Debug.LogError($"Mission with uniqueId '{objectiveUniqueId}' is not found");
+            }
+
+            return objectiveData;
         }
 
         /// <summary>
         /// Updates the progress of objectives related to a specific collectable type.
         /// </summary>
-        public void UpdateObjectiveOfCollectableType(string collectableId, int amountToAdd)
-        {
+        public void UpdateObjectiveOfCollectableType(string collectableId, int amountToAdd) {
+            
             var hasChanges = false;
-            foreach (var objective in _objectives)
-            {
+            foreach (var objective in _objectives) {
                 var uniqueId = objective.GetUniqueId();
-                if (!_completedObjectivesId.Contains(uniqueId) && objective.TargetObjectIds().Contains(collectableId))
-                {
+                if (!_completedObjectivesId.Contains(uniqueId) && objective.TargetObjectIds().Contains(collectableId)) {
                     var indexInOnbjectiveIds = Array.IndexOf(objective.TargetObjectIds(), collectableId);
                     // Get or create the bitmask array for this objective in _objectivesOngoing
-                    if (!_objectivesOngoing.TryGetValue(uniqueId, out var bitmaskArray))
-                    {
+                    if (!_objectivesOngoing.TryGetValue(uniqueId, out var bitmaskArray)) {
                         bitmaskArray = new int[Mathf.CeilToInt(objective.TargetObjectIds().Length / 32f)];
                         _objectivesOngoing[uniqueId] = bitmaskArray;
                     }
@@ -178,86 +175,96 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
                     hasChanges = true;
                 }
             }
-            if (hasChanges)
-            {
+            if (hasChanges) {
                 SortObjectives();
                 NotifyObjectivesChanged();
                 UpdateCompletedObjectives();
+                NotifyTaggedDependentObjects(collectableId);
             }
         }
 
         /// <summary>
         /// Marks objectives of a specific type as complete
         /// </summary>
-        public void CompleteObjectivesOfType(Type type)
-        {
+        public void CompleteObjectivesOfType(Type type) {
+
             var hasChanges = false;
-            foreach (var objective in _objectives)
-            {
-                if (objective.GetType() == type && !_completedObjectivesId.Contains(objective.GetUniqueId()))
-                {
+            foreach (var objective in _objectives) {
+                if (objective.GetType() == type && !_completedObjectivesId.Contains(objective.GetUniqueId())) {
                     var uniqueId = objective.GetUniqueId();
                     // Remove from ongoing objectives
-                    if (_objectivesOngoing.TryGetValue(uniqueId, out var bitmask))
-                    {
+                    if (_objectivesOngoing.TryGetValue(uniqueId, out var bitmask)) {
                         _objectivesOngoing.Remove(uniqueId);
                     }
 
                     Debug.Log($"Force completing Objective: {objective.GetObjectiveDescription()}");
                     objective.Finish();
                     _completedObjectivesId.Add(uniqueId);
+                    NotifyTaggedDependentObjects(uniqueId);
 
                     hasChanges = true;
                 }
             }
-            if (hasChanges)
-            {
+            if (hasChanges) {
                 SortObjectives();
                 NotifyObjectivesChanged();
             }
         }
 
-        private void NotifyObjectivesChanged()
-        {
+        /// <summary>
+        /// Sort logic for objectives.
+        /// - Sort by objective progress (higher progress first)
+        /// - Completed objectives go to the end
+        /// </summary>
+        private void SortObjectives() {
+
+            _objectives = _objectives
+                .OrderByDescending(obj => !obj.IsComplete())
+                .ThenByDescending(obj => (float)obj.GetCurrentQuantity() / obj.GetRequiredQuantity())
+                .ToList();
+        }
+
+        private void NotifyObjectivesChanged() {
+
+            // change the controller to register to the event instead of calling the method
             _controller.HandleObjectivesChanged(_objectives);
+            OnObjectiveUpdated?.Invoke();
         }
 
-        private void NotifyNewObjectives()
-        {
+        private void NotifyNewObjectives() {
+
+            // change the controller to register to the event instead of calling the method
             _controller.HandleNewObjectives(_objectives);
-        }
-
-        public IObjective GetObjectiveByUniqueId(string objectiveUniqueId)
-        {
-            var objectiveData = _objectives.FirstOrDefault(o => o != null && o.GetUniqueId() == objectiveUniqueId);
-
-            if (objectiveData == null)
-            {
-                Debug.LogError($"Mission with uniqueId '{objectiveUniqueId}' is not found");
-            }
-
-            return objectiveData;
+            OnNewObjectives?.Invoke();
         }
 
         /// <summary>
+        /// Notify the dependent objects that are tagged with the uniqueId (like itemId or objectiveId)
+        /// </summary>
+        /// <param name="uniqueId"></param>
+        private void NotifyTaggedDependentObjects(string uniqueId) {
+
+            SingleController.GetController<LevelsController>().NotifyTaggedDependedObjects(uniqueId);
+        }
+        
+        /// <summary>
         /// Updates the list of completed objectives.
         /// </summary>
-        private void UpdateCompletedObjectives()
-        {
-            foreach (var objective in _objectives)
-            {
-                if (objective.IsComplete() && !_completedObjectivesId.Contains(objective.GetUniqueId()))
-                {
+        private void UpdateCompletedObjectives() {
+
+            foreach (var objective in _objectives) {
+                var objectiveUniqueId = objective.GetUniqueId();
+                if (objective.IsComplete() && !_completedObjectivesId.Contains(objectiveUniqueId)) {
                     Debug.Log($"Objective Completed: {objective.GetObjectiveDescription()}");
-                    _completedObjectivesId.Add(objective.GetUniqueId());
+                    _completedObjectivesId.Add(objectiveUniqueId);
+                    NotifyTaggedDependentObjects(objectiveUniqueId);
                 }
             }
         }
 
-        private void HandleHeroEnterDetectionZone(DetectionZoneTrigger zone)
-        {
-            switch (zone)
-            {
+        private void HandleHeroEnterDetectionZone(DetectionZoneTrigger zone) {
+
+            switch (zone) {
                 case DoorController door:
 
                     var collectable = door.CollectableData;
@@ -281,16 +288,16 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             }
         }
 
-        private void HandleInteractableDestroyed(IInteractableBody interactableBody)
-        {
+        private void HandleInteractableDestroyed(IInteractableBody interactableBody) {
+
             var collectableItem = interactableBody.GetTransform().GetComponent<CollectableTaggedItem>();
 
             if (collectableItem == null)
                 return;
 
-            Debug.Log($"Interactable destroyed {collectableItem.gameObject.name}");
-
             var (id, quantity) = collectableItem.GetData();
+            Debug.Log($"CollectableTaggedItem '{id}' {quantity} Interactable destroyed {collectableItem.gameObject.name}");
+
             UpdateObjectiveOfCollectableType(id, quantity);
         }
 

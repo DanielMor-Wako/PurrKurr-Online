@@ -29,6 +29,8 @@ using Code.Wakoz.PurrKurr.DataClasses.Objectives;
 using Code.Wakoz.PurrKurr.Screens.Objectives;
 using Code.Wakoz.PurrKurr.Agents;
 using Code.Wakoz.PurrKurr.Screens.Notifications;
+using Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils;
+using Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 {
@@ -63,6 +65,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         public event Action<IInteractableBody> OnInteractableDestoyed;
         public event Action OnHeroDeath;
         public event Action<EffectData, Transform, Quaternion> OnNewEffect;
+        public event Action OnHideGuidanceMarker;
+        public event Action<ObjectiveMarker> OnShowGuidanceMarker;
         public event Action<NotificationData> OnNewNotification;
         public event Action<float> OnTimeScaleChanged;
         public event Action OnTimeScaleDefault;
@@ -181,6 +185,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             {
                 new ObjectivesHandler(this, GetController<ObjectivesController>()),
                 new ObjectivesMissionHandler(this, GetController<LevelsController>()),
+                new GuidanceMarkerHandler(this, GetController<UiGuidanceController>())
             };
             Handlers.AddBindableHandlers(bindableHandlers);
         }
@@ -220,6 +225,18 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 return false;
 
             return interactable == (IInteractableBody)_hero;
+        }
+
+        public void SetGuidamceMarker(ObjectiveMarker nextMarker = null) {
+
+            var target = nextMarker?.MarkerRef;
+
+            if (target == null) {
+                OnHideGuidanceMarker?.Invoke();
+                return;
+            }
+
+            OnShowGuidanceMarker?.Invoke(nextMarker);
         }
 
         public void CallNewNotification(string message, float durationInSeconds = 5) {
@@ -366,6 +383,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             var isLeadingToDoorWithinTheSameLevel = _levelsController.CurrentLevelIndex == levelToLoad;
             if (!isLeadingToDoorWithinTheSameLevel)
             {
+                // clean up
+                SetGuidamceMarker(null);
+
+                // set up
                 _levelsController.LoadLevel(levelToLoad);
                 var levelObjectivesData = _levelsController.GetLevel(levelToLoad).GetObjectives();
                 Handlers.GetHandler<ObjectivesHandler>().Initialize(levelObjectivesData);
@@ -375,7 +396,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 }
                 _levelsController.NotifyAllTaggedObjects();
             }
-
+            
         }
 
         private void ReviveAllHeroes() {
@@ -1559,7 +1580,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             if (superActionProperties == true) {
                 // revive 1 hp when character is not moving
-                character.DealDamage(-1);
+                character.DealDamage(-10);
                 ApplyEffectOnCharacter(character, Effect2DType.GainHp);
             }
         }
@@ -1901,7 +1922,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             ApplyForce(grabbed, attackStats);
             ApplyEffect(grabbed, Effect2DType.ImpactCritical);
             DealDamageAndNotifyAndDisconnectIfGrabbedIsDead(grabbed, attackStats.Damage, grabber); // was grabbed.DealDamage(attackStats.Damage);
-            ApplyProjectileStateWhenThrown(grabbed, attackStats.Damage, grabber);
+            _ = ApplyProjectileStateWhenThrown(grabbed, attackStats.Damage, grabber);
             Handlers.GetHandler<ShakeHandler>().TriggerShake(grabbed.GetCharacterRigTransform(), new ShakeData(ShakeStyle.Random));
         }
 

@@ -82,7 +82,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Levels {
 
         public void NotifyAllTaggedObjects()
         {
-            _persistentGameObjectsManager.RefreshStateAll();
+            _persistentGameObjectsManager.NotifyAll();
+        }
+
+        public void NotifyTaggedDependedObjects(string itemId) {
+
+            _persistentGameObjectsManager.NotifyTaggedDependedObjects(itemId);
         }
 
         public List<Transform> GetTaggedObjectsOfType(Type type)
