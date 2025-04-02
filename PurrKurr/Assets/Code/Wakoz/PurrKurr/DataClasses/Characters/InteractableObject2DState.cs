@@ -120,7 +120,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             if (_combatAbility != Definitions.ActionType.Empty) {
 
                 if (IsMoveAnimation()) {
-
+                    Debug.Log($"_combatAbility {_combatAbility} during MoveAnimation");
                     if (_combatAbility == Definitions.ActionType.Attack) {
                         SetState(Definitions.ObjectState.Attacking);
                         return;

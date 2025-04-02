@@ -4,10 +4,13 @@ using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData
 {
+
     [CreateAssetMenu(fileName = "ObjectiveSequenceData", menuName = "Data/Objective/Sequence")]
     public class ObjectiveSequenceDataSO : ScriptableObject
     {
         [SerializeField] private string _uniqueId;
+
+        [SerializeField] private string _missionTitle;
 
         [Tooltip("Finish conditions as Win or Lose during active mission")]
         [SerializeField] private ObjectiveFinishConditionsData _finishConditions;
@@ -19,6 +22,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData
         [SerializeField] private List<ObjectiveSequenceData> _sequenceData;
 
         public string UniqueId => _uniqueId;
+
+        public string MissionTitle => _missionTitle;
 
         public ObjectiveFinishConditionsData FinishConditions => _finishConditions;
 
