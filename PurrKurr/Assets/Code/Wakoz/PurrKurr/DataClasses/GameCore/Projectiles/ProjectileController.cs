@@ -16,7 +16,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.Projectiles {
         [SerializeField] private MultiStateView _states;
 
         [Header("Settings")]
-        [SerializeField] private float _animDuration = 1.5f;
+        [SerializeField] private float _animDuration = 1.7f;
         [SerializeField] private float _pushForce = 30f;
         [Tooltip("Extra time to remain active in the scene after movement animation has finished")]
         [SerializeField][Min(0)] private float _expirationTime = 1f;

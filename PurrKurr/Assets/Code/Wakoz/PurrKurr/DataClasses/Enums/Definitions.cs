@@ -2,7 +2,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
 {
     public class Definitions
     {
-        // todo: Check optimization with -> enum : byte
+
         public enum ActionType : byte
         {
             Empty = 0,
@@ -140,7 +140,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             Grabbed,
             Blocking,
             InterruptibleAnimation,
-            Running, // bodySlam DashAttack
+            Running,
             Jumping,
             Falling,
             AerialJumping,
