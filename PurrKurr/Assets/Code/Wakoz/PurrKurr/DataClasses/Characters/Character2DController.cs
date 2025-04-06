@@ -65,7 +65,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private AnchorHandler _anchor;
 
         private LogicController _logic;
-        private DebugController _debug;
+        private DebugDrawController _debug;
 
         public Collider2D[] _solidColliders;
         public Collider2D[] _traversableColliders;
@@ -330,7 +330,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         protected override Task Initialize() {
 
             _logic = SingleController.GetController<LogicController>();
-            _debug = SingleController.GetController<DebugController>();
+            _debug = SingleController.GetController<DebugDrawController>();
 
             var gamePlayerLogic = _logic.GameplayLogic;
             _whatIsSurface = gamePlayerLogic.GetSurfaces();
