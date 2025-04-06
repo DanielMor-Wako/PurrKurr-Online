@@ -40,7 +40,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         private const float _MinVelocityForFlip = 5;
 
         [SerializeField][Min(0)] private int _startingLevelIndex = 0;
-        [SerializeField][Min(0)] private float _attackRadius = 2f;
+        [SerializeField][Min(0)] private float _attackRadius = 3f;
         [SerializeField] private float _xDistanceFromClingPoint = 0.8f;
 
         public event Action<ActionInput> OnTouchPadDown;
@@ -49,6 +49,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         public event Action<ActionType, Vector2, Quaternion, bool, Vector3[]> OnAimingAction;
         public event Action<ActionType> OnAimingActionEnd;
         public event Action<Character2DController> OnNewHero;
+        public event Action OnLevelStart;
         public event Action<Vector3> OnHeroReposition;
         public event Action<Vector2> OnCameraFocusPoint;
         public event Action<List<Transform>> OnCameraFocusTargets;
@@ -62,6 +63,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         public event Action<IObjective, ObjectiveSequenceDataSO> OnObjectiveMissionStarted;
         public event Action<Collider2D> OnInteractablesEntered;
         public event Action<Collider2D> OnInteractablesExited;
+        public event Action<Character2DController, IInteractableBody[], float, AttackData, AttackAbility, Vector2, AttackBaseStats> OnNewInteraction;
         public event Action<IInteractableBody> OnInteractableDestoyed;
         public event Action OnHeroDeath;
         public event Action<EffectData, Transform, Quaternion> OnNewEffect;
@@ -75,6 +77,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         [SerializeField] private CameraController _camController;
         [SerializeField] private Character2DController _mainHero;
         private Character2DController _hero;
+        private TimelineHandler _timelineHandler;
 
         private bool _firstTimeInitialized = false;
         private bool _heroInitialized = false;
@@ -82,14 +85,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         private LogicController _logic;
         private InputController _input;
-        private TimelineEventManager _timelineEventManager;
         private InputInterpreterLogic _inputInterpreterLogic; 
         private UIController _ui;
         private GameplayLogic _gameplayLogic;
         //private EffectsController _effects;
         private LevelsController _levelsController;
         private InteractablesController _interactables;
-        private DebugController _debug;
+        private DebugDrawController _debugDraw;
 
         private LayerMask _whatIsSolid;
         private LayerMask _whatIsSolidForProjectile;
@@ -113,7 +115,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             _hero.OnColliderEntered -= OnInteractablesEntered;
             _hero.OnColliderExited -= OnInteractablesExited;
 
-            CleanBindableHandlers();
+            Handlers.Dispose();
         }
 
         protected override Task Initialize()
@@ -123,13 +125,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             _input = GetController<InputController>();
             _logic = GetController<LogicController>();
-            _timelineEventManager = new TimelineEventManager();
             _inputInterpreterLogic = new InputInterpreterLogic(_logic.InputLogic, _logic.GameplayLogic);
-            _gameplayLogic = _logic.GameplayLogic;
             InitHandlers();
             _levelsController = GetController<LevelsController>();
             _interactables = GetController<InteractablesController>();
-            _debug = GetController<DebugController>();
+            _debugDraw = GetController<DebugDrawController>();
 
             _ui ??= GetController<UIController>();
             if (_ui.TryBindToCharacterController(this))
@@ -139,9 +139,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             else
             {
                 _ui = null;
-                _debug.LogWarning("Something went wrong, there is no active ref to PadsDisplayController");
+                Debug.LogWarning("Something went wrong, there is no active ref to PadsDisplayController");
             }
 
+            _gameplayLogic = _logic.GameplayLogic;
             _whatIsSurface = _gameplayLogic.GetSurfaces();
             _whatIsSolid = _gameplayLogic.GetSolidSurfaces();
             _whatIsSolidForProjectile = _gameplayLogic.GetSolidSurfacesForProjectile();
@@ -170,19 +171,22 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         private void InitUpdateProcessHandlers()
         {
-            var handlers = new List<IUpdateProcessHandler>
+            var handlers = new IUpdateProcessHandler[]
             {
                 new ShakeHandler(),
                 new CameraHandler(_camController),
-                new AgentsHandler()
+                new AgentsHandler(),
             };
             Handlers.AddHandlers(handlers);
         }
 
         private void InitBindableHandlers()
         {
-            var bindableHandlers = new List<IBindableHandler>
+            _timelineHandler = new TimelineHandler(this);
+
+            var bindableHandlers = new IBindableHandler[]
             {
+                _timelineHandler,
                 new ObjectivesHandler(this, GetController<ObjectivesController>()),
                 new ObjectivesMissionHandler(this, GetController<LevelsController>()),
                 new GuidanceMarkerHandler(this, GetController<UiGuidanceController>())
@@ -198,8 +202,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             };
             Handlers.AddBindableHandlers(bindableHandlers);
         }
-
-        private void CleanBindableHandlers() => Handlers.Dispose();
 
         private void InitLevel() {
 
@@ -381,21 +383,23 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
 
             var isLeadingToDoorWithinTheSameLevel = _levelsController.CurrentLevelIndex == levelToLoad;
-            if (!isLeadingToDoorWithinTheSameLevel)
-            {
-                // clean up
-                SetGuidamceMarker(null);
-
-                // set up
-                _levelsController.LoadLevel(levelToLoad);
-                var levelObjectivesData = _levelsController.GetLevel(levelToLoad).GetObjectives();
-                Handlers.GetHandler<ObjectivesHandler>().Initialize(levelObjectivesData);
-                if (hasSpawnPoint)
-                {
-                    OnHeroReposition?.Invoke(newPosition);
-                }
-                _levelsController.NotifyAllTaggedObjects();
+            if (isLeadingToDoorWithinTheSameLevel) {
+                return;
             }
+
+            // clean up
+            SetGuidamceMarker(null);
+
+            // set up
+            _levelsController.LoadLevel(levelToLoad);
+            OnLevelStart?.Invoke();
+            var levelObjectivesData = _levelsController.GetLevel(levelToLoad).GetObjectives();
+            Handlers.GetHandler<ObjectivesHandler>().Initialize(levelObjectivesData);
+            if (hasSpawnPoint)
+            {
+                OnHeroReposition?.Invoke(newPosition);
+            }
+            _levelsController.NotifyAllTaggedObjects();
             
         }
 
@@ -520,7 +524,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         private void RegisterInputEvents() {
 
             if (_input == null) {
-                _debug.LogError("Touch display has no available events for input");
+                Debug.LogError("Touch display has no available events for input");
                 return;
             }
             
@@ -786,7 +790,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             var rope = _interactables.GetInstance<RopeController>();
             if (rope == null) {
-                _debug.LogWarning("No available rope instance in pool, consider increasing the max items capacity");
+                Debug.LogWarning("No available rope instance in pool, consider increasing the max items capacity");
                 if (_charactersRopes.Count > 0) {
                     rope = _charactersRopes.FirstOrDefault();
                 }
@@ -837,7 +841,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             var anchorDistanceFromLegsPosition = (character.transform.position.y - character.LegsPosition.y);
             if (anchorDistanceFromLegsPosition > 0 && navType is NavigationType.Up) {
-                _debug.Log($"anchor too far from legs position, climb up ignored {anchorDistanceFromLegsPosition} > 0");
+                Debug.Log($"anchor too far from legs position, climb up ignored {anchorDistanceFromLegsPosition} > 0");
                 return;
             }
 
@@ -868,7 +872,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             wallPoint += xHorizontalOffsetFromWall * character.LegsRadius * _xDistanceFromClingPoint;
             character.SetAsClinging(edges, wallPoint);
 
-            _debug.DrawLine(edgesClosestPoint, wallPoint, Color.magenta, 1f);
+            Debug.DrawLine(edgesClosestPoint, wallPoint, Color.magenta, 1f);
         }
 
         private void CutRopeLink(IInteractableBody character) {
@@ -938,7 +942,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             var horizontalDir = facingDir * (flipJumpHorizontalWhenClinging ? -1 : 1);
 
-            //_debug.DrawRay(_hero.LegsPosition, forceDir, Color.white, 3);
+            //Debug.DrawRay(_hero.LegsPosition, forceDir, Color.white, 3);
             if (isNavDirUpOrNone) {
                 forceDir = HelperFunctions.RotateVector(forceDir, horizontalDir * -5);
 
@@ -946,7 +950,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 forceDir = HelperFunctions.RotateVector(forceDir, horizontalDir * -18);
 
             }
-            _debug.DrawRay(_hero.LegsPosition, forceDir, Color.white, 3);
+            _debugDraw.DrawRay(_hero.LegsPosition, forceDir, Color.white, 3);
         }
 
         private void AlterThrowDirBasedOnNavigationDirection(ref Vector2 throwDir, ref int facingRightOrLeftTowardsPoint, NavigationType navigationDir, bool isAerial) {
@@ -995,7 +999,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     break;
             }
 
-            _debug.DrawRay(_hero.LegsPosition, throwDir, Color.gray, 3);
+            _debugDraw.DrawRay(_hero.LegsPosition, throwDir, Color.gray, 3);
             if (!_logic.InputLogic.IsNavigationDirValidAsUp(navigationDir)) {
                 throwDir = AlterDirectionToMaxForce(throwDir);
             }
@@ -1005,7 +1009,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     throwDir.x *= .5f;
                 }
             }
-            _debug.DrawRay(_hero.LegsPosition, throwDir, Color.magenta, 3);
+            _debugDraw.DrawRay(_hero.LegsPosition, throwDir, Color.magenta, 3);
         }
 
         private List<TimelineEvent> startedEvents = new();
@@ -1013,12 +1017,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         private void Update() {
             
-            if (_timelineEventManager == null) {
+            if (_timelineHandler == null) {
                 return;
             }
 
-            _timelineEventManager.UpdateEvents(Time.time, ref startedEvents, ref endedEvents);
+            _timelineHandler.UpdateEvents(Time.time, ref startedEvents, ref endedEvents);
 
+            // todo: move this to InteractionHandler responsibility as Tick method
             if (startedEvents != null && startedEvents.Count > 0) {
 
                 foreach (var e in startedEvents) {
@@ -1046,7 +1051,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                                     => Vector2.Distance(obj.GetCenterPosition(), hitPosition)).ToArray();
 
                         if (nearbyTargets.Length == 0 && e.Targets != null && e.Targets.Length > 0) {
-                            _debug.LogWarning($"could not find any targets after filtering by distance -> {_attackRadius}");
+                            Debug.LogWarning($"could not find any targets after filtering by distance -> {_attackRadius}");
                             // nearbyTargets = e.Targets;
 
                         }
@@ -1097,7 +1102,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 RegisterInteractionEvent(attacker, ref moveToPosition, ref interactableBodies, ref newFacingDirection, ref attackAbility, ref attackProperties);
             
             } else {
-                _debug.LogWarning($"Attack Ability {attackAbility} is missing from attack moves");
+                Debug.LogWarning($"Attack Ability {attackAbility} is missing from attack moves");
             }
 
             /*var isNewFacingDirectionSetAndCharacterIsFacingAnything = newFacingDirection != 0;
@@ -1122,7 +1127,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     }
 
                 } else {
-                    _debug.Log($"no alternative attack for {attackAbility}");
+                    Debug.Log($"no alternative attack for {attackAbility}");
                 }
             }
 
@@ -1214,7 +1219,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             if (latestInteraction != null) {
 
-                _timelineEventManager.RegisterInteractionEvent(attacker, validInteractables.ToArray(), Time.time, attackStats, attackAbility, moveToPosition, attackProperties);
+                OnNewInteraction?.Invoke(attacker, validInteractables.ToArray(), Time.time, attackStats, attackAbility, moveToPosition, attackProperties);
             }
 
             attacker.State.MarkLatestInteraction(latestInteraction);
@@ -1289,14 +1294,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 if (interactedCollider.GetTransform().GetComponent<Rigidbody2D>() == null || 
                 attackProperties.Properties.Contains(AttackProperty.GrabAndPickUp) && interactedCollider.GetTransform().GetComponent<AnchorHandler>() == null)
                 {
-                    _debug.LogWarning($"Invalid pick-up, {attackAbility} prevented on {interactedCollider.GetTransform().gameObject.name}");
+                    Debug.LogWarning($"Invalid pick-up, {attackAbility} prevented on {interactedCollider.GetTransform().gameObject.name}");
                     return facingRightOrLeftTowardsPoint;
                 }
             }
 
             var foeValidState = ValidateOpponentConditions(attackProperties, interactedCollider);
             if (!foeValidState) {
-                _debug.LogWarning($"Invalid state, {attackAbility} prevented on {interactedCollider.GetTransform().gameObject.name}");
+                Debug.LogWarning($"Invalid state, {attackAbility} prevented on {interactedCollider.GetTransform().gameObject.name}");
                 return facingRightOrLeftTowardsPoint;
             }
 
@@ -1357,10 +1362,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                     var foeCharacter = foe as Character2DController;
                     if (foeCharacter != null && (_gameplayLogic.IsStateConsideredAsGrounded(foeState) || foeCharacter.State.CanMoveOnSurface())) {
-                        _debug.DrawRay(foe.GetCenterPosition(), attackStats.ForceDir, Color.cyan, 4);
+                        _debugDraw.DrawRay(foe.GetCenterPosition(), attackStats.ForceDir, Color.cyan, 4);
                         var upwardDirByTerrain =
                             (foeCharacter.State.ReturnForwardDirByTerrainQuaternion()) * Quaternion.AngleAxis(180, new Vector3(0, 0, 1));
-                        _debug.DrawRay(foe.GetCenterPosition(), upwardDirByTerrain * Vector3.up, Color.grey, 4);
+                        _debugDraw.DrawRay(foe.GetCenterPosition(), upwardDirByTerrain * Vector3.up, Color.grey, 4);
                         // Convert the Vector2 to a Quaternion
                         Quaternion forceRotation = Quaternion.Euler(0, 0, Mathf.Atan2(attackStats.ForceDir.y, attackStats.ForceDir.x) * Mathf.Rad2Deg).normalized;
 
@@ -1369,14 +1374,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         Quaternion averageDirBetweenGroundAndHit;
                         averageDirBetweenGroundAndHit = Quaternion.Slerp(upwardDirByTerrain, forceRotation, 0.5f);
                         // checking Quaternion for particular directions to validate if adding 180 degrees are needed, to correctly push foes based on groundDir and forceDir
-                        _debug.LogWarning($"dotProduct {dotProduct}");
+                        Debug.LogWarning($"dotProduct {dotProduct}");
 
                         bool facingAwayButNotPerpendicular = (dotProduct > -0.95f && dotProduct < -0.7f || dotProduct > -0.4f && dotProduct < -0.02f);//(dotProduct > -0.95f && dotProduct < -0.02f);
                         bool facingSimilarDirectionNotAligned = (dotProduct > 0.02f && dotProduct < 0.43f);
                         bool almostFacingAwayButNotPerpendicular = (dotProduct < 0 && dotProduct > -0.23f);
                         if (facingAwayButNotPerpendicular || facingSimilarDirectionNotAligned || almostFacingAwayButNotPerpendicular) {
                             averageDirBetweenGroundAndHit *= Quaternion.AngleAxis(180, new Vector3(0, 0, 1));
-                            _debug.LogWarning($"{facingAwayButNotPerpendicular} || {facingSimilarDirectionNotAligned} || {almostFacingAwayButNotPerpendicular}");
+                            Debug.LogWarning($"{facingAwayButNotPerpendicular} || {facingSimilarDirectionNotAligned} || {almostFacingAwayButNotPerpendicular}");
                         }
                         attackStats.ForceDir = averageDirBetweenGroundAndHit.normalized * (Vector2.one * 0.5f * foeCharacter.Stats.PushbackForce);
                     }
@@ -1389,7 +1394,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                             properties.Contains(AttackProperty.PushUpOnBlock) && isFoeBlocking) {
 
                     if ((attackStats.ForceDir.normalized.y) < 0.75f) { // 0.75f is the threshold to account is angle that is not 45 angle
-                        _debug.DrawRay(foe.GetCenterPosition(), attackStats.ForceDir, Color.yellow, 4);
+                        _debugDraw.DrawRay(foe.GetCenterPosition(), attackStats.ForceDir, Color.yellow, 4);
                         attackStats.ForceDir.y = attacker.Stats.PushbackForce;
                     }
 
@@ -1408,7 +1413,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     //_visualDebug.Log($"forceDirAction.y {forceDirAction.ForceDir.normalized.y} during PushDiagonal");
 
                     if ((attackStats.ForceDir.normalized.y) < 0.1f) {
-                        _debug.DrawRay(foe.GetCenterPosition(), attackStats.ForceDir, Color.yellow, 4);
+                        _debugDraw.DrawRay(foe.GetCenterPosition(), attackStats.ForceDir, Color.yellow, 4);
                         attackStats.ForceDir.y = attacker.Stats.PushbackForce;
                     }
                     attackStats.ForceDir.x *= 0.5f;
@@ -1457,8 +1462,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                     //foe.SetTargetPosition(endPosition);
 
-                    _debug.DrawRay(moveToPosition, Vector2.up * 10, Color.grey, 4);
-                    _debug.DrawRay(endPosition, Vector2.up * 10, Color.yellow, 4);
+                    _debugDraw.DrawRay(moveToPosition, Vector2.up * 10, Color.grey, 4);
+                    _debugDraw.DrawRay(endPosition, Vector2.up * 10, Color.yellow, 4);
 
                     //_timelineEventManager.RegisterInteractionEvent(attacker, new IInteractableBody[] { foe }, Time.time, attacker.Stats.AttackDurationInMilliseconds, attackStats, attackAbility);
 
@@ -1647,7 +1652,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         List<Collider2D> damagees = new() ;
         private async Task ApplyProjectileStateWhenThrown(IInteractableBody grabbed, int damage, IInteractableBody thrower, Func<Task> actionOnEnd = null) {
 
-            _debug.Log("trying as damager -> damage: " + damage);
+            Debug.Log("trying as damager -> damage: " + damage);
 
             var _bodyDamager = (grabbed as Character2DController);
 
@@ -1665,7 +1670,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
 
             var grabbedVelocity = grabbed.GetVelocity();
-            _debug.Log("Started as damager -> Mag: " + grabbedVelocity.magnitude);
+            Debug.Log("Started as damager -> Mag: " + grabbedVelocity.magnitude);
 
             //var damagees = new List<Collider2D>() { thrower.GetCollider() };
             damagees.Clear();
@@ -1681,7 +1686,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             while (_gameRunning && grabbedVelocity.magnitude > 1) {
 
-                //_debug.Log("as damager -> Mag: " + grabbedVelocity.magnitude);
+                //Debug.Log("as damager -> Mag: " + grabbedVelocity.magnitude);
                 legsPosition = grabbed.GetCenterPosition();
 
                 var solidOutRadiusObjectsColliders =
@@ -1737,7 +1742,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                         DealDamageAndNotifyAndDisconnectIfGrabbedIsDead(interactableBody, damage, thrower);
 
-                        _debug.DrawLine(objClosestPosition, newPositionToSetOnFixedUpdate, Color.white, 3);
+                        _debugDraw.DrawLine(objClosestPosition, newPositionToSetOnFixedUpdate, Color.white, 3);
                     }
                 }
 
@@ -1761,7 +1766,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         private bool ValidateAttackConditions(AttackBaseStats attack, InteractableObject2DState characterState) {
 
             var attackerState = characterState.CurrentState;
-            if (attack.Ability == AttackAbility.RollAttack) { _debug.Log($"roll attack data: {characterState.Velocity.magnitude}"); }
+            if (attack.Ability == AttackAbility.RollAttack) { Debug.Log($"roll attack data: {characterState.Velocity.magnitude}"); }
 
             foreach (var condition in attack.CharacterStateConditions) {
 
@@ -1784,9 +1789,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         private bool ValidateAlternativeAttackConditions(ref AttackAbility attackAbility, ref AttackBaseStats attack, InteractableObject2DState characterState) {
 
             var state = characterState.CurrentState;
-            _debug.Log($"checking matching alternative Attack for {attackAbility}");
+            Debug.Log($"checking matching alternative Attack for {attackAbility}");
             foreach (var condition in attack.CharacterStateConditions) {
-                //_debug.Log($"checking alt condition {condition} is considered ? {characterState.Velocity.magnitude}");
+                //Debug.Log($"checking alt condition {condition} is considered ? {characterState.Velocity.magnitude}");
                 switch (condition) {
 
                     case ObjectState.Running when !_logic.GameplayLogic.IsStateConsideredAsRunning(characterState.CurrentState, characterState.Velocity.magnitude):
@@ -1855,7 +1860,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }*/
 
             damageableBody.ApplyForce(attackStats.ForceDir);
-            _debug.DrawRay(damageableBody.GetCenterPosition(), attackStats.ForceDir, Color.red, 4);
+            _debugDraw.DrawRay(damageableBody.GetCenterPosition(), attackStats.ForceDir, Color.red, 4);
         }
 
         private void ApplyEffect(IInteractableBody damageableBody, Effect2DType effectOnImpact = Effect2DType.None)
@@ -1916,7 +1921,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             if (grabbed == null || !grabber.IsGrabbing()) {
                 return;
             }
-
+            
             grabber.SetAsGrabbing(null);
             ApplyGrabOnFoe(grabbed, null, grabbed.GetCenterPosition());
             ApplyForce(grabbed, attackStats);
