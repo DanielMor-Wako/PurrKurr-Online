@@ -31,7 +31,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller
             _barsController.Init(hero);
         }
 
-        public bool TryBindToCharacterController(GameplayController character) 
+        public bool TryBindToCharacterController(GameplayController character, InputProcessor inputProcessor) 
         {
             var isPadsInitialized = _padsController.TryBindToCharacter(character);
             var isBarsInitialized = _barsController.TryBindToCharacter(character);

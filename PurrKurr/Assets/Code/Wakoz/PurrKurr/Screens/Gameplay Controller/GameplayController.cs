@@ -43,6 +43,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         [SerializeField][Min(0)] private float _attackRadius = 3f;
         [SerializeField] private float _xDistanceFromClingPoint = 0.8f;
 
+        // todo: use Dispatcher for the gameEvents
         public event Action<ActionInput> OnTouchPadDown;
         public event Action<ActionInput> OnTouchPadClick;
         public event Action<ActionInput> OnTouchPadUp;
@@ -84,11 +85,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         private bool _gameRunning = false;
 
         private LogicController _logic;
-        private InputController _input;
-        private InputInterpreterLogic _inputInterpreterLogic; 
+        private InputProcessor _inputProcessor;
+        private CharacterActionExecuter _characterActionExecuter;
         private UIController _ui;
         private GameplayLogic _gameplayLogic;
-        //private EffectsController _effects;
         private LevelsController _levelsController;
         private InteractablesController _interactables;
         private DebugDrawController _debugDraw;
@@ -103,7 +103,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         protected override void Clean() {
 
-            DeregisterInputEvents();
+            _inputProcessor?.Dispose();
+            _characterActionExecuter?.Dispose();
 
             _gameRunning = false;
 
@@ -118,23 +119,24 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             Handlers.Dispose();
         }
 
-        protected override Task Initialize()
-        {
+        protected override Task Initialize() {
 
             _camController ??= Camera.main.GetComponent<CameraController>();
-
-            _input = GetController<InputController>();
+            
             _logic = GetController<LogicController>();
-            _inputInterpreterLogic = new InputInterpreterLogic(_logic.InputLogic, _logic.GameplayLogic);
+            // handle inputs and generates ExecutableAction
+            _inputProcessor = new InputProcessor(this, GetController<InputController>());
+            // adjust ExecutableAction by hero context (state) and executes
+            _characterActionExecuter = new CharacterActionExecuter(this, _logic.InputLogic, _logic.GameplayLogic, _inputProcessor);
             InitHandlers();
             _levelsController = GetController<LevelsController>();
             _interactables = GetController<InteractablesController>();
             _debugDraw = GetController<DebugDrawController>();
 
             _ui ??= GetController<UIController>();
-            if (_ui.TryBindToCharacterController(this))
+            if (_ui.TryBindToCharacterController(this, _inputProcessor))
             {
-                RegisterInputEvents();
+                //RegisterInputEvents(); // moved to _inputValidator
             }
             else
             {
@@ -229,7 +231,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             return interactable == (IInteractableBody)_hero;
         }
 
-        public void SetGuidamceMarker(ObjectiveMarker nextMarker = null) {
+        public void InvokeGuidamceMarker(ObjectiveMarker nextMarker = null) {
 
             var target = nextMarker?.MarkerRef;
 
@@ -241,15 +243,15 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             OnShowGuidanceMarker?.Invoke(nextMarker);
         }
 
-        public void CallNewNotification(string message, float durationInSeconds = 5) {
+        public void InvokeNewNotification(string message, float durationInSeconds = 5) {
             OnNewNotification?.Invoke(new NotificationData(message, durationInSeconds));
         }
 
-        public void UpdateTimer(float secondsLeft, float totalSeconds) {
+        public void InvokeUpdateTimer(float secondsLeft, float totalSeconds) {
             OnTimerChanged?.Invoke(secondsLeft, totalSeconds);
         }
 
-        public void HideTimer() {
+        public void InvokeHideTimer() {
             OnTimerChanged?.Invoke(0, 1);
         }
 
@@ -315,7 +317,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         var objectiveData = Handlers.GetHandler<ObjectivesHandler>()
                             .GetObjectiveByUniqueId(objectiveTrigger.SequenceData.UniqueId);
 
-                        confirmButtons.ClickedAction = () => StartObjectiveMission(objectiveData, objectiveTrigger.SequenceData);
+                        confirmButtons.ClickedAction = () => InvokeStartObjectiveMission(objectiveData, objectiveTrigger.SequenceData);
                     }
                 }
 
@@ -339,7 +341,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         }
 
-        private void StartObjectiveMission(IObjective objectiveData, ObjectiveSequenceDataSO sequencSOData)
+        private void InvokeStartObjectiveMission(IObjective objectiveData, ObjectiveSequenceDataSO sequencSOData)
         {
             OnObjectiveMissionStarted?.Invoke(objectiveData, sequencSOData);
         }
@@ -370,7 +372,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
         }
 
-        public void LoadLevel(int levelToLoad, GameObject heroSpawnPoint = null)
+        private void LoadLevel(int levelToLoad, GameObject heroSpawnPoint = null)
         {
             var newPosition = Vector3.zero;
             var hasSpawnPoint = heroSpawnPoint != null;
@@ -388,7 +390,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
 
             // clean up
-            SetGuidamceMarker(null);
+            InvokeGuidamceMarker(null);
 
             // set up
             _levelsController.LoadLevel(levelToLoad);
@@ -520,34 +522,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
             _hero.Stats.UpdateStats(level);
         }
-
-        private void RegisterInputEvents() {
-
-            if (_input == null) {
-                Debug.LogError("Touch display has no available events for input");
-                return;
-            }
-            
-            _input.OnTouchPadDown += OnActionStarted;
-            _input.OnTouchPadClick += OnActionOngoing;
-            _input.OnTouchPadUp += OnActionEnded;
-        }
-        
-        private void DeregisterInputEvents() {
-
-            _input.OnTouchPadDown -= OnActionStarted;
-            _input.OnTouchPadClick -= OnActionOngoing;
-            _input.OnTouchPadUp -= OnActionEnded;
-
-            _input = null;
-        }
-
+        // TODO: use this for ref to process inputs on main hero
+/*
         private void OnActionStarted(ActionInput actionInput) {
             
             if (IsAlive(_hero)) {
 
                 if (CanPerformAction()) {
-                    if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, true, false, _hero,
+                    if (_inputValidator.ValidateNavigation(actionInput, true, false, _hero,
                             out var moveSpeed, out Vector2 forceDirNavigation, out var navigationDir)) {
 
                         _hero.DoMove(moveSpeed);
@@ -558,7 +540,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         }
                     }
 
-                    if (_inputInterpreterLogic.TryPerformInputAction(actionInput, true, false, _hero,
+                    if (_inputValidator.ValidateAction(actionInput, true, false, _hero,
                             out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedColliders)) {
 
                         if (isActionPerformed) {
@@ -607,9 +589,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     }
 
                 // todo: replace the condition so it allows for stacking future actions (CanPerformAction() || CanOnlyStackActions())
-                }/* else if (CanOnlyStackActions()) {
+                }*//* else if (CanOnlyStackActions()) {
                     //RegisterInteractionEvent();
-                }*/
+                }*//*
 
             } else {
 
@@ -623,7 +605,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             
             if (IsAlive(_hero) && CanPerformAction()) {
 
-                if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, false, false, _hero, 
+                if (_inputValidator.ValidateNavigation(actionInput, false, false, _hero, 
                         out var moveSpeed, out var forceDirNavigation, out var navigationDir)) {
                     
                     _hero.DoMove(moveSpeed);
@@ -680,10 +662,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     }
                 }
 
-                /*if (_inputInterpreterLogic.TryPerformInputAction(actionInput, false, false, _hero,
+                *//*if (_inputInterpreterLogic.TryPerformInputAction(actionInput, false, false, _hero,
                     out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedCollider)) {
 
-                }*/
+                }*//*
             }
             
             OnTouchPadClick?.Invoke(actionInput);
@@ -691,7 +673,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         private void OnActionEnded(ActionInput actionInput) {
 
-            if (_inputInterpreterLogic.TryPerformInputNavigation(actionInput, false, true, _hero,
+            if (_inputValidator.ValidateNavigation(actionInput, false, true, _hero,
                     out var moveSpeed, out Vector2 forceDirNavigation, out var navigationDir)) {
 
                 _hero.DoMove(moveSpeed);
@@ -699,7 +681,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 _hero.SetNavigationDir(NavigationType.None);
             }
 
-            if (_inputInterpreterLogic.TryPerformInputAction(actionInput, false, true, _hero,
+            if (_inputValidator.ValidateAction(actionInput, false, true, _hero,
                     out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedCollider)) {
 
                 if (isActionPerformed) {
@@ -760,8 +742,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             OnTouchPadUp?.Invoke(actionInput);
         }
-
-        private void ShootProjectile(Character2DController character, ActionInput actionInput, ref Vector2 newPos, ref Quaternion rotation, ref float distancePercentReached) {
+*/
+        public void ShootProjectile(Character2DController character, ActionInput actionInput, ref Vector2 newPos, ref Quaternion rotation, ref float distancePercentReached) {
 
             character.TryGetProjectileDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, ref distancePercentReached);
 
@@ -780,7 +762,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         private List<RopeController> _charactersRopes = new();
 
-        private async void ShootRope(Character2DController character, ActionInput actionInput, Vector2 newPos, Quaternion rotation, float distancePercentReached) {
+        public List<RopeController> CharactersRope => _charactersRopes;
+
+        public async void ShootRope(Character2DController character, ActionInput actionInput, Vector2 newPos, Quaternion rotation, float distancePercentReached) {
 
             var hasNoHit = !character.TryGetRopeDirection(actionInput.NormalizedDirection, ref newPos, ref rotation, out var cursorPosition, ref distancePercentReached);
 
@@ -875,7 +859,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             Debug.DrawLine(edgesClosestPoint, wallPoint, Color.magenta, 1f);
         }
 
-        private void CutRopeLink(IInteractableBody character) {
+        public void CutRopeLink(IInteractableBody character) {
 
             var grabbedInteractable = character.GetGrabbedTarget();
             var ropeLink = grabbedInteractable as RopeLinkController;
@@ -891,7 +875,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             };
         }
 
-        private void DisconnectFromRope(IInteractableBody character) {
+        public void DisconnectFromRope(IInteractableBody character) {
 
             var grabbedInteractable = character.GetGrabbedTarget();
             var ropeLink = grabbedInteractable as RopeLinkController;
@@ -903,7 +887,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             rope.HandleDisconnectInteractableBody(ropeLink, character);
         }
 
-        private void DisconnectFromAnyGrabbing(Character2DController character) {
+        public void DisconnectFromAnyGrabbing(Character2DController character) {
 
             DisconnectFromRope(character);
             DisconnectAnyGrabbing(character);
@@ -927,7 +911,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
         }
 
-        private void AlterJumpDirByStateNavigationDirection(ref Vector2 forceDir, InteractableObject2DState state) {
+        public void AlterJumpDirByStateNavigationDirection(ref Vector2 forceDir, InteractableObject2DState state) {
             
             var navigationDir = state.NavigationDir;
             var isNavDirUpOrNone = navigationDir is NavigationType.Up or NavigationType.None;
@@ -1079,6 +1063,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         {
             //DoTick();
         }*/
+
+        public void InvokeTouchPadDown(ActionInput action) => OnTouchPadDown?.Invoke(action);
+        public void InvokeTouchPadClick(ActionInput action) => OnTouchPadClick?.Invoke(action);
+        public void InvokeTouchPadUp(ActionInput action) => OnTouchPadUp?.Invoke(action);
 
         public void SetCameraScreenShake(float duration = 0.3f, float intensity = 0.4f)
         {
@@ -1561,7 +1549,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
         }
 
-        private async void ApplySpecialAction(Character2DController character, bool isActive) {
+        public async void ApplySpecialAction(Character2DController character, bool isActive) {
 
             character.State.SetChargingSuper(isActive);
 
@@ -1590,7 +1578,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
         }
 
-        private async Task ApplyAimingAction(Character2DController character, ActionInput actionInput) {
+        public async Task ApplyAimingAction(Character2DController character, ActionInput actionInput) {
 
             var actionType = actionInput.ActionType;
 
@@ -1599,7 +1587,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             var isRope = actionType is ActionType.Rope;
             var isProjectile = actionType is ActionType.Projectile;
             var isJumpAim = actionType is ActionType.Jump;
-            
+
             var validAimingAction = isRope || isProjectile || isJumpAim;
 
             if (!validAimingAction || validAimingAction && state.IsAiming()) {
@@ -1615,8 +1603,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             Vector3[] linePoints = null;
 
             bool hasAimDir, hasHitData = false;
-            
-            while (state.IsAiming() && character != null ) {
+
+            while (state.IsAiming() && character != null) {
 
                 hasAimDir = actionInput.NormalizedDirection != Vector2.zero;
 
@@ -1637,18 +1625,26 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 }
 
                 if (hasAimDir) {
-                    OnAimingAction?.Invoke(actionType, newPos, rotation, hasHitData, linePoints);
+                    InvokeAimingAction(actionType, newPos, rotation, linePoints, hasHitData);
 
                 } else {
-                    OnAimingActionEnd?.Invoke(actionType);
+                    InvokeAimingActionEnd(actionType);
                 }
 
                 await Task.Delay(TimeSpan.FromMilliseconds(5));
             }
 
+            InvokeAimingActionEnd(actionType);
+        }
+
+        public void InvokeAimingAction(ActionType actionType, Vector2 newPos, Quaternion rotation, Vector3[] linePoints, bool hasHitData) {
+            OnAimingAction?.Invoke(actionType, newPos, rotation, hasHitData, linePoints);
+        }
+
+        public void InvokeAimingActionEnd(ActionType actionType) {
             OnAimingActionEnd?.Invoke(actionType);
         }
-        
+
         List<Collider2D> damagees = new() ;
         private async Task ApplyProjectileStateWhenThrown(IInteractableBody grabbed, int damage, IInteractableBody thrower, Func<Task> actionOnEnd = null) {
 
@@ -1863,7 +1859,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             _debugDraw.DrawRay(damageableBody.GetCenterPosition(), attackStats.ForceDir, Color.red, 4);
         }
 
-        private void ApplyEffect(IInteractableBody damageableBody, Effect2DType effectOnImpact = Effect2DType.None)
+        public void ApplyEffect(IInteractableBody damageableBody, Effect2DType effectOnImpact = Effect2DType.None)
         {
 
             if (damageableBody == null || effectOnImpact == Effect2DType.None)
@@ -1882,12 +1878,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
         }
 
-        private void ApplyEffectOnCharacter(Character2DController character, Effect2DType effectType)
+        public void ApplyEffectOnCharacter(Character2DController character, Effect2DType effectType)
         {
             ApplyEffectOnCharacter(character, effectType, Quaternion.identity);
         }
 
-        private void ApplyEffectOnCharacter(Character2DController character, Effect2DType effectType, Quaternion initialRotation)
+        public void ApplyEffectOnCharacter(Character2DController character, Effect2DType effectType, Quaternion initialRotation)
         {
             var effectData = character.GetEffectOverride(effectType) ?? _gameplayLogic.GetEffectData(effectType);
             OnNewEffect?.Invoke(effectData, character.transform, initialRotation);

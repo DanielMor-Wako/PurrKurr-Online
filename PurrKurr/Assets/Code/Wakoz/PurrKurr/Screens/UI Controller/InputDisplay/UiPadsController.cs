@@ -19,7 +19,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
         private UiPadsModel _model;
         
         private InputController _screenInput;
-        private GameplayController _playerInput;
+        private GameplayController _gameEvents;
 
         protected override Task Initialize() {
             
@@ -63,9 +63,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
 
             DeregisterCharacterEvents();
 
-            _playerInput = character;
+            _gameEvents = character;
 
-            return RegisterCharacterEvents(character);
+            RegisterCharacterEvents();
+            return true;
         }
         
 
@@ -108,16 +109,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
             }
         }
 
-        private bool RegisterCharacterEvents(GameplayController character) {
+        private void RegisterCharacterEvents() {
 
-            _playerInput.OnTouchPadDown += OnPadDown;
-            _playerInput.OnTouchPadClick += OnPadClicked;
-            _playerInput.OnTouchPadUp += OnPadUp;
-            _playerInput.OnStateChanged += OnStateChanged;
-            
-            return true;
+            _gameEvents.OnTouchPadDown += OnPadDown;
+            _gameEvents.OnTouchPadClick += OnPadClicked;
+            _gameEvents.OnTouchPadUp += OnPadUp;
+            _gameEvents.OnStateChanged += OnStateChanged;
         }
-
 
         private void OnStateChanged(InteractableObject2DState state) {
             
@@ -132,16 +130,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
 
         private void DeregisterCharacterEvents() {
 
-            if (_playerInput == null) {
+            if (_gameEvents == null) {
                 return;
             }
             
-            _playerInput.OnTouchPadDown -= OnPadDown;
-            _playerInput.OnTouchPadClick -= OnPadClicked;
-            _playerInput.OnTouchPadUp -= OnPadUp;
-            _playerInput.OnStateChanged -= OnStateChanged;
+            _gameEvents.OnTouchPadDown -= OnPadDown;
+            _gameEvents.OnTouchPadClick -= OnPadClicked;
+            _gameEvents.OnTouchPadUp -= OnPadUp;
+            _gameEvents.OnStateChanged -= OnStateChanged;
 
-            _playerInput = null;
+            _gameEvents = null;
         }
         
         private void RegisterScreenEvents() {

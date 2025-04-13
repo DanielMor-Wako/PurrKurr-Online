@@ -122,6 +122,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         private void HandleNewHero(Character2DController characterController)
         {
+            // todo : remove the character init from the contructor
             CharacterTransform = characterController.transform;
             _characterController = characterController;
 
@@ -130,7 +131,6 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         private void HandleReposition(Vector3 newPosition)
         {
-            // Move character transform reposition, to another script handling respawn and reposition
             CharacterTransform.position = newPosition;
             FocusTransform.position = newPosition;
             CameraHandler.SetPositionAndSize(newPosition, 0);

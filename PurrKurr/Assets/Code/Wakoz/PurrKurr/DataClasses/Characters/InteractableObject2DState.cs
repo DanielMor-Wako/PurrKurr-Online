@@ -1,13 +1,12 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes;
-using System;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
     [System.Serializable]
     public sealed class InteractableObject2DState {
-
+        
         public Definitions.ObjectState CurrentState => _currentState;
         private Definitions.ObjectState _currentState;
 
@@ -239,12 +238,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _jumpingEndTime = time;
         }
 
-        public void SetCrouchOrStandingByUpDownInput(Definitions.NavigationType verticalInput) {
+        public void UpdateCrouchOrStandingByNavDir(Definitions.NavigationType navDir) {
 
             var isNotMoving = IsNotMoving();//&& CurrentState != Definitions.CharacterState.Running;
             var isOnAnySurface = _hasGroundBeneathByRayCast && IsTouchingAnySurface();
-            var isCrouchingKey = verticalInput is Definitions.NavigationType.Down or Definitions.NavigationType.DownLeft or Definitions.NavigationType.DownRight;
-            var isStandingUpKey = verticalInput is Definitions.NavigationType.Up or Definitions.NavigationType.UpLeft or Definitions.NavigationType.UpRight
+            var isCrouchingKey = navDir is Definitions.NavigationType.Down or Definitions.NavigationType.DownLeft or Definitions.NavigationType.DownRight;
+            var isStandingUpKey = navDir is Definitions.NavigationType.Up or Definitions.NavigationType.UpLeft or Definitions.NavigationType.UpRight
                  && !_wasCeiling && !_isCeiling;
 
             var isCrouching = isNotMoving && isOnAnySurface && isCrouchingKey;

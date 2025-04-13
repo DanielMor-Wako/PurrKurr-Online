@@ -73,6 +73,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             HeavyGrab = 7, // anti-grabbers (massive damage to other grabbers)
             AerialGrab = 8, // grab while jumping or falling , and release grabbed foe in groundsmash
             LightBlock = 9, // absorbs damage but can be grabbed
+            None = 255
         }
 
         public enum AttackProperty : byte
@@ -111,7 +112,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             CriticalResist,
         }
 
-        // stats that are displayed on the ui
+        // stats displayed on the ui
         public enum CharacterStatType : byte
         { 
             Health = 0,

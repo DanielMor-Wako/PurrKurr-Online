@@ -85,7 +85,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems
                 objMarker.MarkerRef.gameObject.SetActive(nextMarker?.MarkerRef == objMarker.MarkerRef);
             }
 
-            _gameEvents.SetGuidamceMarker(nextMarker);
+            _gameEvents.InvokeGuidamceMarker(nextMarker);
         }
 
     }

@@ -61,7 +61,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         private void HandleLoadingNewLevel(Vector3 vector) {
 
             CancelMission();
-            _gameEvents.HideTimer();
+            _gameEvents.InvokeHideTimer();
         }
 
         private async void HandleHeroFailed() {
@@ -96,7 +96,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
             var missionDuration = (TotalSequenceDuration(data));
             Debug.Log($"Mission started duration {missionDuration}: UniqueId {objectiveData.GetUniqueId()} - {objectIds.Count()} total ObjectIds");
-            _gameEvents.CallNewNotification($"New Mission\n'' {sequenceSOData.MissionTitle} ''");
+            _gameEvents.InvokeNewNotification($"New Mission\n'' {sequenceSOData.MissionTitle} ''");
 
             _cancellationTokenSource = new CancellationTokenSource();
             var token = _cancellationTokenSource.Token;
@@ -114,7 +114,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
             while (!token.IsCancellationRequested) {
 
-                _gameEvents.UpdateTimer(_missionSecondsLeft, durationInSeconds);
+                _gameEvents.InvokeUpdateTimer(_missionSecondsLeft, durationInSeconds);
 
                 await Task.Delay(TimeSpan.FromSeconds(1), token);
 
@@ -122,7 +122,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
                 if (!_isActiveDelayBeforeMissionFailed && _missionSecondsLeft < 0) {
                     HandleHeroFailed();
-                    _gameEvents.CallNewNotification("Time Over", 3);
+                    _gameEvents.InvokeNewNotification("Time Over", 3);
                 }
             }
 
@@ -168,7 +168,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
                 if (_heroHasFailed) {
 
                     CancelMission();
-                    _gameEvents.HideTimer();
+                    _gameEvents.InvokeHideTimer();
                     ResetLevelState(() => {
                         _ = StartMission(initData, new CancellationToken());
                         SingleController.GetController<GameplayController>().ReviveHeroes();
@@ -182,7 +182,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
                     var allObject = winConditionsObjects.Concat(loseConditionsObjects).ToDictionary(x => x.Key, x => x.Value);
                     OnMissionComplete(finishConditions, allObject);
                     CancelMission();
-                    _gameEvents.HideTimer();
+                    _gameEvents.InvokeHideTimer();
                     break;
                 }
 
@@ -206,9 +206,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             ConcludeMissionConditions(finishConditions.WinConditions, ref stringBuilderWin, ref objectIds);
             ConcludeMissionConditions(finishConditions.LoseConditions, ref stringBuilderLose, ref objectIds);
 
-            _gameEvents.CallNewNotification(stringBuilder.ToString());
-            _gameEvents.CallNewNotification(stringBuilderWin.ToString());
-            _gameEvents.CallNewNotification(stringBuilderLose.ToString());
+            _gameEvents.InvokeNewNotification(stringBuilder.ToString());
+            _gameEvents.InvokeNewNotification(stringBuilderWin.ToString());
+            _gameEvents.InvokeNewNotification(stringBuilderLose.ToString());
 
             Debug.Log(stringBuilder);
         }
