@@ -98,6 +98,31 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow
                 _ when block => AttackAbility.LightBlock
             };
         }
+        /// <summary>
+        /// Returns the ability type of an ability as Attack Grab or Block
+        /// When ability is not 'None', Uses the index as a devider to find the result by index range.
+        /// 0 - 4 (attack), 5 - 8 (grab), 9 > ... (block)
+        /// </summary>
+        /// <param name="ability"></param>
+        /// <returns></returns>
+        public ActionType GetAbilityType(AttackAbility ability) {
+            if (ability is AttackAbility.None) return ActionType.Empty;
+            
+            var index = (int)ability;
+            switch (index) {
+                case >= BlockIndexMinRange:
+                    return ActionType.Block;
+                case >= GrabIndexMinRange:
+                    return ActionType.Grab;
+                case >= AttackIndexMinRange:
+                    return ActionType.Attack;
+                default:
+                    return ActionType.Empty;
+            }
+        }
+        private const int BlockIndexMinRange = 9; // ref (int)AttackAbility.LightBlock;
+        private const int GrabIndexMinRange = 5; // ref (int)AttackAbility.LightGrabAlsoDefaultGrab;
+        private const int AttackIndexMinRange = 0; // ref (int)AttackAbility.LightAttackAlsoDefaultAttack;
 
         public bool IsAbilityAnAttack(AttackAbility ability) =>
             ability is
