@@ -29,7 +29,7 @@ MonoBehaviour:
     _movementTypes: 00
     _baseActions: 01
     _baseAbilities: 01020507
-    _baseAttacks: 00
+    _baseAttacks: 0009
     _baseBuffs: []
     _baseAttackMoves:
     - _elementName: Light Attack
