@@ -405,7 +405,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 }
 
                 if (isActionPerformed) {
-
+                
                     var isBlockingEnded = actionInput.ActionType is ActionType.Block ;// && character.State.CurrentState is ObjectState.Blocking;
                     var isProjectilingEnded = actionInput.ActionType is ActionType.Projectile && character.State.CurrentState is ObjectState.AimingProjectile;
                     var isRopingEnded = actionInput.ActionType is ActionType.Rope && character.State.CurrentState is ObjectState.AimingRope;
@@ -415,13 +415,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     if (isBlockingEnded || isProjectilingEnded || isRopingEnded || isJumpAimEnded || isSpecial) {
 
                         character.State.SetActiveCombatAbility(ActionType.Empty);
-
+                        
                         if (isSpecial) {
                             _gameEvents.ApplySpecialAction(character, false);
 
                         } else if (actionInput.NormalizedDirection != Vector2.zero) {
 
                             if (isBlockingEnded) {
+
                                 var dodgeEndPosition = Vector2.zero;
                                 character.TryGetDodgeDirection(actionInput.NormalizedDirection * 5, ref dodgeEndPosition);
                                 character.SetTargetPosition(dodgeEndPosition);
@@ -569,16 +570,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             isActionPerformed = false;
             closestColliders = null;
 
-            if (character == null || actionInput.ActionGroupType != Definitions.ActionTypeGroup.Action) {
+            if (character == null || actionInput.ActionGroupType != Definitions.ActionTypeGroup.Action || character.GetHpPercent() <= 0) {
                 return false;
             }
 
             var state = character.State;
-
-            if (state.IsMoveAnimation() && started && actionInput.ActionType != ActionType.Block || character.GetHpPercent() <= 0) {
-                return false;
-            }
-
             var stats = character.Stats;
 
             var heroAsInteractableBody = (IInteractableBody)character;
