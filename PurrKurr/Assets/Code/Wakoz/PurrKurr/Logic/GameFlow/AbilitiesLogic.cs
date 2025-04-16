@@ -95,7 +95,7 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow
                 _ when grab && _inputLogic.IsNavigationDirValidAsUp(navigationDirection) => AttackAbility.MediumGrab,
                 _ when grab && characterState is ObjectState.Jumping or ObjectState.Falling => AttackAbility.AerialGrab,
                 _ when grab => AttackAbility.LightGrabAlsoDefaultGrab,
-                _ => AttackAbility.LightBlock
+                _ when block => AttackAbility.LightBlock
             };
         }
 
@@ -114,6 +114,8 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow
                 AttackAbility.HeavyGrab or
                 AttackAbility.AerialGrab;
 
-
+        public bool IsAbilityBlock(AttackAbility ability) =>
+            ability is
+            AttackAbility.LightBlock;
     }
 }
