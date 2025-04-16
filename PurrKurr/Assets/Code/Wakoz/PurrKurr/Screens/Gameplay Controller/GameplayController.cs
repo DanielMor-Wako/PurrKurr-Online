@@ -31,6 +31,8 @@ using Code.Wakoz.PurrKurr.Agents;
 using Code.Wakoz.PurrKurr.Screens.Notifications;
 using Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems;
+using UnityEngine.TextCore.Text;
+using Code.Wakoz.PurrKurr.DataClasses.Enums;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 {
@@ -1012,8 +1014,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                 foreach (var e in startedEvents) {
 
-                    var facingRightWhileMoving = e.Targets.FirstOrDefault().GetCenterPosition().x > e.Attacker.LegsPosition.x ? true : false;
-                    e.Attacker.FlipCharacterTowardsPoint(facingRightWhileMoving);
+                    if (e.Targets.Length > 0) {
+                        var facingRightWhileMoving = e.Targets.FirstOrDefault().GetCenterPosition().x > e.Attacker.LegsPosition.x ? true : false;
+                        e.Attacker.FlipCharacterTowardsPoint(facingRightWhileMoving);
+                    }
                     e.Attacker.SetTargetPosition(e.InteractionPosition);
                     e.Attacker.State.SetMoveAnimation(Time.time + e.AttackProperties.ActionDuration);
                 }
@@ -1078,15 +1082,17 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 new Vector3(camTransform.position.x, camTransform.position.y, -10)));
         }
 
-        public void CombatLogic(Character2DController attacker, ActionType actionType, Vector2 moveToPosition, Collider2D[] interactedColliders) {
+        public void CombatLogic(Character2DController attacker, ActionType actionType) {
 
             var newFacingDirection = 0;
             var attackAbility = _logic.AbilitiesLogic.GetAttackAbility(attacker.GetNavigationDir(), actionType, attacker.State.CurrentState);
 
             if (attacker.Stats.TryGetAttack(ref attackAbility, out var attackProperties)) {
 
+                Collider2D[] interactedColliders = attacker.NearbyInteractables(); //.Where(o => o.GetComponent<IInteractable>()?.GetInteractableBody()?.GetHpPercent() > 0).FirstOrDefault();
                 ValidateAttackCondition(ref attacker, ref attackAbility, ref attackProperties);
-                GetAvailableTargets(ref attacker, ref attackProperties, moveToPosition, ref interactedColliders, out var interactableBodies);
+                GetAvailableTargets(ref attacker, ref attackProperties, ref interactedColliders, out var interactableBodies);
+                GetCombatNewPos(ref attacker, ref actionType, ref interactableBodies, out var moveToPosition);
                 RegisterInteractionEvent(attacker, ref moveToPosition, ref interactableBodies, ref newFacingDirection, ref attackAbility, ref attackProperties);
             
             } else {
@@ -1099,6 +1105,51 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 attacker.FlipCharacterTowardsPoint(newFacingDirection == 1);
                 attacker.SetTargetPosition(moveToPosition);
             }*/
+
+        }
+
+        private void GetCombatNewPos(ref Character2DController character, ref ActionType actionType, ref IInteractableBody[] closestInteractables, out Vector2 moveToPosition) {
+
+            moveToPosition = character.LegsPosition;
+
+            if (closestInteractables == null || closestInteractables.Length == 0) {
+                return;
+            }
+
+            var closestFoePosition = closestInteractables.FirstOrDefault().GetCollider().ClosestPoint(character.LegsPosition);
+            
+            switch (actionType) {
+
+                    //var dir = Vector2.up;//((Vector3)closestFoePosition - character.LegsPosition);
+                    //moveToPosition = closestFoePosition + Vector2.up * (character.LegsRadius * .5f);
+                    //Debug.DrawLine(character.LegsPosition, moveToPosition, Color.green, 3); // todo: move drawline to gameplaycontroller
+                    //break;
+
+                case Definitions.ActionType.Grab:
+                case Definitions.ActionType.Attack:
+
+                    var legsPosition = character.LegsPosition;
+                    var dir = ((Vector3)closestFoePosition - legsPosition);
+                    var directionTowardsFoe = (closestFoePosition.x > legsPosition.x) ? 1 : -1;
+                    if (dir == Vector3.zero) {
+                        dir = new Vector3(directionTowardsFoe, 0, 0);
+                    }
+                    moveToPosition = closestFoePosition + (Vector2)dir.normalized * -(character.LegsRadius);
+                    Debug.DrawLine(legsPosition, moveToPosition, Color.green, 3); // todo: move drawline to gameplaycontroller
+                    dir = closestFoePosition - moveToPosition;
+
+                    break;
+
+                case Definitions.ActionType.Block:
+
+                    
+                    //var dir = Vector2.up;//((Vector3)closestFoePosition - character.LegsPosition);
+
+                    moveToPosition = character.LegsPosition;// + Vector2.up * (character.LegsRadius);
+                    Debug.DrawLine(character.LegsPosition, moveToPosition, Color.green, 3); // todo: move drawline to gameplaycontroller
+                    break;
+
+            }
 
         }
 
@@ -1121,14 +1172,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         }
 
-        private void GetAvailableTargets(ref Character2DController attacker, ref AttackBaseStats attackProperties, Vector2 moveToPosition, ref Collider2D[] interactedColliders, out IInteractableBody[] interactableBodies) {
+        private void GetAvailableTargets(ref Character2DController attacker, ref AttackBaseStats attackProperties, ref Collider2D[] interactedColliders, out IInteractableBody[] interactableBodies) {
 
             interactableBodies = new IInteractableBody[] { };
-            SetSingleOrMultipleTargets(attacker, ref interactedColliders, ref interactableBodies );
-            
+            SetSingleOrMultipleTargets(attacker, ref interactedColliders, ref interactableBodies);
+
             var canAttackMultiTarget = attackProperties.Properties.Count > 0 && attackProperties.Properties.Contains(AttackProperty.MultiTargetOnSurfaceHit);
             if (canAttackMultiTarget && interactedColliders.Length > 1) {
-                attacker.FilterNearbyCharactersAroundHitPointByDistance(ref interactableBodies, moveToPosition, attacker.Stats.MultiTargetsDistance);
+                attacker.FilterNearbyCharactersAroundHitPointByDistance(ref interactableBodies, interactableBodies.FirstOrDefault().GetCenterPosition(), attacker.Stats.MultiTargetsDistance);
             }
 
         }
@@ -1205,19 +1256,20 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 } 
             }
 
-            if (latestInteraction != null) {
-
-                OnNewInteraction?.Invoke(attacker, validInteractables.ToArray(), Time.time, attackStats, attackAbility, moveToPosition, attackProperties);
-            }
-
-            attacker.State.MarkLatestInteraction(latestInteraction);
+            OnNewInteraction?.Invoke(attacker, validInteractables.ToArray(), Time.time, attackStats, attackAbility, moveToPosition, attackProperties);
             
+            attacker.State.MarkLatestInteraction(latestInteraction);
         }
 
         private void HitTargets(Character2DController attacker, ref Vector2 moveToPosition, IInteractableBody[] interactedColliders, ref int newFacingDirection, AttackAbility attackAbility, AttackBaseStats attackProperties) {
 
             var canMultiHit = attackProperties.Properties.Count > 0 && attackProperties.Properties.Contains(AttackProperty.MultiTargetOnSurfaceHit);
             IInteractableBody latestInteraction = null;
+
+            if (interactedColliders.Length == 0) {
+                PerformCombat(attacker, ref attackAbility, ref attackProperties, moveToPosition, null);
+                return;
+            }
 
             foreach (var col in interactedColliders) {
 
@@ -1271,6 +1323,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 return facingRightOrLeftTowardsPoint;
             }
 
+            var isBlockAction = _logic.AbilitiesLogic.IsAbilityBlock(attackAbility);
+            if (isBlockAction) {
+                return attacker.State.GetFacingRightAsInt();
+            }
+
             var isGrabAction = _logic.AbilitiesLogic.IsAbilityAGrab(attackAbility);
             var isAttackAction = !isGrabAction && _logic.AbilitiesLogic.IsAbilityAnAttack(attackAbility);
             if (!isAttackAction && !isGrabAction) {
@@ -1299,7 +1356,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         private int PerformCombat(Character2DController attacker, ref AttackAbility attackAbility, ref AttackBaseStats attackProperties, Vector2 moveToPosition, IInteractableBody interactedCollider) {
             
-            var facingRightOrLeftTowardsPoint = 0;
+            var facingRightOrLeftTowardsPoint = attacker.State.GetFacingRightAsInt();
+
+            var isBlockAction = _logic.AbilitiesLogic.IsAbilityBlock(attackAbility);
+            if (isBlockAction) {
+                ApplyEffectOnCharacter(attacker, Effect2DType.BlockActive);
+                return facingRightOrLeftTowardsPoint;
+            }
 
             if (interactedCollider == null) {
                 return facingRightOrLeftTowardsPoint;
@@ -1307,6 +1370,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             var foe = interactedCollider;
             var foeState = foe.GetCurrentState();
+
 
             var isAttackAction = _logic.AbilitiesLogic.IsAbilityAnAttack(attackAbility);
             
