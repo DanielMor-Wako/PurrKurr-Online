@@ -3,10 +3,12 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
+namespace Code.Wakoz.PurrKurr.DataClasses.Characters
+{
     [System.Serializable]
-    public sealed class InteractableObject2DState {
-        
+    public sealed class InteractableObject2DState
+    {
+
         public Definitions.ObjectState CurrentState => _currentState;
         private Definitions.ObjectState _currentState;
 
@@ -39,6 +41,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private float _uninterruptibleAnimation;
         private float _cayoteEndTime;
         private float _jumpingEndTime;
+        private float _attackEndTime;
+        private float _grabEndTime;
+        private float _blockEndTime;
         private bool _hasLanded;
         private bool _isCrouching;
         private bool _isStanding;
@@ -66,12 +71,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public bool isChargingSuper() => _chargingSuper;
 
         public void DiagnoseState(Vector3 hitPoint, Vector2 collDir, int collLayer, Vector2 position, Vector2 velocity, bool hasGroundBeneathByRayCast, bool isInTraversableSurface, bool isInTraversableCrouchArea) {
-            
-            _wasGrounded = _isGrounded; _isGrounded = false;
-            _wasCeiling = _isCeiling; _isCeiling = false;
-            _wasRightWall = _isRightWall; _isRightWall = false;
-            _wasLeftWall = _isLeftWall; _isLeftWall = false;
-            _wasTraversable = _isTraversable; _isTraversable = false;
+
+            _wasGrounded = _isGrounded;
+            _isGrounded = false;
+            _wasCeiling = _isCeiling;
+            _isCeiling = false;
+            _wasRightWall = _isRightWall;
+            _isRightWall = false;
+            _wasLeftWall = _isLeftWall;
+            _isLeftWall = false;
+            _wasTraversable = _isTraversable;
+            _isTraversable = false;
             _position = position;
             _velocity = velocity;
             _hasGroundBeneathByRayCast = hasGroundBeneathByRayCast;
@@ -116,47 +126,47 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         private void UpdateState() {
 
-            if (_combatAbility != Definitions.ActionType.Empty) {
+            //if (_combatAbility != Definitions.ActionType.Empty) {
 
-                if (IsMoveAnimation()) {
-                    Debug.Log($"_combatAbility {_combatAbility} during MoveAnimation");
-                    if (_combatAbility == Definitions.ActionType.Attack) {
-                        SetState(Definitions.ObjectState.Attacking);
-                        return;
-                    } else if (_combatAbility == Definitions.ActionType.Grab) {
-                        SetState(Definitions.ObjectState.Grabbing);
-                        return;
-                    }
+            //Debug.Log($"_combatAbility {_combatAbility} during");
+            //if (_combatAbility == Definitions.ActionType.Block && !IsMoveAnimation()) {
+            if (IsBlockingState()) {
+                SetState(Definitions.ObjectState.Blocking);
+                return;
 
-                } else if (_combatAbility == Definitions.ActionType.Block) {
-                    SetState(Definitions.ObjectState.Blocking);
-                    return;
+            } else if (IsAttackingState()/*_combatAbility == Definitions.ActionType.Attack*/) {
+                SetState(Definitions.ObjectState.Attacking);
+                return;
 
-                } else if (_combatAbility == Definitions.ActionType.Projectile) {
-                    SetState(Definitions.ObjectState.AimingProjectile);
-                    return;
+            } else if (IsGrabbingState()/*_combatAbility == Definitions.ActionType.Grab*/) {
+                SetState(Definitions.ObjectState.Grabbing);
+                return;
 
-                } else if (_combatAbility == Definitions.ActionType.Rope) {
-                    SetState(Definitions.ObjectState.AimingRope);
-                    return;
+            } else if (_combatAbility == Definitions.ActionType.Projectile) {
+                SetState(Definitions.ObjectState.AimingProjectile);
+                return;
 
-                } else if (_combatAbility == Definitions.ActionType.Special) {
-                    SetState(Definitions.ObjectState.InterruptibleAnimation);
-                    return;
+            } else if (_combatAbility == Definitions.ActionType.Rope) {
+                SetState(Definitions.ObjectState.AimingRope);
+                return;
 
-                } else if (_combatAbility == Definitions.ActionType.Jump && IsAiming()) {
-                    SetState(Definitions.ObjectState.AimingJump);
-                    return;
+            } else if (_combatAbility == Definitions.ActionType.Special) {
+                SetState(Definitions.ObjectState.InterruptibleAnimation);
+                return;
 
-                } else if (!IsMoveAnimation() && IsInterraptibleAnimation()) {
-                    SetState(Definitions.ObjectState.InterruptibleAnimation);
-                    return;
+            } else if (_combatAbility == Definitions.ActionType.Jump && IsAiming()) {
+                SetState(Definitions.ObjectState.AimingJump);
+                return;
 
-                } else {
-                    SetActiveCombatAbility(Definitions.ActionType.Empty);
-                }
+            } else if (!IsMoveAnimation() && IsInterraptibleAnimation()) {
+                SetState(Definitions.ObjectState.InterruptibleAnimation);
+                return;
 
+            } else {
+                SetActiveCombatAbility(Definitions.ActionType.Empty);
             }
+
+            //}
 
             // todo: add the UninterruptibleAnimation
             if (_currentState == Definitions.ObjectState.InterruptibleAnimation && _combatAbility == Definitions.ActionType.Empty && !IsInterraptibleAnimation()) {
@@ -165,13 +175,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 return;
             }
 
-            if (!_hasLanded && _currentState is Definitions.ObjectState.Falling or Definitions.ObjectState.Jumping && (!_wasGrounded && _isGrounded || ( IsFrontWall() || IsBackWall() ) && _hasGroundBeneathByRayCast)) {
+            if (!_hasLanded && _currentState is Definitions.ObjectState.Falling or Definitions.ObjectState.Jumping && (!_wasGrounded && _isGrounded || (IsFrontWall() || IsBackWall()) && _hasGroundBeneathByRayCast)) {
                 SetState(Definitions.ObjectState.Landed);
                 SetAsLanded();
                 return;
             }
 
-            if ( (_hasGroundBeneathByRayCast || _hasLanded) && (_isGrounded || IsTouchingAnySurface())) {
+            if ((_hasGroundBeneathByRayCast || _hasLanded) && (_isGrounded || IsTouchingAnySurface())) {
 
                 if (!_hasLanded && _hasGroundBeneathByRayCast) {
                     SetAsLanded();
@@ -238,6 +248,26 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _jumpingEndTime = time;
         }
 
+        public void SetCombatTime(Definitions.ActionType combatAbility, float time) {
+
+            if (combatAbility is Definitions.ActionType.Empty)
+                return;
+
+            switch (combatAbility) {
+                case Definitions.ActionType.Block:
+                    _blockEndTime = time;
+                    break;
+
+                case Definitions.ActionType.Attack:
+                    _attackEndTime = time;
+                    break;
+
+                case Definitions.ActionType.Grab:
+                    _grabEndTime = time;
+                    break;
+            }
+        }
+
         public void UpdateCrouchOrStandingByNavDir(Definitions.NavigationType navDir) {
 
             var isNotMoving = IsNotMoving();//&& CurrentState != Definitions.CharacterState.Running;
@@ -252,7 +282,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _isCrouching = isCrouching;
             _isStanding = isStanding;
         }
-        
+
         public bool IsTouchingAnySurface() => _wasGrounded || _isGrounded || _wasRightWall || _isRightWall || _wasLeftWall || _isLeftWall || _wasCeiling || _isCeiling;
 
         public bool IsCeiling() => _wasCeiling || _isCeiling;
@@ -267,26 +297,32 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public bool IsInterraptibleAnimation() => Time.time < _interruptibleAnimation;
 
+        public bool IsBlockingState() => Time.time < _blockEndTime;
+
+        public bool IsAttackingState() => Time.time < _attackEndTime;
+
+        public bool IsGrabbingState() => Time.time < _grabEndTime;
+
         public bool CanPerformAction() =>
             !IsMoveAnimation() && !IsInterraptibleAnimation() && !IsJumping() &&
             _currentState is Definitions.ObjectState.Crouching or Definitions.ObjectState.StandingUp or
                 Definitions.ObjectState.Jumping or Definitions.ObjectState.Falling or
                 Definitions.ObjectState.AerialJumping or Definitions.ObjectState.Grabbing or
                 Definitions.ObjectState.Grounded or Definitions.ObjectState.Landed or
-                Definitions.ObjectState.Running or Definitions.ObjectState.AirGliding or 
+                Definitions.ObjectState.Running or Definitions.ObjectState.AirGliding or
                 Definitions.ObjectState.WallClimbing or Definitions.ObjectState.RopeClinging or
-                Definitions.ObjectState.TraversalRunning or Definitions.ObjectState.WallClinging or 
+                Definitions.ObjectState.TraversalRunning or Definitions.ObjectState.WallClinging or
                 Definitions.ObjectState.Alive or Definitions.ObjectState.Blocking or
-                Definitions.ObjectState.AimingRope or Definitions.ObjectState.AimingProjectile or 
+                Definitions.ObjectState.AimingRope or Definitions.ObjectState.AimingProjectile or
                 Definitions.ObjectState.InterruptibleAnimation or Definitions.ObjectState.AimingJump;
-        
+
         public bool IsJumping() => Time.time < _jumpingEndTime;
 
         public bool IsGrounded() => _isGrounded;
 
         public bool IsCrouching() => _isCrouching;
 
-        public bool IsCrouchingAndNotFallingNearWall() => _isCrouching && (_hasGroundBeneathByRayCast && (_isGrounded || _isLeftWall || _isRightWall) );
+        public bool IsCrouchingAndNotFallingNearWall() => _isCrouching && (_hasGroundBeneathByRayCast && (_isGrounded || _isLeftWall || _isRightWall));
 
         public bool IsStandingUp() => _isStanding;
 
@@ -311,13 +347,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         public void SetAiming(float durationInMilliseconds) => _aimingEndTime = Time.time + durationInMilliseconds;
         public void StopAiming() => SetAiming(0);
 
-        public Quaternion ReturnForwardDirByTerrainQuaternion()  {
-            
+        public Quaternion ReturnForwardDirByTerrainQuaternion() {
+
             if (IsGrabbed()) {
                 Quaternion surfaceQuaternion = Quaternion.LookRotation(Vector3.forward, Vector2.down);
                 return surfaceQuaternion;
             }
-            
+
             if (_closestSurfaceDir != Vector2.zero && _closestSurfacePoint != Vector2.zero && IsTouchingAnySurface()) {
                 Quaternion surfaceQuaternion = Quaternion.LookRotation(Vector3.forward, _closestSurfaceDir);
                 return surfaceQuaternion;
@@ -336,7 +372,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             Quaternion velocityQuaternion = Quaternion.LookRotation(Vector3.forward, _velocity);
             return velocityQuaternion;
-            
+
         }
 
         public bool HasAnySurfaceAround() => _closestSurfaceDir != Vector2.zero && _hasLanded;
@@ -379,8 +415,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             if (!_hasLanded) {
                 return false;
             }
-            
-            if (IsCeiling() && Mathf.Abs(_velocity.x) < 10 ) {
+
+            if (IsCeiling() && Mathf.Abs(_velocity.x) < 10) {
                 return false;
             }
 
@@ -391,6 +427,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             return true;
         }
 
-        
+
     }
 }
