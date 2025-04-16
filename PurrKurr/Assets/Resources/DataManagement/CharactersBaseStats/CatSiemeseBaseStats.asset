@@ -24,7 +24,7 @@ MonoBehaviour:
     _sprintSpeedMinToMax: {x: 1500, y: 2500}
     _jumpForceMinToMax: {x: 40, y: 55}
     _airborneSpeedMinToMax: {x: 5, y: 7}
-    _airborneMaxSpeedMinToMax: {x: 5, y: 10}
+    _airborneMaxSpeedMinToMax: {x: 10, y: 15}
     _multiTargetsDistanceBasevalues: {x: 4, y: 7}
     _movementTypes: 00
     _baseActions: 01
@@ -70,14 +70,14 @@ MonoBehaviour:
     - _elementName: Light Grab
       _attackAbility: 5
       _actionDuration: 0.15
-      _actionCooldownDuration: 0
+      _actionCooldownDuration: 0.15
       _properties: 010203
       _characterStateCondition: 0300
       _opponentStateCondition: 
     - _elementName: Med Grab
       _attackAbility: 6
       _actionDuration: 0.15
-      _actionCooldownDuration: 0
+      _actionCooldownDuration: 0.15
       _properties: 01020d
       _characterStateCondition: 0500
       _opponentStateCondition: 
@@ -98,7 +98,7 @@ MonoBehaviour:
     - _elementName: Light Block
       _attackAbility: 9
       _actionDuration: 0.15
-      _actionCooldownDuration: 0.1
+      _actionCooldownDuration: 0.15
       _properties: 05
       _characterStateCondition: 
       _opponentStateCondition: 
