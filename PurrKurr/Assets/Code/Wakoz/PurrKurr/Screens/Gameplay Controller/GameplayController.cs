@@ -1048,6 +1048,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         nearbyTargets = e.Targets;
                     }*/
 
+                    e.Attacker.State.SetCombatTime(
+                        _logic.AbilitiesLogic.GetAbilityType(e.InteractionType), 
+                        Time.time + e.AttackProperties.ActionCooldownDuration);
 
                     HitTargets(e.Attacker, ref hitPosition, nearbyTargets, ref newFacingDirection, e.InteractionType, e.AttackProperties);
 
@@ -1266,6 +1269,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             var canMultiHit = attackProperties.Properties.Count > 0 && attackProperties.Properties.Contains(AttackProperty.MultiTargetOnSurfaceHit);
             IInteractableBody latestInteraction = null;
 
+            attacker.State.SetInterruptibleAnimation(Time.time + attackProperties.ActionCooldownDuration);
+
             if (interactedColliders.Length == 0) {
                 PerformCombat(attacker, ref attackAbility, ref attackProperties, moveToPosition, null);
                 return;
@@ -1288,8 +1293,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
 
             if (latestInteraction != null) {
-
-                attacker.State.SetInterruptibleAnimation(Time.time + attackProperties.ActionCooldownDuration);
                 
                 if (latestInteraction.GetHpPercent() <= 0) {
                     latestInteraction = null;
@@ -1472,7 +1475,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                     ApplyForce(foe, attackStats);
                     ApplyEffect(foe, Effect2DType.ImpactMed);
-                    DealDamageAndNotifyAndDisconnectIfGrabbedIsDead(foe, attackStats.Damage, (IInteractableBody)attacker);
+                    DealDamageAndNotifyAndDisconnectIfGrabbedIsDead(foe, attackStats.Damage, attacker);
                     Handlers.GetHandler<ShakeHandler>().TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.Random));
 
                 }
@@ -1501,7 +1504,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     ApplyForce(foe, throwStats);
                     ApplyEffect(foe, Effect2DType.DustCloud);
                     attackerAsInteractable.SetAsGrabbing(null);
-                    ApplyProjectileStateWhenThrown(foe, throwStats.Damage, attackerAsInteractable);
+                    _ = ApplyProjectileStateWhenThrown(foe, throwStats.Damage, attackerAsInteractable);
                     Handlers.GetHandler<ShakeHandler>().TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.Circular));
 
                     //_timelineEventManager.RegisterInteractionEvent(attacker, new IInteractableBody[] { foe }, Time.time, attacker.Stats.AttackDurationInMilliseconds, attackStats, attackAbility);
