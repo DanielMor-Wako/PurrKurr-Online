@@ -337,12 +337,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         private void OnActionStarted(Character2DController character, ActionInput actionInput) {
 
             if (ValidateAction(character, actionInput, true, false, 
-                    out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedColliders)) {
+                    out var isActionPerformed, out var interactedColliders)) {
 
                 if (isActionPerformed) {
 
-                    if (interactedColliders != null && !character.State.IsGrabbed()) {
-                        _gameEvents.CombatLogic(character, actionInput.ActionType, moveToPosition, interactedColliders);
+                    var isCombatAction = actionInput.ActionType is ActionType.Attack or ActionType.Grab or ActionType.Block;
+                    if (isCombatAction && !character.State.IsGrabbed()) {
+                        _gameEvents.CombatLogic(character, actionInput.ActionType);
 
                     } else if (interactedColliders != null && character.State.IsGrabbed() &&
                         actionInput.ActionType is ActionType.Grab or ActionType.Attack) {
@@ -361,22 +362,22 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     } else if (actionInput.ActionType is ActionType.Jump && character.State.CurrentState == ObjectState.Crouching) {
 
                         if (HelperFunctions.IsObjectInLayerMask(character.GetSurfaceCollLayer(), ref _whatIsPlatform)) {
+                            var moveToPosition = Vector2.zero;
                             character.TryGetDodgeDirection(-Vector2.up * 2, ref moveToPosition);
                             character.SetTargetPosition(moveToPosition);
                         } else {
                             _ = ApplyAimingAction(character, actionInput);
                         }
 
-                    } else if (actionInput.ActionType == ActionType.Jump && forceDir != Vector2.zero) {
+                    } else if (actionInput.ActionType == ActionType.Jump) {
                         _gameEvents.DisconnectFromAnyGrabbing(character);
-                        _gameEvents.AlterJumpDirByStateNavigationDirection(ref forceDir, character.State);
+                        var jumpForceDir = new Vector2(0, character.Stats.JumpForce);
+                        _gameEvents.AlterJumpDirByStateNavigationDirection(ref jumpForceDir, character.State);
                         character.SetJumping(Time.time + .1f);
-                        character.SetForceDir(forceDir);
+                        character.SetForceDir(jumpForceDir);
                         character.DoMove(0); // might conflict with the TryPerformInputNavigation when the moveSpeed is already set by Navigation
                         _gameEvents.ApplyEffectOnCharacter(character, Effect2DType.DustCloud, character.State.ReturnForwardDirByTerrainQuaternion());
 
-                    } else if (actionInput.ActionType == ActionType.Block) {
-                        _gameEvents.ApplyEffectOnCharacter(character, Effect2DType.BlockActive);
                     }
 
                     character.State.SetActiveCombatAbility(actionInput.ActionType);
@@ -393,11 +394,19 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         private void OnActionEnded(Character2DController character, ActionInput actionInput) {
 
             if (ValidateAction(character, actionInput, false, true, 
-                    out var isActionPerformed, out var forceDir, out var moveToPosition, out var interactedCollider)) {
+                    out var isActionPerformed, out var interactedCollider)) {
+
+                if (character.State.CurrentState == ObjectState.Jumping && character.Velocity.y > 0) {
+
+                    var jumpforceDirKiller = new Vector2(character.State.Velocity.x, 0);
+                    character.SetForceDir(jumpforceDirKiller);
+                    //character.SetForceDir(forceDir, true);
+                    return;
+                }
 
                 if (isActionPerformed) {
 
-                    var isBlockingEnded = actionInput.ActionType is ActionType.Block && character.State.CurrentState is ObjectState.Blocking;
+                    var isBlockingEnded = actionInput.ActionType is ActionType.Block ;// && character.State.CurrentState is ObjectState.Blocking;
                     var isProjectilingEnded = actionInput.ActionType is ActionType.Projectile && character.State.CurrentState is ObjectState.AimingProjectile;
                     var isRopingEnded = actionInput.ActionType is ActionType.Rope && character.State.CurrentState is ObjectState.AimingRope;
                     var isJumpAimEnded = actionInput.ActionType is ActionType.Jump && character.State.CurrentState is ObjectState.AimingJump;
@@ -413,6 +422,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         } else if (actionInput.NormalizedDirection != Vector2.zero) {
 
                             if (isBlockingEnded) {
+                                var dodgeEndPosition = Vector2.zero;
+                                character.TryGetDodgeDirection(actionInput.NormalizedDirection * 5, ref dodgeEndPosition);
+                                character.SetTargetPosition(dodgeEndPosition);
                                 _gameEvents.ApplyEffectOnCharacter(character, Effect2DType.DodgeActive);
                                 _gameEvents.ApplyEffectOnCharacter(character, Effect2DType.DustCloud, character.State.ReturnForwardDirByTerrainQuaternion());
 
@@ -424,14 +436,15 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                                 if (isProjectilingEnded) {
                                     _gameEvents.ShootProjectile(character, actionInput, ref newPos, ref rotation, ref distancePercentReached);
-
+                                    
                                 } else if (isRopingEnded) {
                                     _gameEvents.ShootRope(character, actionInput, newPos, rotation, distancePercentReached);
 
                                 } else if (isJumpAimEnded) {
                                     // apply jump aim in trajectory dir
                                     character.SetJumping(Time.time + .5f);
-                                    forceDir = actionInput.NormalizedDirection * character.Stats.JumpForce;
+                                    var aimJumpDir = actionInput.NormalizedDirection * character.Stats.JumpForce;
+                                    character.SetForceDir(aimJumpDir, true);
                                     _gameEvents.ApplyEffectOnCharacter(character, Effect2DType.DustCloud, character.State.ReturnForwardDirByTerrainQuaternion());
                                 }
                             }
@@ -442,12 +455,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         }
                     }
                 }
-
-                if (forceDir != Vector2.zero) {
-                    character.SetForceDir(forceDir, true);
-                }
-
-                character.SetTargetPosition(moveToPosition);
 
             }
         }
@@ -557,11 +564,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         }
 
         public bool ValidateAction(Character2DController character, ActionInput actionInput, bool started, bool ended, 
-            out bool isActionPerformed, out Vector2 forceDirToSetOnFixedUpdate, out Vector2 newPositionToSetOnFixedUpdate, out Collider2D[] closestColliders) {
+            out bool isActionPerformed, out Collider2D[] closestColliders) {
 
             isActionPerformed = false;
-            forceDirToSetOnFixedUpdate = Vector2.zero;
-            newPositionToSetOnFixedUpdate = Vector2.zero;
             closestColliders = null;
 
             if (character == null || actionInput.ActionGroupType != Definitions.ActionTypeGroup.Action) {
@@ -570,7 +575,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             var state = character.State;
 
-            if (state.IsMoveAnimation() || character.GetHpPercent() <= 0) {
+            if (state.IsMoveAnimation() && started && actionInput.ActionType != ActionType.Block || character.GetHpPercent() <= 0) {
                 return false;
             }
 
@@ -581,7 +586,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 && heroAsInteractableBody.IsGrabbing()) {
 
                 closestColliders = new Collider2D[] { character.GetGrabbedTarget().GetCollider() };
-                forceDirToSetOnFixedUpdate = new Vector2(state.GetFacingRightAsInt(), 1) * stats.PushbackForce;
                 isActionPerformed = true;
                 return true;
             }
@@ -594,15 +598,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         started && character.State.CurrentState is Definitions.ObjectState.TraversalRunning or Definitions.ObjectState.RopeClinging or Definitions.ObjectState.RopeClimbing or Definitions.ObjectState.WallClinging or Definitions.ObjectState.WallClimbing) {
 
                         isActionPerformed = true;
-                        forceDirToSetOnFixedUpdate = new Vector2(0, stats.JumpForce);
-
-                    } else if (ended && state.Velocity.y > 0 && state.CurrentState == Definitions.ObjectState.Jumping) {
-
-                        if (!(forceDirToSetOnFixedUpdate != Vector2.zero)) {
-                            forceDirToSetOnFixedUpdate = new Vector2(state.Velocity.x, 0);
-                        } else {//if (forceDirToSetOnFixedUpdate != Vector2.zero) {
-                            forceDirToSetOnFixedUpdate = Vector2.zero;
-                        }
 
                     } else if ((started && character.State.CurrentState == Definitions.ObjectState.Crouching && state.IsCrouchingAndNotFallingNearWall() ||
                         ended && character.State.CurrentState == Definitions.ObjectState.AimingJump)) {
@@ -613,30 +608,21 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                 case Definitions.ActionType.Attack:
 
-                    closestColliders = character.NearbyInteractables();
+                    /*closestColliders = character.NearbyInteractables();
                     if (closestColliders == null || closestColliders.Length == 0) {
                         return false;
-                    }
+                    }*/
 
                     if (started) {
 
-                        var closestColl = closestColliders.Where(o => o.GetComponent<IInteractable>()?.GetInteractableBody()?.GetHpPercent() > 0).FirstOrDefault();
+                        /*var closestColl = closestColliders.Where(o => o.GetComponent<IInteractable>()?.GetInteractableBody()?.GetHpPercent() > 0).FirstOrDefault();
                         if (closestColl == null)
-                            return false;
+                            return false;*/
 
                         isActionPerformed = true;
                         // todo: delete these calculation from here after they are move to lateon when action occur, both forceDir and newPosition
-                        var legsPosition = character.LegsPosition;
-                        var closestFoePosition = closestColl.ClosestPoint(legsPosition);
-                        var dir = ((Vector3)closestFoePosition - legsPosition);
-                        var directionTowardsFoe = (closestColl.transform.position.x > legsPosition.x) ? 1 : -1;
-                        if (dir == Vector3.zero) {
-                            dir = new Vector3(directionTowardsFoe, 0, 0);
-                        }
-                        newPositionToSetOnFixedUpdate = closestFoePosition + (Vector2)dir.normalized * -(character.LegsRadius);
-                        Debug.DrawLine(legsPosition, newPositionToSetOnFixedUpdate, Color.green, 3); // todo: move drawline to gameplaycontroller
-                        dir = closestFoePosition - newPositionToSetOnFixedUpdate;
-                        forceDirToSetOnFixedUpdate = dir.normalized * stats.PushbackForce;
+                        
+                        //forceDirToSetOnFixedUpdate = dir.normalized * stats.PushbackForce;
                         return true;
                     }
 
@@ -644,14 +630,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                 case Definitions.ActionType.Block:
 
-                    if (started) {
+                    if (started || ended) {
                         isActionPerformed = true;
-                        return true;
-                    }
-
-                    if (ended) {
-                        isActionPerformed = true;
-                        character.TryGetDodgeDirection(actionInput.NormalizedDirection * 5, ref newPositionToSetOnFixedUpdate);
                         return true;
                     }
 
@@ -663,7 +643,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         return false;
                     }
 
-                    var nearbyGrabables = character.NearbyInteractables();
+                    /*var nearbyGrabables = character.NearbyInteractables();
                     if (nearbyGrabables == null || nearbyGrabables.Length == 0) {
                         return false;
                     }
@@ -672,19 +652,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                     if (closestColliders == null) {
                         return false;
-                    }
+                    }*/
 
                     if (started) {
 
                         isActionPerformed = true;
-                        var legsPosition = character.LegsPosition;
-                        var closestFoePosition = closestColliders.FirstOrDefault().ClosestPoint(legsPosition);
-                        var dir = Vector2.up;//((Vector3)closestFoePosition - character.LegsPosition);
-
-                        newPositionToSetOnFixedUpdate = closestFoePosition;// + Vector2.up * (character.LegsRadius);
-                        Debug.DrawLine(character.LegsPosition, newPositionToSetOnFixedUpdate, Color.green, 3); // todo: move drawline to gameplaycontroller
-                                                                                                               //dir = closestFoePosition - newPositionToSetOnFixedUpdate;
-                        forceDirToSetOnFixedUpdate = dir.normalized * stats.PushbackForce;
+                        // todo: delete these calculation from here after they are move to lateon when action occur, both forceDir and newPosition
+                                                                                                             //dir = closestFoePosition - newPositionToSetOnFixedUpdate;
+                        //forceDirToSetOnFixedUpdate = dir.normalized * stats.PushbackForce;
 
                         return true;
                     }
