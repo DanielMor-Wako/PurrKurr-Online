@@ -261,7 +261,7 @@ namespace Code.Wakoz.PurrKurr.Agents
                         if (randomCombatAbility == (int)Definitions.ActionType.Block) {
                             randomCombatAbility = (int)Definitions.ActionType.Grab;
                         }
-                        SingleController.GetController<GameplayController>().CombatLogic(character, (Definitions.ActionType)randomCombatAbility, foe.GetCenterPosition(), character.NearbyInteractables());
+                        SingleController.GetController<GameplayController>().CombatLogic(character, (Definitions.ActionType)randomCombatAbility);
                         return true;
                     }
                     break;
