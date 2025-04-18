@@ -44,6 +44,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
         private float _attackEndTime;
         private float _grabEndTime;
         private float _blockEndTime;
+        private float _dodgeEndTime;
         private bool _hasLanded;
         private bool _isCrouching;
         private bool _isStanding;
@@ -130,7 +131,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
 
             //Debug.Log($"_combatAbility {_combatAbility} during");
             //if (_combatAbility == Definitions.ActionType.Block && !IsMoveAnimation()) {
-            if (IsBlockingState()) {
+            if (IsBlockingState() || _combatAbility == Definitions.ActionType.Block || IsDodgingState()) {
                 SetState(Definitions.ObjectState.Blocking);
                 return;
 
@@ -248,6 +249,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
             _jumpingEndTime = time;
         }
 
+        public void SetDodgeTime(float time) {
+            _dodgeEndTime = time;
+        }
+
         public void SetCombatTime(Definitions.ActionType combatAbility, float time) {
 
             if (combatAbility is Definitions.ActionType.Empty)
@@ -296,6 +301,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
         public bool IsMoveAnimation() => Time.time < _moveAnimation;
 
         public bool IsInterraptibleAnimation() => Time.time < _interruptibleAnimation;
+
+        public bool IsDodgingState() => Time.time < _dodgeEndTime;
 
         public bool IsBlockingState() => Time.time < _blockEndTime;
 
