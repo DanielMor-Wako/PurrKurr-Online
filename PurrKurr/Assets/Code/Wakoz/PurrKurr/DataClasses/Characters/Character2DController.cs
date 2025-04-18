@@ -45,6 +45,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private Rigidbody2D _legsRigidBody;
 
         private Vector2 ForceDirToSetOnFixedUpdate;
+        private Vector2 ForceDirToAddOnFixedUpdate;
 
         private LayerMask _whatIsSurface;
         private LayerMask _whatIsSolid;
@@ -60,7 +61,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         private const float AdditionalOuterRadius = 0.3f;
         private const float DefaultSensesRadius = 10f;
         private float _sensesRadius;
-
+        [SerializeField] private Definitions.ObjectState currState = Definitions.ObjectState.Alive; // remove, for inspector use only
+        [SerializeField] private Definitions.ObjectState lastState = Definitions.ObjectState.Dead; // remove, for inspector use only
         private InteractableObject2DState _state;
         private AnchorHandler _anchor;
 
@@ -514,9 +516,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             } else if (ForceDirToSetOnFixedUpdate == Vector2.zero) {
                 ForceDirToSetOnFixedUpdate = newForceDir;
             }
-
         }
-        
+
+        public void AddForceDir(Vector2 newForceDir) {
+
+            if (newForceDir == Vector2.zero) {
+                return;
+            }
+
+            ForceDirToAddOnFixedUpdate = newForceDir;
+        }
+
         private void Update() {
 
             UpdateCharacterState();
@@ -537,17 +547,23 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         private void FixedUpdate()
         {
-            if (ForceDirToSetOnFixedUpdate != Vector2.zero)
-            {
+            if (ForceDirToSetOnFixedUpdate != Vector2.zero) {
+
                 _rigidbody.velocity = ForceDirToSetOnFixedUpdate;
                 //_rigidbody.AddForce(ForceDirToSetOnFixedUpdate);
                 ForceDirToSetOnFixedUpdate = Vector2.zero;
-            }
-            else if (_rigidbody.velocity.y < -_maxFallingVelocity)
-            {
+            
+            } else if (ForceDirToAddOnFixedUpdate != Vector2.zero) {
+
+                _rigidbody.velocity += (ForceDirToAddOnFixedUpdate);
+                ForceDirToAddOnFixedUpdate = Vector2.zero;
+            
+            } else if (_rigidbody.velocity.y < -_maxFallingVelocity) {
+            
                 _fallingVelocity.Set(_rigidbody.velocity.x, -_maxFallingVelocity);
                 _rigidbody.velocity = _fallingVelocity;
             }
+
             UpdateAnimatorRigRotation();
         }
 
@@ -702,12 +718,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             _state.DiagnoseState(hitPoint, collDir, collLayer, legsPosition, _rigidbody.velocity, hasGroundBeneathByRayCast, isInTraversableSurface, isInTraversableCrouchArea);
 
-            var shouldCallStateChange = prevState != _state.CurrentState ;
+            var isStateChanged = prevState != _state.CurrentState;
             
-            if (shouldCallStateChange) {
+            if (isStateChanged) {
 
                 OnStateChanged?.Invoke(_state);
-                
+
+                this.currState = _state.CurrentState;
+                this.lastState = prevState;
                 // Additional specific states:
                 // Resets rigidbody velocity when player has landed
                 if (_state.CurrentState == Definitions.ObjectState.Landed && ForceDirToSetOnFixedUpdate != Vector2.zero) {
