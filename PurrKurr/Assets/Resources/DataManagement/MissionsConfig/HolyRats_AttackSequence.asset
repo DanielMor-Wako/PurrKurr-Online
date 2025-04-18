@@ -82,12 +82,12 @@ MonoBehaviour:
     _targetObjectIds:
     - Rat2
     _startObjectId: Spawner2
-    _waitTimeInSeconds: 1
+    _waitTimeInSeconds: 0.5
   - _actionType: 1
     _targetObjectIds:
     - Rat3
     _startObjectId: Spawner2
-    _waitTimeInSeconds: 1
+    _waitTimeInSeconds: 0.5
   - _actionType: 3
     _targetObjectIds:
     - FoodPileOverview
@@ -96,34 +96,17 @@ MonoBehaviour:
   - _actionType: 0
     _targetObjectIds: []
     _startObjectId: 
-    _waitTimeInSeconds: 21
-  - _actionType: 3
-    _targetObjectIds:
-    - FoodPileOverview
-    - Spawner1
-    _startObjectId: 
-    _waitTimeInSeconds: 0
+    _waitTimeInSeconds: 22
   - _actionType: 1
     _targetObjectIds:
     - Rat4
     _startObjectId: Spawner1
     _waitTimeInSeconds: 1.5
-  - _actionType: 3
-    _targetObjectIds:
-    - FoodPileOverview
-    - Spawner2
-    _startObjectId: 
-    _waitTimeInSeconds: 0
   - _actionType: 1
     _targetObjectIds:
     - Rat5
     _startObjectId: Spawner2
     _waitTimeInSeconds: 1.5
-  - _actionType: 3
-    _targetObjectIds:
-    - FoodPileOverview
-    _startObjectId: 
-    _waitTimeInSeconds: 0
   - _actionType: 0
     _targetObjectIds:
     - 
