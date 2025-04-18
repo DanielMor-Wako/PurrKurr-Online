@@ -13,6 +13,8 @@ namespace Code.Wakoz.PurrKurr.Agents
 {
     public class AgentsHandler : IUpdateProcessHandler
     {
+        private const int AttackIndexMin = (int)Definitions.ActionType.Attack;
+        private const int AttackIndexMax = (int)Definitions.ActionType.Grab + 1;
         private List<AgentController> _agentsPool;
         private Queue<AgentController> _agentQueue;
 
@@ -20,7 +22,7 @@ namespace Code.Wakoz.PurrKurr.Agents
 
         private AgentController _currentAgent;
         private float _elapsedTime = 0f;
-        private readonly float _calculationTime = 0.1f;
+        private readonly float _calculationRate = 0.1f;
 
         public AgentsHandler() {
             _agentsPool = new();
@@ -56,8 +58,8 @@ namespace Code.Wakoz.PurrKurr.Agents
 
             _elapsedTime += Time.deltaTime;
 
-            if (_elapsedTime > _calculationTime) {
-                _elapsedTime -= _calculationTime;
+            if (_elapsedTime > _calculationRate) {
+                _elapsedTime -= _calculationRate;
 
                 if (_agentQueue.Count == 0 && _agentsPool.Count() > 0) {
                     foreach (var agent in _agentsPool) {
@@ -257,10 +259,10 @@ namespace Code.Wakoz.PurrKurr.Agents
                         if (!isAgentFightingAgent) { _agentDedicatedToAttackMainHero = null; }
                         var foe = targetsTransform.GetComponent<IInteractableBody>();
                         Debug.Log($"{agent.name} attacking {foe.GetTransform().name}");
-                        int randomCombatAbility = Random.Range((int)Definitions.ActionType.Attack, (int)Definitions.ActionType.Grab);
-                        if (randomCombatAbility == (int)Definitions.ActionType.Block) {
+                        int randomCombatAbility = Random.Range(AttackIndexMin, AttackIndexMax);
+                        /*if (randomCombatAbility == (int)Definitions.ActionType.Block) {
                             randomCombatAbility = (int)Definitions.ActionType.Grab;
-                        }
+                        }*/
                         SingleController.GetController<GameplayController>().CombatLogic(character, (Definitions.ActionType)randomCombatAbility);
                         return true;
                     }
@@ -290,7 +292,7 @@ namespace Code.Wakoz.PurrKurr.Agents
 
         // todo: move this to gameBalanceManager script
         private float _recentAttackInteraction = 0;
-        private readonly float CombatInteractionRateInSeconds = 2.5f;
+        private readonly float CombatInteractionRateInSeconds = 2.0f;
         private bool IsCombatInteractionValid() {
             var elapsedTime = Time.realtimeSinceStartup - _recentAttackInteraction;
             var percent = elapsedTime / CombatInteractionRateInSeconds;
