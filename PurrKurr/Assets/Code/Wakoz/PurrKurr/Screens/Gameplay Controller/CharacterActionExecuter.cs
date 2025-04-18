@@ -251,10 +251,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         private void OnNavigationStarted(Character2DController character, ActionInput actionInput) {
 
             if (ValidateNavigation(character, actionInput, true, false, 
-                    out var moveSpeed, out Vector2 forceDirNavigation, out var navigationDir)) {
+                    out var moveSpeed, out var setForceDir, out var addForceDir, out var navigationDir)) {
 
                 character.DoMove(moveSpeed);
-                character.SetForceDir(forceDirNavigation);
+                character.SetForceDir(setForceDir);
+                character.AddForceDir(addForceDir);
                 character.SetNavigationDir(navigationDir);
                 if (character.IsGrabbed()) {
                     character.FlipCharacterTowardsPoint(_inputLogic.IsNavigationDirValidAsRight(navigationDir));
@@ -266,12 +267,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         private void OnNavigationOngoing(Character2DController character, ActionInput actionInput) {
 
             if (ValidateNavigation(character, actionInput, false, false,
-                    out var moveSpeed, out var forceDirNavigation, out var navigationDir)) {
+                    out var moveSpeed, out var setForceDir, out var addForceDir, out var navigationDir)) {
 
                 character.DoMove(moveSpeed);
-                character.SetForceDir(forceDirNavigation);
+                character.SetForceDir(setForceDir);
+                character.AddForceDir(addForceDir);
                 character.SetNavigationDir(navigationDir);
-                if (!character.State.IsMoveAnimation() && navigationDir != NavigationType.None) {
+                if (!character.State.IsMoveAnimation() && navigationDir != NavigationType.None    && !character.State.IsInterraptibleAnimation()) {
 
                     bool? facingRight = _inputLogic.IsNavigationDirValidAsRight(navigationDir) ? true :
                         _inputLogic.IsNavigationDirValidAsLeft(navigationDir) ? false : null;
@@ -290,9 +292,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         var grabbedInteractable = character.GetGrabbedTarget();
                         var ropeLink = grabbedInteractable as RopeLinkController;
                         if (ropeLink != null) {
-                            if (navigationDir is NavigationType.Up or NavigationType.Down) {
+                            if (navigationDir is NavigationType.Up or NavigationType.Down && !character.State.IsInterraptibleAnimation()) {
 
                                 rope.HandleMoveToNextLink(ropeLink, character, navigationDir is NavigationType.Up);
+                                character.State.SetInterruptibleAnimation(Time.time + 0.08f);
 
                             } else if (navigationDir is not (NavigationType.None)) {
                                 var isNavRightByFacingRight = facingRight != null ? facingRight == true ? true : false : false;
@@ -325,10 +328,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         private void OnNavigationEnded(Character2DController character, ActionInput actionInput) {
 
             if (ValidateNavigation(character, actionInput, false, true, 
-                    out var moveSpeed, out Vector2 forceDirNavigation, out var navigationDir)) {
+                    out var moveSpeed, out var setForceDir, out var addForceDir, out var navigationDir)) {
 
                 character.DoMove(moveSpeed);
-                character.SetForceDir(forceDirNavigation);
+                character.SetForceDir(setForceDir);
+                character.AddForceDir(addForceDir);
                 character.SetNavigationDir(NavigationType.None);
             }
 
@@ -426,6 +430,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                                 var dodgeEndPosition = Vector2.zero;
                                 character.TryGetDodgeDirection(actionInput.NormalizedDirection * 5, ref dodgeEndPosition);
                                 character.SetTargetPosition(dodgeEndPosition);
+                                character.State.SetDodgeTime(Time.time + 0.15f); // 0.15f is the fastest combat turn
                                 _gameEvents.ApplyEffectOnCharacter(character, Effect2DType.DodgeActive);
                                 _gameEvents.ApplyEffectOnCharacter(character, Effect2DType.DustCloud, character.State.ReturnForwardDirByTerrainQuaternion());
 
@@ -462,14 +467,19 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
 
         public bool ValidateNavigation(Character2DController character, ActionInput actionInput, bool started, bool ended, 
-                out float moveSpeed, out Vector2 forceDirToSetOnFixedUpdate, out Definitions.NavigationType navigationDir) {
+                out float moveSpeed, out Vector2 forceDirToSetOnFixedUpdate, out Vector2 forceDirToAddOnFixedUpdate, out Definitions.NavigationType navigationDir) {
 
             moveSpeed = 0;
             forceDirToSetOnFixedUpdate = Vector2.zero;
+            forceDirToAddOnFixedUpdate = Vector2.zero;
             navigationDir = Definitions.NavigationType.None;
 
-            if (character == null || actionInput.ActionGroupType != Definitions.ActionTypeGroup.Navigation) {
+            if ( actionInput.ActionGroupType != Definitions.ActionTypeGroup.Navigation || character == null) {
                 return false;
+            }
+
+            if (character.State.IsInterraptibleAnimation() || character.GetHpPercent() <= 0) {
+                return true; // marked true so during animation, moveSpeed = 0 is applied
             }
 
             var state = character.State;
@@ -514,7 +524,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             var isNavRightDir = _inputLogic.IsNavigationDirValidAsRight(navigationDir);
             var isNavLeftDir = _inputLogic.IsNavigationDirValidAsLeft(navigationDir);
 
-            var isAirBorne = state.CurrentState is Definitions.ObjectState.Falling or Definitions.ObjectState.Jumping && !state.IsJumping();
+            var isAirBorne = state.CurrentState is Definitions.ObjectState.Falling or Definitions.ObjectState.Jumping or ObjectState.TraversalRunning && !state.IsJumping();
 
             if (isAirBorne) {
                 var yVelocity = rigidbodyVelocity.y;
@@ -526,9 +536,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         || Mathf.Sign(rigidbodyVelocity.x) > 0 && isNavLeftDir
                         || Mathf.Sign(rigidbodyVelocity.x) < 0 && isNavRightDir) {
 
-                        var newXVelocity = rigidbodyVelocity.x + stats.AirborneSpeed * (isNavRightDir ? 1 : -1);
-                        var clampedXVelocity = Mathf.Clamp(newXVelocity, -stats.AirborneMaxSpeed, stats.AirborneMaxSpeed);
-                        forceDirToSetOnFixedUpdate = new Vector2(clampedXVelocity, yVelocity);
+                        //var newXVelocity = rigidbodyVelocity.x + stats.AirborneSpeed * (isNavRightDir ? 1 : -1);
+                        //var clampedXVelocity = Mathf.Clamp(newXVelocity, -stats.AirborneMaxSpeed, stats.AirborneMaxSpeed);
+                        //forceDirToSetOnFixedUpdate = new Vector2(clampedXVelocity, yVelocity < 0 ? yVelocity : yVelocity * 0.8f);
+                        if (isNavRightDir && rigidbodyVelocity.x < stats.AirborneMaxSpeed ||
+                            isNavLeftDir && rigidbodyVelocity.x > -stats.AirborneMaxSpeed ) {
+                            forceDirToAddOnFixedUpdate = new Vector2((stats.AirborneSpeed * (isNavRightDir ? 1 : -1)), 0);
+                        }
                     }
                     moveSpeed = 0;
 
@@ -570,7 +584,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             isActionPerformed = false;
             closestColliders = null;
 
-            if (character == null || actionInput.ActionGroupType != Definitions.ActionTypeGroup.Action || character.GetHpPercent() <= 0) {
+            if (character == null || actionInput.ActionGroupType != Definitions.ActionTypeGroup.Action || 
+                character.GetHpPercent() <= 0 || character.State.IsInterraptibleAnimation() && actionInput.ActionType != ActionType.Block) {
                 return false;
             }
 
@@ -604,21 +619,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                 case Definitions.ActionType.Attack:
 
-                    /*closestColliders = character.NearbyInteractables();
-                    if (closestColliders == null || closestColliders.Length == 0) {
-                        return false;
-                    }*/
-
                     if (started) {
 
-                        /*var closestColl = closestColliders.Where(o => o.GetComponent<IInteractable>()?.GetInteractableBody()?.GetHpPercent() > 0).FirstOrDefault();
-                        if (closestColl == null)
-                            return false;*/
+                        //var closestColl = closestColliders.Where(o => o.GetComponent<IInteractable>()?.GetInteractableBody()?.GetHpPercent() > 0).FirstOrDefault();
 
                         isActionPerformed = true;
-                        // todo: delete these calculation from here after they are move to lateon when action occur, both forceDir and newPosition
-                        
-                        //forceDirToSetOnFixedUpdate = dir.normalized * stats.PushbackForce;
+
                         return true;
                     }
 
@@ -639,23 +645,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         return false;
                     }
 
-                    /*var nearbyGrabables = character.NearbyInteractables();
-                    if (nearbyGrabables == null || nearbyGrabables.Length == 0) {
-                        return false;
-                    }
-
-                    closestColliders = new Collider2D[] { nearbyGrabables.FirstOrDefault() };
-
-                    if (closestColliders == null) {
-                        return false;
-                    }*/
-
                     if (started) {
 
                         isActionPerformed = true;
-                        // todo: delete these calculation from here after they are move to lateon when action occur, both forceDir and newPosition
-                                                                                                             //dir = closestFoePosition - newPositionToSetOnFixedUpdate;
-                        //forceDirToSetOnFixedUpdate = dir.normalized * stats.PushbackForce;
 
                         return true;
                     }
