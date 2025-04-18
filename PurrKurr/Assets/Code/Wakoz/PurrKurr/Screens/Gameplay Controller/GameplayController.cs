@@ -1491,7 +1491,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 var endPosition = (Vector2)attacker.GetCenterPosition() + grabPointOffset * (attacker.LegsRadius);
                 var attackerAsInteractable = (IInteractableBody)attacker;
 
-                attacker.State.SetInterruptibleAnimation(Time.time + 1); // throw cooldown
+                //attacker.State.SetInterruptibleAnimation(Time.time + attackProperties.ActionCooldownDuration); // throw cooldown, might be duplicated in the PerformCombat
 
                 var isThrowingGrabbedFoe = attackerAsInteractable.IsGrabbing() && foe.IsGrabbed();
                 if (isThrowingGrabbedFoe) {
@@ -1974,11 +1974,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         private async void ApplyGrabThrowWhenGrounded(IInteractableBody grabbed, IInteractableBody grabber, AttackData attackStats) {
 
-            await Task.Delay(150);
+            //await Task.Delay(150);
 
             while (grabber.GetCurrentState() is not (ObjectState.Grounded or ObjectState.Running or ObjectState.Crouching or ObjectState.StandingUp)) {
 
-                await Task.Delay(TimeSpan.FromMilliseconds(200));
+                await Task.Delay(TimeSpan.FromMilliseconds(100));
             }
                 
             if (grabbed == null || !grabber.IsGrabbing()) {
