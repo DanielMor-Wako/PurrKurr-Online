@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: da6e1da31f64d744bb37d52c81a279d5, type: 3}
-  m_Name: HolyRats_AttackSequence
+  m_Name: HolyRats_AttackSequence(BU)
   m_EditorClassIdentifier: 
   _uniqueId: DefeatRats_Attack
   _missionTitle: Holy Rats !
@@ -56,6 +56,25 @@ MonoBehaviour:
     _waitTimeInSeconds: 1
   - _actionType: 3
     _targetObjectIds:
+    - Spawner1
+    _startObjectId: 
+    _waitTimeInSeconds: 0.5
+  - _actionType: 1
+    _targetObjectIds:
+    - Rat1
+    _startObjectId: Spawner1
+    _waitTimeInSeconds: 2
+  - _actionType: 3
+    _targetObjectIds:
+    - FoodPileOverview
+    _startObjectId: 
+    _waitTimeInSeconds: 0
+  - _actionType: 0
+    _targetObjectIds: []
+    _startObjectId: 
+    _waitTimeInSeconds: 10
+  - _actionType: 3
+    _targetObjectIds:
     - Spawner2
     _startObjectId: 
     _waitTimeInSeconds: 1
@@ -63,7 +82,7 @@ MonoBehaviour:
     _targetObjectIds:
     - Rat2
     _startObjectId: Spawner2
-    _waitTimeInSeconds: 0.5
+    _waitTimeInSeconds: 1
   - _actionType: 1
     _targetObjectIds:
     - Rat3
@@ -73,30 +92,38 @@ MonoBehaviour:
     _targetObjectIds:
     - FoodPileOverview
     _startObjectId: 
-    _waitTimeInSeconds: 0.5
+    _waitTimeInSeconds: 0
   - _actionType: 0
     _targetObjectIds: []
     _startObjectId: 
-    _waitTimeInSeconds: 11
-  - _actionType: 1
+    _waitTimeInSeconds: 21
+  - _actionType: 3
     _targetObjectIds:
-    - Rat1
-    _startObjectId: Spawner1
-    _waitTimeInSeconds: 2
-  - _actionType: 0
-    _targetObjectIds: []
+    - FoodPileOverview
+    - Spawner1
     _startObjectId: 
-    _waitTimeInSeconds: 12
+    _waitTimeInSeconds: 0
   - _actionType: 1
     _targetObjectIds:
     - Rat4
     _startObjectId: Spawner1
     _waitTimeInSeconds: 1.5
+  - _actionType: 3
+    _targetObjectIds:
+    - FoodPileOverview
+    - Spawner2
+    _startObjectId: 
+    _waitTimeInSeconds: 0
   - _actionType: 1
     _targetObjectIds:
     - Rat5
     _startObjectId: Spawner2
     _waitTimeInSeconds: 1.5
+  - _actionType: 3
+    _targetObjectIds:
+    - FoodPileOverview
+    _startObjectId: 
+    _waitTimeInSeconds: 0
   - _actionType: 0
     _targetObjectIds:
     - 
