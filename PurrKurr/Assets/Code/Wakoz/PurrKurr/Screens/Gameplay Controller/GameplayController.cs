@@ -88,7 +88,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         private LogicController _logic;
         private InputProcessor _inputProcessor;
-        private CharacterActionExecuter _characterActionExecuter;
+        public CharacterActionExecuter CharacterActionExecuter { get;  private set; }
         private UIController _ui;
         private GameplayLogic _gameplayLogic;
         private LevelsController _levelsController;
@@ -106,7 +106,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         protected override void Clean() {
 
             _inputProcessor?.Dispose();
-            _characterActionExecuter?.Dispose();
+            CharacterActionExecuter?.Dispose();
 
             _gameRunning = false;
 
@@ -129,7 +129,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             // handle inputs and generates ExecutableAction
             _inputProcessor = new InputProcessor(this, GetController<InputController>());
             // adjust ExecutableAction by hero context (state) and executes
-            _characterActionExecuter = new CharacterActionExecuter(this, _logic.InputLogic, _logic.GameplayLogic, _inputProcessor);
+            CharacterActionExecuter = new CharacterActionExecuter(this, _logic.InputLogic, _logic.GameplayLogic, _inputProcessor);
             InitHandlers();
             _levelsController = GetController<LevelsController>();
             _interactables = GetController<InteractablesController>();
@@ -1020,6 +1020,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     }
                     e.Attacker.SetTargetPosition(e.InteractionPosition);
                     e.Attacker.State.SetMoveAnimation(Time.time + e.AttackProperties.ActionDuration);
+                    e.Attacker.State.SetCombatTime(
+                        _logic.AbilitiesLogic.GetAbilityType(e.InteractionType),
+                        Time.time + e.AttackProperties.ActionDuration + e.AttackProperties.ActionCooldownDuration);
+
                 }
             }
 
@@ -1095,8 +1099,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 Collider2D[] interactedColliders = attacker.NearbyInteractables(); //.Where(o => o.GetComponent<IInteractable>()?.GetInteractableBody()?.GetHpPercent() > 0).FirstOrDefault();
                 ValidateAttackCondition(ref attacker, ref attackAbility, ref attackProperties);
                 GetAvailableTargets(ref attacker, ref attackProperties, ref interactedColliders, out var interactableBodies);
-                GetCombatNewPos(ref attacker, ref actionType, ref interactableBodies, out var moveToPosition);
-                RegisterInteractionEvent(attacker, ref moveToPosition, ref interactableBodies, ref newFacingDirection, ref attackAbility, ref attackProperties);
+                //GetCombatNewPos(ref attacker, ref actionType, ref interactableBodies, out var moveToPosition);
+                RegisterInteractionEvent(attacker/*, ref moveToPosition*/, ref interactableBodies, ref newFacingDirection, ref attackAbility, ref attackProperties);
             
             } else {
                 Debug.LogWarning($"Attack Ability {attackAbility} is missing from attack moves");
@@ -1216,8 +1220,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                 targetsList.Add(interactableBody);
             }
-            
-            if (latestInteractionAvailable && latestInteractionIsInTargetsList) {
+            // todo: add section to focus on the last interactable interaction 
+            /*if (latestInteractionAvailable && latestInteractionIsInTargetsList) {
 
                 var interactionPositionedRight = attacker.LegsPosition.x < latestInteraction.GetCenterPosition().x;
                 if (interactionPositionedRight && _logic.InputLogic.IsNavigationDirValidAsRight(attacker.State.NavigationDir) ||
@@ -1227,7 +1231,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     targetsList = targetsList.OrderBy(item => item != latestInteraction).ToList();
 
                 }
-            }
+            }*/
 
             targets = targetsList.ToArray();
             return;
@@ -1235,7 +1239,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         private bool IsAlive(IInteractableBody interactableBody) => interactableBody.GetHpPercent() > 0;
 
-        private void RegisterInteractionEvent(Character2DController attacker, ref Vector2 moveToPosition, ref IInteractableBody[] interactedColliders, ref int newFacingDirection, ref AttackAbility attackAbility, ref AttackBaseStats attackProperties) {
+        private void RegisterInteractionEvent(Character2DController attacker/*, ref Vector2 moveToPosition*/, ref IInteractableBody[] interactedColliders, ref int newFacingDirection, ref AttackAbility attackAbility, ref AttackBaseStats attackProperties) {
 
             var canMultiHit = attackProperties.Properties.Count > 0 && attackProperties.Properties.Contains(AttackProperty.MultiTargetOnSurfaceHit);
             IInteractableBody latestInteraction = null;
@@ -1258,8 +1262,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     }
                 } 
             }
+            var v = validInteractables.ToArray();
+            var abilityType = _logic.AbilitiesLogic.GetAbilityType(attackAbility);
+            GetCombatNewPos(ref attacker, ref abilityType, ref v, out var moveToPosition);
 
-            OnNewInteraction?.Invoke(attacker, validInteractables.ToArray(), Time.time, attackStats, attackAbility, moveToPosition, attackProperties);
+            OnNewInteraction?.Invoke(attacker, v, Time.time, attackStats, attackAbility, moveToPosition, attackProperties);
             
             attacker.State.MarkLatestInteraction(latestInteraction);
         }
@@ -1364,7 +1371,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             var isBlockAction = _logic.AbilitiesLogic.IsAbilityBlock(attackAbility);
             if (isBlockAction) {
                 ApplyEffectOnCharacter(attacker, Effect2DType.BlockActive);
-                return facingRightOrLeftTowardsPoint;
             }
 
             if (interactedCollider == null) {
@@ -1374,6 +1380,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             var foe = interactedCollider;
             var foeState = foe.GetCurrentState();
 
+            if (foeState is ObjectState.Dodging) {
+                return facingRightOrLeftTowardsPoint;
+            }
 
             var isAttackAction = _logic.AbilitiesLogic.IsAbilityAnAttack(attackAbility);
             
@@ -1409,13 +1418,28 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 } else if (properties.Contains(AttackProperty.PushBackOnHit) ||
                     properties.Contains(AttackProperty.PushBackOnBlock) && isFoeBlocking) {
 
+                    var foeCharacter = foe as Character2DController;
+
                     if (properties.Contains(AttackProperty.PushBackOnHit) && isFoeBlocking)
                     {
                         ApplyEffect(foe, Effect2DType.ImpactOnBlock);
+                        //stun foe with animation cooldown
+                        if (isFoeBlocking) {
+
+                            AttackData parryActionStats = new AttackData(0, Vector2.up * attacker.Stats.PushbackForce);
+                            parryActionStats.ForceDir = HelperFunctions.RotateVector(parryActionStats.ForceDir, -5 * facingRightOrLeftTowardsPoint);
+                            attacker.ApplyForce(parryActionStats.ForceDir);
+                            //foe.SetTargetPosition(foe.GetCenterPosition());
+                            ApplyEffect(attacker, Effect2DType.Stunned);
+                            var curve = AnimationCurve.Linear(0, 0, 1, 0);
+                            curve.AddKey(0.25f, 1);
+                            Handlers.GetHandler<ShakeHandler>().TriggerShake(attacker.GetCharacterRigTransform(), new ShakeData(ShakeStyle.VerticalCircular, 1f, 0.3f, curve));
+                            attacker.State.SetStunnedAnimation(Time.time + 1);
+                            attacker.DoMove(0);
+                        }
                         return facingRightOrLeftTowardsPoint;
                     }
 
-                    var foeCharacter = foe as Character2DController;
                     if (foeCharacter != null && (_gameplayLogic.IsStateConsideredAsGrounded(foeState) || foeCharacter.State.CanMoveOnSurface())) {
                         _debugDraw.DrawRay(foe.GetCenterPosition(), attackStats.ForceDir, Color.cyan, 4);
                         var upwardDirByTerrain =
@@ -1454,6 +1478,15 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     }
 
                     attackStats.ForceDir.x *= 0.05f;
+
+                    //stun foe with animation cooldown
+                    if (properties.Contains(AttackProperty.PushUpOnBlock) && isFoeBlocking) {
+
+                        ApplyEffect(foe, Effect2DType.Stunned);
+                        var foeCharacter = foe as Character2DController;
+                        foeCharacter?.State.SetStunnedAnimation(Time.time + 1.5f);
+                        foeCharacter?.DoMove(0);
+                    }
 
                     ApplyForce(foe, attackStats);
                     ApplyEffect(foe, Effect2DType.ImpactHeavy);
@@ -1558,6 +1591,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         ApplyForce(foe, grabActionStats);
                         ApplyEffect(foe, Effect2DType.DustCloud);
                         attackerAsInteractable.SetAsGrabbing(null);
+                        //_ = ApplyProjectileStateWhenThrown(foe, grabActionStats.Damage, attackerAsInteractable);
                     }
 
                 }
@@ -1570,6 +1604,23 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                 }
 
+            } else if (_logic.AbilitiesLogic.IsAbilityBlock(attackAbility)) {
+                
+                facingRightOrLeftTowardsPoint = attacker.State.GetFacingRightAsInt();
+                /*// todo: stun foe with animation cooldown
+                if (foe.GetCurrentState() is ObjectState.Attacking &&
+                    properties.Contains(AttackProperty.StunAttacker)) {
+
+                    AttackData parryActionStats = new AttackData(0, Vector2.up * attacker.Stats.PushbackForce);
+                    foe.ApplyForce(parryActionStats.ForceDir);
+                    //foe.SetTargetPosition(foe.GetCenterPosition());
+                    ApplyEffect(foe, Effect2DType.Stunned);
+                    var curve = AnimationCurve.Linear(0, 0, 1, 0);
+                    curve.AddKey(0.25f, 1);
+                    Handlers.GetHandler<ShakeHandler>().TriggerShake(foe.GetCharacterRigTransform(), new ShakeData(ShakeStyle.VerticalCircular, 1f, 0.3f, curve));
+                    var foeCharacter = foe as Character2DController;
+                    foeCharacter.State.SetMoveAnimation(Time.time + 1);
+                }*/
             }
 
             return facingRightOrLeftTowardsPoint;
