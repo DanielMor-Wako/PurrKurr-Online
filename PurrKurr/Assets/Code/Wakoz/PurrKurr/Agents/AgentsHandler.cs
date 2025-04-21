@@ -171,7 +171,8 @@ namespace Code.Wakoz.PurrKurr.Agents
 
             var character = agent.CharacterController;
 
-            if (character == null || character.GetHpPercent() == 0 || targetsTransform == null)
+            if (character == null || character.GetHpPercent() == 0 || targetsTransform == null ||
+                !character.State.CanPerformContinousRunning() || character.State.IsInterraptibleAnimation() || character.State.IsStunnedState())
                 return (0, 0);
 
             var characterPosition = character.GetCenterPosition();
@@ -263,7 +264,9 @@ namespace Code.Wakoz.PurrKurr.Agents
                         /*if (randomCombatAbility == (int)Definitions.ActionType.Block) {
                             randomCombatAbility = (int)Definitions.ActionType.Grab;
                         }*/
-                        SingleController.GetController<GameplayController>().CombatLogic(character, (Definitions.ActionType)randomCombatAbility);
+                        _characterActionExecuter ??= SingleController.GetController<GameplayController>().CharacterActionExecuter;
+                        _characterActionExecuter.OnActionStarted(character, new Screens.Ui_Controller.ActionInput((Definitions.ActionType)randomCombatAbility, Definitions.ActionTypeGroup.Action, Vector2.zero, Time.time, Vector2.zero));
+                        //SingleController.GetController<GameplayController>().CombatLogic(character, (Definitions.ActionType)randomCombatAbility);
                         return true;
                     }
                     break;
@@ -292,6 +295,7 @@ namespace Code.Wakoz.PurrKurr.Agents
 
         // todo: move this to gameBalanceManager script
         private float _recentAttackInteraction = 0;
+        private CharacterActionExecuter _characterActionExecuter;
         private readonly float CombatInteractionRateInSeconds = 2.0f;
         private bool IsCombatInteractionValid() {
             var elapsedTime = Time.realtimeSinceStartup - _recentAttackInteraction;
@@ -312,8 +316,18 @@ namespace Code.Wakoz.PurrKurr.Agents
             if (plan.yForce > 0) {
                 agent.CharacterController.SetForceDir(new Vector2(plan.xMove, plan.yForce));
             }
-        }
+            /*_characterActionExecuter ??= SingleController.GetController<GameplayController>().CharacterActionExecuter;
+            if (plan.xMove == 0) {
+                _characterActionExecuter.OnNavigationEnded(agent.CharacterController, new Screens.Ui_Controller.ActionInput(Definitions.ActionType.Movement, Definitions.ActionTypeGroup.Navigation, Vector2.zero, Time.time, new Vector2(plan.xMove, plan.yForce)));
+            } else {
+                _characterActionExecuter.OnNavigationOngoing(agent.CharacterController, new Screens.Ui_Controller.ActionInput(Definitions.ActionType.Movement, Definitions.ActionTypeGroup.Navigation, Vector2.zero, Time.time, new Vector2(plan.xMove, plan.yForce)));
+            }
 
+            if (plan.yForce > 0) {
+                _characterActionExecuter.OnActionStarted(agent.CharacterController, new Screens.Ui_Controller.ActionInput(Definitions.ActionType.Jump, Definitions.ActionTypeGroup.Action, new Vector2(plan.xMove, plan.yForce), Time.time, Vector2.zero));
+            }*/
+        }
+    
         private List<Transform> GetTargetsAndOrderByClosestDistance(List<string> targets, Vector3 point) {
 
             var res = new List<Transform>();
