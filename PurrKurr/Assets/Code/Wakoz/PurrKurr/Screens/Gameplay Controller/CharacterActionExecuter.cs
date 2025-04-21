@@ -107,7 +107,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
         }
 
-        public void ProcessAction(Character2DController character, ActionInput action, bool started, bool ended) {
+        private void ProcessAction(Character2DController character, ActionInput action, bool started, bool ended) {
 
             if (action == null || character == null)
                 return;
@@ -248,7 +248,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
 
         // for ref
-        private void OnNavigationStarted(Character2DController character, ActionInput actionInput) {
+        public void OnNavigationStarted(Character2DController character, ActionInput actionInput) {
 
             if (ValidateNavigation(character, actionInput, true, false, 
                     out var moveSpeed, out var setForceDir, out var addForceDir, out var navigationDir)) {
@@ -264,7 +264,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         }
 
-        private void OnNavigationOngoing(Character2DController character, ActionInput actionInput) {
+        public void OnNavigationOngoing(Character2DController character, ActionInput actionInput) {
 
             if (ValidateNavigation(character, actionInput, false, false,
                     out var moveSpeed, out var setForceDir, out var addForceDir, out var navigationDir)) {
@@ -325,7 +325,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
         }
 
-        private void OnNavigationEnded(Character2DController character, ActionInput actionInput) {
+        public void OnNavigationEnded(Character2DController character, ActionInput actionInput) {
 
             if (ValidateNavigation(character, actionInput, false, true, 
                     out var moveSpeed, out var setForceDir, out var addForceDir, out var navigationDir)) {
@@ -338,7 +338,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         }
 
-        private void OnActionStarted(Character2DController character, ActionInput actionInput) {
+        public void OnActionStarted(Character2DController character, ActionInput actionInput) {
 
             if (ValidateAction(character, actionInput, true, false, 
                     out var isActionPerformed, out var interactedColliders)) {
@@ -391,11 +391,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         }
 
-        private void OnActionOngoing(Character2DController character, ActionInput actionInput) {
+        public void OnActionOngoing(Character2DController character, ActionInput actionInput) {
 
         }
 
-        private void OnActionEnded(Character2DController character, ActionInput actionInput) {
+        public void OnActionEnded(Character2DController character, ActionInput actionInput) {
 
             if (ValidateAction(character, actionInput, false, true, 
                     out var isActionPerformed, out var interactedCollider)) {
@@ -466,7 +466,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         }
 
 
-        public bool ValidateNavigation(Character2DController character, ActionInput actionInput, bool started, bool ended, 
+        private bool ValidateNavigation(Character2DController character, ActionInput actionInput, bool started, bool ended, 
                 out float moveSpeed, out Vector2 forceDirToSetOnFixedUpdate, out Vector2 forceDirToAddOnFixedUpdate, out Definitions.NavigationType navigationDir) {
 
             moveSpeed = 0;
@@ -478,7 +478,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 return false;
             }
 
-            if (character.State.IsInterraptibleAnimation() || character.GetHpPercent() <= 0) {
+            if (character.State.IsInterraptibleAnimation() || character.GetHpPercent() <= 0 || character.State.IsStunnedState()) {
                 return true; // marked true so during animation, moveSpeed = 0 is applied
             }
 
@@ -578,14 +578,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             return true;
         }
 
-        public bool ValidateAction(Character2DController character, ActionInput actionInput, bool started, bool ended, 
+        private bool ValidateAction(Character2DController character, ActionInput actionInput, bool started, bool ended, 
             out bool isActionPerformed, out Collider2D[] closestColliders) {
 
             isActionPerformed = false;
             closestColliders = null;
 
             if (character == null || actionInput.ActionGroupType != Definitions.ActionTypeGroup.Action || 
-                character.GetHpPercent() <= 0 || character.State.IsInterraptibleAnimation() && actionInput.ActionType != ActionType.Block) {
+                character.GetHpPercent() <= 0 || character.State.IsStunnedState() || character.State.IsInterraptibleAnimation() && actionInput.ActionType != ActionType.Block) {
                 return false;
             }
 
