@@ -45,6 +45,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
         private float _grabEndTime;
         private float _blockEndTime;
         private float _dodgeEndTime;
+        private float _stunnedEndTime;
         private bool _hasLanded;
         private bool _isCrouching;
         private bool _isStanding;
@@ -130,8 +131,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
             //if (_combatAbility != Definitions.ActionType.Empty) {
 
             //Debug.Log($"_combatAbility {_combatAbility} during");
-            //if (_combatAbility == Definitions.ActionType.Block && !IsMoveAnimation()) {
-            if (IsBlockingState() || _combatAbility == Definitions.ActionType.Block || IsDodgingState()) {
+
+            if (IsStunnedState()) {
+                SetState(Definitions.ObjectState.Stunned);
+                return;
+
+                //if (_combatAbility == Definitions.ActionType.Block && !IsMoveAnimation()) {
+            } else if (IsDodgingState()) {
+                SetState(Definitions.ObjectState.Dodging);
+                return;
+            
+            } else if (IsBlockingState() || _combatAbility == Definitions.ActionType.Block) {
                 SetState(Definitions.ObjectState.Blocking);
                 return;
 
@@ -233,25 +243,17 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
             }
         }
 
-        public void SetMoveAnimation(float time) {
-            _moveAnimation = time;
-        }
+        public void SetMoveAnimation(float time) => _moveAnimation = time;
 
-        public void SetInterruptibleAnimation(float time) {
-            _interruptibleAnimation = time;
-        }
+        public void SetInterruptibleAnimation(float time) => _interruptibleAnimation = time;
 
-        public void SetUninterruptibleAnimation(float time) {
-            _uninterruptibleAnimation = time;
-        }
+        public void SetUninterruptibleAnimation(float time) => _uninterruptibleAnimation = time;
 
-        public void SetJumping(float time) {
-            _jumpingEndTime = time;
-        }
+        public void SetStunnedAnimation(float time) => _stunnedEndTime = time;
 
-        public void SetDodgeTime(float time) {
-            _dodgeEndTime = time;
-        }
+        public void SetJumping(float time) => _jumpingEndTime = time;
+
+        public void SetDodgeTime(float time) => _dodgeEndTime = time;
 
         public void SetCombatTime(Definitions.ActionType combatAbility, float time) {
 
@@ -310,8 +312,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
 
         public bool IsGrabbingState() => Time.time < _grabEndTime;
 
+        public bool IsStunnedState() => Time.time < _stunnedEndTime;
+        
         public bool CanPerformAction() =>
-            !IsMoveAnimation() && !IsInterraptibleAnimation() && !IsJumping() &&
+            !IsMoveAnimation() && !IsInterraptibleAnimation() && !IsJumping() && !IsStunnedState() &&
             _currentState is Definitions.ObjectState.Crouching or Definitions.ObjectState.StandingUp or
                 Definitions.ObjectState.Jumping or Definitions.ObjectState.Falling or
                 Definitions.ObjectState.AerialJumping or Definitions.ObjectState.Grabbing or
