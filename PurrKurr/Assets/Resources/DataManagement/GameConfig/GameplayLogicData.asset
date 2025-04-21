@@ -24,9 +24,6 @@ MonoBehaviour:
   WhatIsSolid:
     serializedVersion: 2
     m_Bits: 2048
-  WhatIsSolidForProjectile:
-    serializedVersion: 2
-    m_Bits: 0
   WhatIsPlatform:
     serializedVersion: 2
     m_Bits: 4096
@@ -83,6 +80,10 @@ MonoBehaviour:
       EffectType: 21
       Effect: {fileID: 5186544280080545649, guid: f250d794808043942b95c348d184dcb3, type: 3}
       TrackPosition: 0
-  CharacterStatesConsideredAsGrounded: 000304050b19
+    - DurationInSeconds: 1
+      EffectType: 28
+      Effect: {fileID: 5096601620542207436, guid: 8da0227c0fa579d4f90e13a9c8d0a362, type: 3}
+      TrackPosition: 1
+  CharacterStatesConsideredAsGrounded: 000304050b1a
   CharacterStatesConsideredAsAerial: 0c0d
   MinMagnitudeConsideredAsRunnin: 25
