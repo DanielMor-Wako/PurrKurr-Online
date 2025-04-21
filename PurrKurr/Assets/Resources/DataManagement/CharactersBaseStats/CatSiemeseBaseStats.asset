@@ -23,7 +23,7 @@ MonoBehaviour:
     _runSpeedMinToMax: {x: 700, y: 1400}
     _sprintSpeedMinToMax: {x: 1500, y: 2500}
     _jumpForceMinToMax: {x: 40, y: 55}
-    _airborneSpeedMinToMax: {x: 1, y: 5}
+    _airborneSpeedMinToMax: {x: 1.5, y: 2}
     _airborneMaxSpeedMinToMax: {x: 10, y: 15}
     _multiTargetsDistanceBasevalues: {x: 4, y: 7}
     _movementTypes: 00
@@ -52,7 +52,7 @@ MonoBehaviour:
       _actionCooldownDuration: 0.35
       _properties: 01020607
       _characterStateCondition: 0400
-      _opponentStateCondition: 0300
+      _opponentStateCondition: 00
     - _elementName: Roll Attack
       _attackAbility: 3
       _actionDuration: 0.15
@@ -99,7 +99,7 @@ MonoBehaviour:
       _attackAbility: 9
       _actionDuration: 0.15
       _actionCooldownDuration: 0.2
-      _properties: 05
+      _properties: 15
       _characterStateCondition: 
       _opponentStateCondition: 
     _abilitiesPool:
