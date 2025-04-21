@@ -99,6 +99,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             ApplyBleedOnHit = 18,
             ApplyBleedOnBlock = 19,
             CriticalChanceOnHit = 20,
+            StunAttacker = 21
         }
 
         public enum CharacterBuff : byte
