@@ -24,11 +24,14 @@ namespace Code.Wakoz.PurrKurr.Agents
         private float _elapsedTime = 0f;
         private readonly float _calculationRate = 0.1f;
 
+        // todo: remove to gameBalanceManager responsibility
+        private float _recentAttackInteraction = 0;
+        private CharacterActionExecuter _characterActionExecuter;
+        private readonly float CombatInteractionRateInSeconds = 1.5f;
+
         public AgentsHandler() {
             _agentsPool = new();
             _agentQueue = new();
-
-            _levelsController = SingleController.GetController<LevelsController>();
 
             AgentController.OnRegisterAgent += RegisterAgent;
             AgentController.OnDeregisterAgent += DeregisterAgent;
@@ -293,10 +296,6 @@ namespace Code.Wakoz.PurrKurr.Agents
             return agent == _agentDedicatedToAttackMainHero;
         }
 
-        // todo: move this to gameBalanceManager script
-        private float _recentAttackInteraction = 0;
-        private CharacterActionExecuter _characterActionExecuter;
-        private readonly float CombatInteractionRateInSeconds = 2.0f;
         private bool IsCombatInteractionValid() {
             var elapsedTime = Time.realtimeSinceStartup - _recentAttackInteraction;
             var percent = elapsedTime / CombatInteractionRateInSeconds;
@@ -330,6 +329,10 @@ namespace Code.Wakoz.PurrKurr.Agents
     
         private List<Transform> GetTargetsAndOrderByClosestDistance(List<string> targets, Vector3 point) {
 
+            _levelsController ??= SingleController.GetController<LevelsController>();
+            if (_levelsController == null) {
+                return new();
+            }
             var res = new List<Transform>();
             res.AddRange(_levelsController.GetTaggedObject(targets));
             return res.OrderBy(obj => Vector2.Distance(obj.transform.position, point)).ToList();
