@@ -63,6 +63,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         
         public List<Definitions.ActionType> GetActions() => _actions;
 
+        public bool HasAbility(Definitions.ActionType ability) => _actions.Contains(ability);
+
         public void InitUpgrades() {
             
             var unlockedActions = _unlockedAbilities.ActionsPool;
@@ -194,6 +196,20 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             Health = health;
             _healthPercentage = (float)Health / MaxHealth;
+        }
+
+        public bool TryUnlockAbility(Definitions.ActionType ability) {
+
+            if (_actions.Contains(ability) ||
+                _unlockedAbilities.ActionsPool.Contains(ability) ||
+                !_baseStats.Data.ActionsPool.Contains(ability)) {
+                return false;
+            }
+
+            _unlockedAbilities.ActionsPool.Add(ability);
+            InitUpgrades();
+
+            return true;
         }
     }
 
