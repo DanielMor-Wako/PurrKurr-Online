@@ -479,7 +479,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
 
             if (character.State.IsInterraptibleAnimation() || character.GetHpPercent() <= 0 || character.State.IsStunnedState()) {
-                return true; // marked true so during animation, moveSpeed = 0 is applied
+                return true; // true, so during animation, moveSpeed = 0 is applied
             }
 
             var state = character.State;
@@ -531,14 +531,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                 if (isNavRightDir || isNavLeftDir) {
 
-                    // Check if the absolute value of the current x velocity is beneath the threshold
+                    // Checks if the absolute value of the current x velocity is beneath the threshold
                     if (Mathf.Abs(rigidbodyVelocity.x) < stats.AirborneMaxSpeed
                         || Mathf.Sign(rigidbodyVelocity.x) > 0 && isNavLeftDir
                         || Mathf.Sign(rigidbodyVelocity.x) < 0 && isNavRightDir) {
 
-                        //var newXVelocity = rigidbodyVelocity.x + stats.AirborneSpeed * (isNavRightDir ? 1 : -1);
-                        //var clampedXVelocity = Mathf.Clamp(newXVelocity, -stats.AirborneMaxSpeed, stats.AirborneMaxSpeed);
-                        //forceDirToSetOnFixedUpdate = new Vector2(clampedXVelocity, yVelocity < 0 ? yVelocity : yVelocity * 0.8f);
                         if (isNavRightDir && rigidbodyVelocity.x < stats.AirborneMaxSpeed ||
                             isNavLeftDir && rigidbodyVelocity.x > -stats.AirborneMaxSpeed ) {
                             forceDirToAddOnFixedUpdate = new Vector2((stats.AirborneSpeed * (isNavRightDir ? 1 : -1)), 0);
@@ -585,12 +582,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             closestColliders = null;
 
             if (character == null || actionInput.ActionGroupType != Definitions.ActionTypeGroup.Action || 
-                character.GetHpPercent() <= 0 || character.State.IsStunnedState() || character.State.IsInterraptibleAnimation() && actionInput.ActionType != ActionType.Block) {
+                character.GetHpPercent() <= 0 || character.State.IsStunnedState() || character.State.IsMoveAnimation() || character.State.IsInterraptibleAnimation() && actionInput.ActionType != ActionType.Block ) {
+                return false;
+            }
+
+            if (!character.Stats.HasAbility(actionInput.ActionType)) {
+                Debug.LogWarning($"Invalid ability input {actionInput.ActionType} , missing from character actions");
                 return false;
             }
 
             var state = character.State;
-            var stats = character.Stats;
 
             var heroAsInteractableBody = (IInteractableBody)character;
             if (started && actionInput.ActionType is Definitions.ActionType.Attack or Definitions.ActionType.Grab
@@ -618,54 +619,15 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     return true;
 
                 case Definitions.ActionType.Attack:
-
-                    if (started) {
-
-                        //var closestColl = closestColliders.Where(o => o.GetComponent<IInteractable>()?.GetInteractableBody()?.GetHpPercent() > 0).FirstOrDefault();
-
-                        isActionPerformed = true;
-
-                        return true;
-                    }
-
-                    return false;
-
-                case Definitions.ActionType.Block:
-
-                    if (started || ended) {
-                        isActionPerformed = true;
-                        return true;
-                    }
-
-                    return false;
-
                 case Definitions.ActionType.Grab:
 
-                    if (!started) {
-                        return false;
-                    }
+                    isActionPerformed = started;
 
-                    if (started) {
+                    return isActionPerformed;
 
-                        isActionPerformed = true;
-
-                        return true;
-                    }
-
-                    break;
-
+                case Definitions.ActionType.Block:
                 case Definitions.ActionType.Projectile:
-
-                    isActionPerformed = started || ended;
-
-                    return isActionPerformed;
-
                 case Definitions.ActionType.Rope:
-
-                    isActionPerformed = started || ended;
-
-                    return isActionPerformed;
-
                 case Definitions.ActionType.Special:
 
                     isActionPerformed = started || ended;
