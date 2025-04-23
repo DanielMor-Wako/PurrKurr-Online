@@ -436,6 +436,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             _levelsController.RefreshSpritesOrder(_hero);
         }
 
+        public void UnlockHeroAbilities(List<ActionType> characterAbilities) {
+            _hero.Stats.SetUnlockedAbilities(characterAbilities);
+            _hero.RefreshStats();
+        }
+
         public void SetNewHero(Character2DController hero) => TryInitHero(hero);
 
         private bool TryInitHero(Character2DController hero)

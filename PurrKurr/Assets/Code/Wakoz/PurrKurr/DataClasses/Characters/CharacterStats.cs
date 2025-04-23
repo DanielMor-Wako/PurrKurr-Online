@@ -211,6 +211,15 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
             return true;
         }
+
+        public void SetUnlockedAbilities(List<Definitions.ActionType> characterAbilities) {
+
+            _unlockedAbilities.ActionsPool.Clear();
+            if (characterAbilities != null) 
+                _unlockedAbilities.ActionsPool.AddRange(characterAbilities);
+            
+            InitUpgrades();
+        }
     }
 
 }

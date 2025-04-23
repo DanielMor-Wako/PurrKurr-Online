@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.Views
 {
-    [RequireComponent(typeof(CanvasGroup))]
     public class CanvasGroupFaderView : View
     {
         [SerializeField] [Min(0.01f)] private float _transitionSpeed = 1;
