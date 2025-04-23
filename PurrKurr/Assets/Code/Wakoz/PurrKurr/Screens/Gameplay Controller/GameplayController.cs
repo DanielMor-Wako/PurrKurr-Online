@@ -193,7 +193,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 _timelineHandler,
                 new ObjectivesHandler(this, GetController<ObjectivesController>()),
                 new ObjectivesMissionHandler(this, GetController<LevelsController>()),
-                new GuidanceMarkerHandler(this, GetController<UiGuidanceController>())
+                new GuidanceMarkerHandler(this, GetController<UiGuidanceController>()),
+                new CharacterStatsHandler(this)
             };
             Handlers.AddBindableHandlers(bindableHandlers);
         }
@@ -754,6 +755,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 return;
             }
 
+            character.State.SetInterruptibleAnimation(Time.time + 0.3f);
+
             projectile.transform.SetPositionAndRotation(character.LegsPosition, rotation);
             projectile.SetTargetPosition(newPos, distancePercentReached);
             ApplyEffectOnCharacter(character, Effect2DType.DustCloud);
@@ -1022,7 +1025,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     e.Attacker.State.SetMoveAnimation(Time.time + e.AttackProperties.ActionDuration);
                     e.Attacker.State.SetCombatTime(
                         _logic.AbilitiesLogic.GetAbilityType(e.InteractionType),
-                        Time.time + e.AttackProperties.ActionDuration + e.AttackProperties.ActionCooldownDuration);
+                        Time.time + e.AttackProperties.ActionDuration);
 
                 }
             }
@@ -1052,9 +1055,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         nearbyTargets = e.Targets;
                     }*/
 
-                    e.Attacker.State.SetCombatTime(
+                    e.Attacker.State.SetInterruptibleAnimation(Time.time + e.AttackProperties.ActionCooldownDuration);
+                    /*e.Attacker.State.SetCombatTime(
                         _logic.AbilitiesLogic.GetAbilityType(e.InteractionType), 
-                        Time.time + e.AttackProperties.ActionCooldownDuration);
+                        Time.time + e.AttackProperties.ActionCooldownDuration);*/
 
                     HitTargets(e.Attacker, ref hitPosition, nearbyTargets, ref newFacingDirection, e.InteractionType, e.AttackProperties);
 
@@ -1427,13 +1431,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         if (isFoeBlocking) {
 
                             AttackData parryActionStats = new AttackData(0, Vector2.up * attacker.Stats.PushbackForce);
-                            parryActionStats.ForceDir = HelperFunctions.RotateVector(parryActionStats.ForceDir, -5 * facingRightOrLeftTowardsPoint);
+                            parryActionStats.ForceDir = HelperFunctions.RotateVector(parryActionStats.ForceDir, 5 * facingRightOrLeftTowardsPoint);
                             attacker.ApplyForce(parryActionStats.ForceDir);
                             //foe.SetTargetPosition(foe.GetCenterPosition());
-                            ApplyEffect(attacker, Effect2DType.Stunned);
                             var curve = AnimationCurve.Linear(0, 0, 1, 0);
                             curve.AddKey(0.25f, 1);
-                            Handlers.GetHandler<ShakeHandler>().TriggerShake(attacker.GetCharacterRigTransform(), new ShakeData(ShakeStyle.VerticalCircular, 1f, 0.3f, curve));
+                            Handlers.GetHandler<ShakeHandler>().TriggerShake(attacker.GetCharacterRigTransform(), new ShakeData(ShakeStyle.HorizontalCircular, 1f, 0.3f, curve));
+                            ApplyStunEffectOnCharacter(attacker, 1);
                             attacker.State.SetStunnedAnimation(Time.time + 1);
                             attacker.DoMove(0);
                         }
@@ -1479,13 +1483,16 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                     attackStats.ForceDir.x *= 0.05f;
 
-                    //stun foe with animation cooldown
-                    if (properties.Contains(AttackProperty.PushUpOnBlock) && isFoeBlocking) {
-
-                        ApplyEffect(foe, Effect2DType.Stunned);
-                        var foeCharacter = foe as Character2DController;
-                        foeCharacter?.State.SetStunnedAnimation(Time.time + 1.5f);
-                        foeCharacter?.DoMove(0);
+                    //stun foe with animation cooldown - longer when foe is blocking
+                    var foeCharacter = foe as Character2DController;
+                    if (foeCharacter != null) {
+                        var stunDuration = properties.Contains(AttackProperty.PushUpOnBlock) && isFoeBlocking ?
+                            1.5f : 0.5f;
+                        if (foeCharacter != null) {
+                            ApplyStunEffectOnCharacter(foeCharacter, stunDuration);
+                            foeCharacter.State.SetStunnedAnimation(Time.time + stunDuration);
+                            foeCharacter.DoMove(0);
+                        }
                     }
 
                     ApplyForce(foe, attackStats);
@@ -1499,6 +1506,19 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                             properties.Contains(AttackProperty.PushDiagonalOnBlock) && isFoeBlocking) {
 
                     //_visualDebug.Log($"forceDirAction.y {forceDirAction.ForceDir.normalized.y} during PushDiagonal");
+
+                    if (properties.Contains(AttackProperty.PushDiagonalOnBlock) && isFoeBlocking) {
+                        ApplyEffect(foe, Effect2DType.ImpactOnBlock);
+                        return facingRightOrLeftTowardsPoint;
+                    }
+
+                    //stun foe with animation cooldown
+                    var foeCharacter = foe as Character2DController;
+                    if (foeCharacter != null) {
+                        ApplyStunEffectOnCharacter(foeCharacter, 0.35f);
+                        foeCharacter.State.SetStunnedAnimation(Time.time + 0.35f);
+                        foeCharacter.DoMove(0);
+                    }
 
                     if ((attackStats.ForceDir.normalized.y) < 0.1f) {
                         _debugDraw.DrawRay(foe.GetCenterPosition(), attackStats.ForceDir, Color.yellow, 4);
@@ -2005,6 +2025,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         {
             var effectData = character.GetEffectOverride(effectType) ?? _gameplayLogic.GetEffectData(effectType);
             OnNewEffect?.Invoke(effectData, character.transform, initialRotation);
+        }
+
+        public void ApplyStunEffectOnCharacter(Character2DController character, float durationInSeconds = 0) {
+
+            var effectData = _gameplayLogic.GetEffectData(Effect2DType.Stunned);
+            effectData.DurationInSeconds = durationInSeconds;
+            OnNewEffect?.Invoke(effectData, character.transform, Quaternion.identity);
         }
 
         private Vector2 AlterDirectionToMaxForce(Vector2 forceDirAction) {
