@@ -2,7 +2,8 @@
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars {
+namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars
+{
     [DefaultExecutionOrder(11)]
     public class UIMenuController : SingleController {
 
