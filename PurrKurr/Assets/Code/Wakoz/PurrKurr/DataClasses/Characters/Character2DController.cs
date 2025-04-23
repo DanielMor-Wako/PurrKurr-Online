@@ -317,6 +317,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
         public InteractableObject2DState State => _state;
 
+        public void RefreshStats() {
+            OnUpdatedStats?.Invoke(null);
+        }
+
         private void UpdateStats(int level = -1) {
 
             level = level == -1 ? _stats.GetCurrentLevel() : level;
@@ -457,6 +461,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             SetForceDir(forceDir);
         }
 
+        public void EndTargetPositionMovement() {
+            _transformMover.EndMove();
+        }
+
         public void SetTargetPosition(Vector2 newPosition, float percentToPerform = 1) {
 
             if (newPosition != Vector2.zero) {
@@ -550,7 +558,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             if (ForceDirToSetOnFixedUpdate != Vector2.zero) {
 
                 _rigidbody.velocity = ForceDirToSetOnFixedUpdate;
-                //_rigidbody.AddForce(ForceDirToSetOnFixedUpdate);
                 ForceDirToSetOnFixedUpdate = Vector2.zero;
             
             } else if (ForceDirToAddOnFixedUpdate != Vector2.zero) {
