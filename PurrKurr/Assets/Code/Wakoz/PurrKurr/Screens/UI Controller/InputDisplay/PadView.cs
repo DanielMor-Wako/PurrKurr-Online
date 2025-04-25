@@ -3,11 +3,13 @@ using Code.Wakoz.PurrKurr.Views;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
-    public class PadView : View<PadModel> {
+namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay
+{
+    public class PadView : View<PadModel>
+    {
 
         private Camera _cam;
-        
+
         [Header("Settings")]
         [SerializeField] private RectTransform _interactionEffect;
         [SerializeField] private RectTransform _fixedTouchPad;
@@ -20,7 +22,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
         private AimPadModel _aimPadModel;
 
         private AbilitiesLogic _abilitiesLogic;
-        
+
         protected override void ModelReplaced() {
             base.ModelReplaced();
 
@@ -31,6 +33,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
                     _cam ??= Camera.main;
                 }
             }
+
         }
 
         protected override void ModelChanged() {
@@ -39,7 +42,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
                 //Debug.Log($"no available pad display {Model.Config.actionType}");
                 return;
             }
-            
+
             var hasAimPad = Model.IsActive && Model.Config.IsAimAvailable && Model.AimStartPos != Vector2.zero;
             if (_aimPadRectTransform != null) {
                 SetStateFlexiblePad(hasAimPad);
@@ -47,7 +50,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
             } else {
                 SetStateFixedPad();
             }
-            
+
             SetAlternativeSymbol();
             SetInteractionEffect();
             SetCooldown();
@@ -63,17 +66,17 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
         }
 
         private void UpdateCooldown(float startAmount, float targetAmount) {
-            
+
             // todo: animate from start amount to target amount
             _cooldown.fillAmount = targetAmount;
         }
 
         private void SetInteractionEffect() {
-            
+
             if (_interactionEffect == null) {
                 return;
             }
-            
+
             _interactionEffect.gameObject.SetActive(Model.IsActive);
         }
 
@@ -87,12 +90,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
         }
 
         private void SetStateFlexiblePad(bool hasAimPad) {
-            
+
             _fixedTouchPad.gameObject.SetActive(!hasAimPad);
             _flexiblePad.gameObject.SetActive(hasAimPad);
 
             if (hasAimPad) {
-                
+
                 // todo: figure why the z is always negative although it is set as 0
                 var newPos = _cam.ScreenToWorldPoint(Model.AimStartPos);
                 newPos.z = 0;
@@ -100,12 +103,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
 
                 if (_aimPadModel != null) {
                     _aimPadModel.UpdateDir(Model.AimDir);
-                    
+
                 } else {
                     _aimPadModel = new AimPadModel(Vector2.zero, _abilitiesLogic.GetSwipeTypeByActionType(Model.Config.actionType));
                     _flexiblePad.SetModel(_aimPadModel);
                 }
-                
+
             }
         }
 
