@@ -1,5 +1,4 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.Enums;
-using Code.Wakoz.PurrKurr.Screens.CameraSystem;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -41,12 +40,12 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
         }
 
         private void HandlePlayCampaignClicked() {
-            GetController<GameplayController>().UnlockHeroAbilities(null);
+            GetController<GameplayController>().SetUnlockedAbilities(null);
             ShowMenu(false);
         }
 
         private void HandleEventsClicked() {
-            GetController<GameplayController>().UnlockHeroAbilities(new List<Definitions.ActionType>() { Definitions.ActionType.Jump, Definitions.ActionType.Projectile, Definitions.ActionType.Grab, Definitions.ActionType.Attack, Definitions.ActionType.Special, Definitions.ActionType.Block, Definitions.ActionType.Rope});
+            GetController<GameplayController>().SetUnlockedAbilities(new List<Definitions.ActionType>() { Definitions.ActionType.Jump, Definitions.ActionType.Projectile, Definitions.ActionType.Grab, Definitions.ActionType.Attack, Definitions.ActionType.Special, Definitions.ActionType.Block, Definitions.ActionType.Rope});
             ShowMenu(false);
         }
 
