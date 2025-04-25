@@ -525,6 +525,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             var isNavLeftDir = _inputLogic.IsNavigationDirValidAsLeft(navigationDir);
 
             var isAirBorne = state.CurrentState is Definitions.ObjectState.Falling or Definitions.ObjectState.Jumping or ObjectState.TraversalRunning && !state.IsJumping();
+            var isStuckOnGroundedStateAndNotMovingAndNoSurfaceAround = !isInvalidMovementState && !state.IsTouchingAnySurface() && state.Velocity.magnitude < 0.01f;
 
             if (isAirBorne) {
                 var yVelocity = rigidbodyVelocity.y;
@@ -547,7 +548,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                 }
 
-            } else if (!isInvalidMovementState && !state.IsCeiling() &&
+            } else if (isStuckOnGroundedStateAndNotMovingAndNoSurfaceAround || 
+                !isInvalidMovementState && !state.IsCeiling() &&
                 (state.IsTouchingAnySurface() && state.CanMoveOnSurface() || state.IsBackWall() || state.IsFrontWall() && state.Velocity.magnitude < 0.2f)) {
 
                 switch (navigationDir) {
