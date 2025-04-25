@@ -194,7 +194,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 new ObjectivesHandler(this, GetController<ObjectivesController>()),
                 new ObjectivesMissionHandler(this, GetController<LevelsController>()),
                 new GuidanceMarkerHandler(this, GetController<UiGuidanceController>()),
-                new CharacterStatsHandler(this)
+                new CharacterStatsHandler(this, GetController<UiIconsMoverController>())
             };
             Handlers.AddBindableHandlers(bindableHandlers);
         }
@@ -436,7 +436,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             _levelsController.RefreshSpritesOrder(_hero);
         }
 
-        public void UnlockHeroAbilities(List<ActionType> characterAbilities) {
+        public void SetUnlockedAbilities(List<ActionType> characterAbilities) {
             _hero.Stats.SetUnlockedAbilities(characterAbilities);
             _hero.RefreshStats();
         }
