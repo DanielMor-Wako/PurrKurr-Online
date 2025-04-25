@@ -1,0 +1,126 @@
+﻿using Code.Wakoz.PurrKurr.Screens.CameraSystem;
+using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using UnityEngine;
+
+namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils
+{
+    [DefaultExecutionOrder(12)]
+    public sealed class UiIconsMoverController : SingleController
+    {
+        [SerializeField] public RectTransform _markerTransform;
+
+        [SerializeField] private AnimationCurve _animeCurve;
+        [SerializeField][Range(0.01f, 5)] private float _durationInSeconds = 1f;
+
+        private int _corooutineCount;
+        private Camera _cam;
+
+        private Dictionary<ScreenEdge, Vector2> _screenEdges = new();
+        public enum ScreenEdge : byte {
+            TopCenter = 0, TopRightCorner = 1, RightCenter = 2, BottomRightCorner = 3, BottomCenter = 4, BottomLeftCorner = 5, LeftCenter = 6, TopLeftCorner = 7
+        }
+
+        private void OnDisable() => Clean();
+
+        protected override void Clean() {
+
+            if (_corooutineCount > 0) {
+                _corooutineCount = 0;
+                StopAllCoroutines();
+            }
+        }
+
+        protected override Task Initialize() {
+
+            _corooutineCount = 0;
+            return Task.CompletedTask;
+        }
+
+        public void DeactivateIcon(RectTransform icon) {
+
+            Destroy(icon.gameObject);
+            _corooutineCount--;
+        }
+
+        public void ActivateIcon(Transform target, ScreenEdge screenEdge) {
+
+            if (_screenEdges == null || _screenEdges.Count == 0) {
+                DefineEdges();
+            }
+
+            if (!_screenEdges.TryGetValue(screenEdge, out var endPosition))
+                return;
+
+            RectTransform clone = Instantiate(_markerTransform, transform);
+
+            _cam ??= GetController<GameplayController>().Handlers.GetHandler<CameraHandler>().CameraComponent;
+
+            var screenPoint = (Vector2)_cam.WorldToScreenPoint(target.position);
+
+            clone.gameObject.SetActive(true);
+            clone.anchoredPosition = screenPoint;
+
+            SmoothToPos(clone, endPosition);
+        }
+
+        private void DefineEdges() {
+
+            var width = Screen.width;
+            var height = Screen.height;
+            var centerWidth = width * 0.5f;
+            var centerHeight = height * 0.5f;
+
+            _screenEdges = new();
+
+            MapEdge(ScreenEdge.TopLeftCorner, new Vector2(0, height));
+            MapEdge(ScreenEdge.TopRightCorner, new Vector2(width, height));
+            MapEdge(ScreenEdge.BottomLeftCorner, new Vector2(0, 0));
+            MapEdge(ScreenEdge.BottomRightCorner, new Vector2(width, 0));
+            MapEdge(ScreenEdge.TopCenter, new Vector2(centerWidth, height));
+            MapEdge(ScreenEdge.RightCenter, new Vector2(width, centerHeight));
+            MapEdge(ScreenEdge.BottomCenter, new Vector2(centerWidth, 0));
+            MapEdge(ScreenEdge.LeftCenter, new Vector2(0, centerHeight));
+        }
+
+        private void MapEdge(ScreenEdge edgeType, Vector2 screenPosition) 
+            => _screenEdges[edgeType] = screenPosition;
+
+        private void SmoothToPos(RectTransform marker, Vector2 endPosition) {
+
+            if (marker == null) {
+                return;
+            }
+
+            _corooutineCount++;
+            _ = StartCoroutine(SmoothMove(marker, endPosition));
+        }
+
+        private IEnumerator SmoothMove(RectTransform target, Vector2 endPosition) {
+
+            var elapsedTime = 0f;
+            var curveValue = 0f;
+
+            _cam ??= GetController<GameplayController>().Handlers.GetHandler<CameraHandler>().CameraComponent;
+
+            while (elapsedTime < _durationInSeconds) {
+
+                if (target == null) {
+                    yield break;
+                }
+
+                curveValue = _animeCurve.Evaluate(elapsedTime / _durationInSeconds);
+                target.anchoredPosition = Vector3.Lerp(target.anchoredPosition, endPosition, curveValue);
+
+                elapsedTime += Time.unscaledDeltaTime;
+
+                yield return null;
+            }
+
+            DeactivateIcon(target);
+        }
+    }
+}
