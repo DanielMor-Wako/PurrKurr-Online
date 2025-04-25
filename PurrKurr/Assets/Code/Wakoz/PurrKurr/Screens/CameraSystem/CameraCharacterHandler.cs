@@ -343,7 +343,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                         null); //() => UpdateFocusByAiming());
                 break;
 
-                case Definitions.ObjectState.InterruptibleAnimation or Definitions.ObjectState.UninterruptibleAnimation:
+                /*case Definitions.ObjectState.InterruptibleAnimation or Definitions.ObjectState.UninterruptibleAnimation:
                     FocusTransform.position = CharacterTransform.position;
                     var smoothSpeed = 2f;
                     CameraHandler.EnqueueCamera(
@@ -352,7 +352,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
                         new CameraTransitionsData() { SmoothSpeed = 5f, MaxZoom = 5, MinZoom = 7, ZoomSpeed = 5 },
                         new CameraOffsetData() { SmoothSpeed = 10f, TargetOffset = Vector3.up * 3 }),
                             () => MoveTargetAxis(FocusTransform, CharacterTransform, smoothSpeed, false, false));
-                break;
+                break;*/
 
                 //case var _ when state.CurrentState is Definitions.ObjectState.Running or Definitions.ObjectState.RopeClinging or Definitions.ObjectState.TraversalRunning:
                 //break;
