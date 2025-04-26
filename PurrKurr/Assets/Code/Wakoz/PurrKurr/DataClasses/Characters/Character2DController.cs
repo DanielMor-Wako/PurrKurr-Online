@@ -516,23 +516,22 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             return _state.GetGrabbedTarget();
         }
 
-        public void SetForceDir(Vector2 newForceDir, bool additionalForce = false) {
-
-            if (additionalForce) {
-                ForceDirToSetOnFixedUpdate += newForceDir;
-
-            } else if (ForceDirToSetOnFixedUpdate == Vector2.zero) {
-                ForceDirToSetOnFixedUpdate = newForceDir;
-            }
-        }
-
-        public void AddForceDir(Vector2 newForceDir) {
+        public void SetForceDir(Vector2 newForceDir) {
 
             if (newForceDir == Vector2.zero) {
                 return;
             }
 
-            ForceDirToAddOnFixedUpdate = newForceDir;
+            ForceDirToSetOnFixedUpdate = newForceDir;
+        }
+
+        public void AddForceDir(Vector2 addForceDir) {
+
+            if (addForceDir == Vector2.zero) {
+                return;
+            }
+
+            ForceDirToAddOnFixedUpdate = addForceDir;
         }
 
         private void Update() {

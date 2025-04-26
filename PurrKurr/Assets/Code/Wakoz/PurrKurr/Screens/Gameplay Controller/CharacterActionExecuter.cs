@@ -404,7 +404,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
                     var jumpforceDirKiller = new Vector2(character.State.Velocity.x, 0);
                     character.SetForceDir(jumpforceDirKiller);
-                    //character.SetForceDir(forceDir, true);
                     return;
                 }
 
@@ -450,7 +449,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                                     // apply jump aim in trajectory dir
                                     character.SetJumping(Time.time + .5f);
                                     var aimJumpDir = actionInput.NormalizedDirection * character.Stats.JumpForce;
-                                    character.SetForceDir(aimJumpDir, true);
+                                    character.SetForceDir(aimJumpDir);
                                     _gameEvents.ApplyEffectOnCharacter(character, Effect2DType.DustCloud, character.State.ReturnForwardDirByTerrainQuaternion());
                                 }
                             }
