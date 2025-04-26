@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils
 {
@@ -13,8 +14,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils
     {
         [SerializeField] public RectTransform _markerTransform;
 
-        [SerializeField] private AnimationCurve _animeCurve;
+        [SerializeField] private AnimationCurve _movementCurve;
         [SerializeField][Range(0.01f, 5)] private float _durationInSeconds = 1f;
+        [FormerlySerializedAs("_alphaCurve")][SerializeField] private AnimationCurve _scaleCurve;
 
         private int _corooutineCount;
         private Camera _cam;
@@ -102,7 +104,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils
         private IEnumerator SmoothMove(RectTransform target, Vector2 endPosition) {
 
             var elapsedTime = 0f;
-            var curveValue = 0f;
+            var posCurve = 0f;
+            var targetAlpha = target.GetComponent<CanvasGroup>();
+
+            var baseScale = new Vector3(0, 0, 1);
+            var addScale = new Vector3(1, 1, 0);
 
             _cam ??= GetController<GameplayController>().Handlers.GetHandler<CameraHandler>().CameraComponent;
 
@@ -112,8 +118,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils
                     yield break;
                 }
 
-                curveValue = _animeCurve.Evaluate(elapsedTime / _durationInSeconds);
-                target.anchoredPosition = Vector3.Lerp(target.anchoredPosition, endPosition, curveValue);
+                var percent = elapsedTime / _durationInSeconds;
+
+                posCurve = _movementCurve.Evaluate(percent);
+                target.anchoredPosition = Vector3.Lerp(target.anchoredPosition, endPosition, posCurve);
+
+                targetAlpha.transform.localScale = baseScale + addScale * _scaleCurve.Evaluate(percent);
 
                 elapsedTime += Time.unscaledDeltaTime;
 
