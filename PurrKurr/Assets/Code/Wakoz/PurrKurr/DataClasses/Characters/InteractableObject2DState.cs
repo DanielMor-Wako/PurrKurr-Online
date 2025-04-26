@@ -141,7 +141,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
                 SetState(Definitions.ObjectState.Dodging);
                 return;
             
-            } else if (IsBlockingState() || _combatAbility == Definitions.ActionType.Block) {
+            } else if (IsBlockingState() /*|| _combatAbility == Definitions.ActionType.Block*/) {
                 SetState(Definitions.ObjectState.Blocking);
                 return;
 
@@ -398,11 +398,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
 
         public void SetActiveCombatAbility(Definitions.ActionType combatAbility) => _combatAbility = combatAbility;
 
-        public bool CanPerformJump(bool isStateConsideredAsGrounded) {
+        public bool CanPerformJump(bool isGroundedState) {
 
-            var isVerticalVelocityExceeding = Velocity.y < 10;
+            var isVerticalVelocityExceeding = Velocity.y < 40; // was 10
 
-            var isGroundedOrCayoteTime = (IsTouchingAnySurface() && isStateConsideredAsGrounded || IsCoyoteTime() || _hasLanded);
+            var isGroundedOrCayoteTime = (IsTouchingAnySurface() && isGroundedState || IsCoyoteTime() || _hasLanded);
             return isVerticalVelocityExceeding && isGroundedOrCayoteTime && !IsJumping() && CurrentState != Definitions.ObjectState.Crouching;
         }
 
