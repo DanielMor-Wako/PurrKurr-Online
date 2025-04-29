@@ -50,8 +50,8 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
 
         protected override void Clean() {
 
-            foreach(var i in _logics.Values) {
-                i?.Unload();
+            foreach(var asset in _logics.Values) {
+                asset?.Unload();
             }
 
             _logics.Clear();
