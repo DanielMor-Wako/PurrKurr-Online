@@ -8,6 +8,5 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
     [CreateAssetMenu(fileName = "ObjectiveData", menuName = "Data/Objective/Smash")]
     public class SmashObjectiveSO : ObjectiveDataSO {
 
-        //[Min(1)] public int requiredQuantity = 1;
     }
 }

@@ -5,13 +5,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives {
 
     public interface IObjective {
         
-        // Process
+        // Todo: dedicated interface for : Process
         void Initialize(ObjectiveDataSO data);
         bool IsComplete();
         void UpdateProgress(int quantity);
         void Finish();
-        
-        // Get Data
+
+        // Todo: dedicated interface for : Data Retrieval
         string GetUniqueId();
         string GetObjectType();
         string[] TargetObjectIds();

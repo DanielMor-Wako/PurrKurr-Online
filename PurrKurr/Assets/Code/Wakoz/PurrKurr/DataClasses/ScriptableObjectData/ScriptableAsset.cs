@@ -3,8 +3,8 @@
 namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData
 {
     /// <summary>
-    /// Abstract base class for managing ScriptableObject assets in a Unity project
-    /// Provides lazy loading and initialization for ScriptableObject data
+    /// Abstract base class for managing ScriptableObject assets
+    /// Handles initialization of ScriptableObject
     /// </summary>
     [DefaultExecutionOrder(1)]
     public abstract class ScriptableAsset
@@ -15,6 +15,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData
         private readonly string _assetPath;
         private bool _isInitialized;
         private ScriptableObject _scriptableObject;
+
+        public ScriptableAsset() { }
 
         protected ScriptableAsset(string assetName, string pathPrefix) {
 
@@ -105,9 +107,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData
     [DefaultExecutionOrder(2)]
     public abstract class ScriptableAsset<T> : ScriptableAsset where T : ScriptableObject
     {
-        private T _cachedData;
+        public ScriptableAsset() : base() { }
 
         protected ScriptableAsset(string assetName, string pathPrefix) : base(assetName, pathPrefix) { }
+
+        private T _cachedData;
 
         /// <summary>
         /// Gets the typed ScriptableObject data, loading it if necessary
