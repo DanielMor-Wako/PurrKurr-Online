@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using UnityEngine;
@@ -8,39 +9,13 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
     [DefaultExecutionOrder(10)]
     public sealed class LogicController : SingleController {
 
-        public InputLogic InputLogic;
-        public AbilitiesLogic AbilitiesLogic;
-        public GameplayLogic GameplayLogic;
+        public InputLogic InputLogic => TryGet<InputLogic>() as InputLogic;
+        public AbilitiesLogic AbilitiesLogic => TryGet<AbilitiesLogic>() as AbilitiesLogic;
+        public GameplayLogic GameplayLogic => TryGet<GameplayLogic>() as GameplayLogic;
+
+        private readonly Dictionary<Type, ScriptableAsset> _logics = new();
 
         private const string DefaultAssetPathPrefix = "DataManagement/GameConfig/";
-
-        private List<ScriptableAsset> _logics = new();
-
-        /// <summary>
-        /// Todo: Inject logics instead of direct ref
-        /// Note: AbilitiesLogic relies on input logic to already be instantiated
-        /// </summary>
-        /// <returns></returns>
-        protected override Task Initialize() {
-
-            InputLogic = new InputLogic("PlayerInputData", DefaultAssetPathPrefix);
-            _logics.Add( InputLogic );
-            
-            AbilitiesLogic = new AbilitiesLogic("AbilitiesData", DefaultAssetPathPrefix);
-            _logics.Add( AbilitiesLogic );
-
-            GameplayLogic = new GameplayLogic("GameplayLogicData", DefaultAssetPathPrefix);
-            _logics.Add( GameplayLogic );
-            
-            return Task.CompletedTask;
-        }
-
-        protected override void Clean() {
-
-            InputLogic = null;
-            AbilitiesLogic = null;
-            GameplayLogic = null;
-        }
 
         /// <summary>
         /// Trying to get a ref by casting a generic as return value
@@ -48,20 +23,46 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
         /// <typeparam name="T"></typeparam>
         /// <param name="logicRef"></param>
         /// <returns></returns>
-        public T TryGet<T>() where T : ScriptableAsset {
+        public ScriptableAsset TryGet<T>() where T : ScriptableAsset {
 
-            foreach (var logic in _logics) {
-                
-                if (logic.GetType() != typeof(T)) {
-                    continue;
-                }
-
-                return logic as T;
+            if (!_logics.TryGetValue(typeof(T), out var asset)) {
+                return null;
             }
 
-            return null;
+            return asset;
         }
-        
+
+        /// <summary>
+        /// Note: AbilitiesLogic relies on input logic to already be instantiated
+        /// </summary>
+        /// <returns></returns>
+        /// Todo: Inject logics instead of direct ref
+        protected override Task Initialize() {
+
+            AddLogic<InputLogic>("PlayerInputData", DefaultAssetPathPrefix);
+            
+            AddLogic<AbilitiesLogic>("AbilitiesData", DefaultAssetPathPrefix);
+
+            AddLogic<GameplayLogic>("GameplayLogicData", DefaultAssetPathPrefix);
+
+            return Task.CompletedTask;
+        }
+
+        protected override void Clean() {
+
+            foreach(var i in _logics.Values) {
+                i?.Unload();
+            }
+
+            _logics.Clear();
+        }
+
+        private void AddLogic<T>(string assetName, string assetPathPrefix) where T : ScriptableAsset, new() {
+
+            var logic = (ScriptableAsset)Activator.CreateInstance(typeof(T), assetName, assetPathPrefix) ?? throw new ArgumentNullException(typeof(T).ToString());
+            _logics[typeof(T)] = logic;
+        }
+
     }
 
 }
