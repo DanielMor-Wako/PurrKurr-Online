@@ -9,6 +9,8 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow
 
     public sealed class GameplayLogic : ScriptableAsset<GameplayLogicSO> 
     {
+        public GameplayLogic() : base() { }
+
         public GameplayLogic(string assetName, string assetPrefix) : base(assetName, assetPrefix) { }
 
         protected override void Init() {}

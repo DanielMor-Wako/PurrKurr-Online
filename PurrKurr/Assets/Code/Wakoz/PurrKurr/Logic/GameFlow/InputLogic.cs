@@ -7,6 +7,8 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow
 
     public sealed class InputLogic : ScriptableAsset<PlayerInputDataSO>
     {
+        public InputLogic() : base() { }
+
         public InputLogic(string assetName, string assetPrefix) : base(assetName, assetPrefix) { }
 
         protected override void Init() { }

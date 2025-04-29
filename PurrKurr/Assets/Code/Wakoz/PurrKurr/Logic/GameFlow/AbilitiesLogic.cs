@@ -12,6 +12,8 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow
     /// </summary>
     public sealed class AbilitiesLogic : ScriptableAsset<AbilitiesDataSO>
     {
+        public AbilitiesLogic() : base() { }
+
         public AbilitiesLogic(string assetName, string assetPrefix) : base(assetName, assetPrefix) { }
 
         private InputLogic _inputLogic;
