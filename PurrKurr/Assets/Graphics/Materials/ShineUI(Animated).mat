@@ -100,14 +100,14 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _LoopDuration: 3
+    - _LoopDuration: 2.5
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _ShineLocation: 0.76
-    - _ShineWidth: 0.581
+    - _ShineWidth: 0.5
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -121,7 +121,7 @@ Material:
     - _UseUIAlphaClip: 0
     - _Val1: 0.57
     - _Val2: 0.06
-    - _Val3: 1.18
+    - _Val3: 1
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
