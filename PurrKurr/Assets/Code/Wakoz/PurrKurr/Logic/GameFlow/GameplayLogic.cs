@@ -7,9 +7,9 @@ using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 namespace Code.Wakoz.PurrKurr.Logic.GameFlow 
 {
 
-    public sealed class GameplayLogic : SOData<GameplayLogicSO> 
+    public sealed class GameplayLogic : ScriptableAsset<GameplayLogicSO> 
     {
-        public GameplayLogic(string assetName) : base(assetName) { }
+        public GameplayLogic(string assetName, string assetPrefix) : base(assetName, assetPrefix) { }
 
         protected override void Init() {}
 

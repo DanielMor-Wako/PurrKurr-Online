@@ -7,9 +7,12 @@ using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
 namespace Code.Wakoz.PurrKurr.Logic.GameFlow
 {
-    public sealed class AbilitiesLogic : SOData<AbilitiesDataSO>
+    /// <summary>
+    /// logic used for touch pads data
+    /// </summary>
+    public sealed class AbilitiesLogic : ScriptableAsset<AbilitiesDataSO>
     {
-        public AbilitiesLogic(string assetName) : base(assetName) { }
+        public AbilitiesLogic(string assetName, string assetPrefix) : base(assetName, assetPrefix) { }
 
         private InputLogic _inputLogic;
 

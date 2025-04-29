@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Code.Wakoz.PurrKurr.Logic.GameFlow
 {
 
-    public sealed class InputLogic : SOData<PlayerInputDataSO>
+    public sealed class InputLogic : ScriptableAsset<PlayerInputDataSO>
     {
-        public InputLogic(string assetName) : base(assetName) { }
+        public InputLogic(string assetName, string assetPrefix) : base(assetName, assetPrefix) { }
 
         protected override void Init() { }
 

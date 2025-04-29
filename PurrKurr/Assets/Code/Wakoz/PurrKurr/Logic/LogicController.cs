@@ -11,19 +11,25 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
         public InputLogic InputLogic;
         public AbilitiesLogic AbilitiesLogic;
         public GameplayLogic GameplayLogic;
-        
-        private List<SOData> _logics = new();
 
+        private const string DefaultAssetPathPrefix = "DataManagement/GameConfig/";
+
+        private List<ScriptableAsset> _logics = new();
+
+        /// <summary>
+        /// Todo: Inject logics instead of direct ref
+        /// Note: AbilitiesLogic relies on input logic to already be instantiated
+        /// </summary>
+        /// <returns></returns>
         protected override Task Initialize() {
 
-            InputLogic = new InputLogic("PlayerInputData");
+            InputLogic = new InputLogic("PlayerInputData", DefaultAssetPathPrefix);
             _logics.Add( InputLogic );
             
-            // Note: AbilitiesLogic relies on input logic to already be instantiated
-            AbilitiesLogic = new AbilitiesLogic("AbilitiesData"); // mainly for touch pads data
+            AbilitiesLogic = new AbilitiesLogic("AbilitiesData", DefaultAssetPathPrefix);
             _logics.Add( AbilitiesLogic );
 
-            GameplayLogic = new GameplayLogic("GameplayLogicData");
+            GameplayLogic = new GameplayLogic("GameplayLogicData", DefaultAssetPathPrefix);
             _logics.Add( GameplayLogic );
             
             return Task.CompletedTask;
@@ -42,7 +48,7 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
         /// <typeparam name="T"></typeparam>
         /// <param name="logicRef"></param>
         /// <returns></returns>
-        public T TryGet<T>() where T : SOData {
+        public T TryGet<T>() where T : ScriptableAsset {
 
             foreach (var logic in _logics) {
                 
