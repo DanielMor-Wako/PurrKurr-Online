@@ -130,9 +130,9 @@ Material:
     - _ReflectionNoise: 1
     - _ReflectionSpeed: 2
     - _ReflectionStrength: 1.61
-    - _RippleFrequency: 1
-    - _RippleIntensity: 0.02
-    - _RippleSpeed: 3
+    - _RippleFrequency: 0.15
+    - _RippleIntensity: 0.07
+    - _RippleSpeed: 5
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SoftParticlesEnabled: 0
@@ -161,7 +161,7 @@ Material:
     - _ClipRect: {r: -32767, g: -32767, b: 32767, a: 32767}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _RippleCenter: {r: 30, g: 0, b: 0, a: 0}
+    - _RippleCenter: {r: 500, g: 0, b: 0, a: 0}
     - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _TintColor: {r: 0.28025985, g: 0.5424385, b: 0.8867924, a: 0.49019608}
