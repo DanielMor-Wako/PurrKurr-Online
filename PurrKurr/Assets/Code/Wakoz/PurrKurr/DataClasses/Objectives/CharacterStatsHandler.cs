@@ -5,6 +5,7 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
 using Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers;
+using Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay;
 using System;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
@@ -61,22 +62,23 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             }
 
             var collectableItem = zone as CollectableItemController;
+
+            // Handle Ability
             var (id, quantity) = collectableItem.GetData();
             var ability = GetAbility(id);
-            if (ability == Definitions.ActionType.Empty) {
+            if (ability != Definitions.ActionType.Empty) {
+
+                if (_character.Stats.TryUnlockAbility(ability)) {
+
+                    _character.RefreshStats();
+                    var abilityPadView = SingleController.GetController<UiPadsController>().GetPadViewTransform(ability);
+                    _uiIconsMoverController?.ActivateIcon(zone.transform, abilityPadView);
+                }
                 return;
             }
 
-            if (_character.Stats.TryUnlockAbility(ability)) {
-                _character.RefreshStats();
-
-                _uiIconsMoverController?.ActivateIcon(zone.transform, UiIconsMoverController.ScreenEdge.BottomRightCorner);
-            }
-                
-            // todo: use strategy pattern or class, for data like sprite for the icon and where to move
-            else if (ability == Definitions.ActionType.Movement) {
-                _uiIconsMoverController?.ActivateIcon(zone.transform, UiIconsMoverController.ScreenEdge.TopLeftCorner);
-            }
+            // Handle as Collectable
+            _uiIconsMoverController?.ActivateIcon(zone.transform, UiIconsMoverController.ScreenEdge.TopLeftCorner);
         }
 
         private Definitions.ActionType GetAbility(string id) 
@@ -90,8 +92,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             "AbilityProjectile" => Definitions.ActionType.Projectile,
             "AbilityRope" => Definitions.ActionType.Rope,
             "AbilitySpecial" => Definitions.ActionType.Special,
-            _ => Definitions.ActionType.Movement,
-            //_ => Definitions.ActionType.Empty
+            _ => Definitions.ActionType.Empty
         };
     }
 }
