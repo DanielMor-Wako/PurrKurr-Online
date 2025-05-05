@@ -33,6 +33,7 @@ using Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems;
 using UnityEngine.TextCore.Text;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
+using System.Text;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 {
@@ -301,7 +302,22 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         {
                             var nextDoor = door.GetNextDoor();
                             var nextDoorPosition = nextDoor != null ? nextDoor.gameObject : null;
-                            confirmButtons.ClickedAction = () => LoadLevel(door.GetRoomIndex(), nextDoorPosition);
+                            var nextRoomIndex = door.GetRoomIndex();
+
+                            // Calculate percentage complete for the nrcy room
+                            var levelObjectivesData = _levelsController.GetLevel(nextRoomIndex).GetObjectives();
+                            if (!string.IsNullOrEmpty(page.BodyContent)) {
+                                var percentComplete = 0f;
+                                if (levelObjectivesData.Count > 0) {
+                                    foreach (var objective in levelObjectivesData) {
+                                        percentComplete += (float)objective.Objective.CurrentQuantity / objective.Objective.RequiredQuantity;
+                                    }
+                                    percentComplete /= levelObjectivesData.Count;
+                                }
+
+                                page.PageCount = $"{Mathf.CeilToInt(percentComplete * 100)}%";
+            }
+                            confirmButtons.ClickedAction = () => LoadLevel(nextRoomIndex, nextDoorPosition);
                         }
                     }
 
@@ -1383,6 +1399,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
 
             if (interactedCollider == null) {
+                if (!isBlockAction) {
+                    ApplyEffectOnCharacter(attacker, _logic.AbilitiesLogic.IsAbilityAnAttack(attackAbility) ? Effect2DType.ImpactMed : Effect2DType.ImpactOnBlock);
+                }
                 return facingRightOrLeftTowardsPoint;
             }
 
