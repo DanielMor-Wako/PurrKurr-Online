@@ -132,7 +132,7 @@ Material:
     - _ReflectionStrength: 1.61
     - _RippleFrequency: 50
     - _RippleIntensity: 0.005
-    - _RippleSpeed: 2
+    - _RippleSpeed: 3.5
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SoftParticlesEnabled: 0
