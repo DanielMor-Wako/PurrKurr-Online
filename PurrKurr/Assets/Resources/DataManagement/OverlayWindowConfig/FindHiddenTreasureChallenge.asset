@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: baeb978d30b5f0547a6e9859553dec4b, type: 3}
-  m_Name: BasicBlockDodge
+  m_Name: FindHiddenTreasureChallenge
   m_EditorClassIdentifier: 
   overlayWindowData:
   - Title: 
-    BodyContent: Swipe the Block button in any direction to dodge and evade incoming
-      damage
-    BodyPicture: {fileID: 0}
+    BodyContent: Rumor has it that the a treasure is hidden in this room, can you
+      find it?
+    BodyPicture: {fileID: -3430613992102656276, guid: 415cb88aedae2ca44b4d339995569370, type: 3}
     ButtonsRawData: []
     PageCount: 1/3

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlayWindowData:
   - Title: 
-    BodyContent: Swipe and release to shoot
+    BodyContent: Swipe Rope upwards and release to shoot
     BodyPicture: {fileID: 21300000, guid: fa48ac93a8d3a15478dc0a77847780fa, type: 3}
     ButtonsRawData: []
     PageCount: 1/3

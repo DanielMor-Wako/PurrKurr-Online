@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlayWindowData:
   - Title: Block
-    BodyContent: Hold the Block button the counter attack and prevent knock-back
+    BodyContent: Press the Block button the counter attack and prevent knock-back
     BodyPicture: {fileID: 0}
     ButtonsRawData: []
     PageCount: 1/3

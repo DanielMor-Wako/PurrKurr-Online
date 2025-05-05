@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Welcome-OverlayWindowData
   m_EditorClassIdentifier: 
   overlayWindowData:
-  - Title: Welcome
+  - Title: 
     BodyContent: Touch the left joystick to move around
     BodyPicture: {fileID: 21300000, guid: 7ebe2228120d1d94295fde0b070863de, type: 3}
     ButtonsRawData:

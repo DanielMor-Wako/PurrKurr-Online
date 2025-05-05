@@ -10,12 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: baeb978d30b5f0547a6e9859553dec4b, type: 3}
-  m_Name: BasicBlockDodge
+  m_Name: GrabNormalThrow
   m_EditorClassIdentifier: 
   overlayWindowData:
   - Title: 
-    BodyContent: Swipe the Block button in any direction to dodge and evade incoming
-      damage
-    BodyPicture: {fileID: 0}
+    BodyContent: Press Grab to throw the ball in the Cannon
+    BodyPicture: {fileID: 21300000, guid: db60c518e818c27448388b7fdbd821e8, type: 3}
     ButtonsRawData: []
     PageCount: 1/3

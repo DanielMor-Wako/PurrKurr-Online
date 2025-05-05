@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlayWindowData:
   - Title: 
-    BodyContent: Swipe in any direction and release to shoot
+    BodyContent: Swipe Rope in any direction and release to shot a new rope
     BodyPicture: {fileID: 21300000, guid: fa48ac93a8d3a15478dc0a77847780fa, type: 3}
     ButtonsRawData: []
     PageCount: 1/3
