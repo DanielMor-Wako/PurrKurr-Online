@@ -18,5 +18,5 @@ MonoBehaviour:
     TargetObjectIds:
     - AbilityAttack
     RequiredQuantity: 1
-    CurrentQuantity: 1
+    CurrentQuantity: 0
     Icon: {fileID: 21300000, guid: d3d7f08bb69ab9a47a7a7bb216c6052d, type: 3}

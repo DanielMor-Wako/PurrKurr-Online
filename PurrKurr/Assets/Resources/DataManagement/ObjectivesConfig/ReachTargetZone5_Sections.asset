@@ -19,6 +19,6 @@ MonoBehaviour:
     - DestroyedTantacle1
     - DestroyedTantacle2
     RequiredQuantity: 2
-    CurrentQuantity: 2
+    CurrentQuantity: 0
     Icon: {fileID: -1249550556, guid: 811a7e424b30b4b488dc53c2a5cb14af, type: 3}
   Instructions: Destroy Tantacles
