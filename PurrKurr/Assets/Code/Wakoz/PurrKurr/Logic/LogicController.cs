@@ -33,6 +33,7 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow {
         }
 
         /// <summary>
+        /// Init logics for player input, character abilities, gameplay settings
         /// Note: AbilitiesLogic relies on input logic to already be instantiated
         /// </summary>
         /// <returns></returns>
