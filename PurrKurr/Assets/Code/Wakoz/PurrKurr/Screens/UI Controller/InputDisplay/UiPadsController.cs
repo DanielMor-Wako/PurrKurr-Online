@@ -71,6 +71,25 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay
             return true;
         }
 
+        public Transform GetPadViewTransform(Definitions.ActionType ability) {
+
+            if (_view == null) {
+                Debug.LogError("No view or model set by Controller");
+                return null;
+            }
+
+            var padView = _view.GetPadView(ability, _view.GetPadView(ability));
+
+            if (padView == null) {
+                Debug.LogWarning($"No PadView found for ability {ability}");
+                return null;
+            }
+
+            var padViewFixedPosition = padView.FixedPad ?? throw new System.ArgumentNullException("Pad View has no fixedPad ref");
+
+            return padViewFixedPosition;
+        }
+
         private void DefineDependents(CharacterStats stats,
             out List<Definitions.ActionType> downKeyDependents, out List<Definitions.ActionType> upKeyDependents, out List<Definitions.ActionType> characterStateDependents) {
 

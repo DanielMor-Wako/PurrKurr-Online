@@ -23,6 +23,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay
 
         private AbilitiesLogic _abilitiesLogic;
 
+        public Transform FixedPad => _fixedTouchPad.transform;
+
         protected override void ModelReplaced() {
             base.ModelReplaced();
 

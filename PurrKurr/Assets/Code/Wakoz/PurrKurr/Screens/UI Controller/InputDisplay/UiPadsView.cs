@@ -16,46 +16,65 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
 
         private List<PadModel> _touchPadModels;
 
+        public PadView GetPadView(Definitions.ActionType ability) 
+            => ability switch {
+
+            Definitions.ActionType.Movement => MovementPad,
+            Definitions.ActionType.Jump => JumpPad,
+            Definitions.ActionType.Attack => AttackPad,
+            Definitions.ActionType.Block => BlockPad,
+            Definitions.ActionType.Grab => GrabPad,
+            Definitions.ActionType.Projectile => ProjectilePad,
+            Definitions.ActionType.Rope => RopePad,
+            Definitions.ActionType.Special => SuppurrPad,
+            Definitions.ActionType.Empty => null,
+            _ => null
+        };
+
+        public PadView GetPadView(Definitions.ActionType ability, PadView padView) {
+            return padView;
+        }
+
         protected override void ModelReplaced() {
             base.ModelReplaced();
             
             InitializePads(Model.Config);
         }
         
-        private void InitializePads(UiPadsData config) {
+        private void InitializePads(UiPadsData data) {
 
-            if (config == null) {
+            if (data == null) {
                 Debug.LogError("missing pads data");
                 return;
             }
 
             _touchPadModels = new List<PadModel>();
             
-            InitPad(MovementPad, config.MovementPadConfig);
-            InitPad(JumpPad, config.JumpPadConfig);
-            InitPad(AttackPad, config.AttackPadConfig);
-            InitPad(BlockPad, config.BlockPadConfig);
-            InitPad(GrabPad, config.GrabPadConfig);
-            InitPad(ProjectilePad, config.ProjectilePad);
-            InitPad(RopePad, config.RopePadConfig);
-            InitPad(SuppurrPad, config.SupurrPadConfig);
+            InitPad(MovementPad, data.MovementPadConfig);
+            InitPad(JumpPad, data.JumpPadConfig);
+            InitPad(AttackPad, data.AttackPadConfig);
+            InitPad(BlockPad, data.BlockPadConfig);
+            InitPad(GrabPad, data.GrabPadConfig);
+            InitPad(ProjectilePad, data.ProjectilePad);
+            InitPad(RopePad, data.RopePadConfig);
+            InitPad(SuppurrPad, data.SupurrPadConfig);
         }
 
-        private void InitPad(PadView view, UiPadData config) {
+        private void InitPad(PadView view, UiPadData data) {
 
-            if (config == null) {
+            if (data == null) {
                 Debug.LogError($"no config set for {view.name}");
                 return;
             }
             
             if (view == null) {
-                Debug.LogError($"no view set for {config.actionType}");
+                Debug.LogError($"no view set for {data.actionType}");
                 return;
             }
 
-            var model = new PadModel(config);
+            var model = new PadModel(data);
             _touchPadModels.Add(model);
-            view.gameObject.SetActive(config.IsAvailable);
+            view.gameObject.SetActive(data.IsAvailable);
             view.SetModel(model);
         }
 
@@ -153,7 +172,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
 
             return false;
         }
-
     }
 
 }
