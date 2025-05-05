@@ -57,6 +57,23 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils
             if (!_screenEdges.TryGetValue(screenEdge, out var endPosition))
                 return;
 
+            ActivateIcon(target, endPosition);
+        }
+
+        public void ActivateIcon(Transform target, Transform endTarget) {
+
+            if (target == null || endTarget == null)
+                return;
+
+            _cam ??= GetController<GameplayController>().Handlers.GetHandler<CameraHandler>().CameraComponent;
+            
+            var endTargetPosition = (Vector2)_cam.WorldToScreenPoint(endTarget.position);
+
+            ActivateIcon(target, endTargetPosition);
+        }
+
+        public void ActivateIcon(Transform target, Vector2 screenPosition) {
+
             RectTransform clone = Instantiate(_markerTransform, transform);
 
             _cam ??= GetController<GameplayController>().Handlers.GetHandler<CameraHandler>().CameraComponent;
@@ -66,10 +83,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils
             clone.gameObject.SetActive(true);
             clone.anchoredPosition = screenPoint;
 
-            SmoothToPos(clone, endPosition);
+            SmoothToPos(clone, screenPosition);
         }
 
         private void DefineEdges() {
+
+            var iconSize = _markerTransform.rect.width * .5f;
 
             var width = Screen.width;
             var height = Screen.height;
@@ -78,14 +97,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils
 
             _screenEdges = new();
 
-            MapEdge(ScreenEdge.TopLeftCorner, new Vector2(0, height));
-            MapEdge(ScreenEdge.TopRightCorner, new Vector2(width, height));
-            MapEdge(ScreenEdge.BottomLeftCorner, new Vector2(0, 0));
-            MapEdge(ScreenEdge.BottomRightCorner, new Vector2(width, 0));
-            MapEdge(ScreenEdge.TopCenter, new Vector2(centerWidth, height));
-            MapEdge(ScreenEdge.RightCenter, new Vector2(width, centerHeight));
-            MapEdge(ScreenEdge.BottomCenter, new Vector2(centerWidth, 0));
-            MapEdge(ScreenEdge.LeftCenter, new Vector2(0, centerHeight));
+            MapEdge(ScreenEdge.TopLeftCorner, new Vector2(-iconSize, height + iconSize));
+            MapEdge(ScreenEdge.TopRightCorner, new Vector2(width + iconSize, height + iconSize));
+            MapEdge(ScreenEdge.BottomLeftCorner, new Vector2(-iconSize, -iconSize));
+            MapEdge(ScreenEdge.BottomRightCorner, new Vector2(width + iconSize, -iconSize));
+            MapEdge(ScreenEdge.TopCenter, new Vector2(centerWidth, height + iconSize));
+            MapEdge(ScreenEdge.RightCenter, new Vector2(width + iconSize, centerHeight));
+            MapEdge(ScreenEdge.BottomCenter, new Vector2(centerWidth, -iconSize));
+            MapEdge(ScreenEdge.LeftCenter, new Vector2(-iconSize, centerHeight));
         }
 
         private void MapEdge(ScreenEdge edgeType, Vector2 screenPosition) 
