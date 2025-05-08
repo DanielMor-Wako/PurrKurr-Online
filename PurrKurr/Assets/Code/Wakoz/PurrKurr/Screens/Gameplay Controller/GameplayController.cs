@@ -304,7 +304,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                             var nextDoorPosition = nextDoor != null ? nextDoor.gameObject : null;
                             var nextRoomIndex = door.GetRoomIndex();
 
-                            // Calculate percentage complete for the nrcy room
+                            // Calculate percentage complete for the next room
                             var levelObjectivesData = _levelsController.GetLevel(nextRoomIndex).GetObjectives();
                             if (!string.IsNullOrEmpty(page.BodyContent)) {
                                 var percentComplete = 0f;

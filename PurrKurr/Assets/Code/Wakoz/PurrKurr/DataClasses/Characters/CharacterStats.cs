@@ -152,7 +152,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 (CalculateWithinMinMaxRange(_levelPercent, _baseStats.Data.multiTargetsDistanceBasevalues));
 
             // todo: add the body size to the characterBaseStatsData
-            var minBodySize = 0.7f;
+            var minBodySize = 0.8f;
             BodySize = (1 - minBodySize) * _levelPercent + minBodySize;
         }
 

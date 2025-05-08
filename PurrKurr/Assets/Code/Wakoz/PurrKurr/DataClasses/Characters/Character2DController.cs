@@ -12,6 +12,7 @@ using Code.Wakoz.PurrKurr.DataClasses.Effects;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
 using Code.Wakoz.PurrKurr.Logic.GameFlow;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
+using Code.Wakoz.PurrKurr.AnimatorBridge;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
@@ -33,6 +34,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         [SerializeField] private JointMotor2D _motor;
         [SerializeField] private TransformMover _transformMover;
         [SerializeField] private DetectionZone _senses;
+        [SerializeField] private AnimatorPlayer _modelAnimatorPlayer;
         [SerializeField] private Character2DRig _rigAnimator;
         [SerializeField] private Transform _bodyDamager;
         [Header("Ground RayCheck Settings")]
@@ -729,6 +731,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             if (isStateChanged) {
 
                 OnStateChanged?.Invoke(_state);
+                TryPlayAnimationClip(_state.CurrentState);
 
                 this.currState = _state.CurrentState;
                 this.lastState = prevState;
@@ -739,6 +742,24 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                     DoMove(0);
                 }
             }
+        }
+
+        // Todo: use extention for this monsteracity
+        private void TryPlayAnimationClip(Definitions.ObjectState currentState) {
+            if (currentState is Definitions.ObjectState.Running) {
+                _modelAnimatorPlayer?.PlayAnimation(AnimClipType.Moving);
+            } else if (currentState is Definitions.ObjectState.Jumping) {
+                _modelAnimatorPlayer?.PlayAnimation(AnimClipType.Jump);
+            } else if(currentState is Definitions.ObjectState.Grounded) {
+                _modelAnimatorPlayer?.PlayAnimation(AnimClipType.Init);
+            } else if (currentState is Definitions.ObjectState.Attacking) {
+                _modelAnimatorPlayer?.PlayAnimation(AnimClipType.LightAttack);
+            } else if (currentState is Definitions.ObjectState.Crouching) {
+                _modelAnimatorPlayer?.PlayAnimation(AnimClipType.Crouch);
+            } else if (currentState is Definitions.ObjectState.StandingUp) {
+                _modelAnimatorPlayer?.PlayAnimation(AnimClipType.StandUp);
+            }
+            
         }
 
         private void UpdateOverlappingColliders(ref Collider2D[] solids, ref Collider2D[] traversables) {
