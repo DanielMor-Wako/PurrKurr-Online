@@ -165,7 +165,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
-    - _TintColor: {r: 1, g: 1, b: 1, a: 0.19607843}
+    - _TintColor: {r: 1, g: 1, b: 1, a: 0.27450982}
     - _WaterColor: {r: 0.5330188, g: 0.7028859, b: 1, a: 1}
     - _WaterTopColor: {r: 0.124154456, g: 0.34206975, b: 0.8490566, a: 0.47058824}
   m_BuildTextureStacks: []
