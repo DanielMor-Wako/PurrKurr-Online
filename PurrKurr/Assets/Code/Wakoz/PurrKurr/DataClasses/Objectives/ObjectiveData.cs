@@ -43,5 +43,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             CurrentQuantity = other.CurrentQuantity;
         }
 
+        
     }
 }

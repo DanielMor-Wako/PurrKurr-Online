@@ -140,7 +140,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
             } else if (IsDodgingState()) {
                 SetState(Definitions.ObjectState.Dodging);
                 return;
-            
+
             } else if (IsBlockingState() /*|| _combatAbility == Definitions.ActionType.Block*/) {
                 SetState(Definitions.ObjectState.Blocking);
                 return;
@@ -167,6 +167,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
 
             } else if (_combatAbility == Definitions.ActionType.Jump && IsAiming()) {
                 SetState(Definitions.ObjectState.AimingJump);
+                return;
+
+            } else if (IsClinging()) {
+                SetState(NavigationDir is Definitions.NavigationType.Up or Definitions.NavigationType.Down ? Definitions.ObjectState.WallClimbing : Definitions.ObjectState.WallClinging);
+                return;
+
+            } else if (IsGrabbing() && GetGrabbedTarget() is RopeLinkController) {
+                SetState(IsNotMoving() ? Definitions.ObjectState.RopeClinging : Definitions.ObjectState.RopeClimbing);
                 return;
 
             } else if (!IsMoveAnimation() && IsInterraptibleAnimation()) {
@@ -199,7 +207,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
                 }
 
                 if (_isCrouching) {
-                    SetState(Definitions.ObjectState.Crouching);
+                    SetState(Velocity.magnitude > 2 ? Definitions.ObjectState.Crawling : Definitions.ObjectState.Crouching);
                     return;
                 } else if (_isStanding) {
                     SetState(Definitions.ObjectState.StandingUp);
@@ -220,16 +228,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
             if (IsJumping()) {
                 SetState(Definitions.ObjectState.Jumping);
                 _hasLanded = false;
-                return;
-
-            } else if (IsGrabbing() && GetGrabbedTarget() is RopeLinkController) {
-                SetState(IsNotMoving() ? Definitions.ObjectState.RopeClinging : Definitions.ObjectState.RopeClimbing);
-                //_hasLanded = false;
-                return;
-
-            } else if (IsClinging()) {
-                SetState(IsNotMoving() ? Definitions.ObjectState.WallClinging : Definitions.ObjectState.WallClimbing);
-                //_hasLanded = false;
                 return;
 
             } else if (_isTraversable) {

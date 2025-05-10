@@ -45,9 +45,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             _facingRightAngle = facingRightAngle;
         }
 
-        public void UpdateRigRotation(bool isAlive, Quaternion terrainQuaternion) {
+        public void UpdateRigRotation(bool useOffset, Quaternion terrainQuaternion) {
 
-            var offsetQuaternion = Quaternion.Euler(0f, 0f, isAlive ? _facingRightAngle : 0);
+            var offsetQuaternion = Quaternion.Euler(0f, 0f, useOffset ? _facingRightAngle : 0);
             var newRotation = Quaternion.Lerp(_rigTrasform.rotation,
                 terrainQuaternion * offsetQuaternion,
                 Time.deltaTime * 10f);

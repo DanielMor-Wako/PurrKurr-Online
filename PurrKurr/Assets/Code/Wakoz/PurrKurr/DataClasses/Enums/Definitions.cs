@@ -158,7 +158,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             AimingJump,
             Stunned,
             Landed,
-            Dodging
+            Dodging,
+            Crawling
         }
 
         public enum Effect2DType
