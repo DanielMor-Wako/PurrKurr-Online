@@ -13,6 +13,7 @@ using Code.Wakoz.PurrKurr.DataClasses.GameCore.Anchors;
 using Code.Wakoz.PurrKurr.Logic.GameFlow;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Detection;
 using Code.Wakoz.PurrKurr.AnimatorBridge;
+using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
 
@@ -614,15 +615,21 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 return;
             }
 
-            var isAlive = Stats.Health > 0;
+            if (Stats.Health <= 0) {
+                _rigAnimator.UpdateRigRotation(Quaternion.LookRotation(Vector3.forward, Vector2.down), 0);
+                return;
+            }
+
+            var defaultOffsetWhenNoJumping = 
+                State.CurrentState is ObjectState.Jumping ? State.IsFacingRight() ? 90 : 270 : -1;
             
             var terrainQuaternion = _state.ReturnForwardDirByTerrainQuaternion();
-            if (_state.IsJumping()) {
+            /*if (_state.IsJumping()) {
                 // aditional 50 to the jump direction, so character will start into rotation when jumping to create the flip effect. 50 is pretty random, 90 will turn the flip to obselete
                 terrainQuaternion *= Quaternion.AngleAxis(_state.GetFacingRightAsInt() * 50, new Vector3(0, 0, 1));
-            }
-            
-            _rigAnimator.UpdateRigRotation(isAlive, terrainQuaternion);
+            }*/
+
+            _rigAnimator.UpdateRigRotation(terrainQuaternion, defaultOffsetWhenNoJumping);
         }
 
         private void UpdateCharacterState() {
@@ -731,6 +738,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             if (isStateChanged) {
 
                 OnStateChanged?.Invoke(_state);
+
+                if (GetHpPercent() <= 0) {
+                    _state.SetState(Definitions.ObjectState.Dead);
+                }
+
                 TryPlayAnimationClip(_state.CurrentState);
 
                 this.currState = _state.CurrentState;
@@ -742,24 +754,62 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                     DoMove(0);
                 }
             }
+
+            _modelAnimatorPlayer?.SetPlaySpeed(GetClipSpeedByState(_state.CurrentState));
         }
 
         // Todo: use extention for this monsteracity
         private void TryPlayAnimationClip(Definitions.ObjectState currentState) {
-            if (currentState is Definitions.ObjectState.Running) {
-                _modelAnimatorPlayer?.PlayAnimation(AnimClipType.Moving);
-            } else if (currentState is Definitions.ObjectState.Jumping) {
-                _modelAnimatorPlayer?.PlayAnimation(AnimClipType.Jump);
-            } else if(currentState is Definitions.ObjectState.Grounded) {
-                _modelAnimatorPlayer?.PlayAnimation(AnimClipType.Init);
-            } else if (currentState is Definitions.ObjectState.Attacking) {
-                _modelAnimatorPlayer?.PlayAnimation(AnimClipType.LightAttack);
-            } else if (currentState is Definitions.ObjectState.Crouching) {
-                _modelAnimatorPlayer?.PlayAnimation(AnimClipType.Crouch);
-            } else if (currentState is Definitions.ObjectState.StandingUp) {
-                _modelAnimatorPlayer?.PlayAnimation(AnimClipType.StandUp);
-            }
+
+            var animClip = GetClipByState(currentState);
             
+            _modelAnimatorPlayer?.PlayAnimation(animClip);
+        }
+
+        private float GetClipSpeedByState(ObjectState currentState) {
+            
+            if (currentState is not ObjectState.Running /*or ObjectState.Crawling*/) {
+                return 1;
+            }
+            var minClipSpeed = 0.5f;
+            var speedGap = 1 - minClipSpeed;
+            var speedPer = Mathf.Clamp01(Velocity.magnitude / 20) * speedGap + minClipSpeed; // 20 as the min speed for the lowest level stat
+
+            return speedPer;
+        }
+
+        private AnimClipType GetClipByState(ObjectState currentState) {
+
+            return currentState switch {
+
+                ObjectState.Running or ObjectState.TraversalRunning => AnimClipType.Moving,
+                ObjectState.Jumping => AnimClipType.Jump,
+                ObjectState.Falling => AnimClipType.Fall,
+                ObjectState.Grounded => AnimClipType.Init,
+                ObjectState.Grabbing or ObjectState.StandingUp => AnimClipType.StandUp,
+                ObjectState.Crouching => AnimClipType.Crouch,
+                ObjectState.Crawling => AnimClipType.Crawl,
+                ObjectState.Stunned => AnimClipType.Stunned,
+                ObjectState.LightAttack => AnimClipType.LightAttack,
+                ObjectState.MediumAttack => AnimClipType.MediumAttack,
+                ObjectState.HeavyAttack => AnimClipType.HeavyAttack,
+                ObjectState.AerialAttack => AnimClipType.AerialAttack,
+                ObjectState.DashAttack => AnimClipType.DashAttack,
+                ObjectState.SpecialAbility => AnimClipType.SpecialAbility,
+                ObjectState.Blocking => AnimClipType.Block,
+                ObjectState.Dodging => AnimClipType.Dodge,
+                ObjectState.AimingJump => AnimClipType.AimJump,
+                ObjectState.AimingRope => AnimClipType.AimRope,
+                ObjectState.AimingProjectile => AnimClipType.AimProjectile,
+                ObjectState.WallClinging  => AnimClipType.WallCling,
+                ObjectState.WallClimbing  => AnimClipType.WallClimb,
+                ObjectState.RopeClinging => AnimClipType.RopeCling,
+                ObjectState.RopeClimbing => AnimClipType.RopeClimb,
+                ObjectState.Landed => AnimClipType.Landed,
+                ObjectState.Dead => AnimClipType.DropDead,
+
+                _ => AnimClipType.Init,
+            };
         }
 
         private void UpdateOverlappingColliders(ref Collider2D[] solids, ref Collider2D[] traversables) {
