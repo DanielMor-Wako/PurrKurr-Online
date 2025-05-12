@@ -63,12 +63,7 @@ MonoBehaviour:
     _targetObjectIds:
     - Rat2
     _startObjectId: Spawner2
-    _waitTimeInSeconds: 0.5
-  - _actionType: 1
-    _targetObjectIds:
-    - Rat3
-    _startObjectId: Spawner2
-    _waitTimeInSeconds: 0.7
+    _waitTimeInSeconds: 0.8
   - _actionType: 3
     _targetObjectIds:
     - FoodPileOverview
@@ -83,6 +78,11 @@ MonoBehaviour:
     - Rat1
     _startObjectId: Spawner1
     _waitTimeInSeconds: 0
+  - _actionType: 1
+    _targetObjectIds:
+    - Rat3
+    _startObjectId: Spawner2
+    _waitTimeInSeconds: 0.4
   - _actionType: 0
     _targetObjectIds: []
     _startObjectId: 
