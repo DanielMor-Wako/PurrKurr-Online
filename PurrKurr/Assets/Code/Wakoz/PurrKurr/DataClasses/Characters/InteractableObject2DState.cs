@@ -2,6 +2,7 @@
 using Code.Wakoz.PurrKurr.DataClasses.GameCore;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.Ropes;
 using UnityEngine;
+using static Code.Wakoz.PurrKurr.DataClasses.Enums.Definitions;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.Characters
 {
@@ -36,11 +37,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
         public bool IsInCrouchArea() => _isInTraversableCrouchArea;
 
         private Definitions.ActionType _combatAbility;
+        private AttackAbility _interactionAbility;
         private float _moveAnimation;
         private float _interruptibleAnimation;
         private float _uninterruptibleAnimation;
         private float _cayoteEndTime;
         private float _jumpingEndTime;
+        private float _specialEndTime;
         private float _attackEndTime;
         private float _grabEndTime;
         private float _blockEndTime;
@@ -146,7 +149,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
                 return;
 
             } else if (IsAttackingState()/*_combatAbility == Definitions.ActionType.Attack*/) {
-                SetState(Definitions.ObjectState.Attacking);
+                var attackType =
+                    _interactionAbility is AttackAbility.LightAttackAlsoDefaultAttack ? Definitions.ObjectState.LightAttack :
+                    _interactionAbility is AttackAbility.MediumAttack ? Definitions.ObjectState.MediumAttack :
+                    _interactionAbility is AttackAbility.HeavyAttack ? Definitions.ObjectState.HeavyAttack :
+                    _interactionAbility is AttackAbility.AerialAttack ? Definitions.ObjectState.AerialAttack :
+                    _interactionAbility is AttackAbility.RollAttack ? Definitions.ObjectState.DashAttack :
+                    Definitions.ObjectState.LightAttack;
+                SetState(attackType);
                 return;
 
             } else if (IsGrabbingState()/*_combatAbility == Definitions.ActionType.Grab*/) {
@@ -161,8 +171,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
                 SetState(Definitions.ObjectState.AimingRope);
                 return;
 
-            } else if (_combatAbility == Definitions.ActionType.Special) {
-                SetState(Definitions.ObjectState.InterruptibleAnimation);
+            } else if (/*IsSpecialState() || */_combatAbility == Definitions.ActionType.Special) {
+                SetState(Definitions.ObjectState.SpecialAbility);
                 return;
 
             } else if (_combatAbility == Definitions.ActionType.Jump && IsAiming()) {
@@ -212,7 +222,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
                 } else if (_isStanding) {
                     SetState(Definitions.ObjectState.StandingUp);
                     return;
-                } else if (Velocity.magnitude > 2 && (_navigationDirection is Definitions.NavigationType.Right or Definitions.NavigationType.Left)) {
+                } else if (Velocity.magnitude > 2 && (_navigationDirection is Definitions.NavigationType.Right or Definitions.NavigationType.Left or Definitions.NavigationType.UpRight or Definitions.NavigationType.UpLeft)) {
                     SetState(Definitions.ObjectState.Running);
                     return;
                 } else if (_wasGrounded && _isGrounded /*&& _currentState == Definitions.CharacterState.Landed*/) {
@@ -253,12 +263,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
 
         public void SetDodgeTime(float time) => _dodgeEndTime = time;
 
-        public void SetCombatTime(Definitions.ActionType combatAbility, float time) {
+        public void SetCombatTime(AttackAbility ability, ActionType abilityType, float time) {
 
-            if (combatAbility is Definitions.ActionType.Empty)
+            _interactionAbility = ability;
+
+            if (abilityType is Definitions.ActionType.Empty)
                 return;
 
-            switch (combatAbility) {
+            switch (abilityType) {
                 case Definitions.ActionType.Block:
                     _blockEndTime = time;
                     break;
@@ -269,6 +281,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
 
                 case Definitions.ActionType.Grab:
                     _grabEndTime = time;
+                    break;
+
+                case Definitions.ActionType.Special:
+                    _specialEndTime = time;
                     break;
             }
         }
@@ -301,6 +317,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
         public bool IsMoveAnimation() => Time.time < _moveAnimation;
 
         public bool IsInterraptibleAnimation() => Time.time < _interruptibleAnimation;
+
+        public bool IsSpecialState() => Time.time < _specialEndTime;
 
         public bool IsDodgingState() => Time.time < _dodgeEndTime;
 
@@ -356,10 +374,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
         public void SetAiming(float durationInMilliseconds) => _aimingEndTime = Time.time + durationInMilliseconds;
         public void StopAiming() => SetAiming(0);
 
+        private Quaternion lookUpQuaternion = Quaternion.LookRotation(Vector3.forward, Vector2.down);
         public Quaternion ReturnForwardDirByTerrainQuaternion() {
 
             if (IsGrabbed()) {
-                Quaternion surfaceQuaternion = Quaternion.LookRotation(Vector3.forward, Vector2.down);
+                Quaternion surfaceQuaternion = lookUpQuaternion;
                 return surfaceQuaternion;
             }
 
@@ -371,6 +390,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
             if (HasAnySurfaceAround()) {
                 Quaternion surfaceQuaternion = Quaternion.LookRotation(Vector3.forward, _alternativeSurfaceDir);
                 return surfaceQuaternion;
+            }
+
+            if (IsInterraptibleAnimation() || IsMoveAnimation()) {
+                Quaternion animationQuaternion = lookUpQuaternion;
+                return animationQuaternion;
             }
 
             /*if (IsClinging()) {
