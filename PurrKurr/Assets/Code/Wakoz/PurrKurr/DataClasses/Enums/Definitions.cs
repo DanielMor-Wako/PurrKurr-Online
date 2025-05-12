@@ -73,6 +73,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             HeavyGrab = 7, // anti-grabbers (massive damage to other grabbers)
             AerialGrab = 8, // grab while jumping or falling , and release grabbed foe in groundsmash
             LightBlock = 9, // absorbs damage but can be grabbed
+            Special = 10,
             None = 255
         }
 
@@ -137,7 +138,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             Grounded,
             Crouching,
             StandingUp,
-            Attacking,
+            LightAttack,
             Grabbing,
             Grabbed,
             Blocking,
@@ -159,7 +160,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             Stunned,
             Landed,
             Dodging,
-            Crawling
+            Crawling,
+            MediumAttack,
+            HeavyAttack,
+            AerialAttack,
+            DashAttack,
+            SpecialAbility
         }
 
         public enum Effect2DType
