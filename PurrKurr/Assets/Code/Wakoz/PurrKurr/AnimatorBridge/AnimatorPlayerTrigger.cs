@@ -38,11 +38,11 @@ namespace Code.Wakoz.PurrKurr.AnimatorBridge
         public void PlayAimRope() => PlayAnimation(AnimClipType.AimRope);
         public void PlayAimProjectile() => PlayAnimation(AnimClipType.AimProjectile);
         public void PlayTaunt() => PlayAnimation(AnimClipType.Taunt);
-        public void PlaySpecialAttack() => PlayAnimation(AnimClipType.SpecialAttack);
+        public void PlaySpecialAttack() => PlayAnimation(AnimClipType.SpecialAbility);
         public void PlayLightAttack() => PlayAnimation(AnimClipType.LightAttack);
         public void PlayMediumAttack() => PlayAnimation(AnimClipType.MediumAttack);
         public void PlayHeavyAttack() => PlayAnimation(AnimClipType.HeavyAttack);
-        public void PlayRollAttack() => PlayAnimation(AnimClipType.RollAttack);
+        public void PlayRollAttack() => PlayAnimation(AnimClipType.DashAttack);
         public void PlayAerialAttack() => PlayAnimation(AnimClipType.AerialAttack);
         public void PlayLightGrab() => PlayAnimation(AnimClipType.LightGrab);
         public void PlayMediumGrab() => PlayAnimation(AnimClipType.MediumGrab);
