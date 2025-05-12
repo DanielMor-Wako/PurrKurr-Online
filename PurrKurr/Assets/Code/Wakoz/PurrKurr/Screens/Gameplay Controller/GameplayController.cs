@@ -926,7 +926,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         }
 
         private bool CanPerformAction() => _hero.State.CanPerformAction();
-        private bool CanOnlyStackActions() => _hero.State.CurrentState is ObjectState.Attacking or ObjectState.InterruptibleAnimation;
+        private bool CanOnlyStackActions() => _hero.State.CurrentState is ObjectState.LightAttack or ObjectState.InterruptibleAnimation;
 
         private void FaceCharacterByNavigationDir(NavigationType navigationDir) {
 
@@ -1044,9 +1044,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     }
                     e.Attacker.SetTargetPosition(e.InteractionPosition);
                     e.Attacker.State.SetMoveAnimation(Time.time + e.AttackProperties.ActionDuration);
-                    e.Attacker.State.SetCombatTime(
+                    e.Attacker.State.SetCombatTime(e.InteractionType,
                         _logic.AbilitiesLogic.GetAbilityType(e.InteractionType),
-                        Time.time + e.AttackProperties.ActionDuration);
+                        Time.time + e.AttackProperties.ActionDuration + e.AttackProperties.ActionCooldownDuration);
 
                 }
             }
@@ -1173,8 +1173,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     break;
 
                 case Definitions.ActionType.Block:
+                case Definitions.ActionType.Special:
 
-                    
                     //var dir = Vector2.up;//((Vector3)closestFoePosition - character.LegsPosition);
 
                     moveToPosition = character.LegsPosition;// + Vector2.up * (character.LegsRadius);
@@ -1399,9 +1399,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
 
             if (interactedCollider == null) {
-                if (!isBlockAction) {
-                    ApplyEffectOnCharacter(attacker, _logic.AbilitiesLogic.IsAbilityAnAttack(attackAbility) ? Effect2DType.ImpactMed : Effect2DType.ImpactOnBlock);
-                }
                 return facingRightOrLeftTowardsPoint;
             }
 
@@ -1737,6 +1734,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 // revive 1 hp when character is not moving
                 character.DealDamage(-10);
                 ApplyEffectOnCharacter(character, Effect2DType.GainHp);
+                //character.State.SetCombatTime( ActionType.Special, Time.time + 0.5f);
             }
         }
 
