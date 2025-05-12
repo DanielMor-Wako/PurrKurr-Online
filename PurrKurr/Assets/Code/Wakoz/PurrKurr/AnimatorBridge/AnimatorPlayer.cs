@@ -44,13 +44,13 @@ namespace Code.Wakoz.PurrKurr.AnimatorBridge
 
         // Taunts and Special Actions
         Taunt = 24,
-        SpecialAttack = 25,
+        SpecialAbility = 25,
 
         // Attacks
         LightAttack = 26,
         MediumAttack = 27,
         HeavyAttack = 28,
-        RollAttack = 29,
+        DashAttack = 29,
         AerialAttack = 30,
 
         // Grabs
@@ -82,7 +82,7 @@ namespace Code.Wakoz.PurrKurr.AnimatorBridge
         [SerializeField] private Animator _animator;
 
         [Tooltip("Cross fade duration between animations.\nWhen set as 0, crossfade is ignored")]
-        [SerializeField] [Min(0)] private float _crossfade;
+        [SerializeField][Min(0)] private float _crossfade;
 
         private HashSet<int> _cachedClipHashes = new();
         private AnimationClip[] _runtimeAnimationClips;
@@ -92,8 +92,8 @@ namespace Code.Wakoz.PurrKurr.AnimatorBridge
         /// Default is 1 as the multiplier takes no effect
         /// </summary>
         /// <param name="speedMultiplier"></param>
-        public void SetPlaySpeed(float speedMultiplier = 1)
-        {
+        public void SetPlaySpeed(float speedMultiplier = 1) {
+
             _animator.SetFloat("PLAY_SPEED", speedMultiplier);
         }
 
@@ -101,10 +101,9 @@ namespace Code.Wakoz.PurrKurr.AnimatorBridge
         /// Plays an animation based on the enum value (int) provided
         /// </summary>
         /// <param name="animClipTypeInt">The integer value corresponding to the AnimClipType enum.</param>
-        public void PlayAnimation(AnimClipType animClipType)
-        {
-            if (_animator == null)
-            {
+        public void PlayAnimation(AnimClipType animClipType) {
+
+            if (_animator == null) {
                 Debug.LogError("Animator reference is not assigned!");
                 return;
             }
@@ -113,14 +112,10 @@ namespace Code.Wakoz.PurrKurr.AnimatorBridge
 
             int clipHash = Animator.StringToHash(clipName);
 
-            if (!_cachedClipHashes.Contains(clipHash))
-            {
-                if (IsAnimationClipExists(clipName))
-                {
+            if (!_cachedClipHashes.Contains(clipHash)) {
+                if (IsAnimationClipExists(clipName)) {
                     _cachedClipHashes.Add(clipHash);
-                }
-                else
-                {
+                } else {
                     Debug.LogError($"Animation clip '{clipName}' not found in the Animator!");
                     return;
                 }
@@ -129,16 +124,14 @@ namespace Code.Wakoz.PurrKurr.AnimatorBridge
             PlayClipHash(clipHash);
         }
 
-        private void PlayClipHash(int clipHash)
-        {
-            //Debug.Log($"Playing animation: {clipName} (Hash: {clipHash})");
-            if (_crossfade > 0)
-            {
-                _animator.CrossFade(clipHash, _crossfade);
+        private void PlayClipHash(int clipHash) {
+
+            if (_crossfade > 0) {
+                _animator.CrossFadeInFixedTime(clipHash, _crossfade);
                 return;
             }
 
-            _animator.Play(clipHash);
+            _animator.Play(clipHash); //, -1, 0);
         }
 
         /// <summary>
@@ -146,14 +139,12 @@ namespace Code.Wakoz.PurrKurr.AnimatorBridge
         /// </summary>
         /// <param name="clipName">The name of the animation clip to check.</param>
         /// <returns>True if the animation clip exists, false otherwise.</returns>
-        private bool IsAnimationClipExists(string clipName)
-        {
+        private bool IsAnimationClipExists(string clipName) {
+
             _runtimeAnimationClips ??= _animator.runtimeAnimatorController.animationClips;
 
-            for (var i = 0; i < _runtimeAnimationClips.Length; i++)
-            {
-                if (_runtimeAnimationClips[i].name == clipName)
-                {
+            for (var i = 0; i < _runtimeAnimationClips.Length; i++) {
+                if (_runtimeAnimationClips[i].name == clipName) {
                     return true;
                 }
             }
