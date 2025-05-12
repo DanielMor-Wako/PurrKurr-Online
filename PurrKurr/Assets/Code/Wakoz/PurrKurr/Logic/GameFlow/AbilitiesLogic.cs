@@ -115,6 +115,8 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow
             
             var index = (int)ability;
             switch (index) {
+                case >= SpecialIndexMinRange:
+                    return ActionType.Special;
                 case >= BlockIndexMinRange:
                     return ActionType.Block;
                 case >= GrabIndexMinRange:
@@ -125,10 +127,10 @@ namespace Code.Wakoz.PurrKurr.Logic.GameFlow
                     return ActionType.Empty;
             }
         }
+        private const int SpecialIndexMinRange = 10;
         private const int BlockIndexMinRange = 9; // ref (int)AttackAbility.LightBlock;
         private const int GrabIndexMinRange = 5; // ref (int)AttackAbility.LightGrabAlsoDefaultGrab;
         private const int AttackIndexMinRange = 0; // ref (int)AttackAbility.LightAttackAlsoDefaultAttack;
-
         public bool IsAbilityAnAttack(AttackAbility ability) =>
             ability is
                 AttackAbility.LightAttackAlsoDefaultAttack or
