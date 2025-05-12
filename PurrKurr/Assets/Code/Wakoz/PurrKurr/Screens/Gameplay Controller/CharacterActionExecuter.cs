@@ -413,7 +413,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     var isProjectilingEnded = actionInput.ActionType is ActionType.Projectile && character.State.CurrentState is ObjectState.AimingProjectile;
                     var isRopingEnded = actionInput.ActionType is ActionType.Rope && character.State.CurrentState is ObjectState.AimingRope;
                     var isJumpAimEnded = actionInput.ActionType is ActionType.Jump && character.State.CurrentState is ObjectState.AimingJump;
-                    var isSpecial = actionInput.ActionType is ActionType.Special && character.State.CurrentState is ObjectState.InterruptibleAnimation;
+                    var isSpecial = actionInput.ActionType is ActionType.Special && character.State.CurrentState is ObjectState.SpecialAbility;
 
                     if (isBlockingEnded || isProjectilingEnded || isRopingEnded || isJumpAimEnded || isSpecial) {
 
