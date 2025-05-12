@@ -138,7 +138,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         private void HandleAiming(Definitions.ActionType type, Vector2 position, Quaternion quaternion, bool hitData, Vector3[] lineTrajectory)
         {
-            Debug.Log("GameEvent: aiming (values) " + type);
+            //Debug.Log("GameEvent: aiming (values) " + type);
             if (CameraHandler == null)
             {
                 Debug.LogError("camera handler is missing");
