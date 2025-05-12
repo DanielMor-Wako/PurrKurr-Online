@@ -10,7 +10,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         [Tooltip("Controlls the animator rig, Auto = to be affected by facing right or left. or set as fixed direction right or left")]
         [SerializeField] private Definitions.Character2DFacingRightType _facingType;
 
-        private float _facingRightAngle;
+        private float _facingRightOnSurfaceAngle;
         private Vector3 FacingRight = Vector3.one;
         private Vector3 FacingLeft = new Vector3(-1, 1, 1);
 
@@ -42,12 +42,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             }
 
             _rigTrasform.localScale = facingRightScale;
-            _facingRightAngle = facingRightAngle;
+            _facingRightOnSurfaceAngle = facingRightAngle;
         }
 
-        public void UpdateRigRotation(bool useOffset, Quaternion terrainQuaternion) {
+        public void UpdateRigRotation(Quaternion terrainQuaternion, float defaultOffset = -1) {
 
-            var offsetQuaternion = Quaternion.Euler(0f, 0f, useOffset ? _facingRightAngle : 0);
+            var offsetQuaternion = Quaternion.Euler(0f, 0f, defaultOffset < 0 ? _facingRightOnSurfaceAngle : defaultOffset);
             var newRotation = Quaternion.Lerp(_rigTrasform.rotation,
                 terrainQuaternion * offsetQuaternion,
                 Time.deltaTime * 10f);
