@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.Screens.Objectives
@@ -12,6 +13,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
 
         [SerializeField] private ObjectiveView _objectiveViewPrefab;
         [SerializeField] private Transform _parentContainer;
+        [SerializeField] private TextMeshProUGUI _titleText;
         [SerializeField] private CanvasGroupFaderView _titleFader;
         [SerializeField] private ImageColorChangerView _titleColor;
         [SerializeField] private MultiStateView _arrowIconState;
@@ -70,7 +72,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
             if (_arrowIconState == null)
                 return;
 
-            var canDisplayArrowIcon = HasAnyCompleted();
+            var canDisplayArrowIcon = HasAnyObjectives();
             var newState = canDisplayArrowIcon ? Convert.ToInt32(!_isHidingCompletedObjectives) : 2;
 
             if (newState == _arrowIconState.CurrentState)
@@ -82,7 +84,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
         private void SetArrowIconScale()
         {
             var newState = _arrowIconState != null ? _arrowIconState.CurrentState :
-                HasAnyCompleted() ? Convert.ToInt32(!_isHidingCompletedObjectives) : 2;
+                HasAnyObjectives() ? Convert.ToInt32(!_isHidingCompletedObjectives) : 2;
 
             if (_arrowIconScaler != null && newState == 2)
                 return;
@@ -98,6 +100,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
 
             return _models.FirstOrDefault(o => o.InterfaceData.IsComplete()) != null;
         }
+
+        private bool HasAnyObjectives() 
+            => _models.Count > 0;
 
         /// <summary>
         /// Refreshes all models and updates alpha of completed items
@@ -124,7 +129,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
         {
             var totalObjectives = Model.Objectives.Count;
             SetTitleFader(totalObjectives);
-
+            
             _models.Clear();
 
             while (_objectiveViews.Count < totalObjectives)
@@ -169,10 +174,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
             }
         }
 
-        protected override void ModelChanged()
-        {
+        protected override void ModelChanged() {
             ProcessItemsUpdate();
             SetArrowIconState();
+            SetTitleText();
         }
 
         private void SetTitleFader(int totalObjectives)
@@ -184,6 +189,29 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
             _titleFader.StartTransition(totalObjectives < 1 ? HiddenAlpha : FullAlpha);
         }
 
+        private void SetTitleText() {
+
+            if (_titleText == null)
+                return;
+
+            var totalObjectives = Model.Objectives.Count;
+
+            if (totalObjectives == 0) {
+                _titleText.SetText($"Objectives (100%)");
+                return;
+            }
+
+            var fillPercent = 0f;
+
+            for (var i = 0; i < totalObjectives; i++) {
+                var objectiveModel = Model.Objectives[i];
+                fillPercent += Mathf.Clamp01((float)objectiveModel.InterfaceData.GetCurrentQuantity() / objectiveModel.InterfaceData.GetRequiredQuantity());
+            }
+            fillPercent = Mathf.CeilToInt((fillPercent / totalObjectives) * 100);
+            
+            _titleText.SetText($"Objectives ({fillPercent}%)");
+        }
+        
         private void TitleColorTransition()
         {
             if (_titleColor == null)
@@ -269,25 +297,27 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
 
                 Action fillAction = () =>
                 {
-                    if (!hasFillAmountDifference)
+                    /*if (!hasFillAmountDifference)
                     {
                         model.UpdateItem();
-                        viewItem.Fader.StartTransition(objectiveModel.InterfaceData.IsComplete() ? GetCompletedAlpha() : FullAlpha);
+                        //viewItem.Fader.StartTransition(objectiveModel.InterfaceData.IsComplete() ? GetCompletedAlpha() : FullAlpha);
+                        viewItem.Fader.StartTransition(_isHidingCompletedObjectives ? GetCompletedAlpha() : FullAlpha);
                     }
                     else
-                    {
+                    {*/
                         // Set the viewItem's sibling index to match the model's index
-                        var itemIndexInScene = viewItem.transform.GetSiblingIndex();
-                        Debug.Log($"Item sibling {itemIndexInScene} with new order as {i}");
-                        if (itemIndexInScene != i)
-                        {
-                            var newSiblingIndex = i;
+                        //var itemIndexInScene = viewItem.transform.GetSiblingIndex();
+                        //Debug.Log($"Item sibling {model.InterfaceData.GetObjectType()} {itemIndexInScene} with new order as {i}");
+                        /*if (itemIndexInScene != i)
+                        {*/
+                            var newSiblingIndex = i + 1;
                             siblingAction = () =>
                             {
                                 viewItem.transform.SetSiblingIndex(newSiblingIndex);
-                                viewItem.Fader.StartTransition(objectiveModel.InterfaceData.IsComplete() ? GetCompletedAlpha() : 1);
+                                //viewItem.Fader.StartTransition(objectiveModel.InterfaceData.IsComplete() ? GetCompletedAlpha() : 1);
+                                viewItem.Fader.StartTransition(_isHidingCompletedObjectives ? GetCompletedAlpha() : 1);
                             };
-                        }
+                        //}
 
                         viewItem.ImageScaler.StartTransition();
                         var fillPercent = Mathf.Clamp01((float)objectiveModel.InterfaceData.GetCurrentQuantity() / objectiveModel.InterfaceData.GetRequiredQuantity());
@@ -295,12 +325,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
                         {
                             model.UpdateItem();
                             viewItem.ImageScaler.EndTransition();
-                            viewItem.Fader.StartTransition(objectiveModel.InterfaceData.IsComplete() ? GetCompletedAlpha() : 1f, siblingAction);
+                            //viewItem.Fader.StartTransition(objectiveModel.InterfaceData.IsComplete() ? GetCompletedAlpha() : 1f, siblingAction);
+                            viewItem.Fader.StartTransition(_isHidingCompletedObjectives ? GetCompletedAlpha() : 1f, siblingAction);
                         });
-                    }
+                    //}
                 };
 
-                viewItem.Fader.StartTransition(isCompleteAndImageFillIsFull ? GetCompletedAlpha() : 1, fillAction);
+                //viewItem.Fader.StartTransition(isCompleteAndImageFillIsFull ? GetCompletedAlpha() : 1, fillAction);
+                viewItem.Fader.StartTransition(!hasFillAmountDifference ? GetCompletedAlpha() : 1f, fillAction);
             }
         }
 
