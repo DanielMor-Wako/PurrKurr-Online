@@ -217,12 +217,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
                 }
 
                 if (_isCrouching) {
-                    SetState(Velocity.magnitude > 2 ? Definitions.ObjectState.Crawling : Definitions.ObjectState.Crouching);
+                    SetState(Velocity.magnitude > 1 ? Definitions.ObjectState.Crawling : Definitions.ObjectState.Crouching);
                     return;
                 } else if (_isStanding) {
                     SetState(Definitions.ObjectState.StandingUp);
                     return;
-                } else if (Velocity.magnitude > 2 && (_navigationDirection is Definitions.NavigationType.Right or Definitions.NavigationType.Left or Definitions.NavigationType.UpRight or Definitions.NavigationType.UpLeft)) {
+                } else if (Velocity.magnitude > 1 && (_navigationDirection is Definitions.NavigationType.Right or Definitions.NavigationType.Left or Definitions.NavigationType.UpRight or Definitions.NavigationType.UpLeft)) {
                     SetState(Definitions.ObjectState.Running);
                     return;
                 } else if (_wasGrounded && _isGrounded /*&& _currentState == Definitions.CharacterState.Landed*/) {
@@ -392,7 +392,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
                 return surfaceQuaternion;
             }
 
-            if (IsInterraptibleAnimation() || IsMoveAnimation()) {
+            if (IsInterraptibleAnimation() || IsMoveAnimation() || _currentState is ObjectState.Falling) {
                 Quaternion animationQuaternion = lookUpQuaternion;
                 return animationQuaternion;
             }
