@@ -6,11 +6,10 @@ using System.Linq;
 namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 {
 
-#if UNITY_EDITOR
-    
     [RequireComponent(typeof(CameraController))]
     public class CameraControllerEditorTest : MonoBehaviour
     {
+#if UNITY_EDITOR
         [SerializeField] private CameraController _camController;
 
         [Header("Refresh Rate")]
@@ -26,16 +25,19 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         private int _refreshRate = 0;
         private CameraCharacterHandler _mediator;
         private CameraHandler _handler;
-
+#endif
         private void Start()
         {
 #if !UNITY_EDITOR
             Destroy(this);
             Debug.LogWarning("The script is for camera test only, and should not exist outside of the editor");
 #endif
+#if UNITY_EDITOR
             _camController ??= GetComponent<CameraController>();
+#endif
         }
 
+#if UNITY_EDITOR
         private void AddCamera(CameraData data, Action processActionCallback = null)
         {
             _camController.AddCamera(data, processActionCallback);
@@ -86,7 +88,7 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         private void SetMediator()
         {
-            _mediator ??= _camController.CharacterMediator as CameraCharacterHandler;
+            _mediator ??= _camController.CharacterMediator;
         }
 
 
@@ -182,6 +184,6 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
 #endregion
 
-    }
 #endif
+    }
 }
