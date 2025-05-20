@@ -616,7 +616,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
             }
 
             if (Stats.Health <= 0) {
-                _rigAnimator.UpdateRigRotation(Quaternion.LookRotation(Vector3.forward, Vector2.down), 0);
+                _rigAnimator.UpdateRigRotation(_state.ReturnForwardDirByTerrainQuaternion(), 0);
                 return;
             }
 
@@ -767,11 +767,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
         }
 
         private float GetClipSpeedByState(ObjectState currentState) {
-            
-            if (currentState is not ObjectState.Running /*or ObjectState.Crawling*/) {
+
+            if (currentState is not ObjectState.Running) {
                 return 1;
             }
-            var minClipSpeed = 0.5f;
+            var minClipSpeed = 0.1f;
             var speedGap = 1 - minClipSpeed;
             var speedPer = Mathf.Clamp01(Velocity.magnitude / 20) * speedGap + minClipSpeed; // 20 as the min speed for the lowest level stat
 
@@ -786,7 +786,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 ObjectState.Jumping => AnimClipType.Jump,
                 ObjectState.Falling => AnimClipType.Fall,
                 ObjectState.Grounded => AnimClipType.Init,
-                ObjectState.Grabbing or ObjectState.StandingUp => AnimClipType.StandUp,
+                ObjectState.Grabbing => AnimClipType.Grabbing,
+                ObjectState.StandingUp => AnimClipType.StandUp,
                 ObjectState.Crouching => AnimClipType.Crouch,
                 ObjectState.Crawling => AnimClipType.Crawl,
                 ObjectState.Stunned => AnimClipType.Stunned,
