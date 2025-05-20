@@ -67,7 +67,10 @@ namespace Code.Wakoz.PurrKurr.AnimatorBridge
         // Damage and Death
         TakeDamage = 38,
         DropDead = 39,
-        RiseUp = 40
+        RiseUp = 40,
+
+        // Holding Object
+        Grabbing = 41,
     }
 
     [RequireComponent(typeof(Animator))]
