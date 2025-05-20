@@ -2,7 +2,8 @@ using System.Globalization;
 using System.Threading;
 using UnityEngine;
 
-namespace Code.Wakoz.PurrKurr.Screens.Init {
+namespace Code.Wakoz.PurrKurr.Screens.Init
+{
     public class InitController : MonoBehaviour {
         
         [SerializeField] private bool _destroyScriptOnLoad = true;
@@ -13,14 +14,20 @@ namespace Code.Wakoz.PurrKurr.Screens.Init {
         [SerializeField][Min(0)] private int _testTargetFrameRate = 0;
 
         private const int DEFAULT_TARGET_FRAME_RATE = 60;
+
+        private static bool IsInitialized = false;
         
         private void Awake()
         {
+            if (IsInitialized)
+                return;
+
             SetTargtFrameRate();
             SetScreenOrientation();
 #if !UNITY_EDITOR
             SetLocalization();
 #endif
+            IsInitialized = true;
         }
 
         private void SetTargtFrameRate() 
@@ -66,6 +73,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Init {
 #endif
         }
         */
-        
     }
+        
 }
