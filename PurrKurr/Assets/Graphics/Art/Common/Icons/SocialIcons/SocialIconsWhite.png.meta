@@ -1,0 +1,1592 @@
+fileFormatVersion: 2
+guid: 479616be0b97603479df3d68110bdbaf
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 333
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3d63dade6bb0d843a6e52bc43fa4783
+      internalID: -847628334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_1
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 333
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ec39f60e76b7d94db2ee8065738f2ee
+      internalID: -411307182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_2
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 333
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d329d87869d6cad4c972b4d714c63614
+      internalID: 456867986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_3
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 333
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c975e364628c804a8fe76a69121cbbb
+      internalID: 1072572880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_4
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 333
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9650ed6f303b5fb46ae1a641caa4828f
+      internalID: -552439372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_5
+      rect:
+        serializedVersion: 2
+        x: 335
+        y: 333
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 652dc08338938f04485aca2ff4e11577
+      internalID: 1167615446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_6
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 333
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ef18f09259b27d4db87391485503d40
+      internalID: 388894739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_7
+      rect:
+        serializedVersion: 2
+        x: 469
+        y: 333
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dcf8488b23b625243a549f0e2c0bf2d5
+      internalID: 1058769102
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_8
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 333
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a95d1d126ca5d42478c7f48fcf2f82e3
+      internalID: -1945721381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_9
+      rect:
+        serializedVersion: 2
+        x: 603
+        y: 333
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8152df47a677fad4992f0ef1fa00deba
+      internalID: 1980664632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_10
+      rect:
+        serializedVersion: 2
+        x: 670
+        y: 333
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 173783d1842027946a97392013110878
+      internalID: -1732735910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 267
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e88ee4caa5cd6e545911b42b452da856
+      internalID: 1134488833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_12
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 267
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 809de6ffae1d59448a32a59c1eb0517a
+      internalID: -1589943189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_13
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 267
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: baf70d4264e204147ab1479e5900ce28
+      internalID: 430087007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_14
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 267
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a85399765f0d4c645bf4eb25e257b414
+      internalID: 876507784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_15
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 267
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8865f83839449b7439d1b4413689a73b
+      internalID: -1846415521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_16
+      rect:
+        serializedVersion: 2
+        x: 335
+        y: 267
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de1b65876a3ddcd4f9c9e9114802e018
+      internalID: -2131141688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_17
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 267
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd0a800da3cf65e4e9207c8e5730e988
+      internalID: 2017580277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_18
+      rect:
+        serializedVersion: 2
+        x: 469
+        y: 267
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0fe11be792ffc864bbc0ecef2432488a
+      internalID: 298193188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_19
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 267
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 614ed1db081b042429407313b6991528
+      internalID: 536490223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_20
+      rect:
+        serializedVersion: 2
+        x: 603
+        y: 267
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 46c3a270d93ef554cb56a2ac0972d9c9
+      internalID: 377104165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_21
+      rect:
+        serializedVersion: 2
+        x: 670
+        y: 267
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31691c18f08db3940933746f93817724
+      internalID: -701791023
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_22
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 201
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89cb25eb51daa984bba6c56dceececc0
+      internalID: 1070241190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_23
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 201
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 21f1a2a349fab204787d0404bd9c8e93
+      internalID: -985792970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_24
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 201
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40acd20931296564a913cd8fd650d48a
+      internalID: 1137003136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_25
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 201
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f21f89e99146b8948ac94e3bf1cedb65
+      internalID: 1764640845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_26
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 201
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a43f60c10a3c494c9044393b64e64e8
+      internalID: -207611114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_27
+      rect:
+        serializedVersion: 2
+        x: 335
+        y: 201
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95b329f73ec786d479c3d1effdb479d2
+      internalID: -1747851590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_28
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 201
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0335a0f1cb3b8ca49a1fc47362f0a02b
+      internalID: 850348503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_29
+      rect:
+        serializedVersion: 2
+        x: 469
+        y: 201
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c66990f14949a3c42be0cbdf78ecbb37
+      internalID: 1221358005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_30
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 201
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17c871cdcca85f245bb22c45066ef63c
+      internalID: 1130366728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_31
+      rect:
+        serializedVersion: 2
+        x: 603
+        y: 201
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9af8f079df466de459ff6a0022a2278b
+      internalID: -2074920677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_32
+      rect:
+        serializedVersion: 2
+        x: 670
+        y: 201
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f1c4d2e2f111504fad18bbf0f978b62
+      internalID: -1930641934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_33
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 135
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 584ca5c2a27f4ac4a80cde1ebc7b8d82
+      internalID: 1760759146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_34
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 135
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73e30abe08904d242901c6dc89ed4566
+      internalID: 581257889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_35
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 135
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5be99ed3ff532449a742ae3155a6521
+      internalID: 1714050878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_36
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 135
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a084f29bccdb89f45bf3f40170a935fe
+      internalID: -2098957600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_37
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 135
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebc8d06b6b2db3f4396fed456a704ef4
+      internalID: -2127664575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_38
+      rect:
+        serializedVersion: 2
+        x: 335
+        y: 135
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a85da6dc84925344286660286ecf99c6
+      internalID: -180836954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_39
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 135
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03c218b5a2ed17747a94d4b4391bee8a
+      internalID: -932600414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_40
+      rect:
+        serializedVersion: 2
+        x: 469
+        y: 135
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90339d88c59f81b47a003039cbc54570
+      internalID: -364045386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_41
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 135
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6764696a55ac494583c434aa1030615
+      internalID: 1998810915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_42
+      rect:
+        serializedVersion: 2
+        x: 603
+        y: 135
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d05144fc9423ca24898003db850b079e
+      internalID: -1592380096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_43
+      rect:
+        serializedVersion: 2
+        x: 670
+        y: 135
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 365ef54e649f8c6418529085a4e13ff9
+      internalID: 1603770646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_44
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 69
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4df08d58624d28c4b88f9b0336431a8a
+      internalID: 1009557214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_45
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 69
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f6aef7cf172c714b946dcaea25e6c34
+      internalID: -924588494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_46
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 69
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e193c349c22735644b537ed7a80519af
+      internalID: 1295990676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_47
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 69
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bcee5207cd2661488c1e87d153f8fd8
+      internalID: -10156914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_48
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 69
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea330298fe1bf74468b31654149c9ce1
+      internalID: 713442118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_49
+      rect:
+        serializedVersion: 2
+        x: 335
+        y: 69
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24ae15d03b847834fa37424ca85e241f
+      internalID: -1295306696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_50
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 69
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6cf52f0baf87c24aa170eed250531e4
+      internalID: 1605792264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_51
+      rect:
+        serializedVersion: 2
+        x: 469
+        y: 69
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4db5e88d7facb2349a8c07b350eee217
+      internalID: 1249826979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_52
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 69
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e265a9c5689300447ac0df844d27a172
+      internalID: 124157343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_53
+      rect:
+        serializedVersion: 2
+        x: 603
+        y: 69
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3614d8693cae32e47ab1d282e9013cda
+      internalID: 1853513129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_54
+      rect:
+        serializedVersion: 2
+        x: 670
+        y: 69
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f46882de9fa8a3346b3f130a09c1f9c0
+      internalID: -1935213532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_55
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f20a0e748775f94eb274cbf247f7662
+      internalID: -1593624165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_56
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 3
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 332c45ea17e6ef7498b35019f5705cf4
+      internalID: 229350308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_57
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 3
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d52129dc6d7c9ae4bbb9ec7b55a19fc7
+      internalID: 1011543917
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_58
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 3
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77c7a8c7384299c4ca1590904695dabf
+      internalID: -1184444016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_59
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 3
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e758f7e9b9807ea46a1078fa0c78b799
+      internalID: 1442802611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_60
+      rect:
+        serializedVersion: 2
+        x: 335
+        y: 3
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0bbec0e79fc7a843aebaca67b83a2c3
+      internalID: 1549909053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_61
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 3
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d929ca7d30d3f542b7bf9fd528ea79e
+      internalID: -623679545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_62
+      rect:
+        serializedVersion: 2
+        x: 469
+        y: 3
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 724bf68879462154eab382a1b814e509
+      internalID: -1858858847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_63
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 3
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f5bf86fdceaed143a9e6797df4900fd
+      internalID: 84540751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_64
+      rect:
+        serializedVersion: 2
+        x: 603
+        y: 3
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6512a8799650be49ba03fa61c759d6a
+      internalID: 1852371571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SocialIconsWhite_00_65
+      rect:
+        serializedVersion: 2
+        x: 670
+        y: 3
+        width: 64
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e6be237c40ff08418051671c5ce0221
+      internalID: 677324766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      SocialIconsWhite_00_0: -847628334
+      SocialIconsWhite_00_1: -411307182
+      SocialIconsWhite_00_10: -1732735910
+      SocialIconsWhite_00_11: 1134488833
+      SocialIconsWhite_00_12: -1589943189
+      SocialIconsWhite_00_13: 430087007
+      SocialIconsWhite_00_14: 876507784
+      SocialIconsWhite_00_15: -1846415521
+      SocialIconsWhite_00_16: -2131141688
+      SocialIconsWhite_00_17: 2017580277
+      SocialIconsWhite_00_18: 298193188
+      SocialIconsWhite_00_19: 536490223
+      SocialIconsWhite_00_2: 456867986
+      SocialIconsWhite_00_20: 377104165
+      SocialIconsWhite_00_21: -701791023
+      SocialIconsWhite_00_22: 1070241190
+      SocialIconsWhite_00_23: -985792970
+      SocialIconsWhite_00_24: 1137003136
+      SocialIconsWhite_00_25: 1764640845
+      SocialIconsWhite_00_26: -207611114
+      SocialIconsWhite_00_27: -1747851590
+      SocialIconsWhite_00_28: 850348503
+      SocialIconsWhite_00_29: 1221358005
+      SocialIconsWhite_00_3: 1072572880
+      SocialIconsWhite_00_30: 1130366728
+      SocialIconsWhite_00_31: -2074920677
+      SocialIconsWhite_00_32: -1930641934
+      SocialIconsWhite_00_33: 1760759146
+      SocialIconsWhite_00_34: 581257889
+      SocialIconsWhite_00_35: 1714050878
+      SocialIconsWhite_00_36: -2098957600
+      SocialIconsWhite_00_37: -2127664575
+      SocialIconsWhite_00_38: -180836954
+      SocialIconsWhite_00_39: -932600414
+      SocialIconsWhite_00_4: -552439372
+      SocialIconsWhite_00_40: -364045386
+      SocialIconsWhite_00_41: 1998810915
+      SocialIconsWhite_00_42: -1592380096
+      SocialIconsWhite_00_43: 1603770646
+      SocialIconsWhite_00_44: 1009557214
+      SocialIconsWhite_00_45: -924588494
+      SocialIconsWhite_00_46: 1295990676
+      SocialIconsWhite_00_47: -10156914
+      SocialIconsWhite_00_48: 713442118
+      SocialIconsWhite_00_49: -1295306696
+      SocialIconsWhite_00_5: 1167615446
+      SocialIconsWhite_00_50: 1605792264
+      SocialIconsWhite_00_51: 1249826979
+      SocialIconsWhite_00_52: 124157343
+      SocialIconsWhite_00_53: 1853513129
+      SocialIconsWhite_00_54: -1935213532
+      SocialIconsWhite_00_55: -1593624165
+      SocialIconsWhite_00_56: 229350308
+      SocialIconsWhite_00_57: 1011543917
+      SocialIconsWhite_00_58: -1184444016
+      SocialIconsWhite_00_59: 1442802611
+      SocialIconsWhite_00_6: 388894739
+      SocialIconsWhite_00_60: 1549909053
+      SocialIconsWhite_00_61: -623679545
+      SocialIconsWhite_00_62: -1858858847
+      SocialIconsWhite_00_63: 84540751
+      SocialIconsWhite_00_64: 1852371571
+      SocialIconsWhite_00_65: 677324766
+      SocialIconsWhite_00_7: 1058769102
+      SocialIconsWhite_00_8: -1945721381
+      SocialIconsWhite_00_9: 1980664632
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

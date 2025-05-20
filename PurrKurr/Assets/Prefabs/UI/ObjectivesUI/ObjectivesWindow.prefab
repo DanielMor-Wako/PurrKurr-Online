@@ -166,7 +166,7 @@ GameObject:
   - component: {fileID: 8548797736445638172}
   - component: {fileID: 5186590262580003811}
   m_Layer: 5
-  m_Name: Icon (Opened)
+  m_Name: Icon (Closed)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -268,11 +268,11 @@ RectTransform:
   - {fileID: 3816223362710495942}
   - {fileID: 7701354370845023953}
   - {fileID: 1490803252528043601}
-  m_Father: {fileID: 5142459905957324625}
+  m_Father: {fileID: 5341009351865697589}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 79.999985, y: 0}
   m_SizeDelta: {x: 600, y: 87.04}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &8013447197139571193
@@ -372,7 +372,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1157597392097776759}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
   m_Name: 
@@ -415,6 +415,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 4276923741035074843}
   - {fileID: 5142459905957324625}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -450,6 +451,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _objectiveViewPrefab: {fileID: 1445425726399815986}
   _parentContainer: {fileID: 5142459905957324625}
+  _titleText: {fileID: 9085548486711404256}
   _titleFader: {fileID: 4474683243065728976}
   _titleColor: {fileID: 7655377848870177707}
   _arrowIconState: {fileID: 4629143567918480094}
@@ -485,8 +487,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4457998923509953865}
   - {fileID: 4008253956079666815}
+  - {fileID: 4457998923509953865}
   m_Father: {fileID: 1490803252528043601}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -555,8 +557,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _states:
-  - {fileID: 5887321872856483888}
   - {fileID: 688872843290542932}
+  - {fileID: 5887321872856483888}
   - {fileID: 0}
   _currentState: {fileID: 5887321872856483888}
 --- !u!1 &5168180405622460698
@@ -637,7 +639,7 @@ GameObject:
   - component: {fileID: 783501302147590443}
   - component: {fileID: 2984979393559111336}
   m_Layer: 5
-  m_Name: Icon (Closed)
+  m_Name: Icon (Opened)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -731,7 +733,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4276923741035074843}
   - {fileID: 2071163056772675265}
   m_Father: {fileID: 5341009351865697589}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -865,7 +866,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Objectives
+  m_text: Objectives (0%)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 8882712eeb2a7344cb85bc23b097ae3b, type: 2}
