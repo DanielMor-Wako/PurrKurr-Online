@@ -9,6 +9,8 @@ namespace Code.Wakoz.PurrKurr.Screens.SceneTransition
     {
         [SerializeField] private SceneTransitionView _view;
 
+        private static int _previoudBuildIndex = -1;
+
         protected override void Clean()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
@@ -21,25 +23,25 @@ namespace Code.Wakoz.PurrKurr.Screens.SceneTransition
             return Task.CompletedTask;
         }
 
-        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-        {
-            Debug.Log($"New Scene '{scene.name}' has loaded | index {scene.buildIndex}");
-            if (scene.buildIndex == 0)
-            {
-                return;
-            }
-
-            _view.EndTransition();
-        }
-
-        public void LoadSceneByIndex(int index, Action onEndAnimation = null)
-        {
-            if (index < 0 || index >= SceneManager.sceneCountInBuildSettings)
-            {
+        public void LoadSceneByIndex(int index, string newTitle = "", Action onEndAnimation = null) {
+            if (index < 0 || index >= SceneManager.sceneCountInBuildSettings) {
                 Debug.LogError("Invalid build index: " + index);
             }
 
-            DoAnimAndLoadScene(index, onEndAnimation, $"Loading {index}");
+            DoAnimAndLoadScene(index, onEndAnimation, $"{newTitle}");
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            Debug.Log($"New Scene '{scene.name}' has loaded | index {scene.buildIndex} <-- {_previoudBuildIndex}");
+
+            var isFirstScene = _previoudBuildIndex == -1;
+
+            _previoudBuildIndex = scene.buildIndex;
+
+            if (isFirstScene) return;
+
+            _view.EndTransition();
         }
 
         private void DoAnimAndLoadScene(int index, Action onEndAnimation = null, string newTitle = "")
