@@ -316,7 +316,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                                 }
 
                                 page.PageCount = $"{Mathf.CeilToInt(percentComplete * 100)}%";
-            }
+                            }
                             confirmButtons.ClickedAction = () => LoadLevel(nextRoomIndex, nextDoorPosition);
                         }
                     }
