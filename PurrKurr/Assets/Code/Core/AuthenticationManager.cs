@@ -14,8 +14,7 @@ namespace Code.Core.Auth
         private const string DevEnvironmentName = "development";
 
         private IAuthStrategy _authStrategy;
-        //private User user;
-
+        
         private bool _initialized;
 
         private PlayerInfo _playerInfo;
