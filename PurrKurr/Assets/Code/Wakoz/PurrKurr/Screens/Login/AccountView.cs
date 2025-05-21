@@ -20,6 +20,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
         public InputField UsernameInput;
         public InputField PasswordInput;
 
+        [SerializeField] private TMP_Text _usernameTitle;
+
         [SerializeField] private CanvasGroupFaderView _logoutWindowFader;
 
         [SerializeField] private CanvasGroupFaderView _userFeedFader;
@@ -54,10 +56,19 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
         protected override void ModelChanged() {
 
             _logoutWindowFader?.EndTransition(Convert.ToInt32(Model.IsLogOutConfirmationPopup));
-            
+
+            UpdateUsernameInfo();
             ChangePage(Model.PageIndex);
             UpdateUserFeed("");
             UpdateCredentialsForm(Model.IsCredentialsAvailable);
+        }
+
+        private void UpdateUsernameInfo() {
+
+            if (_usernameTitle == null || Model.Player == null)
+                return;
+
+            _usernameTitle?.SetText(Model.Player.Username);
         }
 
         public void ChangePage(int newState) {

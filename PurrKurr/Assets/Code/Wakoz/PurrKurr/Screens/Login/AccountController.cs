@@ -61,10 +61,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
 
                 var playerInfo = await AuthenticationService.Instance.GetPlayerInfoAsync();
 
-                _model.ChangeCredentialsAvailability(string.IsNullOrEmpty(playerInfo.Username));
-
-                _view.UpdateUserFeed($"Username: {playerInfo.Username}<br>ID {playerInfo.Id}<br>UnityID: {playerInfo.GetUnityId()}");
+                UpdateRegisteredUserInfo(playerInfo);
             }
+        }
+
+        private void UpdateRegisteredUserInfo(PlayerInfo playerInfo) {
+            _model.ChangeCredentialsAvailability(string.IsNullOrEmpty(playerInfo.Username), true);
+            _model.SetPlayerinfo(playerInfo);
+            _view.UpdateUserFeed($"ID:<br>{playerInfo.Id}<br>UnityID:<br>{playerInfo.GetUnityId()}");
         }
 
         private void ChangePageToGuestUser() {
@@ -176,11 +180,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
 
             var playerInfo = await AuthenticationService.Instance.GetPlayerInfoAsync();
 
-            _model.ChangeCredentialsAvailability(string.IsNullOrEmpty(playerInfo.Username));
-
-            //_authService.TrySignInUnityPlayer(OnAuthSuccess, OnAuthFailure);
-
-            //_authService.TrySignInUnityPlayer(OnAuthSuccess, OnAuthFailure);
+            UpdateRegisteredUserInfo(playerInfo);
 
         }
 
@@ -199,7 +199,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
         }
 
         private async void OnAuthSuccess(string obj) {
-            Debug.Log("Account link Guest State:");
+            Debug.Log("Account link start");
             
             await Task.Delay(TimeSpan.FromSeconds(5));
 
@@ -208,6 +208,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
                 ChangePageToRegisteredUser();
                 _view.UpdateUserFeed("Account linked");
                 Debug.Log("Account linked");
+
+                var playerInfo = await AuthenticationService.Instance.GetPlayerInfoAsync();
+                _model.SetPlayerinfo(playerInfo);
 
             } else {
 
