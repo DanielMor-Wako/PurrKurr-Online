@@ -3,7 +3,6 @@ using Code.Wakoz.PurrKurr.Screens.SceneTransition;
 using System;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
-using Unity.Services.Authentication.PlayerAccounts;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -127,7 +126,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
         private void OnAuthSuccess(string accessToken) {
 
             var user = AuthenticationService.Instance;
-            Debug.Log(user.PlayerId + ": " + "Authentication successful with token ");
+            Debug.Log(user.PlayerId + $" : Authentication successful with token {accessToken} - logged in? {_authService.IsLoggedIn()}");
+
+            if (!_authService.IsLoggedIn()) {
+                return;
+            }
 
             MoveToNextScene();
         }
