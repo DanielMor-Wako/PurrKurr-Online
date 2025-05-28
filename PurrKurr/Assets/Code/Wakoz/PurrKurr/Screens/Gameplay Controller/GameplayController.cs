@@ -31,9 +31,8 @@ using Code.Wakoz.PurrKurr.Agents;
 using Code.Wakoz.PurrKurr.Screens.Notifications;
 using Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems;
-using UnityEngine.TextCore.Text;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
-using System.Text;
+using Code.Core;
 
 namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 {
@@ -52,8 +51,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         public event Action<ActionInput> OnTouchPadUp;
         public event Action<ActionType, Vector2, Quaternion, bool, Vector3[]> OnAimingAction;
         public event Action<ActionType> OnAimingActionEnd;
+        public event Action OnSavePlayerProgress;
+        public event Action OnPlayerProgressLoaded;
         public event Action<Character2DController> OnNewHero;
-        public event Action OnLevelStart;
+        public event Action OnStartLoadingLevel;
         public event Action<Vector3> OnHeroReposition;
         public event Action<Vector2> OnCameraFocusPoint;
         public event Action<List<Transform>> OnCameraFocusTargets;
@@ -122,7 +123,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             Handlers.Dispose();
         }
 
-        protected override Task Initialize() {
+        protected override async Task Initialize() {
 
             _camController ??= Camera.main.GetComponent<CameraController>();
             
@@ -156,6 +157,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             _whatIsCharacter = _gameplayLogic.GetDamageables();
             _whatIsDamageable = _gameplayLogic.GetDamageables();
 
+            var gameManager = GetController<GameManager>();
+            if (gameManager != null) {
+                await gameManager.WaitUntilLoadComplete();
+                OnProgressLoaded(); // objetives handler should be initialized
+            }
+            
             InitLevel();
 
             TryInitHero(_mainHero);
@@ -163,8 +170,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             _levelsController.RefreshSpritesOrder(_hero);
 
             _gameRunning = true;
-
-            return Task.CompletedTask;
         }
 
         private void InitHandlers()
@@ -195,7 +200,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 new ObjectivesHandler(this, GetController<ObjectivesController>()),
                 new ObjectivesMissionHandler(this, GetController<LevelsController>()),
                 new GuidanceMarkerHandler(this, GetController<UiGuidanceController>()),
-                new CharacterStatsHandler(this, GetController<UiIconsMoverController>())
+                new CharacterStatsHandler(this, GetController<UiIconsMoverController>()),
+                new GameStateHandler(this, GetController<GameManager>())
             };
             Handlers.AddBindableHandlers(bindableHandlers);
         }
@@ -245,6 +251,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
 
             OnShowGuidanceMarker?.Invoke(nextMarker);
+        }
+
+        public bool IsGameRunning() {
+            return _heroInitialized && _gameRunning;
         }
 
         public void InvokeNewNotification(string message, float durationInSeconds = 5) {
@@ -307,17 +317,20 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                             // Calculate percentage complete for the next room
                             var levelObjectivesData = _levelsController.GetLevel(nextRoomIndex).GetObjectives();
                             if (!string.IsNullOrEmpty(page.BodyContent)) {
-                                var percentComplete = 0f;
+                                /*var percentComplete = 0f;
                                 if (levelObjectivesData.Count > 0) {
                                     foreach (var objective in levelObjectivesData) {
                                         percentComplete += (float)objective.Objective.CurrentQuantity / objective.Objective.RequiredQuantity;
                                     }
                                     percentComplete /= levelObjectivesData.Count;
-                                }
-
+                                }*/
+                                float percentComplete = Handlers.GetHandler<ObjectivesHandler>().GetPercentComplete(levelObjectivesData);
                                 page.PageCount = $"{Mathf.CeilToInt(percentComplete * 100)}%";
                             }
-                            confirmButtons.ClickedAction = () => LoadLevel(nextRoomIndex, nextDoorPosition);
+                            confirmButtons.ClickedAction = () => {
+                                SavePlayerProgress();
+                                LoadLevel(nextRoomIndex, nextDoorPosition);
+                            };
                         }
                     }
 
@@ -410,10 +423,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
             // clean up
             InvokeGuidamceMarker(null);
-
+            
             // set up
             _levelsController.LoadLevel(levelToLoad);
-            OnLevelStart?.Invoke();
+            OnStartLoadingLevel?.Invoke();
             var levelObjectivesData = _levelsController.GetLevel(levelToLoad).GetObjectives();
             Handlers.GetHandler<ObjectivesHandler>().Initialize(levelObjectivesData);
             if (hasSpawnPoint)
@@ -422,6 +435,17 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             }
             _levelsController.NotifyAllTaggedObjects();
             
+        }
+
+        public void SavePlayerProgress() {
+            var nothingToSave = !Handlers.GetHandler<ObjectivesHandler>().HasCollectedAny();
+            if (nothingToSave) return;
+
+            OnSavePlayerProgress?.Invoke();
+        }
+
+        public void OnProgressLoaded() {
+            OnPlayerProgressLoaded?.Invoke();
         }
 
         private void ReviveAllHeroes() {
@@ -453,6 +477,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         }
 
         public void SetUnlockedAbilities(List<ActionType> characterAbilities) {
+            if (_hero == null) {
+                Debug.LogWarning("Game is loading");
+                return;
+            }
             _hero.Stats.SetUnlockedAbilities(characterAbilities);
             _hero.RefreshStats();
         }
@@ -1027,7 +1055,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         private void Update() {
             
-            if (_timelineHandler == null) {
+            if (_timelineHandler == null || !_gameRunning) {
                 return;
             }
 
@@ -1287,11 +1315,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                     }
                 } 
             }
-            var v = validInteractables.ToArray();
+            var interactables = validInteractables.ToArray();
             var abilityType = _logic.AbilitiesLogic.GetAbilityType(attackAbility);
-            GetCombatNewPos(ref attacker, ref abilityType, ref v, out var moveToPosition);
+            GetCombatNewPos(ref attacker, ref abilityType, ref interactables, out var moveToPosition);
 
-            OnNewInteraction?.Invoke(attacker, v, Time.time, attackStats, attackAbility, moveToPosition, attackProperties);
+            OnNewInteraction?.Invoke(attacker, interactables, Time.time, attackStats, attackAbility, moveToPosition, attackProperties);
             
             attacker.State.MarkLatestInteraction(latestInteraction);
         }

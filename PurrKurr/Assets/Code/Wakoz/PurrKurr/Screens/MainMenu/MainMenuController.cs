@@ -1,4 +1,6 @@
-﻿using Code.Core.Auth;
+﻿using Code.Core;
+using Code.Core.Auth;
+using Code.Core.Services.DataManagement;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.SceneTransition;
@@ -16,6 +18,8 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
 
         private MainMenuModel _model;
         private AuthenticationManager _authService;
+
+        private GameManager _gameManager;
 
         protected override void Clean() {
 
@@ -43,11 +47,49 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
 
             _view.SetModel(_model);
 
+            WaitForPlayerInfoAndUpdateView();
+
             return Task.CompletedTask;
         }
 
-        private void HandleAccountClicked() {
+        private async void WaitForPlayerInfoAndUpdateView() {
 
+            _gameManager ??= GetController<GameManager>();
+            if (_gameManager == null) {
+                return;
+            }
+
+            _model.SetButtonsAvailability(false, true);
+            _model.SetDisplayName(_gameManager.DisplayName);
+            _view.UpdateLoadingBarProgress(0);
+
+            if (_gameManager.DataProgressInPercent < 1) {
+                _view.UpdateLoadingBarProgress(0.01f);
+                await _gameManager.WaitUntilLoadComplete(() => UpdateLoadingProgress());
+                _view.UpdateLoadingBarProgress(1, "Ready");
+                await Task.Delay(TimeSpan.FromSeconds(1.5f));
+                _view.UpdateLoadingBarProgress(0);
+            }
+
+            _model.SetButtonsAvailability(true);
+            /*if (_gameManager.DisplayName != _model.PlayerDisplayName) {
+                _model.SetDisplayName(_gameManager.DisplayName);
+            } else {
+                Debug.LogWarning("Seems that displayName is already set , if reocurring consider erasing the second update and not wait for load complete");
+            }*/
+
+        }
+
+        private void UpdateLoadingProgress() {
+            _view.UpdateLoadingBarProgress(_gameManager.DataProgressInPercent, $"{Mathf.CeilToInt(_gameManager.DataProgressInPercent * 100)}% Loaded");
+        }
+
+        private void HandleAccountClicked() {
+            var controller = GetController<GameplayController>();
+            if (controller == null || !controller.IsGameRunning()) {
+                Debug.LogWarning("Cant start when game is not running");
+                return;
+            }
             GetController<SceneTransitionController>().LoadSceneByIndex(2, "Profile");
         }
 
@@ -56,12 +98,31 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
         }
 
         private void HandlePlayCampaignClicked() {
-            GetController<GameplayController>().SetUnlockedAbilities(null);
+            
+            var controller = GetController<GameplayController>();
+            if (controller == null || !controller.IsGameRunning()) {
+                Debug.LogWarning("Cant start when game is not running");
+                return;
+            }
+            // todo: use objectivesData to set up the player abilities
+            List <Definitions.ActionType> abilities = controller.Handlers.GetHandler<GameStateHandler>().GetCharacterAbilitiesFromCollectedObjectives();
+            //UnityEngine.Debug.Log("Player abilities retrieved -> " + string.Join(",", abilities));
+            controller.SetUnlockedAbilities(abilities);
+
             ShowMenu(false);
         }
 
         private void HandleEventsClicked() {
-            GetController<GameplayController>().SetUnlockedAbilities(new List<Definitions.ActionType>() { Definitions.ActionType.Jump, Definitions.ActionType.Projectile, Definitions.ActionType.Grab, Definitions.ActionType.Attack, Definitions.ActionType.Special, Definitions.ActionType.Block, Definitions.ActionType.Rope });
+
+            var controller = GetController<GameplayController>();
+            if (controller == null || !controller.IsGameRunning()) {
+                Debug.LogWarning("Cant start when game is not running");
+                return;
+            }
+
+            controller.SetUnlockedAbilities(new List<Definitions.ActionType>() { Definitions.ActionType.Jump, Definitions.ActionType.Projectile, Definitions.ActionType.Grab, Definitions.ActionType.Attack, Definitions.ActionType.Special, Definitions.ActionType.Block, Definitions.ActionType.Rope });
+            //controller.SetUnlockedAbilities(null);
+
             ShowMenu(false);
         }
 
