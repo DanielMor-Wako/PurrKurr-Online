@@ -30,6 +30,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
         [SerializeField] private CanvasGroupFaderView _credetialsFormFader;
         [SerializeField] private RectTransformScalerView _credetialsFormScaler;
 
+        [SerializeField] private TextMeshProUGUI _versionText;
+
         [Space(10)]
         public MultiStateView _pageStateView;
 
@@ -53,6 +55,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
 
             if (_welcomeWindowFader != null) {
                 _welcomeWindowFader.CanvasTarget.alpha = 0;
+            }
+
+            if (_versionText != null) {
+                _versionText.SetText($"Version: {Application.version}");
             }
         }
 
