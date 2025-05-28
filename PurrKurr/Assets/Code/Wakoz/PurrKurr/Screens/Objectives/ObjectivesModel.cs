@@ -1,5 +1,4 @@
-﻿using Code.Wakoz.PurrKurr.DataClasses.Objectives;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,8 +18,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
 
         public void UpdateItems()
         {
-            foreach (var objective in Objectives)
-            {
+            foreach (var objective in Objectives) {
+
                 objective.UpdateItem();
             }
 
@@ -31,8 +30,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
         {
             var objectiveWithId = Objectives.Where(o => o != null && uniqueIds.Contains(o.InterfaceData.GetUniqueId()));
 
-            foreach (var objective in objectiveWithId)
-            {
+            foreach (var objective in objectiveWithId) {
+
                 objective.UpdateItem();
             }
 
@@ -45,8 +44,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
         /// </summary>
         public void ReorderItemsInternal(List<string> uniqueIds)
         {
-            if (SortAction == null)
-            {
+            if (SortAction == null) {
+
                 throw new InvalidOperationException("SortAction is not set");
             }
 

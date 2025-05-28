@@ -29,7 +29,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             if (_gameEvents == null)
                 return;
 
-            _gameEvents.OnLevelStart += HandleLevelStarted;
+            _gameEvents.OnStartLoadingLevel += HandleLevelStarted;
             _gameEvents.OnNewInteraction += RegisterInteractionEvent;
         }
 
@@ -38,7 +38,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             if (_gameEvents == null)
                 return;
 
-            _gameEvents.OnLevelStart -= HandleLevelStarted;
+            _gameEvents.OnStartLoadingLevel -= HandleLevelStarted;
             _gameEvents.OnNewInteraction -= RegisterInteractionEvent;
         }
 
