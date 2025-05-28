@@ -20,9 +20,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
         public InputField UsernameInput;
         public InputField PasswordInput;
 
-        [SerializeField] private TMP_Text _usernameTitle;
+        [SerializeField] private TMP_Text _playerNameText;
 
         [SerializeField] private CanvasGroupFaderView _logoutWindowFader;
+        [SerializeField] private TextMeshProUGUI _logoutWindowText;
 
         [SerializeField] private CanvasGroupFaderView _userFeedFader;
         [SerializeField] private RectTransformScalerView _userFeedScaler;
@@ -56,19 +57,26 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
         protected override void ModelChanged() {
 
             _logoutWindowFader?.EndTransition(Convert.ToInt32(Model.IsLogOutConfirmationPopup));
+            if (Model.IsLogOutConfirmationPopup) {
 
-            UpdateUsernameInfo();
+                _logoutWindowText?.SetText(
+                    Model.IsGuest ? "Logging out as guest will <color=#FFFFFF;\"><b>erase all progress</b></color>" :
+                    $"Log out?<br>Progress is saved!"
+                );
+            }
+
+            UpdateDisplayName();
             ChangePage(Model.PageIndex);
             UpdateUserFeed("");
             UpdateCredentialsForm(Model.IsCredentialsAvailable);
         }
 
-        private void UpdateUsernameInfo() {
+        private void UpdateDisplayName() {
 
-            if (_usernameTitle == null || Model.Player == null)
+            if (_playerNameText == null)
                 return;
 
-            _usernameTitle?.SetText(Model.Player.Username);
+            _playerNameText?.SetText(Model.PlayerDisplayName);
         }
 
         public void ChangePage(int newState) {

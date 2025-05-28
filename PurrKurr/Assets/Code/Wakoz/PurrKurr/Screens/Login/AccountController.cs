@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using UnityEngine;
 using Unity.Services.Core;
+using Code.Core;
 
 namespace Code.Wakoz.PurrKurr.Screens.Login
 {
@@ -66,16 +67,27 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
         }
 
         private void UpdateRegisteredUserInfo(PlayerInfo playerInfo) {
+
             _model.ChangeCredentialsAvailability(string.IsNullOrEmpty(playerInfo.Username), true);
-            _model.SetPlayerinfo(playerInfo);
-            _view.UpdateUserFeed($"ID:<br>{playerInfo.Id}<br>UnityID:<br>{playerInfo.GetUnityId()}");
+            SetDisplayName();
+
+            _view.UpdateUserFeed($"ID:{playerInfo.Id}<br>UnityID:<br>{playerInfo.GetUnityId()}");
+        }
+
+        private void SetDisplayName() {
+            var gameManager = GetController<GameManager>();
+            var displayName = gameManager != null ? gameManager?.DisplayName : "";
+            _model.SetDisplayName(displayName);
         }
 
         private void ChangePageToGuestUser() {
+            _model.SetGuestUser(true);
             _model.ChangePageIndex(1);
+            SetDisplayName();
         }
 
         private void ChangePageToRegisteredUser() {
+            _model.SetGuestUser(false);
             _model.ChangePageIndex(2);
         }
 
@@ -146,6 +158,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
 
         private async void DeleteAccount() {
 
+            var gameManager = GetController<GameManager>();
+            if (gameManager != null) {
+                await gameManager.DeleteGameData();
+            }
+
             await _authService.DeleteAccount();
 
             LoadLoginScene("Account Deleted");
@@ -162,16 +179,17 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
 
 
             if (AuthenticationService.Instance.IsSignedIn) {
-                Debug.Log("user is signed in, trying to logout before re-signing");
-                _authService.LogOut(true);
+                try {
+                    Debug.Log("user is signed in, trying to logout before re-signing");
+                    _authService.LogOut(true);
+                    AuthenticationService.Instance.ClearSessionToken();
 
-                //await _authService.InitAsync();
+                    await _authService.InitAsync();
+                    await _authService.SignInCachedUserAsync();
 
-                //_authService.Dispose();
-                //_authService = new AuthenticationManager();
-                AuthenticationService.Instance.ClearSessionToken();
-                await _authService.InitAsync();
-                await _authService.SignInCachedUserAsync();
+                } catch (Exception ex) {
+                    ChangePageToGuestUser();
+                }
             }
 
             _authService.SetAuthStrategy(new UnityAccountAuthStrategy());
@@ -210,7 +228,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
                 Debug.Log("Account linked");
 
                 var playerInfo = await AuthenticationService.Instance.GetPlayerInfoAsync();
-                _model.SetPlayerinfo(playerInfo);
+                _model.ForceRefresh();
 
             } else {
 
