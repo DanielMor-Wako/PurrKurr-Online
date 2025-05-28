@@ -1,6 +1,7 @@
 ﻿using Code.Core.Auth;
 using Code.Wakoz.PurrKurr.Screens.SceneTransition;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using UnityEngine;
@@ -11,7 +12,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
     [DefaultExecutionOrder(11)]
     public class LoginController : SingleController
     {
-
         [SerializeField] private LoginView _view;
 
         [Tooltip("Reference for Offline playing button, used for testing in editor")]
@@ -20,6 +20,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
         private LoginModel _model;
 
         private AuthenticationManager _authService;
+
+        private bool _isRequestAvailable = true;
+        private CancellationTokenSource _cancellationTokenSource;
 
         protected override void Clean() {
 
@@ -104,39 +107,64 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
             MoveToPage(3);
             int newIndex = SceneManager.GetActiveScene().buildIndex + 1;
             
-            GetController<SceneTransitionController>().LoadSceneByIndex(newIndex, "Loading"
-                /*,() => {
-                     actionOnEnd.Invoke();
-                 }*/);
-
+            GetController<SceneTransitionController>().LoadSceneByIndex(newIndex, "Loading");
         }
-
+        
         public void SetAuthStrategy(IAuthStrategy authStrategy) {
+            if (!_isRequestAvailable) return;
             _authService.SetAuthStrategy(authStrategy);
         }
-
+        
         public void SignIn(Action<string> onSuccess, Action<string> onFailure) {
+            if (!_isRequestAvailable) return;
+            _isRequestAvailable = false;
+            
             _authService.Authenticate(onSuccess, onFailure);
         }
 
         public void SignUp(Action<string> onSuccess, Action<string> onFailure) {
+            if (!_isRequestAvailable) return;
+            _isRequestAvailable = false;
+            
             _authService.Register(onSuccess, onFailure);
         }
 
         private void OnAuthSuccess(string accessToken) {
 
-            var user = AuthenticationService.Instance;
-            Debug.Log(user.PlayerId + $" : Authentication successful with token {accessToken} - logged in? {_authService.IsLoggedIn()}");
+            Debug.Log($"Authentication successful with token {accessToken}");
 
-            if (!_authService.IsLoggedIn()) {
+            _cancellationTokenSource = new CancellationTokenSource();
+            var token = _cancellationTokenSource.Token;
+
+            _ = WaitUntilLoggedInAndMoveToNextScene(10, token);
+        }
+
+        private async Task WaitUntilLoggedInAndMoveToNextScene(int retries = 10, CancellationToken token = default) {
+
+            var user = AuthenticationService.Instance;
+            Debug.Log($"{user.PlayerId} - checking logged-in state, {retries} tries");
+
+            var retryLeft = retries;
+
+            while (!_authService.IsLoggedIn() && retryLeft > 0) {
+                Debug.Log("not logged in yet");
+                retryLeft--;
+                await Task.Delay(TimeSpan.FromSeconds(2), token);
+            }
+
+            _isRequestAvailable = true;
+
+            if (retryLeft <= 0) {
+                Debug.Log("Error occur: connection is too slow");
                 return;
             }
 
             MoveToNextScene();
         }
-
+        
         private void OnAuthFailure(string error) {
             _view.UpdateUserFeed(error);
+            _isRequestAvailable = true;
             Debug.LogError("Authentication failed: " + error);
         }
 
@@ -158,26 +186,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
 
             MoveToPage(2);
 
+            // Force authentication in cases a callback was not retrieved from the web request by previous calls
+            _isRequestAvailable = true;
             SetAuthStrategy(new UnityAccountAuthStrategy());
             SignIn(OnAuthSuccess, OnUnityWebAuthFailure);
-
-/*
-            if (PlayerAccountService.Instance.IsSignedIn) {
-                // If the player is already signed into Unity Player Accounts, proceed directly to the Unity Authentication sign-in.
-                Debug.Log("already signed!!!");
-                await _authService.SignInWithUnityAsync(PlayerAccountService.Instance.AccessToken);
-                return;
-            }*/
-            // clicked login --> starting web request
-            //await _authService.SignInCachedUnityAccountAsync();
-/*
-            if (await _authService.IsUnityIdAvailable()) {
-
-                ChangeSceneToMainMenu();
-                return;
-            }
-
-            ShowWelcomeWindow();*/
         }
 
         private void HandleGoogleAppleClicked() {
@@ -199,7 +211,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
                 _view.UpdateUserFeed("Name is not valid");
 
             } else {
-                SetAuthStrategy(new EmailPasswordAuthStrategy(username, password));
+                SetAuthStrategy(new UsernamePasswordAuthStrategy(username, password));
                 SignIn(OnAuthSuccess, OnAuthFailure);
             }
         }
@@ -213,7 +225,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
                 _view.UpdateUserFeed("Name is not valid");
 
             } else {
-                SetAuthStrategy(new EmailPasswordAuthStrategy(username, password));
+                SetAuthStrategy(new UsernamePasswordAuthStrategy(username, password));
                 SignUp(OnAuthSuccess, OnAuthFailure);
             }
         }
