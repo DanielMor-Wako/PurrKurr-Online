@@ -23,11 +23,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         public event Action OnNewObjectives;
         public event Action OnObjectiveUpdated;
 
-        private ObjectiveFactory _objectiveFactory;
-        private List<IObjective> _objectives = new();
         private HashSet<string> _completedObjectivesId = new();
         [Tooltip("Stores the bitmask for collected states of each item in TargetObjectIds")]
         private Dictionary<string, int[]> _objectivesOngoing = new();
+        private bool _hasCollectedAny = false;
+
+        private ObjectiveFactory _objectiveFactory;
+        private List<IObjective> _objectives = new();
 
         private GameplayController _gameEvents;
         private ObjectivesController _controller;
@@ -63,6 +65,16 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             _gameEvents = null;
         }
 
+        public void SetOngoingObjectivesData(Dictionary<string, int[]> objectivesOngoing) 
+            => _objectivesOngoing = objectivesOngoing;
+
+        public void SetCompletedObjectivesData(HashSet<string> completedObjectivesId) 
+            => _completedObjectivesId = completedObjectivesId;
+
+        public (Dictionary<string, int[]> objectivesOngoing, 
+            HashSet<string> completedObjectivesId)
+            GetAllData() => (_objectivesOngoing, _completedObjectivesId);
+
         /// <summary>
         /// Initializes objectives for the level.
         /// Marks completed objectives after creation as finished.
@@ -92,6 +104,52 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
             SortObjectives();
             NotifyNewObjectives();
+        }
+
+        public float GetPercentComplete(List<ObjectiveDataSO> objectivesData) {
+
+            var result = 0f;
+
+            if (objectivesData == null || objectivesData.Count == 0) 
+                return result;
+
+            foreach (var data in objectivesData) {
+                var objectiveIds = data.Objective.UniqueId;
+                if (objectiveIds != null) {
+                    var currrentQuantity = 0;
+                    // Check for the objective's existing progress in _objectivesOngoing
+                    if (_objectivesOngoing.TryGetValue(objectiveIds, out var existingProgress)) {
+                        currrentQuantity = existingProgress.CountActiveBits();
+                        result += currrentQuantity / data.Objective.RequiredQuantity;
+                    }
+                    // Mark objective as completed
+                    else if (_completedObjectivesId.Contains(objectiveIds)) {
+                        result++;
+                    }
+
+                    //var percentComplete = Mathf.Clamp01((float)objectiveIds.GetCurrentQuantity() / objectiveIds.GetRequiredQuantity());
+                    //percentComplete = Mathf.CeilToInt((percentComplete / totalObjectives) * 100);
+                }
+                /*var objective = _objectiveFactory.Create(data);
+                if (objective != null) {
+                    objective.Initialize(data);
+
+                    // Check for the objective's existing progress in _objectivesOngoing
+                    if (_objectivesOngoing.TryGetValue(data.Objective.UniqueId, out var existingProgress)) {
+                        objective.UpdateProgress(existingProgress.CountActiveBits());
+                    }
+                    // Mark objective as completed
+                    else if (_completedObjectivesId.Contains(data.Objective.UniqueId)) {
+                        Debug.Log($"Objective {data.Objective.UniqueId} is already completed. Marking as complete.");
+                        objective.Finish();
+                    }
+
+                    var percentComplete = Mathf.Clamp01((float)objective.GetCurrentQuantity() / objective.GetRequiredQuantity());
+                    percentComplete = Mathf.CeilToInt((percentComplete / totalObjectives) * 100);
+                }*/
+            }
+
+            return Mathf.Clamp01(result / objectivesData.Count);
         }
 
         /// <summary>
@@ -127,6 +185,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
         public bool IsObjectiveCompleted(string uniqueId) 
             => _completedObjectivesId.Contains(uniqueId);
+
+        public bool HasCollectedAny() 
+            => _hasCollectedAny;
 
         /// <summary>
         /// Gets all active objective
@@ -192,10 +253,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             foreach (var objective in _objectives) {
                 if (objective.GetType() == type && !_completedObjectivesId.Contains(objective.GetUniqueId())) {
                     var uniqueId = objective.GetUniqueId();
-                    // Remove from ongoing objectives
-                    if (_objectivesOngoing.TryGetValue(uniqueId, out var bitmask)) {
-                        _objectivesOngoing.Remove(uniqueId);
-                    }
+                    EnsureOngoingObjectiveRemoved(uniqueId);
 
                     Debug.Log($"Force completing Objective: {objective.GetObjectiveDescription()}");
                     objective.Finish();
@@ -208,6 +266,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             if (hasChanges) {
                 SortObjectives();
                 NotifyObjectivesChanged();
+            }
+        }
+
+        private void EnsureOngoingObjectiveRemoved(string uniqueId) {
+
+            if (_objectivesOngoing.ContainsKey(uniqueId)) {
+                _objectivesOngoing.Remove(uniqueId);
             }
         }
 
@@ -226,6 +291,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
         private void NotifyObjectivesChanged() {
 
+            _hasCollectedAny = true;
             // change the controller to register to the event instead of calling the method
             _controller.HandleObjectivesChanged(_objectives);
             OnObjectiveUpdated?.Invoke();
@@ -233,6 +299,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
 
         private void NotifyNewObjectives() {
 
+            _hasCollectedAny = false;
             // change the controller to register to the event instead of calling the method
             _controller.HandleNewObjectives(_objectives);
             OnNewObjectives?.Invoke();
@@ -253,11 +320,12 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         private void UpdateCompletedObjectives() {
 
             foreach (var objective in _objectives) {
-                var objectiveUniqueId = objective.GetUniqueId();
-                if (objective.IsComplete() && !_completedObjectivesId.Contains(objectiveUniqueId)) {
+                var uniqueId = objective.GetUniqueId();
+                if (objective.IsComplete() && !_completedObjectivesId.Contains(uniqueId)) {
                     Debug.Log($"Objective Completed: {objective.GetObjectiveDescription()}");
-                    _completedObjectivesId.Add(objectiveUniqueId);
-                    NotifyTaggedDependentObjects(objectiveUniqueId);
+                    _completedObjectivesId.Add(uniqueId);
+                    EnsureOngoingObjectiveRemoved(uniqueId);
+                    NotifyTaggedDependentObjects(uniqueId);
                 }
             }
         }
