@@ -38,6 +38,7 @@ namespace Code.Wakoz.PurrKurr.Views
                 StopCoroutine(_fillerCoroutine);
             }
 
+            targetValue = Mathf.Clamp01(targetValue);
             _smoothFillDelegate ??= SmoothFill;
             _fillerCoroutine = StartCoroutine(_smoothFillDelegate(targetValue, _transitionSpeed, callback));
         }
