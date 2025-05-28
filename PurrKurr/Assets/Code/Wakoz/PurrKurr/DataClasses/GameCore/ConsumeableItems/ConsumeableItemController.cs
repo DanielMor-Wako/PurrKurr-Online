@@ -51,15 +51,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.ConsumeableItems
             return Task.CompletedTask;
         }
 
-        private void UpdateStateView()
-        {
+        private void UpdateStateView() {
 
-            if (_state == null)
-            {
-                return;
-            }
+            if (_state == null) return;
 
             var percentage = Mathf.FloorToInt((float)_currentQuantity / _quantity * 10);
+
+            if (_state.CurrentState == percentage) return;
 
             _state.ChangeState(percentage);
         }
