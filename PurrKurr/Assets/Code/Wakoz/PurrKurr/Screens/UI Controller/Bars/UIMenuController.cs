@@ -1,5 +1,4 @@
-﻿using IngameDebugConsole;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars
@@ -19,23 +18,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars
 
             _view.SetModel(_model);
 
-            SetVisibilityInGameDebugger();
-
             return Task.CompletedTask;
         }
 
         public void Toggle()
         {
             _model.Toggle();
-            
-            SetVisibilityInGameDebugger();
         }
 
-        private void SetVisibilityInGameDebugger()
-        {
-            var ingameDebugger = DebugLogManager.Instance;
-            if (ingameDebugger != null)
-                ingameDebugger.gameObject.SetActive(_model.IsOpen);
-        }
     }
 }

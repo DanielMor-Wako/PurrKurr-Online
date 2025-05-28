@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 8517441788816777383}
   - component: {fileID: 5038334198152609696}
   - component: {fileID: 8471084242844604093}
+  - component: {fileID: 5651965103570665458}
+  - component: {fileID: 2974813221338491971}
   - component: {fileID: 1888595386962743366}
   m_Layer: 7
   m_Name: DestractableLionStatue
@@ -82,6 +84,37 @@ MonoBehaviour:
   _collectableData:
     _itemId: LionStatue
     _quantity: 1
+--- !u!114 &5651965103570665458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641496336778215532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 348a3d78257d33f40a32ab39ad4be8bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overlayWindowData: []
+  _zone: {fileID: 0}
+  _collectableItem: {fileID: 8471084242844604093}
+  _state: {fileID: 2974813221338491971}
+--- !u!114 &2974813221338491971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641496336778215532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b72451c3368d2824aa3db4c6a86d2ee8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _states:
+  - {fileID: 1673415319469423781}
+  _currentState: {fileID: 0}
 --- !u!61 &1888595386962743366
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -137,6 +170,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6463391506097993220}
   - component: {fileID: 6019850612826791484}
+  - component: {fileID: 2547228845064940693}
   m_Layer: 7
   m_Name: StatueSprite
   m_TagString: Untagged
@@ -211,6 +245,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2547228845064940693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1673415319469423781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06cd21108f064524949ef64273608517, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dependants:
+  - {fileID: 7266955242167619601}
+  - {fileID: 6267480046416171269}
 --- !u!1 &6267480046416171269
 GameObject:
   m_ObjectHideFlags: 0

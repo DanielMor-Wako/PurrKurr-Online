@@ -1,5 +1,4 @@
 using Code.Wakoz.PurrKurr.DataClasses.Characters;
-using Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems;
 using Code.Wakoz.PurrKurr.DataClasses.GameCore.TaggedItems;
 using Code.Wakoz.PurrKurr.Screens.InteractableObjectsPool;
 using Code.Wakoz.PurrKurr.Screens.PersistentGameObjects;
