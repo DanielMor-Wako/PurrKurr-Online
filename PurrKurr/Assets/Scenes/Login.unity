@@ -2866,6 +2866,7 @@ MonoBehaviour:
   _userFeedText: {fileID: 7627896984747750910}
   _credetialsFormFader: {fileID: 913694911}
   _credetialsFormScaler: {fileID: 913694910}
+  _versionText: {fileID: 1654821602}
   _pageStateView: {fileID: 821899237}
 --- !u!114 &913694907
 MonoBehaviour:
@@ -5831,7 +5832,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Version 0.5
+  m_text: Version 1.0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 8882712eeb2a7344cb85bc23b097ae3b, type: 2}

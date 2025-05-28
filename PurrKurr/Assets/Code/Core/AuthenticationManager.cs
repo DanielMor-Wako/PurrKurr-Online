@@ -62,7 +62,7 @@ namespace Code.Core.Auth
             Action<string> onSuccess,
             Action<string> onFailure
         ) {
-            auth.Link(onSuccess, onFailure);
+            auth.LinkFB(onSuccess, onFailure);
         }
 
         public void UnlinkProvider(
@@ -70,7 +70,7 @@ namespace Code.Core.Auth
             Action<string> onSuccess,
             Action<string> onFailure
         ) {
-            auth.Unlink(onSuccess, onFailure);
+            auth.UnlinkFB(onSuccess, onFailure);
         }
 
         public bool IsLoggedIn() {
@@ -80,9 +80,11 @@ namespace Code.Core.Auth
         public async Task<bool> IsGuest() {
             
             var playerInfo = await AuthenticationService.Instance.GetPlayerInfoAsync();
-            Debug.Log($"{playerInfo.Username} identities : {playerInfo.Identities.Count}");
+            var username = playerInfo.Username;
+            Debug.Log($"Username: {playerInfo.Username} | Identities : {playerInfo.Identities.Count}");
+            var isAccountLinkedOrSignedUp = playerInfo.Identities.Count > 0 || !string.IsNullOrEmpty(username);
 
-            return playerInfo.Identities.Count == 0;
+            return !isAccountLinkedOrSignedUp;
         }
 
         public void LogOut(bool clearCredentials = true) {
@@ -159,7 +161,7 @@ namespace Code.Core.Auth
             string username, string password,
             Action<string> onSuccess, Action<string> onFailure
         ) {
-            var authStrategy = new EmailPasswordAuthStrategy(username, password);
+            var authStrategy = new UsernamePasswordAuthStrategy(username, password);
 
             await authStrategy.AddCredentialsAsync(onSuccess, onFailure);
         }
@@ -173,6 +175,7 @@ namespace Code.Core.Auth
 
             PlayerAccountService.Instance.SignedIn += HandlePlayerSignIn;
             PlayerAccountService.Instance.SignInFailed += HandlePlayerSignInFailed;
+            PlayerAccountService.Instance.SignedOut += HandlePlayerSignOut;
 
             _initialized = true;
         }
@@ -186,8 +189,13 @@ namespace Code.Core.Auth
 
             PlayerAccountService.Instance.SignedIn -= HandlePlayerSignIn;
             PlayerAccountService.Instance.SignInFailed -= HandlePlayerSignInFailed;
+            PlayerAccountService.Instance.SignedOut -= HandlePlayerSignOut;
 
             _initialized = false;
+        }
+
+        private void HandlePlayerSignOut() {
+            Debug.Log($"Signed out");
         }
 
         private void HandleSignInFailed(RequestFailedException exception) {
@@ -343,8 +351,8 @@ namespace Code.Core.Auth
     }
     public interface IIdentityProviderStrategy
     {
-        void Link(System.Action<string> onSuccess, System.Action<string> onFailure);
-        void Unlink(System.Action<string> onSuccess, System.Action<string> onFailure);
+        void LinkFB(System.Action<string> onSuccess, System.Action<string> onFailure);
+        void UnlinkFB(System.Action<string> onSuccess, System.Action<string> onFailure);
     }
     public interface IAuthStrategy
     {
@@ -353,12 +361,12 @@ namespace Code.Core.Auth
             throw new NotImplementedException();
         }
     }
-    public class EmailPasswordAuthStrategy : IAuthStrategy
+    public class UsernamePasswordAuthStrategy : IAuthStrategy
     {
         public string Username;
         public string Password;
 
-        public EmailPasswordAuthStrategy(string username, string password) {
+        public UsernamePasswordAuthStrategy(string username, string password) {
             Username = username;
             Password = password;
         }
@@ -480,28 +488,39 @@ namespace Code.Core.Auth
                 Debug.Log("Sign-in is successful");
             }
             catch (AuthenticationException ex) {
-                // Compare error code to AuthenticationErrorCodes
-                // Notify the player with the proper error message
                 Debug.LogException(ex);
             }
             catch (RequestFailedException ex) {
-                // Compare error code to CommonErrorCodes
-                // Notify the player with the proper error message
                 Debug.LogException(ex);
             }
         }
     }
     public class AnonymousAuthStrategy : IAuthStrategy
     {
-        public async void Authenticate(Action<string> onSuccess, System.Action<string> onFailure) {
+        public async void Authenticate(Action<string> onSuccess, Action<string> onFailure) {
+            
             try {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
                 Debug.Log($"{AuthenticationService.Instance.PlayerId} Signed in Anonymously");
+                await PersonalizePlayerName("Mitten");
                 onSuccess("Signed in Anonymously");
-            }
-            catch (Exception e) {
+            
+            } catch (Exception e) {
                 Debug.LogException(e);
                 onFailure(e.Message);
+            }
+        }
+
+        private async Task PersonalizePlayerName(string personlizedName) {
+
+            try {
+                var currentName = await AuthenticationService.Instance.GetPlayerNameAsync();
+
+                await AuthenticationService.Instance.UpdatePlayerNameAsync(personlizedName);
+                Debug.Log($"Player name set as '{personlizedName}'");
+            }
+            catch (RequestFailedException ex) {
+                Debug.LogError($"Failed to set player name: {ex.Message}");
             }
         }
     }
@@ -511,11 +530,11 @@ namespace Code.Core.Auth
             throw new NotImplementedException();
         }
 
-        public void Link(Action<string> onSuccess, Action<string> onFailure) {
+        public void LinkFB(Action<string> onSuccess, Action<string> onFailure) {
             throw new NotImplementedException();
         }
 
-        public void Unlink(Action<string> onSuccess, Action<string> onFailure) {
+        public void UnlinkFB(Action<string> onSuccess, Action<string> onFailure) {
             throw new NotImplementedException();
         }
     }
@@ -636,12 +655,12 @@ namespace Code.Core.Auth
             }
         }
 
-        public async void Link(Action<string> onSuccess, Action<string> onFailure) {
+        public async void LinkFB(Action<string> onSuccess, Action<string> onFailure) {
             var token = "Face book TOKEN";
             //await AuthenticationService.Instance.LinkWithFacebookAsync(token);
         }
 
-        public async void Unlink(Action<string> onSuccess, Action<string> onFailure) {
+        public async void UnlinkFB(Action<string> onSuccess, Action<string> onFailure) {
             //await AuthenticationService.Instance.UnlinkFacebookAsync();
         }
     }
