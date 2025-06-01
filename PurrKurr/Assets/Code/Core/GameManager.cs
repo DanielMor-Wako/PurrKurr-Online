@@ -9,8 +9,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using Unity.Services.CloudSave;
+using Unity.Services.CloudSave.Models;
 using Unity.Services.CloudSave.Models.Data.Player;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Code.Core {
 
@@ -55,45 +57,149 @@ namespace Code.Core {
             await _gameStateManager.DeleteAllAsync();
         }
 
+        /// <summary>
+        /// Todo: implement documentation for new player creation: 
+        /// https://docs.unity.com/ugs/en-us/manual/cloud-code/manual/triggers/tutorials/use-cases/initialize-new-players
+        /// </summary>
+        [ContextMenu("Save Default Game State")]
+        public async void SaveDefaultGameState() {
+
+            DataProgressInPercent = 0;
+
+            var characterId = UnityEngine.Random.Range(1, 3);
+            LevelData = 1;
+            ExpData = 0;
+            MainCharacterData = new MainCharacter_SerializeableData(characterId);
+
+            CharacterIdsData = new CharactersIDs_SerializeableData(new List<string>() { characterId.ToString() });
+            CompletedObjectivesData = new CompletedObjectives_SerializeableData();
+            OngoingObjectivesData = new OngoingObjectives_SerializeableData();
+            GameStateData = new GameState_SerializeableData() {
+                roomId = 0,
+                objects = new List<ObjectRecord>() {
+                    new ObjectRecord() { key = "player", value = Vector2.zero.ToString() }
+                }
+            };
+
+            var publicData = new (string key, object value)[]
+            {
+                ("level", LevelData),
+                ("exp", ExpData),
+                ("mainCharacter", MainCharacterData),
+            };
+            var privateData = new (string key, object value)[]
+            {
+                ("completedObjectives", CompletedObjectivesData),
+                ("ongoingObjectives", OngoingObjectivesData),
+                ("characters", CharacterIdsData),
+                ("gameState", GameStateData),
+            };
+
+            await _gameStateManager.SavePlayerPublicData(publicData);
+
+            await _gameStateManager.SavePlayerPrivateData(privateData);
+
+            DataProgressInPercent = 1;
+
+            return;
+
+            /*var instances = _gameStateManager.GetSerializedInstances();
+
+            instances["playerData"] = new PlayerData() { exp = 0, level = 1 };
+
+            await _gameStateManager.SaveGameState("data", "new");*/
+        }
+
+        public async void SaveProgress(
+            CompletedObjectives_SerializeableData completed,
+            OngoingObjectives_SerializeableData ongoing,
+            GameState_SerializeableData gameState) {
+
+            var privateData = new (string key, object value)[]
+            {
+                ("completedObjectives", completed),
+                ("ongoingObjectives", ongoing),
+                ("gameState", gameState),
+            };
+
+            await _gameStateManager.SavePlayerPrivateData(privateData);
+        }
+
         [ContextMenu("Load Game State")]
         public async void LoadGameState() {
 
             DataProgressInPercent = 0.01f;
 
-            await RetrieveEverything();
-            //var data = await CloudSaveService.Instance.Data.Player.LoadAllAsync();
-            //var data = await CloudSaveService.Instance.Data.Player.LoadAllAsync(new LoadAllOptions(new PublicWriteAccessClassOptions));
-
-
-            var allkeys = await _gameStateManager.GetAllKeys();
-
-            var keysCount = allkeys.Count();
-            var keysLoaded = keysCount > 0 ? 0 : 1;
-            var keySet = allkeys.ToHashSet(); //new HashSet<string>(allkeys.Select(k => k));
-            Debug.Log($"{keysCount} keys are listed");
-            foreach (var key in keySet) {
-                await Load(key);
-                keysLoaded++;
-                DataProgressInPercent = (float)keysLoaded / keysCount;
-            }
-
+            var rawData = await RetrieveEverything();
+            DataProgressInPercent = 0.5f;
+            
+            //var allData = GetCastedData(rawData);
+            _gameStateManager.SerializeResults(rawData);
             InvokeInstanceResults();
+            return;
 
             //var playerData = instances["playerData"] as PlayerData;
         }
 
-        private async Task RetrieveEverything() {
-            try {
-                // If you wish to load only a subset of keys rather than everything, you
-                // can call a method LoadAsync and pass a HashSet of keys into it.
-                Debug.Log($"Retrieve Everything");
-                var results = await CloudSaveService.Instance.Data.Player.LoadAllAsync();
+        private Dictionary<string, object> GetCastedData(Dictionary<string, Item> rawData) {
 
+            //var casted = _gameStateManager.GetAsType(i.Value, type);
+
+            var result = new Dictionary<string, object>();
+
+            foreach (var item in rawData) {
+                var key = item.Key;
+                
+                switch (key) {
+                    case "characters":
+                        result.Add(key, _gameStateManager.GetAsType(item.Value, typeof(CharactersIDs_SerializeableData)));
+                        
+                        break;
+                    case "completedObjectives":
+                        result.Add(key, _gameStateManager.GetAsType(item.Value, typeof(CompletedObjectives_SerializeableData)));
+                        
+                        break;
+                    case "ongoingObjectives":
+                        result.Add(key, _gameStateManager.GetAsType(item.Value, typeof(OngoingObjectives_SerializeableData)));
+
+                        break;
+                    case "gameState":
+                        result.Add(key, _gameStateManager.GetAsType(item.Value, typeof(GameState_SerializeableData)));
+
+                        break;
+                    case "exp":
+                        result.Add(key, _gameStateManager.GetAsType(item.Value, typeof(int)));
+
+                        break;
+                    case "level":
+                        result.Add(key, _gameStateManager.GetAsType(item.Value, typeof(int)));
+
+                        break;
+                    case "mainCharacter":
+                        result.Add(key, _gameStateManager.GetAsType(item.Value, typeof(MainCharacter_SerializeableData)));
+
+                        break;
+                }
+            }
+
+            return result;
+        }
+
+        private async Task<Dictionary<string, Unity.Services.CloudSave.Models.Item>> RetrieveEverything() {
+            try {
+
+                Debug.Log($"Retrieve Everything");
+                var publicResults = await CloudSaveService.Instance.Data.Player.LoadAllAsync(new LoadAllOptions(new PublicReadAccessClassOptions()));
+                Debug.Log($"public Results: "+ publicResults.Count);
+                var privateResults = await CloudSaveService.Instance.Data.Player.LoadAllAsync();
+                Debug.Log($"private Results: " + privateResults.Count);
+                var results = publicResults.Concat(privateResults).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
                 Debug.Log($"{results.Count} elements loaded!");
 
                 foreach (var result in results) {
-                    Debug.Log($"Key: {result.Key}, Value: {result.Value.Value}");
+                    Debug.Log($"Key: {result.Value.Key}, Value: {result.Value.Value}");
                 }
+                return results;
                 //await _gameStateManager.CacheDataInstances(results);
             }
             catch (CloudSaveValidationException e) {
@@ -105,6 +211,7 @@ namespace Code.Core {
             catch (CloudSaveException e) {
                 Debug.LogError(e);
             }
+            return null;
         }
 
         private void InvokeInstanceResults() {
@@ -153,7 +260,7 @@ namespace Code.Core {
                     break;
                 case "mainCharacter":
                     MainCharacterData = value as MainCharacter_SerializeableData;
-                    Debug.Log($"mainCharacter {MainCharacterData.id}");
+                    Debug.Log($"mainCharacter {(MainCharacterData != null ? MainCharacterData.id : "none")}");
                     break;
             }
         }
@@ -203,88 +310,6 @@ namespace Code.Core {
                     break;
             }
         }
-
-        /// <summary>
-        /// Todo: implement documentation for new player creation: 
-        /// https://docs.unity.com/ugs/en-us/manual/cloud-code/manual/triggers/tutorials/use-cases/initialize-new-players
-        /// </summary>
-        [ContextMenu("Save Default Game State")]
-        public async void SaveDefaultGameState() {
-
-            DataProgressInPercent = 0;
-            
-            var characterId = UnityEngine.Random.Range(1, 3);
-            LevelData = 1;
-            ExpData = 0;
-            MainCharacterData = new MainCharacter_SerializeableData(characterId);
-            
-            CharacterIdsData = new CharactersIDs_SerializeableData(new List<string>() { characterId.ToString() });
-            CompletedObjectivesData = new CompletedObjectives_SerializeableData();
-            OngoingObjectivesData = new OngoingObjectives_SerializeableData();
-            GameStateData = new GameState_SerializeableData() {
-                roomId = 0,
-                objects = new List<ObjectRecord>() {
-                    new ObjectRecord() { key = "player", value = Vector2.zero.ToString() }
-                }
-            };
-
-            var publicData = new (string key, object value)[]
-            {
-                ("level", LevelData),
-                ("exp", ExpData),
-                ("mainCharacter", MainCharacterData),
-            };
-            var privateData = new (string key, object value)[]
-            {
-                ("completedObjectives", CompletedObjectivesData),
-                ("ongoingObjectives", OngoingObjectivesData),
-                ("characters", CharacterIdsData),
-                ("gameState", GameStateData),
-            };
-
-            await _gameStateManager.SavePlayerPublicData(publicData);
-
-            await _gameStateManager.SavePlayerPrivateData(privateData);
-
-            DataProgressInPercent = 1;
-
-            return;
-            
-            /*var instances = _gameStateManager.GetSerializedInstances();
-
-            instances["playerData"] = new PlayerData() { displayName = "test", level = 1 };
-
-            await _gameStateManager.SaveGameState("data", "new");*/
-        }
-
-        public async void SaveProgress(
-            CompletedObjectives_SerializeableData completed,
-            OngoingObjectives_SerializeableData ongoing,
-            GameState_SerializeableData gameState) 
-            {
-
-            var privateData = new (string key, object value)[]
-            {
-                ("completedObjectives", completed),
-                ("ongoingObjectives", ongoing),
-                ("gameState", gameState),
-            };
-            
-            await _gameStateManager.SavePlayerPrivateData(privateData);
-        }
-        /*
-                private void Start() {
-
-                    var serializer = new CloudSaveSerializer();
-                    var storage = new CloudSaveStorage();
-
-                    GetPrefabBank();
-
-                    _gameStateManager = new GameStateManager(storage, serializer);
-
-                    UpdatePlayerInfo();
-                }
-        */
 
         private void SetNoPlayer() => SetPlayerIdAndDisplayName("", "");
 
@@ -371,11 +396,32 @@ namespace Code.Core {
 
             UpdatePlayerInfo();
 
+            RegisterToSceneChanges();
+
             return Task.CompletedTask;
         }
 
         protected override void Clean() {
             CancelLoadingPlayerData();
+            DeregisterToSceneChanges();
+        }
+
+        private void RegisterToSceneChanges() 
+            => SceneManager.sceneLoaded += HandleSceneChange;
+
+        private void DeregisterToSceneChanges() 
+            => SceneManager.sceneLoaded -= HandleSceneChange;
+
+        private void HandleSceneChange(Scene newScene, LoadSceneMode arg1) {
+            if (newScene.buildIndex > 0) {
+                return;
+            }
+            
+            DestroyAndKillProcessesOnLoginScreen();
+        }
+
+        private void DestroyAndKillProcessesOnLoginScreen() {
+            Destroy(gameObject);
         }
 
         private async Task WaitUntil(Func<bool> condition, Action onCallback = null, CancellationToken cancellationToken = default) {

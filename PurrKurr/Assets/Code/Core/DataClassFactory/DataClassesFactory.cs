@@ -29,7 +29,7 @@ namespace Code.Core.DataClassFactory {
         public IEnumerable<Type> GetRegisteredValues() 
             => _registeredInstances.Values;
 
-        public Type GetRegisteredType(string key) => 
+        public Type GetTypeOfKey(string key) => 
             _registeredInstances.TryGetValue(key, out var type) ? type 
             : throw new KeyNotFoundException($"The key '{key}' does not exist in the registered instance creation methods.");
 
