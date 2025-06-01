@@ -2,6 +2,7 @@
 using Code.Core.Auth;
 using Code.Core.Services.DataManagement;
 using Code.Wakoz.PurrKurr.DataClasses.Enums;
+using Code.Wakoz.PurrKurr.DataClasses.Objectives;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.SceneTransition;
 using System;
@@ -64,10 +65,10 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
             _view.UpdateLoadingBarProgress(0);
 
             if (_gameManager.DataProgressInPercent < 1) {
-                _view.UpdateLoadingBarProgress(0.01f);
+                _view.UpdateLoadingBarProgress(0.01f, "Loading");
                 await _gameManager.WaitUntilLoadComplete(() => UpdateLoadingProgress());
                 _view.UpdateLoadingBarProgress(1, "Ready");
-                await Task.Delay(TimeSpan.FromSeconds(1.5f));
+                await Task.Delay(TimeSpan.FromSeconds(1f));
                 _view.UpdateLoadingBarProgress(0);
             }
 
@@ -104,10 +105,10 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
                 Debug.LogWarning("Cant start when game is not running");
                 return;
             }
-            // todo: use objectivesData to set up the player abilities
-            List <Definitions.ActionType> abilities = controller.Handlers.GetHandler<GameStateHandler>().GetCharacterAbilitiesFromCollectedObjectives();
-            //UnityEngine.Debug.Log("Player abilities retrieved -> " + string.Join(",", abilities));
-            controller.SetUnlockedAbilities(abilities);
+
+            // Todo: Mode Specific Strategy
+            controller.UnlockCharacterAbilitiesByObjectives();
+            //controller.UnlockAllAbilities();
 
             ShowMenu(false);
         }
@@ -120,8 +121,14 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
                 return;
             }
 
-            controller.SetUnlockedAbilities(new List<Definitions.ActionType>() { Definitions.ActionType.Jump, Definitions.ActionType.Projectile, Definitions.ActionType.Grab, Definitions.ActionType.Attack, Definitions.ActionType.Special, Definitions.ActionType.Block, Definitions.ActionType.Rope });
-            //controller.SetUnlockedAbilities(null);
+            var hasCompletedTutorial = controller.Handlers.GetHandler<GameStateHandler>().HasCompletedTutorial();
+            if (!hasCompletedTutorial) {
+                Debug.Log("Locked: You must completed Campaign");
+                return;
+            }
+
+            Debug.Log("Events is currently offline");
+            return;
 
             ShowMenu(false);
         }

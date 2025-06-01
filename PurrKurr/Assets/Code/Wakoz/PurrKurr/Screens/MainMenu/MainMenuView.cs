@@ -44,7 +44,7 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
 
         protected override void ModelReplaced() {
 
-            if (_loadingProgressBar == null) return;
+            if (_loadingProgressBar == null || _loadingProgressBar.ImageTarget == null) return;
             _loadingProgressBar.ImageTarget.fillAmount = 0;
         }
 

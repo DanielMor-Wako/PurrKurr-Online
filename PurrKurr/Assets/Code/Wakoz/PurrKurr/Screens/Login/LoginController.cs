@@ -107,7 +107,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
             MoveToPage(3);
             int newIndex = SceneManager.GetActiveScene().buildIndex + 1;
             
-            GetController<SceneTransitionController>().LoadSceneByIndex(newIndex, "Loading");
+            GetController<SceneTransitionController>().LoadSceneByIndex(newIndex);
         }
         
         public void SetAuthStrategy(IAuthStrategy authStrategy) {
