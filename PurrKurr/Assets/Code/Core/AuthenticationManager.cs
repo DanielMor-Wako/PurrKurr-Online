@@ -23,6 +23,7 @@ namespace Code.Core.Auth
 
         public AuthenticationManager()
         {
+            Debug.Log("todo: consider using static on _initialized  for reseting the service correctly on re-login");
             _initialized = false;
         }
 
@@ -91,6 +92,11 @@ namespace Code.Core.Auth
 
             AuthenticationService.Instance.SignOut(clearCredentials);
             PlayerAccountService.Instance.SignOut();
+
+            if (clearCredentials) {
+                AuthenticationService.Instance.ClearSessionToken();
+                PlayerPrefs.DeleteAll();
+            }
         }
         
         public async Task DeleteAccount() {
@@ -502,7 +508,7 @@ namespace Code.Core.Auth
             try {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
                 Debug.Log($"{AuthenticationService.Instance.PlayerId} Signed in Anonymously");
-                await PersonalizePlayerName("Mitten");
+                await PersonalizePlayerName("Kitten");
                 onSuccess("Signed in Anonymously");
             
             } catch (Exception e) {
