@@ -138,7 +138,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
 
             var isGuest = await _authService.IsGuest();
             if (isGuest) {
-                DeleteAccount();
+                await DeleteAccount();
                 return;
             }
 
@@ -152,11 +152,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
         private void LogOut() {
 
             _authService.LogOut();
-
+            
             LoadLoginScene("Logged Out");
         }
 
-        private async void DeleteAccount() {
+        private async Task DeleteAccount() {
 
             var gameManager = GetController<GameManager>();
             if (gameManager != null) {
