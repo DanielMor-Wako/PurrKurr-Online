@@ -201,15 +201,18 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
                 return;
             }
 
-            var fillPercent = 0f;
+            var itemsCollected = 0f;
+            var totalItems = 0;
 
             for (var i = 0; i < totalObjectives; i++) {
                 var objectiveModel = Model.Objectives[i];
-                fillPercent += Mathf.Clamp01((float)objectiveModel.InterfaceData.GetCurrentQuantity() / objectiveModel.InterfaceData.GetRequiredQuantity());
+                itemsCollected += objectiveModel.InterfaceData.GetCurrentQuantity();
+                totalItems += objectiveModel.InterfaceData.GetRequiredQuantity();
             }
-            fillPercent = Mathf.CeilToInt((fillPercent / totalObjectives) * 100);
+            totalItems = totalItems > 0 ? totalItems : 1;
+            itemsCollected = Mathf.CeilToInt((itemsCollected / totalItems) * 100);
             
-            _titleText.SetText($"Objectives ({fillPercent}%)");
+            _titleText.SetText($"Objectives ({itemsCollected}%)");
         }
         
         private void TitleColorTransition()
