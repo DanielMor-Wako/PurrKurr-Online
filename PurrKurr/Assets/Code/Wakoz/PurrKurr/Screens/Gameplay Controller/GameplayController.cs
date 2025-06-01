@@ -438,7 +438,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         }
 
         public void SavePlayerProgress() {
-            var nothingToSave = !Handlers.GetHandler<ObjectivesHandler>().HasCollectedAny();
+            var nothingToSave = !Handlers.GetHandler<ObjectivesHandler>().HasAnyObjectiveProgress();
             if (nothingToSave) return;
 
             OnSavePlayerProgress?.Invoke();
@@ -476,6 +476,20 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             _levelsController.RefreshSpritesOrder(_hero);
         }
 
+        public void UnlockCharacterAbilitiesByObjectives() {
+            List<ActionType> abilities = Handlers.GetHandler<GameStateHandler>().GetCharacterAbilitiesFromCollectedObjectives();
+            //UnityEngine.Debug.Log("Player abilities retrieved -> " + string.Join(",", abilities));
+            SetUnlockedAbilities(abilities);
+        }
+
+        public void UnlockAllAbilities() {
+            SetUnlockedAbilities(new List<ActionType>() { ActionType.Jump, ActionType.Projectile, ActionType.Grab, ActionType.Attack, ActionType.Special, ActionType.Block, ActionType.Rope });
+        }
+
+        /// <summary>
+        /// Sets the character abilities by the list of actionType, when value is null, character has no abilities
+        /// </summary>
+        /// <param name="characterAbilities"></param>
         public void SetUnlockedAbilities(List<ActionType> characterAbilities) {
             if (_hero == null) {
                 Debug.LogWarning("Game is loading");
