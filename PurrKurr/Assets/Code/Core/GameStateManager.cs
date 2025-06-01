@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Code.Core.DataClassFactory;
 using Code.Wakoz.PurrKurr.DataClasses.ServerData;
 using System;
+using Unity.Services.CloudSave.Models;
 
 namespace Code.Core
 {
@@ -99,6 +100,50 @@ namespace Code.Core
             return await _saveManager.GetAllKeys();
         }
 /*
+        public void SerializeResults<T>(Dictionary<string, T> data) {
+
+            foreach (var i in data) {
+                Type type = _dataFactory.GetTypeOfKey(i.Key);
+                UnityEngine.Debug.Log($"{i.Key} as {type.Name}");
+                CacheDataInstance(i.Key, type);
+            }
+        }*/
+
+        public void SerializeResults(Dictionary<string, Item> data) {
+
+            foreach (var i in data) {
+                /*Type type = _dataFactory.GetTypeOfKey(i.Key);
+                UnityEngine.Debug.Log($"{i.Key} as {type.Name}");
+                CacheDataInstance(i.Key, type);*/
+                var key = i.Key;
+                if (key == "ongoingObjectives") {
+                    CacheDataInstance(key, i.Value.Value.GetAs<OngoingObjectives_SerializeableData>());
+                } else if (key == "gameState") {
+                    CacheDataInstance(key, i.Value.Value.GetAs<GameState_SerializeableData>());
+                } else if (key == "completedObjectives") {
+                    CacheDataInstance(key, i.Value.Value.GetAs<CompletedObjectives_SerializeableData>());
+                } else if (key == "characters") {
+                    CacheDataInstance(key, i.Value.Value.GetAs<CharactersIDs_SerializeableData>());
+                } else if (key == "mainCharacter") {
+                    CacheDataInstance(key, i.Value.Value.GetAs<MainCharacter_SerializeableData>());
+                } else if (key == "level") {
+                    CacheDataInstance(key, i.Value.Value.GetAs<int>());
+                } else if (key == "exp") {
+                    CacheDataInstance(key, i.Value.Value.GetAs<int>());
+                }
+                else {
+                    UnityEngine.Debug.LogError($"not cast for key {key}");
+                }
+            }
+
+        }
+
+        public T GetAsType<T>(Item value, T asType) {
+
+            return value != null ? value.Value.GetAs<T>() : default;
+
+        }
+/*
         public async Task LoadGameState(string objectKey) {
 
             var objectType = _dataFactory.GetRegisteredType(objectKey);
@@ -129,13 +174,13 @@ namespace Code.Core
             CacheDataInstance(objectKey, data);
         }
 
-        private void CacheDataInstances(params (string key, object value)[] values) {
+        public void CacheDataInstances(params (string key, object value)[] values) {
             foreach (var i in values) {
                 CacheDataInstance(i.key, i.value);
             }
         }
 
-        private void CacheDataInstance<T>(string objectKey, T data) {
+        public void CacheDataInstance<T>(string objectKey, T data) {
 
             //var type = _dataFactory.GetRegisteredType(objectKey);
 
