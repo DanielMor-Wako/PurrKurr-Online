@@ -1,7 +1,9 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.Characters;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
+using Code.Wakoz.PurrKurr.Screens.MainMenu;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars;
 using Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay;
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -16,9 +18,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller
 
         protected override Task Initialize() {
 
-            _menuController ??= SingleController.GetController<UIMenuController>();
-            _padsController ??= SingleController.GetController<UiPadsController>();
-            _barsController ??= SingleController.GetController<UIBarsController>();
+            _menuController ??= GetController<UIMenuController>() ?? throw new ArgumentNullException("Missing Ui Menu Controller");
+            _padsController ??= GetController<UiPadsController>() ?? throw new ArgumentNullException("Missing Ui Pads Controller");
+            _barsController ??= GetController<UIBarsController>() ?? throw new ArgumentNullException("Missing Ui Bars Controller");
 
             return Task.CompletedTask;
         }
@@ -39,6 +41,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller
             return isPadsInitialized && isBarsInitialized;
         }
 
-        public void ToggleMenu() => _menuController?.Toggle();
+        public void ToggleMenu() {
+
+            if (!Debug.isDebugBuild) {
+                GetController<MainMenuController>().ShowMenu(true);
+                return;
+            }
+
+            _menuController?.Toggle();
+        }
     }
 }
