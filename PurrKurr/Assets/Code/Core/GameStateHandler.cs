@@ -105,5 +105,29 @@ namespace Code.Core
 
             return result;
         }
+
+        public bool HasCompletedTutorial() {
+
+            if (_objectivesHandler == null)
+                return false;
+
+            // todo: make the ids not hardcoded
+            var mainObjectiveIds = new List<string>() {
+                "CollectAbility_Jump",
+                "CollectAbility_Block",
+                "CollectAbility_Attack",
+                "CollectAbility_Grab",
+                "CollectAbility_Special",
+                "Reached_FinalSync"
+            };
+
+            foreach (var ability in mainObjectiveIds) {
+                if (!_objectivesHandler.IsObjectiveCompleted(ability)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }
