@@ -12,8 +12,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems
         [SerializeField] private ObjectiveMarker[] _objectiveMarkers;
 
         private bool _isInitialized = false;
-        private ObjectivesHandler _objectivesHandler;
         private GameplayController _gameEvents;
+        private ObjectivesHandler _objectivesHandler;
 
         protected override void Clean() {
 
@@ -75,7 +75,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems
                     return;
                 }
 
-                var hasNoMarkerAndItemNotCollected = nextMarker == null && !_objectivesHandler.IsCollected(objMarker.ItemId);
+                var hasNoMarkerAndItemNotCollected = nextMarker == null && !_objectivesHandler.IsCollected(objMarker.ItemId) && !_objectivesHandler.IsObjectiveCompleted(objMarker.ItemId);
 
                 if (hasNoMarkerAndItemNotCollected) {
                     nextMarker = objMarker;
