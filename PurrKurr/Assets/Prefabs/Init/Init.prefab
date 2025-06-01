@@ -20289,6 +20289,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1916745089048627728}
+    - target: {fileID: 8489535065830244669, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1916745089048627728}
+    - target: {fileID: 8489535065830244669, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UnlockCharacterAbilitiesByObjectives
+      objectReference: {fileID: 0}
     - target: {fileID: 9121409245444499553, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -20304,6 +20312,14 @@ PrefabInstance:
     - target: {fileID: 9121409245444499553, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -55
+      objectReference: {fileID: 0}
+    - target: {fileID: 9153370060279457292, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1916745089048627728}
+    - target: {fileID: 9153370060279457292, guid: be4e81f211fa9d3498300c0403d0084e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UnlockAllAbilities
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
