@@ -58,6 +58,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
             _gameEvents = null;
         }
 
+        public bool HasActiveMission() 
+            => _cancellationTokenSource != null ?
+            !_cancellationTokenSource.IsCancellationRequested : false;
+
         private void HandleLoadingNewLevel(Vector3 vector) {
 
             CancelMission();
@@ -78,7 +82,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         }
 
         private void CancelMission() {
+
             _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = null;
         }
 
         private async void HandleMissionStarted(IObjective objectiveData, ObjectiveSequenceDataSO sequenceSOData) {
