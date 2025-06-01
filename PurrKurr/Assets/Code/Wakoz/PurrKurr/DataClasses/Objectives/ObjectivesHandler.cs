@@ -109,22 +109,29 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         public float GetPercentComplete(List<ObjectiveDataSO> objectivesData) {
 
             var result = 0f;
+            var totalItemIdsCount = 0;
 
             if (objectivesData == null || objectivesData.Count == 0) 
                 return result;
 
             foreach (var data in objectivesData) {
+
+                if (data == null) {
+                    Debug.LogWarning("Empty ref to Objective data");
+                    continue;
+                }
+
                 var objectiveIds = data.Objective.UniqueId;
                 if (objectiveIds != null) {
-                    var currrentQuantity = 0;
+
+                    totalItemIdsCount += data.Objective.RequiredQuantity;
                     // Check for the objective's existing progress in _objectivesOngoing
                     if (_objectivesOngoing.TryGetValue(objectiveIds, out var existingProgress)) {
-                        currrentQuantity = existingProgress.CountActiveBits();
-                        result += currrentQuantity / data.Objective.RequiredQuantity;
+                        result += existingProgress.CountActiveBits();
                     }
                     // Mark objective as completed
                     else if (_completedObjectivesId.Contains(objectiveIds)) {
-                        result++;
+                        result += data.Objective.RequiredQuantity;
                     }
 
                     //var percentComplete = Mathf.Clamp01((float)objectiveIds.GetCurrentQuantity() / objectiveIds.GetRequiredQuantity());
@@ -148,8 +155,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
                     percentComplete = Mathf.CeilToInt((percentComplete / totalObjectives) * 100);
                 }*/
             }
-
-            return Mathf.Clamp01(result / objectivesData.Count);
+            totalItemIdsCount = totalItemIdsCount > 0 ? totalItemIdsCount : 1;
+            return Mathf.Clamp01(result / totalItemIdsCount);
         }
 
         /// <summary>
@@ -186,7 +193,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         public bool IsObjectiveCompleted(string uniqueId) 
             => _completedObjectivesId.Contains(uniqueId);
 
-        public bool HasCollectedAny() 
+        public bool HasAnyObjectiveProgress() 
             => _hasCollectedAny;
 
         /// <summary>
