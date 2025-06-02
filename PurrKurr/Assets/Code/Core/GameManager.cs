@@ -44,9 +44,9 @@ namespace Code.Core {
         private GameStateManager _gameStateManager;
         private CancellationTokenSource _loadPlayerDataCTS;
 
-        private const string DataCacheFileName = "PlayerDataCache.json";
-        private const string CacheTimestampFileName = "CacheTimestamp.json";
         private const int CachedValidDurationInHours = 1;
+        private const string DataCacheFilePath = "PlayerDataCache.json";
+        private const string CacheTimestampFilePath = "CacheTimestamp.json";
 
         public async Task WaitUntilLoadComplete(Action onCallback = null) {
 
@@ -57,10 +57,31 @@ namespace Code.Core {
             }
         }
 
+        /// <summary>
+        /// Deletes all the keys from the cloudsave
+        /// </summary>
+        /// <returns></returns>
         public async Task DeleteGameData() {
 
             DataProgressInPercent = 0f;
             await _gameStateManager.DeleteAllAsync();
+        }
+
+        /// <summary>
+        /// Deletes the local cached files
+        /// </summary>
+        public void ClearCachedFiles() {
+
+            string dataPath = Path.Combine(Application.persistentDataPath, DataCacheFilePath);
+            string timestampPath = Path.Combine(Application.persistentDataPath, CacheTimestampFilePath);
+
+            if (File.Exists(dataPath)) {
+                File.Delete(dataPath);
+            }
+            if (File.Exists(timestampPath)) {
+                File.Delete(timestampPath);
+            }
+            Debug.Log("Deleted cache");
         }
 
         /// <summary>
@@ -136,7 +157,7 @@ namespace Code.Core {
 
             DataProgressInPercent = 0.01f;
 
-            if (FetchExistingCachedData()) {
+            if (await FetchExistingCachedData()) {
                 DataProgressInPercent = 1;
                 return;
             }
@@ -148,13 +169,13 @@ namespace Code.Core {
             //var allData = GetCastedData(rawData);
             _gameStateManager.SerializeResults(rawData);
             InvokeInstanceResults();
-            CacheData();
+            _ = CacheData();
             return;
 
             //var playerData = instances["playerData"] as PlayerData;
         }
 
-        private void CacheData() {
+        private async Task CacheData() {
 
             var dataToCache = new Dictionary<string, object> {
                 { "UserId", UserId },
@@ -169,48 +190,60 @@ namespace Code.Core {
             };
 
             string json = JsonConvert.SerializeObject(dataToCache);
-            File.WriteAllText(Path.Combine(Application.persistentDataPath, DataCacheFileName), json);
-            File.WriteAllText(Path.Combine(Application.persistentDataPath, CacheTimestampFileName), DateTime.UtcNow.ToString());
+            await File.WriteAllTextAsync(Path.Combine(Application.persistentDataPath, DataCacheFilePath), json);
+            await File.WriteAllTextAsync(Path.Combine(Application.persistentDataPath, CacheTimestampFilePath), DateTime.UtcNow.ToString());
         }
 
-        private bool FetchExistingCachedData() {
+        private async Task<bool> FetchExistingCachedData() {
             
-            string timestampPath = Path.Combine(Application.persistentDataPath, CacheTimestampFileName);
-            string dataPath = Path.Combine(Application.persistentDataPath, DataCacheFileName);
+            string timestampPath = Path.Combine(Application.persistentDataPath, CacheTimestampFilePath);
+            string dataPath = Path.Combine(Application.persistentDataPath, DataCacheFilePath);
             if (File.Exists(dataPath) && File.Exists(timestampPath)) {
-                string timestampStr = File.ReadAllText(timestampPath);
+                string timestampStr = await File.ReadAllTextAsync(timestampPath);
+                DataProgressInPercent = 0.2f;
                 if (DateTime.TryParse(timestampStr, out DateTime cacheTime)) {
                     if ((DateTime.UtcNow - cacheTime).TotalHours > CachedValidDurationInHours) {
                         Debug.LogWarning("Expired Cached data");
                         return false;
                     }
-                    string json = File.ReadAllText(dataPath);
+                    string json = await File.ReadAllTextAsync(dataPath);
+                    DataProgressInPercent = 0.4f;
                     var serializableData = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                     if (serializableData != null) {
 
-                        if (serializableData.TryGetValue("UserId", out var userId)) 
-                        {
+                        if (serializableData.TryGetValue("UserId", out var userId)) {
                             var cachedUserId = userId.ToString();
                             if (cachedUserId != UserId) {
-                                Debug.LogWarning($"UserId mismatch between {UserId} <> to cached usedId {cachedUserId}");
+                                Debug.LogWarning($"UserId mismatch between {UserId} <> to cached {cachedUserId}");
                                 return false;
                             }
                         }
-
-                        if (serializableData.TryGetValue("DisplayName", out var displayName)) 
-                            { DisplayName = displayName.ToString(); } else { return false; }
+                        if (serializableData.TryGetValue("DisplayName", out var displayName)) {
+                            var cachedDisplayName = displayName.ToString();
+                            if (cachedDisplayName != DisplayName) {
+                                Debug.LogWarning($"DisplayName mismatch between {DisplayName} <> to cached {cachedDisplayName}");
+                                return false;
+                            }
+                        }
+                        DataProgressInPercent = 0.5f;
                         if (serializableData.TryGetValue("CompletedObjectivesData", out var completedObjectivesData)) 
                             { CompletedObjectivesData = JsonConvert.DeserializeObject<CompletedObjectives_SerializeableData>(completedObjectivesData.ToString()); }
+                            else { return false; }
                         if (serializableData.TryGetValue("OngoingObjectivesData", out var ongoingObjectivesData)) 
                             { OngoingObjectivesData = JsonConvert.DeserializeObject<OngoingObjectives_SerializeableData>(ongoingObjectivesData.ToString()); }
+                            else { return false; }
                         if (serializableData.TryGetValue("GameStateData", out var gameStateData)) 
                             { GameStateData = JsonConvert.DeserializeObject<GameState_SerializeableData>(gameStateData.ToString()); }
+                            else { return false; }
                         if (serializableData.TryGetValue("MainCharacterData", out var mainCharacterData)) 
                             { MainCharacterData = JsonConvert.DeserializeObject<MainCharacter_SerializeableData>(mainCharacterData.ToString()); }
+                            else { return false; }
                         if (serializableData.TryGetValue("LevelData", out var levelData)) 
                             { LevelData = JsonConvert.DeserializeObject<int>(levelData.ToString()); }
+                            else { return false; }
                         if (serializableData.TryGetValue("ExpData", out var expData)) 
                             { ExpData = JsonConvert.DeserializeObject<int>(expData.ToString()); }
+                            else { return false; }
                         if (serializableData.TryGetValue("CharacterIdsData", out var characterIdsData)) 
                             { CharacterIdsData = JsonConvert.DeserializeObject<CharactersIDs_SerializeableData>(characterIdsData.ToString()); }
 
