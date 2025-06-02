@@ -2,8 +2,10 @@
 using Code.Core.Services.DataManagement.Storage;
 using Code.Wakoz.PurrKurr;
 using Code.Wakoz.PurrKurr.DataClasses.ServerData;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +25,6 @@ namespace Code.Core {
         //[SerializeField] private PrefabBank _prefabBank;
 
         public float DataProgressInPercent { get; private set; }
-        private CancellationTokenSource _loadPlayerDataCTS;
 
         public string UserId { get; private set; }
         public string DisplayName { get; private set; }
@@ -41,7 +42,12 @@ namespace Code.Core {
         //[SerializeField] private PlayerView _playerView;
 
         private GameStateManager _gameStateManager;
-        
+        private CancellationTokenSource _loadPlayerDataCTS;
+
+        private const string DataCacheFileName = "PlayerDataCache.json";
+        private const string CacheTimestampFileName = "CacheTimestamp.json";
+        private const int CachedValidDurationInHours = 1;
+
         public async Task WaitUntilLoadComplete(Action onCallback = null) {
 
             if (DataProgressInPercent < 1) {
@@ -130,15 +136,90 @@ namespace Code.Core {
 
             DataProgressInPercent = 0.01f;
 
+            if (FetchExistingCachedData()) {
+                DataProgressInPercent = 1;
+                return;
+            }
+
             var rawData = await RetrieveEverything();
+
             DataProgressInPercent = 0.5f;
             
             //var allData = GetCastedData(rawData);
             _gameStateManager.SerializeResults(rawData);
             InvokeInstanceResults();
+            CacheData();
             return;
 
             //var playerData = instances["playerData"] as PlayerData;
+        }
+
+        private void CacheData() {
+
+            var dataToCache = new Dictionary<string, object> {
+                { "UserId", UserId },
+                { "DisplayName", DisplayName },
+                { "CompletedObjectivesData", CompletedObjectivesData },
+                { "OngoingObjectivesData", OngoingObjectivesData },
+                { "GameStateData", GameStateData },
+                { "MainCharacterData", MainCharacterData },
+                { "LevelData", LevelData },
+                { "ExpData", ExpData },
+                { "CharacterIdsData", CharacterIdsData }
+            };
+
+            string json = JsonConvert.SerializeObject(dataToCache);
+            File.WriteAllText(Path.Combine(Application.persistentDataPath, DataCacheFileName), json);
+            File.WriteAllText(Path.Combine(Application.persistentDataPath, CacheTimestampFileName), DateTime.UtcNow.ToString());
+        }
+
+        private bool FetchExistingCachedData() {
+            
+            string timestampPath = Path.Combine(Application.persistentDataPath, CacheTimestampFileName);
+            string dataPath = Path.Combine(Application.persistentDataPath, DataCacheFileName);
+            if (File.Exists(dataPath) && File.Exists(timestampPath)) {
+                string timestampStr = File.ReadAllText(timestampPath);
+                if (DateTime.TryParse(timestampStr, out DateTime cacheTime)) {
+                    if ((DateTime.UtcNow - cacheTime).TotalHours > CachedValidDurationInHours) {
+                        Debug.LogWarning("Expired Cached data");
+                        return false;
+                    }
+                    string json = File.ReadAllText(dataPath);
+                    var serializableData = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                    if (serializableData != null) {
+
+                        if (serializableData.TryGetValue("UserId", out var userId)) 
+                        {
+                            var cachedUserId = userId.ToString();
+                            if (cachedUserId != UserId) {
+                                Debug.LogWarning($"UserId mismatch between {UserId} <> to cached usedId {cachedUserId}");
+                                return false;
+                            }
+                        }
+
+                        if (serializableData.TryGetValue("DisplayName", out var displayName)) 
+                            { DisplayName = displayName.ToString(); } else { return false; }
+                        if (serializableData.TryGetValue("CompletedObjectivesData", out var completedObjectivesData)) 
+                            { CompletedObjectivesData = JsonConvert.DeserializeObject<CompletedObjectives_SerializeableData>(completedObjectivesData.ToString()); }
+                        if (serializableData.TryGetValue("OngoingObjectivesData", out var ongoingObjectivesData)) 
+                            { OngoingObjectivesData = JsonConvert.DeserializeObject<OngoingObjectives_SerializeableData>(ongoingObjectivesData.ToString()); }
+                        if (serializableData.TryGetValue("GameStateData", out var gameStateData)) 
+                            { GameStateData = JsonConvert.DeserializeObject<GameState_SerializeableData>(gameStateData.ToString()); }
+                        if (serializableData.TryGetValue("MainCharacterData", out var mainCharacterData)) 
+                            { MainCharacterData = JsonConvert.DeserializeObject<MainCharacter_SerializeableData>(mainCharacterData.ToString()); }
+                        if (serializableData.TryGetValue("LevelData", out var levelData)) 
+                            { LevelData = JsonConvert.DeserializeObject<int>(levelData.ToString()); }
+                        if (serializableData.TryGetValue("ExpData", out var expData)) 
+                            { ExpData = JsonConvert.DeserializeObject<int>(expData.ToString()); }
+                        if (serializableData.TryGetValue("CharacterIdsData", out var characterIdsData)) 
+                            { CharacterIdsData = JsonConvert.DeserializeObject<CharactersIDs_SerializeableData>(characterIdsData.ToString()); }
+
+                            Debug.Log("Fetched cache");
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private Dictionary<string, object> GetCastedData(Dictionary<string, Item> rawData) {
@@ -186,16 +267,19 @@ namespace Code.Core {
         }
 
         private async Task<Dictionary<string, Unity.Services.CloudSave.Models.Item>> RetrieveEverything() {
+
             try {
 
                 Debug.Log($"Retrieve Everything");
                 var publicResults = await CloudSaveService.Instance.Data.Player.LoadAllAsync(new LoadAllOptions(new PublicReadAccessClassOptions()));
+                DataProgressInPercent = 0.2f;
                 Debug.Log($"public Results: "+ publicResults.Count);
                 var privateResults = await CloudSaveService.Instance.Data.Player.LoadAllAsync();
+                DataProgressInPercent = 0.4f;
                 Debug.Log($"private Results: " + privateResults.Count);
                 var results = publicResults.Concat(privateResults).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
                 Debug.Log($"{results.Count} elements loaded!");
-
+                
                 foreach (var result in results) {
                     Debug.Log($"Key: {result.Value.Key}, Value: {result.Value.Value}");
                 }
@@ -426,8 +510,8 @@ namespace Code.Core {
 
         private async Task WaitUntil(Func<bool> condition, Action onCallback = null, CancellationToken cancellationToken = default) {
             while (!condition()) {
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
-                Debug.Log($"LoadProgress % {Mathf.CeilToInt(DataProgressInPercent * 100)}");
+                await Task.Delay(TimeSpan.FromSeconds(0.15f), cancellationToken);
+                //Debug.Log($"LoadProgress % {Mathf.CeilToInt(DataProgressInPercent * 100)}");
                 onCallback?.Invoke();
             }
         }
