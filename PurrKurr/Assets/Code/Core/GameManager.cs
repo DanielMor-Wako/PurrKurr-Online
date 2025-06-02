@@ -16,8 +16,8 @@ using Unity.Services.CloudSave.Models.Data.Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Code.Core {
-
+namespace Code.Core
+{
     [DefaultExecutionOrder(10)]
     public class GameManager : SingleController {
 
@@ -45,9 +45,7 @@ namespace Code.Core {
         private CancellationTokenSource _loadPlayerDataCTS;
 
         private const int CachedValidDurationInHours = 1;
-        private const string DataCacheFilePath = "PlayerDataCache.json";
-        private const string CacheTimestampFilePath = "CacheTimestamp.json";
-
+        
         public async Task WaitUntilLoadComplete(Action onCallback = null) {
 
             if (DataProgressInPercent < 1) {
@@ -72,14 +70,8 @@ namespace Code.Core {
         /// </summary>
         public void ClearCachedFiles() {
 
-            string dataPath = Path.Combine(Application.persistentDataPath, DataCacheFilePath);
-            string timestampPath = Path.Combine(Application.persistentDataPath, CacheTimestampFilePath);
-
-            if (File.Exists(dataPath)) {
-                File.Delete(dataPath);
-            }
-            if (File.Exists(timestampPath)) {
-                File.Delete(timestampPath);
+            if (TryGetCacheFilePath(out var path)) {
+                File.Delete(path);
             }
             Debug.Log("Deleted cache");
         }
@@ -150,17 +142,18 @@ namespace Code.Core {
             };
 
             await _gameStateManager.SavePlayerPrivateData(privateData);
+            await CacheData();
         }
 
         [ContextMenu("Load Game State")]
         public async void LoadGameState() {
 
-            DataProgressInPercent = 0.01f;
-
-            if (await FetchExistingCachedData()) {
+            if (await TryFetchingCache()) {
                 DataProgressInPercent = 1;
                 return;
             }
+
+            DataProgressInPercent = 0.01f;
 
             var rawData = await RetrieveEverything();
 
@@ -189,20 +182,38 @@ namespace Code.Core {
                 { "CharacterIdsData", CharacterIdsData }
             };
 
-            string json = JsonConvert.SerializeObject(dataToCache);
-            await File.WriteAllTextAsync(Path.Combine(Application.persistentDataPath, DataCacheFilePath), json);
-            await File.WriteAllTextAsync(Path.Combine(Application.persistentDataPath, CacheTimestampFilePath), DateTime.UtcNow.ToString());
+            try {
+                string json = JsonConvert.SerializeObject(dataToCache);
+                string dataPath = Path.Combine(Application.persistentDataPath, CacheConfig.CacheFilePath);
+                await File.WriteAllTextAsync(dataPath, json);
+                var expirationTimestamp = DateTime.UtcNow.AddHours(CachedValidDurationInHours);
+                File.SetLastWriteTimeUtc(dataPath, expirationTimestamp);
+                Debug.Log($"Cached data, future timestamp {expirationTimestamp}");
+            }
+            catch (IOException ex) {
+                Debug.LogError($"Failed to write cache file: {ex.Message}");
+            }
+            catch (UnauthorizedAccessException ex) {
+                Debug.LogError($"No permission to write cache file: {ex.Message}");
+            }
+            catch (Exception ex) {
+                Debug.LogError($"Unexpected error writing cache file: {ex.Message}");
+            }
         }
 
-        private async Task<bool> FetchExistingCachedData() {
-            
-            string timestampPath = Path.Combine(Application.persistentDataPath, CacheTimestampFilePath);
-            string dataPath = Path.Combine(Application.persistentDataPath, DataCacheFilePath);
-            if (File.Exists(dataPath) && File.Exists(timestampPath)) {
-                string timestampStr = await File.ReadAllTextAsync(timestampPath);
+        public bool TryGetCacheFilePath(out string filePath) {
+            filePath = Path.Combine(Application.persistentDataPath, CacheConfig.CacheFilePath);
+            return File.Exists(filePath);
+        }
+
+        private async Task<bool> TryFetchingCache() {
+
+            DataProgressInPercent = 0.01f;
+            if (TryGetCacheFilePath(out var dataPath)) {
                 DataProgressInPercent = 0.2f;
-                if (DateTime.TryParse(timestampStr, out DateTime cacheTime)) {
-                    if ((DateTime.UtcNow - cacheTime).TotalHours > CachedValidDurationInHours) {
+                DateTime cacheTime = File.GetLastWriteTimeUtc(dataPath);
+                if (cacheTime != null) {
+                    if (DateTime.UtcNow > cacheTime) {
                         Debug.LogWarning("Expired Cached data");
                         return false;
                     }
@@ -247,7 +258,7 @@ namespace Code.Core {
                         if (serializableData.TryGetValue("CharacterIdsData", out var characterIdsData)) 
                             { CharacterIdsData = JsonConvert.DeserializeObject<CharactersIDs_SerializeableData>(characterIdsData.ToString()); }
 
-                            Debug.Log("Fetched cache");
+                            Debug.Log("Restored from cache");
                         return true;
                     }
                 }
@@ -506,6 +517,7 @@ namespace Code.Core {
             // Set up
             var serializer = new CloudSaveSerializer();
             var storage = new CloudSaveStorage();
+            //var localStorage = new CacheJsonStorage(); // todo: create a strategy for local storage
 
             GetPrefabBank();
 
