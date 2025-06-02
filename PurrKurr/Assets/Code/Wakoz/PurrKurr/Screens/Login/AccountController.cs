@@ -151,6 +151,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
 
         private void LogOut() {
 
+            var gameManager = GetController<GameManager>();
+            if (gameManager != null) {
+                gameManager.ClearCachedFiles();
+            }
+
             _authService.LogOut();
             
             LoadLoginScene("Logged Out");
@@ -160,6 +165,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
 
             var gameManager = GetController<GameManager>();
             if (gameManager != null) {
+                gameManager.ClearCachedFiles();
                 await gameManager.DeleteGameData();
             }
 
