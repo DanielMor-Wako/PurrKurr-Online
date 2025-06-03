@@ -45,6 +45,9 @@ namespace Code.Core
         private CancellationTokenSource _loadPlayerDataCTS;
 
         private const int CachedValidDurationInHours = 1;
+        private bool _hasCacheData;
+
+        public bool HasCache() => _hasCacheData;
         
         public async Task WaitUntilLoadComplete(Action onCallback = null) {
 
@@ -73,6 +76,7 @@ namespace Code.Core
             if (TryGetCacheFilePath(out var path)) {
                 File.Delete(path);
             }
+            _hasCacheData = false;
             Debug.Log("Deleted cache");
         }
 
@@ -153,6 +157,7 @@ namespace Code.Core
                 return;
             }
 
+            _hasCacheData = false;
             DataProgressInPercent = 0.01f;
 
             var rawData = await RetrieveEverything();
@@ -188,6 +193,7 @@ namespace Code.Core
                 await File.WriteAllTextAsync(dataPath, json);
                 var expirationTimestamp = DateTime.UtcNow.AddHours(CachedValidDurationInHours);
                 File.SetLastWriteTimeUtc(dataPath, expirationTimestamp);
+                _hasCacheData = true;
                 Debug.Log($"Cached data, future timestamp {expirationTimestamp}");
             }
             catch (IOException ex) {
@@ -203,22 +209,24 @@ namespace Code.Core
 
         public bool TryGetCacheFilePath(out string filePath) {
             filePath = Path.Combine(Application.persistentDataPath, CacheConfig.CacheFilePath);
-            return File.Exists(filePath);
+            _hasCacheData = File.Exists(filePath);
+            return _hasCacheData;
         }
 
         private async Task<bool> TryFetchingCache() {
 
             DataProgressInPercent = 0.01f;
             if (TryGetCacheFilePath(out var dataPath)) {
-                DataProgressInPercent = 0.2f;
+                DataProgressInPercent = 0.5f;
                 DateTime cacheTime = File.GetLastWriteTimeUtc(dataPath);
                 if (cacheTime != null) {
                     if (DateTime.UtcNow > cacheTime) {
                         Debug.LogWarning("Expired Cached data");
+                        await Task.Delay(TimeSpan.FromSeconds(1));
                         return false;
                     }
                     string json = await File.ReadAllTextAsync(dataPath);
-                    DataProgressInPercent = 0.4f;
+                    DataProgressInPercent = 0.7f;
                     var serializableData = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                     if (serializableData != null) {
 
@@ -236,7 +244,7 @@ namespace Code.Core
                                 return false;
                             }
                         }
-                        DataProgressInPercent = 0.5f;
+                        DataProgressInPercent = 0.9f;
                         if (serializableData.TryGetValue("CompletedObjectivesData", out var completedObjectivesData)) 
                             { CompletedObjectivesData = JsonConvert.DeserializeObject<CompletedObjectives_SerializeableData>(completedObjectivesData.ToString()); }
                             else { return false; }
@@ -554,6 +562,7 @@ namespace Code.Core
         }
 
         private async Task WaitUntil(Func<bool> condition, Action onCallback = null, CancellationToken cancellationToken = default) {
+
             while (!condition()) {
                 await Task.Delay(TimeSpan.FromSeconds(0.15f), cancellationToken);
                 //Debug.Log($"LoadProgress % {Mathf.CeilToInt(DataProgressInPercent * 100)}");

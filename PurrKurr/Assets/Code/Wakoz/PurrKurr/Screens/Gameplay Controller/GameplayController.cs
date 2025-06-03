@@ -160,7 +160,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             var gameManager = GetController<GameManager>();
             if (gameManager != null) {
                 await gameManager.WaitUntilLoadComplete();
-                OnProgressLoaded(); // objetives handler should be initialized
+                OnProgressLoaded(); // objetives handler must be initialized
             }
             
             InitLevel();

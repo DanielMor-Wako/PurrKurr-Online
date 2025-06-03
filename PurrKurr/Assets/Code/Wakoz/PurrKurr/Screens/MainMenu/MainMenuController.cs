@@ -1,12 +1,8 @@
 ﻿using Code.Core;
 using Code.Core.Auth;
-using Code.Core.Services.DataManagement;
-using Code.Wakoz.PurrKurr.DataClasses.Enums;
-using Code.Wakoz.PurrKurr.DataClasses.Objectives;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.SceneTransition;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -21,6 +17,9 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
         private AuthenticationManager _authService;
 
         private GameManager _gameManager;
+
+        private readonly string RestoredHash = "Restored";
+        private readonly string LoadedHash = "Loaded";
 
         protected override void Clean() {
 
@@ -60,29 +59,29 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
                 return;
             }
 
-            _model.SetButtonsAvailability(false, true);
+            _model.SetButtonsAvailability(_gameManager.DataProgressInPercent == 1, true);
             _model.SetDisplayName(_gameManager.DisplayName);
             _view.UpdateLoadingBarProgress(0);
 
             if (_gameManager.DataProgressInPercent < 1) {
-                _view.UpdateLoadingBarProgress(0.01f, "Loading");
-                await _gameManager.WaitUntilLoadComplete(() => UpdateLoadingProgress());
-                _view.UpdateLoadingBarProgress(1, "Ready");
-                await Task.Delay(TimeSpan.FromSeconds(1f));
-                _view.UpdateLoadingBarProgress(0);
+                //_view.UpdateLoadingBarProgress(0.01f, _gameManager.HasCache() ? "Restoring" : "Loading");
+                UpdateProgress();
+                await _gameManager.WaitUntilLoadComplete(() => UpdateProgress());
+
+                _view.UpdateLoadingBarProgress(1, _gameManager.HasCache() ? RestoredHash : LoadedHash, async () 
+                    => {
+                        _view.UpdateLoadingBarProgress(1, "Ready");
+                        await Task.Delay(TimeSpan.FromSeconds(1f));
+                        _view.UpdateLoadingBarProgress(0);
+                        _model.SetButtonsAvailability(true);
+                    } );
             }
-
-            _model.SetButtonsAvailability(true);
-            /*if (_gameManager.DisplayName != _model.PlayerDisplayName) {
-                _model.SetDisplayName(_gameManager.DisplayName);
-            } else {
-                Debug.LogWarning("Seems that displayName is already set , if reocurring consider erasing the second update and not wait for load complete");
-            }*/
-
         }
-
-        private void UpdateLoadingProgress() {
-            _view.UpdateLoadingBarProgress(_gameManager.DataProgressInPercent, $"{Mathf.CeilToInt(_gameManager.DataProgressInPercent * 100)}% Loaded");
+        
+        private void UpdateProgress() {
+            string progressText = _gameManager.HasCache() ? RestoredHash : LoadedHash;
+            //_view.UpdateLoadingBarProgress(_gameManager.DataProgressInPercent, $"{Mathf.CeilToInt(_gameManager.DataProgressInPercent * 100)}% {progressText}");
+            _view.UpdateLoadingBarProgress(_gameManager.DataProgressInPercent, $"{Mathf.CeilToInt(_view.GetLoadingBarProgress() * 100)}% {progressText}");
         }
 
         private void HandleAccountClicked() {
