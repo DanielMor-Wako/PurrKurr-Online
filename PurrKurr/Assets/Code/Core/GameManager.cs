@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
@@ -15,6 +16,8 @@ using Unity.Services.CloudSave.Models;
 using Unity.Services.CloudSave.Models.Data.Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Security.Cryptography;
+using Unity.Services.Core;
 
 namespace Code.Core
 {
@@ -80,6 +83,15 @@ namespace Code.Core
             Debug.Log("Deleted cache");
         }
 
+        public void PlayOffline() {
+
+            SetDefaultPlayerInstances();
+            UserId = "";
+            DisplayName = "OfflineKitten";
+
+            DataProgressInPercent = 1;
+        }
+
         /// <summary>
         /// Todo: implement documentation for new player creation: 
         /// https://docs.unity.com/ugs/en-us/manual/cloud-code/manual/triggers/tutorials/use-cases/initialize-new-players
@@ -89,20 +101,9 @@ namespace Code.Core
 
             DataProgressInPercent = 0;
 
-            var characterId = UnityEngine.Random.Range(1, 3);
-            LevelData = 1;
-            ExpData = 0;
-            MainCharacterData = new MainCharacter_SerializeableData(characterId);
+            SetDefaultPlayerInstances();
 
-            CharacterIdsData = new CharactersIDs_SerializeableData(new List<string>() { characterId.ToString() });
-            CompletedObjectivesData = new CompletedObjectives_SerializeableData();
-            OngoingObjectivesData = new OngoingObjectives_SerializeableData();
-            GameStateData = new GameState_SerializeableData() {
-                roomId = 0,
-                objects = new List<ObjectRecord>() {
-                    new ObjectRecord() { key = "player", value = Vector2.zero.ToString() }
-                }
-            };
+            await TryPersonalizePlayerName("Kitten");
 
             var publicData = new (string key, object value)[]
             {
@@ -133,6 +134,38 @@ namespace Code.Core
             await _gameStateManager.SaveGameState("data", "new");*/
         }
 
+        private void SetDefaultPlayerInstances() {
+
+            var characterId = UnityEngine.Random.Range(1, 3);
+            LevelData = 1;
+            ExpData = 0;
+            MainCharacterData = new MainCharacter_SerializeableData(characterId);
+
+            CharacterIdsData = new CharactersIDs_SerializeableData(new List<string>() { characterId.ToString() });
+            CompletedObjectivesData = new CompletedObjectives_SerializeableData();
+            OngoingObjectivesData = new OngoingObjectives_SerializeableData();
+            GameStateData = new GameState_SerializeableData() {
+                roomId = 0,
+                objects = new List<ObjectRecord>() {
+                    new ObjectRecord() { key = "player", value = Vector2.zero.ToString() }
+                }
+            };
+        }
+
+        // move to cloudcode on new account creation
+        private async Task TryPersonalizePlayerName(string personlizedName) {
+
+            try {
+                var currentName = await AuthenticationService.Instance.GetPlayerNameAsync();
+
+                await AuthenticationService.Instance.UpdatePlayerNameAsync(personlizedName);
+                Debug.Log($"Player name set as '{personlizedName}'");
+            }
+            catch (RequestFailedException ex) {
+                Debug.LogError($"Failed to set player name: {ex.Message}");
+            }
+        }
+
         public async void SaveProgress(
             CompletedObjectives_SerializeableData completed,
             OngoingObjectives_SerializeableData ongoing,
@@ -145,7 +178,10 @@ namespace Code.Core
                 ("gameState", gameState),
             };
 
-            await _gameStateManager.SavePlayerPrivateData(privateData);
+            if (UnityServices.State == ServicesInitializationState.Initialized) {
+                await _gameStateManager.SavePlayerPrivateData(privateData);
+            }
+
             await CacheData();
         }
 
@@ -173,7 +209,16 @@ namespace Code.Core
             //var playerData = instances["playerData"] as PlayerData;
         }
 
+        public void ForceCache() {
+            _ = CacheData();
+        }
+
         private async Task CacheData() {
+
+            if (string.IsNullOrEmpty(UserId)) {
+                Debug.LogWarning($"UserId is not set, caching is ignored");
+                return;
+            }
 
             var dataToCache = new Dictionary<string, object> {
                 { "UserId", UserId },
@@ -189,8 +234,10 @@ namespace Code.Core
 
             try {
                 string json = JsonConvert.SerializeObject(dataToCache);
+                byte[] encryptedData = EncryptStringToBytes(json);
                 string dataPath = Path.Combine(Application.persistentDataPath, CacheConfig.CacheFilePath);
-                await File.WriteAllTextAsync(dataPath, json);
+                await File.WriteAllBytesAsync(dataPath, encryptedData);
+                //await File.WriteAllTextAsync(dataPath, json);
                 var expirationTimestamp = DateTime.UtcNow.AddHours(CachedValidDurationInHours);
                 File.SetLastWriteTimeUtc(dataPath, expirationTimestamp);
                 _hasCacheData = true;
@@ -202,8 +249,39 @@ namespace Code.Core
             catch (UnauthorizedAccessException ex) {
                 Debug.LogError($"No permission to write cache file: {ex.Message}");
             }
+            catch (CryptographicException ex) {
+                Debug.LogError($"Encryption error: {ex.Message}");
+            }
             catch (Exception ex) {
                 Debug.LogError($"Unexpected error writing cache file: {ex.Message}");
+            }
+        }
+
+        private byte[] EncryptStringToBytes(string plainText) {
+            using (Aes aes = Aes.Create()) {
+                aes.Key = CacheConfig.EncryptionKey;
+                aes.IV = CacheConfig.IV;
+                using (var encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
+                using (var ms = new MemoryStream()) {
+                    using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+                    using (var sw = new StreamWriter(cs)) {
+                        sw.Write(plainText);
+                    }
+                    return ms.ToArray();
+                }
+            }
+        }
+
+        private string DecryptBytesToString(byte[] cipherText) {
+            using (Aes aes = Aes.Create()) {
+                aes.Key = CacheConfig.EncryptionKey;
+                aes.IV = CacheConfig.IV;
+                using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
+                using (var ms = new MemoryStream(cipherText))
+                using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                using (var sr = new StreamReader(cs)) {
+                    return sr.ReadToEnd();
+                }
             }
         }
 
@@ -213,20 +291,33 @@ namespace Code.Core
             return _hasCacheData;
         }
 
+        public bool ValidateCache() {
+
+            var filePath = Path.Combine(Application.persistentDataPath, CacheConfig.CacheFilePath);
+            
+            if (!File.Exists(filePath))
+                return false;
+
+            var cacheTime = File.GetLastWriteTimeUtc(filePath);
+            if (cacheTime != null && DateTime.UtcNow > cacheTime) {
+                Debug.LogWarning("Expired Cached data");
+                return false;
+            }
+
+            return _hasCacheData;
+        }
+
         private async Task<bool> TryFetchingCache() {
 
             DataProgressInPercent = 0.01f;
             if (TryGetCacheFilePath(out var dataPath)) {
-                DataProgressInPercent = 0.5f;
-                DateTime cacheTime = File.GetLastWriteTimeUtc(dataPath);
-                if (cacheTime != null) {
-                    if (DateTime.UtcNow > cacheTime) {
-                        Debug.LogWarning("Expired Cached data");
-                        await Task.Delay(TimeSpan.FromSeconds(1));
-                        return false;
-                    }
-                    string json = await File.ReadAllTextAsync(dataPath);
-                    DataProgressInPercent = 0.7f;
+
+                if (ValidateCache()) {
+
+                    byte[] encryptedData = await File.ReadAllBytesAsync(dataPath);
+                    string json = DecryptBytesToString(encryptedData);
+                    //string json = await File.ReadAllTextAsync(dataPath);
+                    DataProgressInPercent = 0.5f;
                     var serializableData = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                     if (serializableData != null) {
 
@@ -271,6 +362,8 @@ namespace Code.Core
                     }
                 }
             }
+
+            await Task.Delay(TimeSpan.FromSeconds(1));
             return false;
         }
 
@@ -449,12 +542,26 @@ namespace Code.Core
 
         private void SetNoPlayer() => SetPlayerIdAndDisplayName("", "");
 
+        public void UpdatePlayerIdAndDisplayName() {
+
+            var id = AuthenticationService.Instance.PlayerInfo.Id;
+            var playerName = AuthenticationService.Instance.PlayerName;
+            var displayName = GetDisplayName(playerName);
+
+            SetPlayerIdAndDisplayName(id, displayName);
+        }
+
         private void SetPlayerIdAndDisplayName(string userId, string playerName) {
             UserId = userId;
             DisplayName = playerName;
         }
 
         private async void UpdatePlayerInfo() {
+
+            if (UnityServices.State != ServicesInitializationState.Initialized) {
+                PlayOffline();
+                return;
+            }
 
             var auth = AuthenticationService.Instance;
 
@@ -476,10 +583,10 @@ namespace Code.Core
             }
 
             var id = AuthenticationService.Instance.PlayerInfo.Id;
-            var playerName = AuthenticationService.Instance.PlayerName;
-            var displayName = GetDisplayName(playerName);
-
-            SetPlayerIdAndDisplayName(id, displayName);
+            //var playerName = AuthenticationService.Instance.PlayerName;
+            //var displayName = GetDisplayName(playerName);
+            
+            UpdatePlayerIdAndDisplayName();
 
             var userLevel = await _gameStateManager.GetUserLevel();
             var isFirstTime = userLevel <= 0;
@@ -488,9 +595,7 @@ namespace Code.Core
                 Debug.Log($"New account, override to default data\nId {id}");
                 SaveDefaultGameState();
             } else {
-                Debug.Log($"Loading account data\nId {id}");
-                Debug.Log($"{playerName} mainCharacter Id {userLevel}");
-                // set the player with its own data
+                Debug.Log($"Loading account (lvl {userLevel})\nId {id}");
                 LoadGameState();
             }
         }
@@ -504,7 +609,9 @@ namespace Code.Core
 
             if (string.IsNullOrEmpty(playerName))
                 return string.Empty;
-            return playerName.Contains("#") ? playerName.Split('#')[0] : playerName;
+
+            var lastHashIndex = playerName.LastIndexOf('#');
+            return lastHashIndex >= 0 ? playerName.Substring(0, lastHashIndex) : playerName;
         }
 
         private void GetPrefabBank() {
@@ -565,7 +672,6 @@ namespace Code.Core
 
             while (!condition()) {
                 await Task.Delay(TimeSpan.FromSeconds(0.15f), cancellationToken);
-                //Debug.Log($"LoadProgress % {Mathf.CeilToInt(DataProgressInPercent * 100)}");
                 onCallback?.Invoke();
             }
         }
