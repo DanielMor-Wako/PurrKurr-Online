@@ -143,7 +143,7 @@ namespace Code.Core.Auth
             }*/
 
             if (!IsLoggedIn()) {
-                Debug.Log("Authetication service no SessionTokenExists");
+                Debug.Log("Authetication service is missing SessionTokenExists");
                 return false;
             }
 
@@ -315,25 +315,6 @@ namespace Code.Core.Auth
         private void HandlePlayerSignInFailed(RequestFailedException exception) {
             Debug.Log($"SignInFailed exception {exception}");
         }
-
-        private async Task LinkWithUnityAsync(string accessToken) {
-            try {
-                await AuthenticationService.Instance.LinkWithUnityAsync(accessToken);
-                Debug.Log("Link is successful.");
-            }
-            catch (AuthenticationException ex) when (ex.ErrorCode == AuthenticationErrorCodes.AccountAlreadyLinked) {
-                // Handle the exception
-                Debug.LogError("User already linked, try log in instead");
-            }
-            catch (AuthenticationException ex) {
-                Debug.LogException(ex);
-            }
-            catch (RequestFailedException ex) {
-                // Handle the exception
-                Debug.LogException(ex);
-            }
-        }
-
     }
     public interface IAuthenticationManager
     {
@@ -457,7 +438,7 @@ namespace Code.Core.Auth
         public async void Authenticate(Action<string> onSuccess, Action<string> onFailure) {
 
             if (PlayerAccountService.Instance.IsSignedIn) {
-                Debug.Log("Player is SignedIn");
+                Debug.Log($"Player is SignedIn accessToken {PlayerAccountService.Instance.AccessToken}");
                 // If the player is already signed into Unity Player Accounts, proceed directly to the Unity Authentication sign-in.
                 await SignInWithUnityAuth();
                 return;
@@ -500,6 +481,46 @@ namespace Code.Core.Auth
                 Debug.LogException(ex);
             }
         }
+
+        public async void Register(Action<string> onSuccess, Action<string> onFailure) {
+
+            try {
+
+                Debug.Log($"Trying to Link (isSignedIn?){PlayerAccountService.Instance.IsSignedIn} with accessToken {PlayerAccountService.Instance.AccessToken}");
+                /*if (string.IsNullOrEmpty(PlayerAccountService.Instance.AccessToken)) {
+                    // If the player has no AccessToken, proceed to the Unity Authentication sign-in.
+                    await PlayerAccountService.Instance.StartSignInAsync();
+                }*/
+                await AuthenticationService.Instance.LinkWithUnityAsync(PlayerAccountService.Instance.AccessToken);
+                Debug.Log($"Link to unity with accessToken {PlayerAccountService.Instance.AccessToken}");
+                onSuccess("Link is successful");
+            }
+            catch (AuthenticationException ex) when (ex.ErrorCode == AuthenticationErrorCodes.AccountAlreadyLinked) {
+                Debug.LogError("Account already linked");
+                onFailure("Account already linked");
+            }
+            catch (AuthenticationException ex) {
+                Debug.LogException(ex);
+                onFailure("AuthenticationException");
+            }
+            catch (PlayerAccountsException ex) {
+                // Compare error code to PlayerAccountsErrorCodes
+                Debug.Log($"PlayerAccountsException {ex.ErrorCode}");
+                Debug.LogException(ex);
+                onFailure("PlayerAccountsException");
+            }
+            catch (RequestFailedException ex) {
+                // Handle the exception
+                // Compare error code to CommonErrorCodes
+                Debug.Log($"RequestFailedException {ex.ErrorCode}");
+                Debug.LogException(ex);
+                onFailure("RequestFailedException");
+            }
+            catch (Exception e) {
+                Debug.LogException(e);
+                onFailure(e.Message);
+            }
+        }
     }
     public class AnonymousAuthStrategy : IAuthStrategy
     {
@@ -508,25 +529,11 @@ namespace Code.Core.Auth
             try {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
                 Debug.Log($"{AuthenticationService.Instance.PlayerId} Signed in Anonymously");
-                await PersonalizePlayerName("Kitten");
                 onSuccess("Signed in Anonymously");
             
             } catch (Exception e) {
                 Debug.LogException(e);
                 onFailure(e.Message);
-            }
-        }
-
-        private async Task PersonalizePlayerName(string personlizedName) {
-
-            try {
-                var currentName = await AuthenticationService.Instance.GetPlayerNameAsync();
-
-                await AuthenticationService.Instance.UpdatePlayerNameAsync(personlizedName);
-                Debug.Log($"Player name set as '{personlizedName}'");
-            }
-            catch (RequestFailedException ex) {
-                Debug.LogError($"Failed to set player name: {ex.Message}");
             }
         }
     }
