@@ -382,7 +382,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
                 return surfaceQuaternion;
             }
 
-            if (_closestSurfaceDir != Vector2.zero && _closestSurfacePoint != Vector2.zero && IsTouchingAnySurface()) {
+            if (_closestSurfaceDir != Vector2.zero && _closestSurfacePoint != Vector2.zero && !_isCeiling && !_wasCeiling && IsTouchingAnySurface()) {
                 Quaternion surfaceQuaternion = Quaternion.LookRotation(Vector3.forward, _closestSurfaceDir);
                 return surfaceQuaternion;
             }
