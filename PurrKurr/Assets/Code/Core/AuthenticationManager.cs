@@ -497,24 +497,24 @@ namespace Code.Core.Auth
             }
             catch (AuthenticationException ex) when (ex.ErrorCode == AuthenticationErrorCodes.AccountAlreadyLinked) {
                 Debug.LogError("Account already linked");
-                onFailure("Account already linked");
+                onFailure("Error: Already linked to another account");
             }
             catch (AuthenticationException ex) {
                 Debug.LogException(ex);
-                onFailure("AuthenticationException");
+                onFailure("Error: Authentication Failed");
             }
             catch (PlayerAccountsException ex) {
                 // Compare error code to PlayerAccountsErrorCodes
                 Debug.Log($"PlayerAccountsException {ex.ErrorCode}");
                 Debug.LogException(ex);
-                onFailure("PlayerAccountsException");
+                onFailure("Error: Player Accounts Failed");
             }
             catch (RequestFailedException ex) {
                 // Handle the exception
                 // Compare error code to CommonErrorCodes
                 Debug.Log($"RequestFailedException {ex.ErrorCode}");
                 Debug.LogException(ex);
-                onFailure("RequestFailedException");
+                onFailure("Error: Request Failed");
             }
             catch (Exception e) {
                 Debug.LogException(e);
