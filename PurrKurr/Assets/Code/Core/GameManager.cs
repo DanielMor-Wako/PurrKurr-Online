@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
@@ -160,6 +159,7 @@ namespace Code.Core
 
                 await AuthenticationService.Instance.UpdatePlayerNameAsync(personlizedName);
                 Debug.Log($"Player name set as '{personlizedName}'");
+                UpdatePlayerIdAndDisplayName();
             }
             catch (RequestFailedException ex) {
                 Debug.LogError($"Failed to set player name: {ex.Message}");
