@@ -6,6 +6,8 @@ using Unity.Services.Authentication;
 using UnityEngine;
 using Unity.Services.Core;
 using Code.Core;
+using System.Threading;
+using Unity.Services.Authentication.PlayerAccounts;
 
 namespace Code.Wakoz.PurrKurr.Screens.Login
 {
@@ -19,16 +21,23 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
         private AuthenticationManager _authService;
         private RegexValidator _regexValidator;
 
+        private CancellationTokenSource _cancellationTokenSource;
+
         protected override void Clean() {
+
+            _view.ChangeNameInput.onEndEdit.RemoveAllListeners();
 
             _view.OnPreviousClicked -= HandlePrevious;
 
+            _view.OnChangePlayerNameClicked -= HandlePlayerRename;
             _view.OnLinkAccountClicked -= HandleLinkProviders;
             _view.OnUpdateCredentialsClicked -= HandleUpdateCredentials;
+            _view.OnDisplayAllAccountInfo -= HandleDisplayAllInfo;
 
             _view.OnLogOutClicked -= HandleLogOutPopup;
             _view.OnLogOutConfirmClicked -= HandleLogOutConfirm;
             _view.OnLogOutCancelClicked -= HandleLogOutCancel;
+            _view.OnToggleForceDelete -= HandleToggleForceDelete;
 
             _authService?.Dispose();
             _authService = null;
@@ -38,20 +47,33 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
 
             _model = new AccountModel();
 
+            _view.ChangeNameInput.onEndEdit.AddListener(text => {
+                _view.SetInteractableButtonChangeName(IsValidNewPlayername(text));
+            });
+
             _view.OnPreviousClicked += HandlePrevious;
 
+            _view.OnChangePlayerNameClicked += HandlePlayerRename;
             _view.OnLinkAccountClicked += HandleLinkProviders;
             _view.OnUpdateCredentialsClicked += HandleUpdateCredentials;
+            _view.OnDisplayAllAccountInfo += HandleDisplayAllInfo;
 
             _view.OnLogOutClicked += HandleLogOutPopup;
             _view.OnLogOutConfirmClicked += HandleLogOutConfirm;
             _view.OnLogOutCancelClicked += HandleLogOutCancel;
+            _view.OnToggleForceDelete += HandleToggleForceDelete;
 
             _view.SetModel(_model);
 
             _authService = new AuthenticationManager();
+            SetDisplayUserId();
 
-            if (UnityServices.State is ServicesInitializationState.Uninitialized 
+            await SetPageAsGuestOrRegistered();
+        }
+
+        private async Task SetPageAsGuestOrRegistered() {
+
+            if (UnityServices.State is ServicesInitializationState.Uninitialized
                 || await _authService.IsGuest()) {
                 // Guest or unsigned user -> Show available providers
                 ChangePageToGuestUser();
@@ -59,52 +81,70 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
             } else {
                 // Registered user -> Show Linked providers
                 ChangePageToRegisteredUser();
-
                 var playerInfo = await AuthenticationService.Instance.GetPlayerInfoAsync();
-
                 UpdateRegisteredUserInfo(playerInfo);
             }
         }
 
+        private bool IsValidNewPlayername(string playerName)
+            => !string.IsNullOrEmpty(playerName.Trim()) && playerName != _model.PlayerDisplayName;
+
         private void UpdateRegisteredUserInfo(PlayerInfo playerInfo) {
-
-            _model.ChangeCredentialsAvailability(string.IsNullOrEmpty(playerInfo.Username), true);
             SetDisplayName();
+        }
 
-            _view.UpdateUserFeed($"ID:{playerInfo.Id}<br>UnityID:<br>{playerInfo.GetUnityId()}");
+        private async void HandleDisplayAllInfo() {
+            var playerInfo = await AuthenticationService.Instance.GetPlayerInfoAsync();
+            var id = playerInfo.Id;
+            GUIUtility.systemCopyBuffer = id;
+            _view.UpdateUserFeed($"User id copied to clipboard!<br>{playerInfo.Username}<br>{id}");
         }
 
         private void SetDisplayName() {
             var gameManager = GetController<GameManager>();
-            var displayName = gameManager != null ? gameManager?.DisplayName : "";
+            var displayName = gameManager != null ? gameManager.DisplayName : "";
             _model.SetDisplayName(displayName);
         }
 
+        private void SetDisplayUserId() {
+            var gameManager = GetController<GameManager>();
+            var userId = gameManager != null ? gameManager.UserId : "";
+            _model.SetUserId(userId);
+        }
+
         private void ChangePageToGuestUser() {
+
             _model.SetGuestUser(true);
+            _model.ChangeNameAvailability(false, true);
+            _model.SetForceDeleteOnLogOut(true, true);
             _model.ChangePageIndex(1);
             SetDisplayName();
         }
 
         private void ChangePageToRegisteredUser() {
+
             _model.SetGuestUser(false);
+            _model.ChangeNameAvailability(true, true);
+            _model.ChangeCredentialsAvailability(false, true);
+            _model.SetForceDeleteOnLogOut(false, true);
             _model.ChangePageIndex(2);
         }
 
         private void HandlePrevious() {
 
             _model.ChangeCredentialsAvailability(false, true);
+            _model.ChangeNameAvailability(false, true);
             _model.ChangeLogOutConfirmationState(false);
+            _view.UpdateUserFeed("");
 
             GetController<SceneTransitionController>().LoadSceneByIndex(1, "Main Menu");
             //_model.ChangeOpenState(!_model.IsOpen);
-            //_model.ChangeLogOutConfirmationState(false);
         }
 
         private void HandleLogOutPopup() {
 
             _model.ChangeLogOutConfirmationState(!_model.IsLogOutConfirmationPopup);
-
+            _view.UpdateUserFeed("");
             /*var modalData = isGuest ?
                 new OverlayWindowData() {
                     Title = "Warning",
@@ -136,8 +176,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
                 return;
             }
 
-            var isGuest = await _authService.IsGuest();
-            if (isGuest) {
+            if (_model.ForceDeleteOnLogOut || await _authService.IsGuest()) {
                 await DeleteAccount();
                 return;
             }
@@ -161,6 +200,12 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
             LoadLoginScene("Logged Out");
         }
 
+        private void HandleToggleForceDelete() {
+            if (_model.IsGuest) 
+                return;
+            _model.SetForceDeleteOnLogOut(!_model.ForceDeleteOnLogOut);
+        }
+
         private async Task DeleteAccount() {
 
             var gameManager = GetController<GameManager>();
@@ -178,36 +223,76 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
             GetController<SceneTransitionController>().LoadSceneByIndex(0, titleText);
         }
 
-        private async void HandleLinkProviders() {
+        private async void HandlePlayerRename() {
 
-            _model.ChangeCredentialsAvailability(false, true);
-            _model.ChangePageIndex(0);
+            var input = _view.ChangeNameInput.text;
 
+            // check sufficient currency
 
-            if (AuthenticationService.Instance.IsSignedIn) {
-                try {
-                    Debug.Log("user is signed in, trying to logout before re-signing");
-                    _authService.LogOut(true);
-                    AuthenticationService.Instance.ClearSessionToken();
-
-                    await _authService.InitAsync();
-                    await _authService.SignInCachedUserAsync();
-
-                } catch (Exception ex) {
-                    ChangePageToGuestUser();
-                }
+            if (!IsValidUsername(input)) {
+                _view.UpdateUserFeed("Name must be between 3–50 characters.<br>No spaces or special characters (e.g., <, >, /, \", ;).");
+                return;
             }
 
-            _authService.SetAuthStrategy(new UnityAccountAuthStrategy());
-            _authService.Authenticate(OnAuthSuccess, OnAuthFailure);
+            _view.SetInteractableButtonChangeName(false);
+            if (await TryPersonalizePlayerName(input)) {
 
-
-            var playerInfo = await AuthenticationService.Instance.GetPlayerInfoAsync();
-
-            UpdateRegisteredUserInfo(playerInfo);
-
+                var gameManager = GetController<GameManager>();
+                gameManager?.UpdatePlayerIdAndDisplayName();
+                gameManager?.ForceCache();
+                SetDisplayName();
+                _view.SetInteractableButtonChangeName(IsValidNewPlayername(input));
+            }
         }
 
+        private async void HandleLinkProviders() {
+
+            if (!AuthenticationService.Instance.IsSignedIn) {
+                Debug.LogWarning("User is not signed in");
+                return;
+            }
+
+            if (await _authService.IsUnityIdAvailable()) {
+                Debug.LogWarning($"User is already linked");
+                _view.UpdateUserFeed($"User is already linked to another player");
+                return;
+            }
+
+            _model.ChangePageIndex(0);
+
+            Debug.Log($"Trying to Link (isSignedIn?){PlayerAccountService.Instance.IsSignedIn} with accessToken {PlayerAccountService.Instance.AccessToken}");
+            if (string.IsNullOrEmpty(PlayerAccountService.Instance.AccessToken)) {
+                // If the player has no AccessToken, proceed to the Unity Authentication sign-in.
+                await PlayerAccountService.Instance.StartSignInAsync();
+            }
+
+            _cancellationTokenSource ??= new CancellationTokenSource();
+            await WaitUntilPlayerAccessTokenExist(10, _cancellationTokenSource.Token);
+
+            _authService.SetAuthStrategy(new UnityAccountAuthStrategy());
+            _authService.Register(OnAuthSuccess, OnAuthFailure);
+        }
+
+        // todo: move to authentication utils
+        private async Task<bool> TryPersonalizePlayerName(string personlizedName) {
+
+            try {
+                await AuthenticationService.Instance.UpdatePlayerNameAsync(personlizedName);
+                _view.UpdateUserFeed($"Saved Name:<br>{personlizedName}");
+                Debug.Log($"Player name set as '{personlizedName}'");
+                return true;
+            }
+            catch (RequestFailedException ex) {
+                _view.UpdateUserFeed(ex.Message);
+                Debug.LogError($"Failed to set player name: {ex.Message}");
+            }
+            catch (Exception ex) {
+                _view.UpdateUserFeed(ex.Message);
+                Debug.LogError($"Exception setting player name {ex.Message}");
+            }
+
+            return false;
+        }
 
         // link account methods
         private async void HandleLinkFb() {
@@ -217,15 +302,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
             Debug.Log("Not Available, Try again later");
         }
 
-        private void OnAuthFailure(string obj) {
-            Debug.Log("Failed to link account");
-            ChangePageToGuestUser();
+        private async void OnAuthFailure(string obj) {
+            Debug.Log($"Failed to link account {obj}");
+            await SetPageAsGuestOrRegistered();
+            _view.UpdateUserFeed(obj);
         }
-
+        
         private async void OnAuthSuccess(string obj) {
             Debug.Log("Account link start");
-            
-            await Task.Delay(TimeSpan.FromSeconds(5));
 
             if (_authService.IsLoggedIn() && !(await _authService.IsGuest())) {
                 
@@ -236,6 +320,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
                 var playerInfo = await AuthenticationService.Instance.GetPlayerInfoAsync();
                 _model.ForceRefresh();
 
+                UpdateRegisteredUserInfo(playerInfo);
+
             } else {
 
                 ChangePageToGuestUser();
@@ -243,6 +329,28 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
                 Debug.Log("not registered or offline");
             }
             
+        }
+
+        private async Task WaitUntilPlayerAccessTokenExist(int retries = 10, CancellationToken token = default) {
+
+            //var user = AuthenticationService.Instance;
+            //Debug.Log($"{user.PlayerId} - checking logged-in state, {retries} tries");
+            var playerAccount = PlayerAccountService.Instance;
+            Debug.Log($"{PlayerAccountService.Instance.IsSignedIn} | accessToken {PlayerAccountService.Instance.AccessToken}");
+
+            var retryLeft = retries;
+            while (!playerAccount.IsSignedIn && retryLeft > 0) {
+                Debug.Log("not sign in yet");
+                retryLeft--;
+                await Task.Delay(TimeSpan.FromSeconds(2), token);
+            }
+
+            //_isRequestAvailable = true;
+
+            if (retryLeft <= 0) {
+                Debug.Log("Error occur: connection is too slow");
+                return;
+            }
         }
 
         private async void HandleUpdateCredentials() {
@@ -266,7 +374,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
             string username = _view.UsernameInput.text;
             string password = _view.PasswordInput.text;
 
-            _regexValidator ??= new RegexValidator();
             if (!IsValidUsername(username)) {
                 _view.UpdateUserFeed("Username is not valid");
             } else {
@@ -279,7 +386,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
         }
 
         private bool IsValidUsername(string name) {
-            return !string.IsNullOrEmpty(name) && name.Length >= 3 && name.Length <= 20;
+            _regexValidator ??= new RegexValidator();
+            return _regexValidator.IsValidUsername(name);
         }
 
         private void AddCredentialsAsync(

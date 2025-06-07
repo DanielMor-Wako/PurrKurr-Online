@@ -3,6 +3,7 @@ using Code.Core.Auth;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.SceneTransition;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -18,8 +19,7 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
 
         private GameManager _gameManager;
 
-        private readonly string RestoredHash = "Restored";
-        private readonly string LoadedHash = "Loaded";
+        private CancellationTokenSource _loadPlayerDataCTS;
 
         protected override void Clean() {
 
@@ -32,6 +32,8 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
 
             _authService?.Dispose();
             _authService = null;
+
+            CancelLoadingPlayerData();
         }
 
         protected override Task Initialize() {
@@ -60,28 +62,49 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
             }
 
             _model.SetButtonsAvailability(_gameManager.DataProgressInPercent == 1, true);
-            _model.SetDisplayName(_gameManager.DisplayName);
+            _model.SetDisplayName(_gameManager.DisplayName != "" ? _gameManager.DisplayName : "New Player");
             _view.UpdateLoadingBarProgress(0);
 
             if (_gameManager.DataProgressInPercent < 1) {
-                //_view.UpdateLoadingBarProgress(0.01f, _gameManager.HasCache() ? "Restoring" : "Loading");
-                UpdateProgress();
+                var hasCache = _gameManager.TryGetCacheFilePath(out var _);
+                _view.UpdateLoadingBarProgress(.01f, $"{Mathf.CeilToInt(_view.GetLoadingBarProgress() * 100)}%");
+                
                 await _gameManager.WaitUntilLoadComplete(() => UpdateProgress());
+                await WaitUntilFullProgressBar(() => UpdateProgress());
 
-                _view.UpdateLoadingBarProgress(1, _gameManager.HasCache() ? RestoredHash : LoadedHash, async () 
-                    => {
-                        _view.UpdateLoadingBarProgress(1, "Ready");
-                        await Task.Delay(TimeSpan.FromSeconds(1f));
-                        _view.UpdateLoadingBarProgress(0);
-                        _model.SetButtonsAvailability(true);
-                    } );
+                _view.UpdateLoadingBarProgress(1, "<b><color=#FFFFFF;\"><b>Ready</b></color>");
+                await Task.Delay(TimeSpan.FromSeconds(.75f));
+                _view.UpdateLoadingBarProgress(0);
+
+                _model.SetButtonsAvailability(true, true);
+                _model.SetDisplayName(_gameManager.DisplayName);
             }
         }
         
+        public async Task WaitUntilFullProgressBar(Action onCallback = null) {
+
+            if (_view.GetLoadingBarProgress() < 1) {
+
+                _loadPlayerDataCTS ??= new CancellationTokenSource();
+                await WaitUntil(() => Mathf.CeilToInt(_view.GetLoadingBarProgress() * 100) == 100, onCallback, _loadPlayerDataCTS.Token);
+            }
+        }
+
+        private async Task WaitUntil(Func<bool> condition, Action onCallback = null, CancellationToken cancellationToken = default) {
+
+            while (!condition() && !cancellationToken.IsCancellationRequested) {
+                await Task.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken);
+                onCallback?.Invoke();
+            }
+        }
+
         private void UpdateProgress() {
-            string progressText = _gameManager.HasCache() ? RestoredHash : LoadedHash;
-            //_view.UpdateLoadingBarProgress(_gameManager.DataProgressInPercent, $"{Mathf.CeilToInt(_gameManager.DataProgressInPercent * 100)}% {progressText}");
-            _view.UpdateLoadingBarProgress(_gameManager.DataProgressInPercent, $"{Mathf.CeilToInt(_view.GetLoadingBarProgress() * 100)}% {progressText}");
+            _view.UpdateLoadingBarProgress(_gameManager.DataProgressInPercent, $"{Mathf.CeilToInt(_view.GetLoadingBarProgress() * 100)}%");
+        }
+        
+        private void CancelLoadingPlayerData() {
+            _loadPlayerDataCTS?.Cancel();
+            _loadPlayerDataCTS = null;
         }
 
         private void HandleAccountClicked() {

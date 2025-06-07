@@ -26,19 +26,25 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
         public void ClickedPlayArena() => OnPlayArenaClicked?.Invoke();
         public void ClickedPlayHunt() => OnPlayHuntClicked?.Invoke();
 
+        public float GetLoadingBarProgress() 
+            => _loadingProgressBar != null ? _loadingProgressBar.ImageTarget.fillAmount : 0;
+
         /// <summary>
         /// Update progress of text and image filler by the targetValue,
         /// value must be between 0 to 1, progress is visible when value is above 0
         /// </summary>
         /// <param name="targetValue"></param>
-        public void UpdateLoadingBarProgress(float targetValue, string progressText = "") {
+        public void UpdateLoadingBarProgress(float targetValue, string progressText = "", Action callback = null) {
 
-            _loadingProgressBar.gameObject.SetActive(targetValue > 0);
+            if (_loadingProgressBar == null || _loadingProgressBar.gameObject == null)
+                return;
+
+            _loadingProgressBar?.gameObject.SetActive(targetValue > 0);
 
             if (targetValue <= 0)
                 return;
 
-            _loadingProgressBar?.StartTransition(targetValue);
+            _loadingProgressBar?.StartTransition(targetValue, callback);
             _loadingProgressText?.SetText(progressText);
         }
 

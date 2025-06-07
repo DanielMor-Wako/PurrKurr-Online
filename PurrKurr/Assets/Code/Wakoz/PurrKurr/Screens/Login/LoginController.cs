@@ -169,8 +169,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
         }
 
         private void OnUnityWebAuthFailure(string error) {
-            OnAuthFailure(error);
             ShowWelcomeWindow();
+            OnAuthFailure(error);
         }
 
         private void HandleOfflinePlay() {
