@@ -36,6 +36,8 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
             _view.OnUsernamePasswordSignIn -= HandleSignInCredentials;
 
             _authService.Dispose();
+
+            StopWaitUntilLoggedIn();
         }
 
         protected override async Task Initialize() {
@@ -63,29 +65,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
                 ShowWelcomeWindow();
             }
         }
-
-        /*
-       private async void Start() {
-
-           _authService = new AuthenticationManager();
-           await _authService.InitAsync();
-
-           _authService.SetAuthStrategy(new AnonymousAuthStrategy());
-           SignIn(OnSessionTokenExist, OnAuthFailure);
-
-
-
-           //if (await _authService.SignInCachedUnityAccountAsync()) {
-           //if (await _authService.IsUnityIdAvailable()) {
-           //var accessToken = PlayerAccountService.Instance.AccessToken;
-           *//*if (accessToken != null) {
-
-               ChangeSceneToMainMenu();
-           } else {
-               ShowWelcomeWindow();
-           }*//*
-       }
-*/
 /*
         private void OnSessionTokenExist(string msgOnSuccess) {
             _authService.TrySignInUnityPlayer(
@@ -99,8 +78,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
         private void HandlePreviousClicked() 
             => ShowWelcomeWindow();
 
-        private void ShowWelcomeWindow() 
-            => MoveToPage(1);
+        private void ShowWelcomeWindow() {
+            StopWaitUntilLoggedIn();
+            MoveToPage(1);
+        }
 
         private void MoveToNextScene() {
 
@@ -141,27 +122,38 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
 
         private async Task WaitUntilLoggedInAndMoveToNextScene(int retries = 10, CancellationToken token = default) {
 
-            var user = AuthenticationService.Instance;
-            Debug.Log($"{user.PlayerId} - checking logged-in state, {retries} tries");
+            try {
 
-            var retryLeft = retries;
+                var user = AuthenticationService.Instance;
+                Debug.Log($"{user.PlayerId} - checking logged-in state, {retries} tries");
 
-            while (!_authService.IsLoggedIn() && retryLeft > 0) {
-                Debug.Log("not logged in yet");
-                retryLeft--;
-                await Task.Delay(TimeSpan.FromSeconds(2), token);
+                var retryLeft = retries;
+
+                while (!_authService.IsLoggedIn() && retryLeft > 0 && !token.IsCancellationRequested) {
+                    Debug.Log("not logged in yet");
+                    retryLeft--;
+                    await Task.Delay(TimeSpan.FromSeconds(2), token);
+                }
+            
+                if (retryLeft <= 0) {
+                    Debug.Log("Error occur: connection is too slow");
+                    return;
+                }
+
+                MoveToNextScene();
+
+            } catch(Exception ex) { 
+                Debug.LogException(ex);
+
+            } finally {
+                _isRequestAvailable = true;
             }
-
-            _isRequestAvailable = true;
-
-            if (retryLeft <= 0) {
-                Debug.Log("Error occur: connection is too slow");
-                return;
-            }
-
-            MoveToNextScene();
         }
         
+        private void StopWaitUntilLoggedIn() {
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = null;
+        }
         private void OnAuthFailure(string error) {
             _view.UpdateUserFeed(error);
             _isRequestAvailable = true;
