@@ -66,7 +66,7 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
             _view.UpdateLoadingBarProgress(0);
 
             if (_gameManager.DataProgressInPercent < 1) {
-                var hasCache = _gameManager.TryGetCacheFilePath(out var _);
+                
                 _view.UpdateLoadingBarProgress(.01f, $"{Mathf.CeilToInt(_view.GetLoadingBarProgress() * 100)}%");
                 
                 await _gameManager.WaitUntilLoadComplete(() => UpdateProgress());

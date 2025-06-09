@@ -35,7 +35,7 @@ namespace Code.Wakoz.PurrKurr.Screens.SceneTransition
         {
             var isFirstScene = _previoudBuildIndex == -1;
 
-            Debug.Log($"New Scene '{scene.name}' has loaded <-- index ({scene.buildIndex}) prev ({_previoudBuildIndex})");
+            Debug.Log($"Scene '{scene.name}' Loaded <-- index ({scene.buildIndex}) prev ({_previoudBuildIndex})");
 
             _previoudBuildIndex = scene.buildIndex;
 

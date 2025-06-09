@@ -27,16 +27,14 @@ namespace Code.Wakoz.PurrKurr.Screens.PersistentGameObjects
         public void NotifyAll() {
 
             // todo: remove this hell of logs
-            UnityEngine.Debug.Log($"{_objects.Count} tagged objects are notified");
-            var stringBuilder = new StringBuilder("Tagged objects Info :\n");
+            var stringBuilder = new StringBuilder($"{_objects.Count} Tagged objects Info:\n");
             foreach (var item in _objects) {
                 item.Value.ChangeState();
                 stringBuilder.Append($"{item.Value.ItemId} | ");
             }
             UnityEngine.Debug.Log(stringBuilder);
 
-            UnityEngine.Debug.Log($"{_dependentObjects.Count} tagged dependent objects are notified");
-            stringBuilder = new StringBuilder("Tagged dependent objects Into :\n");
+            stringBuilder = new StringBuilder($"{_dependentObjects.Count} Tagged dependent objects Info:\n");
             foreach (var dependentItems in _dependentObjects) {
                 NotifyTaggedDependedObjects(dependentItems.Key);
                 foreach (var dependentItem in dependentItems.Value) {

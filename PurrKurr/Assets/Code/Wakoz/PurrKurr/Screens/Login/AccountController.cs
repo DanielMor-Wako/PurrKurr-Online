@@ -254,7 +254,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
 
             if (await _authService.IsUnityIdAvailable()) {
                 Debug.LogWarning($"User is already linked");
-                _view.UpdateUserFeed($"User is already linked to another player");
+                _view.UpdateUserFeed($"User is already linked");
                 return;
             }
 
