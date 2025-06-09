@@ -7,6 +7,8 @@ using Code.Core.DataClassFactory;
 using Code.Wakoz.PurrKurr.DataClasses.ServerData;
 using System;
 using Unity.Services.CloudSave.Models;
+using UnityEngine;
+using System.Reflection;
 
 namespace Code.Core
 {
@@ -112,6 +114,15 @@ namespace Code.Core
         public void SerializeResults(Dictionary<string, Item> data) {
 
             foreach (var i in data) {
+/*
+                // using reflection for the object types
+                Type type = _dataFactory.GetTypeOfKey(i.Key);
+                MethodInfo getAsMethod = i.Value.Value.GetType().GetMethod("GetAs").MakeGenericMethod(type);
+                object result = getAsMethod.Invoke(i.Value.Value, null) ;
+                CacheDataInstance(i.Key, result);
+                CacheDataInstance(i.Key, result as OngoingObjectives_SerializeableData);
+*/
+
                 /*Type type = _dataFactory.GetTypeOfKey(i.Key);
                 UnityEngine.Debug.Log($"{i.Key} as {type.Name}");
                 CacheDataInstance(i.Key, type);*/

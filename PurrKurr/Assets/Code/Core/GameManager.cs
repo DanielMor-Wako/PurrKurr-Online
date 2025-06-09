@@ -98,7 +98,7 @@ namespace Code.Core
         [ContextMenu("Save Default Game State")]
         public async void SaveDefaultGameState() {
 
-            DataProgressInPercent = 0;
+            DataProgressInPercent = 0.1f;
 
             SetDefaultPlayerInstances();
 
@@ -418,12 +418,10 @@ namespace Code.Core
                 Debug.Log($"Retrieve Everything");
                 var publicResults = await CloudSaveService.Instance.Data.Player.LoadAllAsync(new LoadAllOptions(new PublicReadAccessClassOptions()));
                 DataProgressInPercent = 0.2f;
-                Debug.Log($"public Results: "+ publicResults.Count);
                 var privateResults = await CloudSaveService.Instance.Data.Player.LoadAllAsync();
                 DataProgressInPercent = 0.4f;
-                Debug.Log($"private Results: " + privateResults.Count);
                 var results = publicResults.Concat(privateResults).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                Debug.Log($"{results.Count} elements loaded!");
+                Debug.Log($"{results.Count} keys loaded!<br>{publicResults.Count} Public | {privateResults.Count} Private");
                 
                 foreach (var result in results) {
                     Debug.Log($"Key: {result.Value.Key}, Value: {result.Value.Value}");
