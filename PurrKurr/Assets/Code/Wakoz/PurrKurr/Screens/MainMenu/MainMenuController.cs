@@ -62,13 +62,13 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
             }
 
             _model.SetButtonsAvailability(_gameManager.DataProgressInPercent == 1, true);
-            _model.SetDisplayName(_gameManager.DisplayName != "" ? _gameManager.DisplayName : "New Player");
+            UpdatePlayerInfo();
             _view.UpdateLoadingBarProgress(0);
 
             if (_gameManager.DataProgressInPercent < 1) {
-                
+
                 _view.UpdateLoadingBarProgress(.01f, $"{Mathf.CeilToInt(_view.GetLoadingBarProgress() * 100)}%");
-                
+
                 await _gameManager.WaitUntilLoadComplete(() => UpdateProgress());
                 await WaitUntilFullProgressBar(() => UpdateProgress());
 
@@ -77,10 +77,16 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
                 _view.UpdateLoadingBarProgress(0);
 
                 _model.SetButtonsAvailability(true, true);
-                _model.SetDisplayName(_gameManager.DisplayName);
+
+                UpdatePlayerInfo();
             }
         }
-        
+
+        private void UpdatePlayerInfo() {
+            _model.SetPlayerLevel(_gameManager.DisplayName != "" && _gameManager.LevelData > 0 ? $"<color=#FFFFFF;\"> Level {_gameManager.LevelData}</color>" : "", true);
+            _model.SetDisplayName(_gameManager.DisplayName != "" ? _gameManager.DisplayName : "New Player");
+        }
+
         public async Task WaitUntilFullProgressBar(Action onCallback = null) {
 
             if (_view.GetLoadingBarProgress() < 1) {

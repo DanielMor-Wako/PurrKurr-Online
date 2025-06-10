@@ -9,6 +9,8 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
     {
         [SerializeField] CanvasGroupFaderView _fader;
         [SerializeField] private TMP_Text _playerNameText;
+        // todo: make PlayerView script to concise all playerdata but excluding the name
+        [SerializeField] private TMP_Text _playerLevelText;
 
         [SerializeField] private MultiStateView _menuAvailableState;
         [SerializeField] private ImageFillerView _loadingProgressBar;
@@ -59,6 +61,7 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
             _fader?.EndTransition(Convert.ToInt32(Model.IsOpen));
             UpdateDisplayName();
             UpdateButtonsAvailabeState();
+            UpdatePlayerInfo();
         }
 
         private void UpdateDisplayName() {
@@ -67,6 +70,14 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
                 return;
 
             _playerNameText?.SetText(Model.PlayerDisplayName);
+        }
+
+        private void UpdatePlayerInfo() {
+
+            if (_playerLevelText == null)
+                return;
+
+            _playerLevelText?.SetText(Model.PlayerLevelInfo);
         }
 
         private void UpdateButtonsAvailabeState() {

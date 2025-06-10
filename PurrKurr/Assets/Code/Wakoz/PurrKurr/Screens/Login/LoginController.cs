@@ -125,18 +125,17 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
             try {
 
                 var user = AuthenticationService.Instance;
-                Debug.Log($"{user.PlayerId} - checking logged-in state, {retries} tries");
+                Debug.Log($"{user.PlayerId} - checking logged-in state");
 
                 var retryLeft = retries;
 
                 while (!_authService.IsLoggedIn() && retryLeft > 0 && !token.IsCancellationRequested) {
-                    Debug.Log("not logged in yet");
                     retryLeft--;
                     await Task.Delay(TimeSpan.FromSeconds(2), token);
                 }
             
                 if (retryLeft <= 0) {
-                    Debug.Log("Error occur: connection is too slow");
+                    Debug.Log($"Error occur: connection is too slow {retries} tries");
                     return;
                 }
 
