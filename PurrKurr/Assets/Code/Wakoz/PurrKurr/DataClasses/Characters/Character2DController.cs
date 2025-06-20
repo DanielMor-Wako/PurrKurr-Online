@@ -445,7 +445,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 SetSpriteOrder(0);
             }
 
-            OnUpdatedStats?.Invoke(new List<DisplayedableStatData>() { new DisplayedableStatData(Definitions.CharacterDisplayableStat.Health , Stats.GetHealthPercentage(), Stats.Health.ToString()) });
+            OnUpdatedStats?.Invoke(new List<DisplayedableStatData>() { new DisplayedableStatData(Definitions.CharacterDisplayableStat.Health , Stats.GetHealthPercentage(), $"{Stats.Health} / {Stats.MaxHealth}") });
 
             //return newHealthPoint;
         }
@@ -787,14 +787,14 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters {
                 ObjectState.Falling => AnimClipType.Fall,
                 ObjectState.Grounded => AnimClipType.Init,
                 ObjectState.Grabbing => AnimClipType.Grabbing,
-                
+
                 // todo: add grabbing states on objectState
-/*
-                ObjectState.LightGrab => AnimClipType.LightGrab,
+
+/*                ObjectState.LightGrab => AnimClipType.LightGrab,
                 ObjectState.MediumGrab => AnimClipType.MediumGrab,
-                ObjectState.HeavyGrab => AnimClipType.HeavyGrab,
+                ObjectState.HeavyGrab => AnimClipType.HeavyGrab,*/
                 ObjectState.AerialGrab => AnimClipType.AerialGrab,
-*/
+
                 ObjectState.StandingUp => AnimClipType.StandUp,
                 ObjectState.Crouching => AnimClipType.Crouch,
                 ObjectState.Crawling => AnimClipType.Crawl,

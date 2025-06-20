@@ -165,7 +165,8 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Enums
             HeavyAttack,
             AerialAttack,
             DashAttack,
-            SpecialAbility
+            SpecialAbility,
+            AerialGrab
         }
 
         public enum Effect2DType

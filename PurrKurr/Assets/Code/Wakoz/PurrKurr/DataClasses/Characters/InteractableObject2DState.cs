@@ -160,7 +160,13 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
                 return;
 
             } else if (IsGrabbingState()/*_combatAbility == Definitions.ActionType.Grab*/) {
-                SetState(Definitions.ObjectState.Grabbing);
+                var grabType =
+                    _interactionAbility is AttackAbility.LightGrabAlsoDefaultGrab ? Definitions.ObjectState.Grabbing :
+                    _interactionAbility is AttackAbility.MediumGrab ? Definitions.ObjectState.Grabbing :
+                    _interactionAbility is AttackAbility.HeavyGrab ? Definitions.ObjectState.Grabbing :
+                    _interactionAbility is AttackAbility.AerialGrab ? Definitions.ObjectState.AerialGrab :
+                    Definitions.ObjectState.Grabbing;
+                SetState(grabType);
                 return;
 
             } else if (_combatAbility == Definitions.ActionType.Projectile) {
