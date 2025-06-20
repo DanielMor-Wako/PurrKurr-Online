@@ -100,9 +100,9 @@ namespace Code.Core
 
             DataProgressInPercent = 0.1f;
 
-            SetDefaultPlayerInstances();
+            DisplayName = "New Player";
 
-            await TryPersonalizePlayerName("Kitten");
+            SetDefaultPlayerInstances();
 
             var publicData = new (string key, object value)[]
             {
@@ -119,8 +119,13 @@ namespace Code.Core
             };
 
             await _gameStateManager.SavePlayerPublicData(publicData);
+            DataProgressInPercent = .6f;
 
             await _gameStateManager.SavePlayerPrivateData(privateData);
+            DataProgressInPercent = .8f;
+
+            await TryPersonalizePlayerName("Kitten");
+            UpdatePlayerIdAndDisplayName();
 
             DataProgressInPercent = 1;
 
@@ -159,7 +164,6 @@ namespace Code.Core
 
                 await AuthenticationService.Instance.UpdatePlayerNameAsync(personlizedName);
                 Debug.Log($"Player name set as '{personlizedName}'");
-                UpdatePlayerIdAndDisplayName();
             }
             catch (RequestFailedException ex) {
                 Debug.LogError($"Failed to set player name: {ex.Message}");
@@ -188,6 +192,9 @@ namespace Code.Core
         [ContextMenu("Load Game State")]
         public async void LoadGameState() {
 
+            await AuthenticationService.Instance.GetPlayerNameAsync();
+            UpdatePlayerIdAndDisplayName();
+
             if (await TryFetchingCache()) {
                 DataProgressInPercent = 1;
                 return;
@@ -203,7 +210,13 @@ namespace Code.Core
             //var allData = GetCastedData(rawData);
             _gameStateManager.SerializeResults(rawData);
             InvokeInstanceResults();
+
+            UpdatePlayerIdAndDisplayName();
+
+            DataProgressInPercent = 1;
+
             _ = CacheData();
+
             return;
 
             //var playerData = instances["playerData"] as PlayerData;
@@ -422,12 +435,7 @@ namespace Code.Core
                 DataProgressInPercent = 0.4f;
                 var results = publicResults.Concat(privateResults).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
                 Debug.Log($"{results.Count} keys loaded!<br>{publicResults.Count} Public | {privateResults.Count} Private");
-                
-                foreach (var result in results) {
-                    Debug.Log($"Key: {result.Value.Key}, Value: {result.Value.Value}");
-                }
                 return results;
-                //await _gameStateManager.CacheDataInstances(results);
             }
             catch (CloudSaveValidationException e) {
                 Debug.LogError(e);
@@ -453,8 +461,6 @@ namespace Code.Core
             foreach (var instance in instances) {
                 InvokeInstance(instance);
             }
-
-            DataProgressInPercent = 1;
         }
 
         private void InvokeInstance(KeyValuePair<string, object> instance) {
@@ -580,20 +586,18 @@ namespace Code.Core
                 return;
             }
 
-            var id = AuthenticationService.Instance.PlayerInfo.Id;
+            //var id = AuthenticationService.Instance.PlayerInfo.Id;
             //var playerName = AuthenticationService.Instance.PlayerName;
             //var displayName = GetDisplayName(playerName);
-            
-            UpdatePlayerIdAndDisplayName();
 
             var userLevel = await _gameStateManager.GetUserLevel();
             var isFirstTime = userLevel <= 0;
 
             if (isFirstTime) {
-                Debug.Log($"New account, override to default data\nId {id}");
+                Debug.Log($"New account, override to default data\nId {UserId}");
                 SaveDefaultGameState();
             } else {
-                Debug.Log($"Loading account (lvl {userLevel})\nId {id}");
+                Debug.Log($"Loading account (lvl {userLevel})\nId {UserId}");
                 LoadGameState();
             }
         }

@@ -1,5 +1,4 @@
 ﻿using Code.Core;
-using Code.Core.Auth;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.SceneTransition;
 using System;
@@ -15,7 +14,6 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
         [SerializeField] private MainMenuView _view;
 
         private MainMenuModel _model;
-        private AuthenticationManager _authService;
 
         private GameManager _gameManager;
 
@@ -29,9 +27,6 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
             _view.OnPlayEventsClicked -= HandleEventsClicked;
             _view.OnPlayArenaClicked -= HandlePlayArenaClicked;
             _view.OnPlayHuntClicked -= HandlePlayHuntClicked;
-
-            _authService?.Dispose();
-            _authService = null;
 
             CancelLoadingPlayerData();
         }
@@ -69,22 +64,28 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
 
                 _view.UpdateLoadingBarProgress(.01f, $"{Mathf.CeilToInt(_view.GetLoadingBarProgress() * 100)}%");
 
-                await _gameManager.WaitUntilLoadComplete(() => UpdateProgress());
-                await WaitUntilFullProgressBar(() => UpdateProgress());
+                await _gameManager.WaitUntilLoadComplete(() => {
+                    UpdateProgressBar();
+                    UpdateProgressDisplayName();
+                });
+                UpdatePlayerInfo();
+                await WaitUntilFullProgressBar(() => UpdateProgressBar());
 
                 _view.UpdateLoadingBarProgress(1, "<b><color=#FFFFFF;\"><b>Ready</b></color>");
                 await Task.Delay(TimeSpan.FromSeconds(.75f));
                 _view.UpdateLoadingBarProgress(0);
 
-                _model.SetButtonsAvailability(true, true);
+                _model.SetButtonsAvailability(true);
 
                 UpdatePlayerInfo();
             }
         }
 
         private void UpdatePlayerInfo() {
-            _model.SetPlayerLevel(_gameManager.DisplayName != "" && _gameManager.LevelData > 0 ? $"<color=#FFFFFF;\"> Level {_gameManager.LevelData}</color>" : "", true);
-            _model.SetDisplayName(_gameManager.DisplayName != "" ? _gameManager.DisplayName : "New Player");
+
+            var hasData = _gameManager.DataProgressInPercent == 1 && _gameManager.DisplayName != "";
+            _model.SetPlayerLevel(hasData && _gameManager.LevelData > 0 ? $"<color=#FFFFFF;\"> Level {_gameManager.LevelData}</color>" : "", true);
+            _model.SetDisplayName(_gameManager.DisplayName);
         }
 
         public async Task WaitUntilFullProgressBar(Action onCallback = null) {
@@ -104,10 +105,16 @@ namespace Code.Wakoz.PurrKurr.Screens.MainMenu
             }
         }
 
-        private void UpdateProgress() {
+        private void UpdateProgressBar() {
             _view.UpdateLoadingBarProgress(_gameManager.DataProgressInPercent, $"{Mathf.CeilToInt(_view.GetLoadingBarProgress() * 100)}%");
         }
-        
+
+        private void UpdateProgressDisplayName() {
+            if (_gameManager.DisplayName != _model.PlayerDisplayName) {
+                _model.SetDisplayName(_gameManager.DisplayName);
+            }
+        }
+
         private void CancelLoadingPlayerData() {
             _loadPlayerDataCTS?.Cancel();
             _loadPlayerDataCTS = null;

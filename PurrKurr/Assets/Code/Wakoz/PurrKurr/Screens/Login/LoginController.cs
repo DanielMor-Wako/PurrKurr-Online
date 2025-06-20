@@ -21,7 +21,6 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
 
         private AuthenticationManager _authService;
 
-        private bool _isRequestAvailable = true;
         private CancellationTokenSource _cancellationTokenSource;
 
         protected override void Clean() {
@@ -35,7 +34,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
             _view.OnUsernamePasswordSignUp -= HandleSignUpCredentials;
             _view.OnUsernamePasswordSignIn -= HandleSignInCredentials;
 
-            _authService.Dispose();
+            _authService?.Dispose();
 
             StopWaitUntilLoggedIn();
         }
@@ -79,40 +78,34 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
             => ShowWelcomeWindow();
 
         private void ShowWelcomeWindow() {
-            StopWaitUntilLoggedIn();
             MoveToPage(1);
         }
 
         private void MoveToNextScene() {
 
             MoveToPage(3);
-            int newIndex = SceneManager.GetActiveScene().buildIndex + 1;
+            int newIndex = 1; //SceneManager.GetActiveScene().buildIndex + 1;
             
             GetController<SceneTransitionController>().LoadSceneByIndex(newIndex);
         }
         
         public void SetAuthStrategy(IAuthStrategy authStrategy) {
-            if (!_isRequestAvailable) return;
             _authService.SetAuthStrategy(authStrategy);
         }
         
         public void SignIn(Action<string> onSuccess, Action<string> onFailure) {
-            if (!_isRequestAvailable) return;
-            _isRequestAvailable = false;
-            
             _authService.Authenticate(onSuccess, onFailure);
         }
 
         public void SignUp(Action<string> onSuccess, Action<string> onFailure) {
-            if (!_isRequestAvailable) return;
-            _isRequestAvailable = false;
-            
             _authService.Register(onSuccess, onFailure);
         }
 
         private void OnAuthSuccess(string accessToken) {
 
             Debug.Log($"Authentication successful with token {accessToken}");
+
+            StopWaitUntilLoggedIn();
 
             _cancellationTokenSource = new CancellationTokenSource();
             var token = _cancellationTokenSource.Token;
@@ -145,7 +138,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
                 Debug.LogException(ex);
 
             } finally {
-                _isRequestAvailable = true;
+                _cancellationTokenSource = null;
             }
         }
         
@@ -153,9 +146,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
             _cancellationTokenSource?.Cancel();
             _cancellationTokenSource = null;
         }
+
         private void OnAuthFailure(string error) {
             _view.UpdateUserFeed(error);
-            _isRequestAvailable = true;
+            StopWaitUntilLoggedIn();
             Debug.LogError("Authentication failed: " + error);
         }
 
@@ -178,7 +172,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Login
             MoveToPage(2);
 
             // Force authentication in cases a callback was not retrieved from the web request by previous calls
-            _isRequestAvailable = true;
+            //StopWaitUntilLoggedIn();
             SetAuthStrategy(new UnityAccountAuthStrategy());
             SignIn(OnAuthSuccess, OnUnityWebAuthFailure);
         }
