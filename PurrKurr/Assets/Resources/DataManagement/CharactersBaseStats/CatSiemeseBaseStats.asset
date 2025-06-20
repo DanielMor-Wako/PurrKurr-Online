@@ -63,7 +63,7 @@ MonoBehaviour:
     - _elementName: Aerial Attack
       _attackAbility: 4
       _actionDuration: 0.15
-      _actionCooldownDuration: 0.5
+      _actionCooldownDuration: 0.45
       _properties: 0b0e08
       _characterStateCondition: 0c00
       _opponentStateCondition: 00
@@ -91,7 +91,7 @@ MonoBehaviour:
     - _elementName: Aerial Grab
       _attackAbility: 8
       _actionDuration: 0.15
-      _actionCooldownDuration: 0.3
+      _actionCooldownDuration: 0.5
       _properties: 01020c
       _characterStateCondition: 0c00
       _opponentStateCondition: 00
