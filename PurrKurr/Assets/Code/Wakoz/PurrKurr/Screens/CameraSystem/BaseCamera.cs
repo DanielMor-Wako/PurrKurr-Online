@@ -28,6 +28,8 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
         protected float _currentZoom;
         protected Vector3 _newPosition;
 
+        private float _greatestDistance;
+
         public BaseCamera(CameraData data, Action processActionCallback = null)
         {
             _data = data;
@@ -75,7 +77,8 @@ namespace Code.Wakoz.PurrKurr.Screens.CameraSystem
 
         public virtual void AdjustZoom(Camera cam)
         {
-            _currentZoom = Mathf.Lerp(_data.Transitions.MaxZoom, _data.Transitions.MinZoom, CameraUtils.GetGreatestDistance(_data.Targets) / _data.Transitions.ZoomLimiter);
+            CameraUtils.GetGreatestDistance(_data.Targets, ref _greatestDistance);
+            _currentZoom = Mathf.Lerp(_data.Transitions.MaxZoom, _data.Transitions.MinZoom, _greatestDistance / _data.Transitions.ZoomLimiter);
             cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, _currentZoom, Time.unscaledDeltaTime * _data.Transitions.ZoomSpeed);
         }
 
