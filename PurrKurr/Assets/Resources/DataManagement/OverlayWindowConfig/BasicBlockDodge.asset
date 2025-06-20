@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlayWindowData:
   - Title: 
-    BodyContent: Swipe the Block button in any direction to dodge and evade incoming
-      damage
+    BodyContent: Swipe Block in any direction to aim<br>Release to dodge and evade
+      incoming damage
     BodyPicture: {fileID: 0}
     ButtonsRawData: []
     PageCount: 1/3

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: BasicJumpShort
   m_EditorClassIdentifier: 
   overlayWindowData:
-  - Title: Short Jump
-    BodyContent: Quickly release the jump button to perform Short Jump
+  - Title: 
+    BodyContent: Press and release quickly to jump low
     BodyPicture: {fileID: 0}
     ButtonsRawData: []
     PageCount: 1/3

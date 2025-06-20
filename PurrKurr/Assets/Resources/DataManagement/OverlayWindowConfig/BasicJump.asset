@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: BasicJump
   m_EditorClassIdentifier: 
   overlayWindowData:
-  - Title: Jump Basics
-    BodyContent: Press to jump while holding left or right to jump in any direction<br><br>Hold
-      Jump to reach higher
+  - Title: 
+    BodyContent: Hold Left + Hold Jump to get over obstacles
     BodyPicture: {fileID: 0}
     ButtonsRawData: []
     PageCount: 1/3

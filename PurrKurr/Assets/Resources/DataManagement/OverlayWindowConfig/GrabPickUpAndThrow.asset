@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlayWindowData:
   - Title: 
-    BodyContent: Pick up objects by holding Up and Pressing Grab<br><br>Throw the
-      object by holding Up and pressing Grab again
+    BodyContent: Hold Up + Grab to Pick up objects
     BodyPicture: {fileID: 21300000, guid: 1356b6d1bdea9fd4c8ebc33c2648d317, type: 3}
     ButtonsRawData: []
     PageCount: 1/3

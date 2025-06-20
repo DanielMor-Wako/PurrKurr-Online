@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlayWindowData:
   - Title: Challenge
-    BodyContent: Protect the food from peasants<br>before the time ends
+    BodyContent: Protect the food from Pests<br>before the time ends
     BodyPicture: {fileID: 21300000, guid: 6900683f9f58ad04dbf0c8c71c52aa98, type: 3}
     ButtonsRawData:
     - ButtonType: 0

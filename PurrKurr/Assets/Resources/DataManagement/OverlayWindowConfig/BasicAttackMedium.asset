@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlayWindowData:
   - Title: Medium Attack
-    BodyContent: Hold Up + Press Attack
+    BodyContent: Hold Up + Attack
     BodyPicture: {fileID: 0}
     ButtonsRawData: []
     PageCount: 1/3

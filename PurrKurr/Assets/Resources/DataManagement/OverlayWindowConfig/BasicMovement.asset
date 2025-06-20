@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: BasicMovement
   m_EditorClassIdentifier: 
   overlayWindowData:
-  - Title: Basic Movement
-    BodyContent: Hold Right to gain momentum and reach futher away
+  - Title: 
+    BodyContent: Hold Right to gain momentum
     BodyPicture: {fileID: 21300000, guid: 3fd32f3548b6bd24d90836f2dae7802f, type: 3}
     ButtonsRawData: []
     PageCount: 1/3

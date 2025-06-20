@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlayWindowData:
   - Title: 
-    BodyContent: Rumor has it that the a treasure is hidden in this room, can you
-      find it?
+    BodyContent: A teasure is hidden nearby,<br>Can you find it?
     BodyPicture: {fileID: -3430613992102656276, guid: 415cb88aedae2ca44b4d339995569370, type: 3}
     ButtonsRawData: []
     PageCount: 1/3

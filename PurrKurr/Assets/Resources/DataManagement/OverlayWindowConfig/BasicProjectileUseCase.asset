@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BasicProjectileUseCase
   m_EditorClassIdentifier: 
   overlayWindowData:
-  - Title: Remote Damage
+  - Title: 
     BodyContent: 'Shoot hairballs to remotely destory the hazard without maing physical
       contact '
     BodyPicture: {fileID: 21300000, guid: 3222c17a07450f0438955643cca45bfc, type: 3}

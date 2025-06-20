@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: BasicProjectile
   m_EditorClassIdentifier: 
   overlayWindowData:
-  - Title: Puke Hairballs
-    BodyContent: Swipe the Projectile button in any direction to aim and release
-      to shoot
+  - Title: 
+    BodyContent: Swipe in any direction to aim and release to Puke Hairballs
     BodyPicture: {fileID: 21300000, guid: 83815fbd404b739479e6d88062745a91, type: 3}
     ButtonsRawData: []
     PageCount: 1/3

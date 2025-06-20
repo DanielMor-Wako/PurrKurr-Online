@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: BasicGrab
   m_EditorClassIdentifier: 
   overlayWindowData:
-  - Title: Grab
-    BodyContent: Press Grab to hand on to nearby objects
+  - Title: 
+    BodyContent: Press Grab to throw nearbly objects
     BodyPicture: {fileID: 0}
     ButtonsRawData: []
     PageCount: 1/3

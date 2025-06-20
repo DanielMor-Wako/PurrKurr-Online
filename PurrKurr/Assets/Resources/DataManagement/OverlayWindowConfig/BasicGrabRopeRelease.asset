@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: BasicGrabRopeRelease
   m_EditorClassIdentifier: 
   overlayWindowData:
-  - Title: Release Rope
-    BodyContent: Press block to drop off
+  - Title: 
+    BodyContent: Press block to drop from the rope
     BodyPicture: {fileID: 0}
     ButtonsRawData: []
     PageCount: 1/3

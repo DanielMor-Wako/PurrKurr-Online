@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: BasicGrabRope
   m_EditorClassIdentifier: 
   overlayWindowData:
-  - Title: Grab Rope
-    BodyContent: Press Grab to hand on to nearby objects
+  - Title: 
+    BodyContent: Press Grab to hang on ropes
     BodyPicture: {fileID: 0}
     ButtonsRawData: []
     PageCount: 1/3

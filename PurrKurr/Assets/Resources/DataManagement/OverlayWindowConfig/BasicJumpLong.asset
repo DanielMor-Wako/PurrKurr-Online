@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: BasicJumpLong
   m_EditorClassIdentifier: 
   overlayWindowData:
-  - Title: High Jump
-    BodyContent: Hold jump to reach higher areas
-    BodyPicture: {fileID: 0}
+  - Title: 
+    BodyContent: Hold Jump to reach higher
+    BodyPicture: {fileID: 21300000, guid: 729915d3bee1ddc4b9800a68bce2cf14, type: 3}
     ButtonsRawData: []
     PageCount: 1/3
