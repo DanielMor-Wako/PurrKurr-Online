@@ -16,6 +16,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
         private List<TimelineEvent> activeEvents;
         private List<TimelineEvent> timelineHistory;
 
+        private List<TimelineEvent> _startedEvents = new();
+        private List<TimelineEvent> _finishedEvents = new();
+
         private GameplayController _gameEvents;
 
         public TimelineHandler(GameplayController gameEvents) {
@@ -49,25 +52,49 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
 
         public void UpdateEvents(float currentTime, ref List<TimelineEvent> movementEventsRef, ref List<TimelineEvent> actionInteractionEventsRef) {
 
-            var startedEvents = futureEvents.FindAll(e => e.StartTime < currentTime);
+            UpdateStartedEvents(currentTime);
 
-            if (startedEvents.Count > 0) {
-                Debug.Log(startedEvents.Count + " events started.  1-> " + startedEvents.FirstOrDefault().InteractionType);
-                activeEvents.AddRange(startedEvents);
-                futureEvents.RemoveAll(startedEvents.Contains);
+            if (_startedEvents.Count > 0) {
+                Debug.Log(_startedEvents.Count + " events started.  1-> " + _startedEvents.FirstOrDefault().InteractionType);
+                activeEvents.AddRange(_startedEvents);
+                futureEvents.RemoveAll(_startedEvents.Contains);
             }
 
-            movementEventsRef = startedEvents.Count > 0 ? startedEvents : null;
+            movementEventsRef = _startedEvents.Count > 0 ? _startedEvents : null;
 
-            var finishedEvents = activeEvents.FindAll(e => e.StartTime + e.DurationInMilliseconds < currentTime);
+            UpdateFinishedEvents(currentTime);
 
-            if (finishedEvents.Count > 0) {
-                Debug.Log(finishedEvents.Count + " events ended.  1-> " + finishedEvents.FirstOrDefault().InteractionType);
-                timelineHistory.AddRange(finishedEvents);
-                activeEvents.RemoveAll(finishedEvents.Contains);
+            if (_finishedEvents.Count > 0) {
+                Debug.Log(_finishedEvents.Count + " events ended.  1-> " + _finishedEvents.FirstOrDefault().InteractionType);
+                timelineHistory.AddRange(_finishedEvents);
+                activeEvents.RemoveAll(_finishedEvents.Contains);
             }
 
-            actionInteractionEventsRef = finishedEvents;
+            actionInteractionEventsRef = _finishedEvents;
+        }
+
+        private void UpdateFinishedEvents(float currentTime) {
+
+            _finishedEvents.Clear();
+            for (int i = 0; i < activeEvents.Count; i++) {
+                if (activeEvents[i].StartTime + activeEvents[i].DurationInMilliseconds < currentTime) {
+                    _finishedEvents.Add(activeEvents[i]);
+                }
+            }
+            return;
+            _finishedEvents = activeEvents.FindAll(e => e.StartTime + e.DurationInMilliseconds < currentTime);
+        }
+
+        private void UpdateStartedEvents(float currentTime) {
+
+            _startedEvents.Clear();
+            for (int i = 0; i < futureEvents.Count; i++) {
+                if (futureEvents[i].StartTime < currentTime) {
+                    _startedEvents.Add(futureEvents[i]);
+                }
+            }
+            return;
+            _startedEvents = futureEvents.FindAll(e => e.StartTime < currentTime);
         }
 
         private void HandleLevelStarted() {

@@ -1,9 +1,6 @@
 ﻿using Code.Wakoz.PurrKurr.DataClasses.GameCore.CollectableItems;
-using Code.Wakoz.PurrKurr.DataClasses.Objectives;
-using Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller;
 using Code.Wakoz.PurrKurr.Screens.Gameplay_Controller.Handlers;
-using UnityEngine;
 
 namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils
 {
@@ -28,9 +25,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils
             _gameEvents.OnHideGuidanceMarker += HideMarker;
             _gameEvents.OnShowGuidanceMarker += ShowMarker;
 
-            _gameEvents.OnObjectiveMissionStarted += StartForceHiding;
+            _gameEvents.OnTimerChanged += ForceHideWhenTimerIsCounting;
+
+            /*_gameEvents.OnObjectiveMissionStarted += StartForceHiding;
             _gameEvents.OnHeroReposition += StopForceHiding;
-            _gameEvents.OnHeroDeath += TagNoneActiveMission;
+            _gameEvents.OnHeroDeath += TagNoneActiveMission;*/
         }
 
         public void Unbind() {
@@ -41,9 +40,11 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils
             _gameEvents.OnHideGuidanceMarker -= HideMarker;
             _gameEvents.OnShowGuidanceMarker -= ShowMarker;
 
-            _gameEvents.OnObjectiveMissionStarted -= StartForceHiding;
+            _gameEvents.OnTimerChanged -= ForceHideWhenTimerIsCounting;
+
+            /*_gameEvents.OnObjectiveMissionStarted -= StartForceHiding;
             _gameEvents.OnHeroReposition -= StopForceHiding;
-            _gameEvents.OnHeroDeath -= TagNoneActiveMission;
+            _gameEvents.OnHeroDeath -= TagNoneActiveMission;*/
         }
 
         public void Dispose() {
@@ -82,6 +83,10 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils
             _controller.ActivateMarker(_currentMarker);
         }
 
+        private void ForceHideWhenTimerIsCounting(float secondsLeft, float totalSeconds) {
+            ForceHideMarker(secondsLeft > 0);
+        }
+/*
         private void StartForceHiding(IObjective objective, ObjectiveSequenceDataSO sO)
             => ForceHideMarker(true);
 
@@ -90,6 +95,6 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GamePlayUtils
 
         private void TagNoneActiveMission() 
             => ForceHideMarker(false);
-
+*/
     }
 }
