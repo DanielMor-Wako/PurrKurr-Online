@@ -5,7 +5,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars {
         public string HealthText { get; private set; } = "";
         public float TimerPercent { get; private set; }
         public string TimerText { get; private set; } = "";
-        public bool IsAlmostTimeOut { get; private set; }
+        public bool IsAnimating { get; private set; }
 
         public UIBarsModel(float healthPercent, string healthText, float timerPercent) {
 
@@ -19,9 +19,9 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars {
             Changed();
         }
 
-        public void UpdateTimerStat(float timerPercent, bool isAlmostTimeOut, string timerText) {
+        public void UpdateTimerStat(float timerPercent, bool isPulseAnimation, string timerText) {
 
-            UpdateTimerInternal(timerPercent, isAlmostTimeOut, timerText);
+            UpdateTimerInternal(timerPercent, isPulseAnimation, timerText);
             Changed();
         }
 
@@ -35,7 +35,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars {
 
             TimerPercent = timerPercent;
             TimerText = timerText;
-            IsAlmostTimeOut = isAlmostTimeOut;
+            IsAnimating = isAlmostTimeOut;
         }
     }
 }

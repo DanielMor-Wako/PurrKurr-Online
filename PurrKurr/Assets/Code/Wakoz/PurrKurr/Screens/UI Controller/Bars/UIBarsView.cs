@@ -1,4 +1,5 @@
 ﻿using Code.Wakoz.PurrKurr.Views;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,10 +20,21 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars
         [SerializeField] private CanvasGroupFaderView _timerFader;
         [SerializeField] private TextMeshProUGUI _timerText;
 
+        [Header("Currencies")]
+        [SerializeField] private UICurrenciesView _currenciesView;
+
         protected override void ModelChanged() {
 
             UpdateHealth();
             UpdateTimer();
+            UpdateCurrencies();
+        }
+
+        private void UpdateCurrencies() {
+
+            if (_currenciesView == null) return;
+
+            _currenciesView.UpdateView(); // get data and publish
         }
 
         private void UpdateHealth() {
@@ -77,7 +89,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars
                 _timerText.SetText(Model.TimerText);
             }
 
-            if (_timerScaler != null && Model.IsAlmostTimeOut) {
+            if (_timerScaler != null && Model.IsAnimating) {
                 _timerScaler.TargetRectTransform.localScale = _timerScaler.MaxScale;
                 _timerScaler.EndTransition();
             }

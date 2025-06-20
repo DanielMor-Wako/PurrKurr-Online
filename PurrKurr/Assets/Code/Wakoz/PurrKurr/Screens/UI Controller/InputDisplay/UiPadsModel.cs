@@ -320,6 +320,11 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.InputDisplay {
         }
         
         public float GetCooldownByPadType(Definitions.ActionType actionType) {
+            
+            if (_padsCooldown.TryGetValue(actionType, out var res)) {
+                return res;
+            }
+
             var result = (_padsCooldown.Where(padCooldown => padCooldown.Key == actionType).
                 Select(padCooldown => padCooldown.Value)).FirstOrDefault();
 

@@ -86,7 +86,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.GameCore.OverlayWindowTrigger
             for (int i = 0; i < pageCount; i++)
             {
                 var page = pagesData[i];
-                page.PageCount = $"{i + 1}/{pageCount}";
+                page.PageCount = $"{i + 1} / {pageCount}";
 
             }
 

@@ -31,7 +31,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars
         
         public void Init(Character2DController hero = null) {
 
-            _model = new UIBarsModel(hero.Stats.GetHealthPercentage(), hero.Stats.Health.ToString(), 0);
+            _model = new UIBarsModel(hero.Stats.GetHealthPercentage(), $"{hero.Stats.Health} / {hero.Stats.MaxHealth}", 0);
             _view.SetModel(_model);
         }
 
