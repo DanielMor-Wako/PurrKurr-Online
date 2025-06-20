@@ -201,6 +201,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                 new ObjectivesMissionHandler(this, GetController<LevelsController>()),
                 new GuidanceMarkerHandler(this, GetController<UiGuidanceController>()),
                 new CharacterStatsHandler(this, GetController<UiIconsMoverController>()),
+                new CharacterStateHandler(this),
                 new GameStateHandler(this, GetController<GameManager>())
             };
             Handlers.AddBindableHandlers(bindableHandlers);
