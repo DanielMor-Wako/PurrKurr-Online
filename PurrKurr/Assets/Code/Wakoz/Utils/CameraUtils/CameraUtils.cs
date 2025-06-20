@@ -30,6 +30,25 @@ namespace Code.Wakoz.Utils.CameraUtils
             return hasTargets ? bounds.center : Vector3.zero;
         }
 
+        public static void GetGreatestDistance(this IEnumerable<Transform> targets, ref float greatestDistanace) {
+            if (targets == null)
+                return;
+
+            var bounds = new Bounds();
+            bool hasTargets = false;
+
+            foreach (var target in targets) {
+                if (!hasTargets) {
+                    bounds = new Bounds(target.position, Vector3.zero);
+                    hasTargets = true;
+                } else {
+                    bounds.Encapsulate(target.position);
+                }
+            }
+
+            greatestDistanace =  hasTargets ? Mathf.Max(bounds.size.x, bounds.size.y) : 0;
+        }
+
         public static float GetGreatestDistance(IEnumerable<Transform> targets)
         {
             if (targets == null)
