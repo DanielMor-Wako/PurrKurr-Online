@@ -359,9 +359,9 @@ namespace Code.Core.Auth
         }
 
         public async void Authenticate(Action<string> onSuccess, Action<string> onFailure) {
-            var user = AuthenticationService.Instance;
 
             try {
+                var user = AuthenticationService.Instance;
                 if (user.IsSignedIn) {
                     if (IsUserAnonymous()) {
                         await user.SignInWithUsernamePasswordAsync(Username, Password);
