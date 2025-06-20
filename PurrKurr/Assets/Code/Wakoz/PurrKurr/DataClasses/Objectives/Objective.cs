@@ -32,8 +32,9 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         public virtual void Finish() 
             => _data.Objective.CurrentQuantity = _data.Objective.RequiredQuantity;
 
-        public abstract string GetObjectiveDescription();
-
+        public virtual string GetObjectiveDescription() 
+            => $"{_data.Objective.Instructions}";
+        
         public string GetUniqueId() 
             => _data.Objective.UniqueId;
 

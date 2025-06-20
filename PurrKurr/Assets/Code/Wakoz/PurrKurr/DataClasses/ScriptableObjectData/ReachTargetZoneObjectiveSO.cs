@@ -8,6 +8,5 @@ namespace Code.Wakoz.PurrKurr.DataClasses.ScriptableObjectData {
     [CreateAssetMenu(fileName = "ObjectiveData", menuName = "Data/Objective/Reach Target Zone")]
     public class ReachTargetZoneObjectiveSO : ObjectiveDataSO {
 
-        public string Instructions = "Reach Zone";
     }
 }

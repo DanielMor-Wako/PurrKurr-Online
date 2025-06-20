@@ -13,6 +13,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Objectives
         public int CurrentQuantity = 0;
 
         public Sprite Icon;
+        public string Instructions;
 
         public ObjectiveData() {}
 
