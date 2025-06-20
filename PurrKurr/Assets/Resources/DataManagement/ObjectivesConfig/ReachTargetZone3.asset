@@ -20,4 +20,5 @@ MonoBehaviour:
     RequiredQuantity: 1
     CurrentQuantity: 0
     Icon: {fileID: -4343348214475826980, guid: 83ca103d4f4dbf64fae06eea598b58ed, type: 3}
+    Instructions: Reach Door
   Instructions: Reach Door

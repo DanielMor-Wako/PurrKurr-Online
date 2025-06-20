@@ -24,3 +24,4 @@ MonoBehaviour:
     RequiredQuantity: 5
     CurrentQuantity: 0
     Icon: {fileID: 21300000, guid: 18febbbe061919243b00a6ebfe8590c8, type: 3}
+    Instructions: Smash Rats

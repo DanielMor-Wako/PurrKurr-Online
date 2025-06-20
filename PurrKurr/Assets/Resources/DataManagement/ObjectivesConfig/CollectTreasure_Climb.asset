@@ -20,3 +20,4 @@ MonoBehaviour:
     RequiredQuantity: 1
     CurrentQuantity: 0
     Icon: {fileID: -3430613992102656276, guid: 415cb88aedae2ca44b4d339995569370, type: 3}
+    Instructions: Collect Treasure

@@ -28,3 +28,4 @@ MonoBehaviour:
     RequiredQuantity: 9
     CurrentQuantity: 0
     Icon: {fileID: -167871124, guid: 11498bf491965d54c9d0f38b620da8b8, type: 3}
+    Instructions: Smash Lion Statue

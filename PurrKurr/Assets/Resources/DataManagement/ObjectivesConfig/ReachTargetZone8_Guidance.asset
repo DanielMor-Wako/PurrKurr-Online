@@ -10,14 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 12a081ebce714224bafada78022caecf, type: 3}
-  m_Name: ReachTargetZoneMain_Guidance
+  m_Name: ReachTargetZone8_Guidance
   m_EditorClassIdentifier: 
   _objectiveData:
-    UniqueId: Reached_Main_Guidance
+    UniqueId: Reached_Projectile_Guidance
     TargetObjectType: GuidanceMarker
     TargetObjectIds:
     - GuidanceMarker1
-    RequiredQuantity: 1
+    - GuidanceMarker2
+    - GuidanceMarker3
+    - GuidanceMarker4
+    - GuidanceMarker5
+    - GuidanceMarker6
+    - GuidanceMarker7
+    - GuidanceMarker8
+    RequiredQuantity: 8
     CurrentQuantity: 0
     Icon: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
     Instructions: Reach Markers

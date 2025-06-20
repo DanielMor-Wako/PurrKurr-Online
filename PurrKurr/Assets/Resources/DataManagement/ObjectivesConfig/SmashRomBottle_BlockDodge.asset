@@ -25,3 +25,4 @@ MonoBehaviour:
     RequiredQuantity: 6
     CurrentQuantity: 0
     Icon: {fileID: 2680147653974948724, guid: 415cb88aedae2ca44b4d339995569370, type: 3}
+    Instructions: Smash Bottles

@@ -21,3 +21,4 @@ MonoBehaviour:
     RequiredQuantity: 2
     CurrentQuantity: 0
     Icon: {fileID: -8506704527363435205, guid: 83ca103d4f4dbf64fae06eea598b58ed, type: 3}
+    Instructions: Collect Bones
