@@ -228,7 +228,7 @@ namespace Code.Wakoz.PurrKurr.DataClasses.Characters
                 } else if (_isStanding) {
                     SetState(Definitions.ObjectState.StandingUp);
                     return;
-                } else if (Velocity.magnitude > 1 && (_navigationDirection is Definitions.NavigationType.Right or Definitions.NavigationType.Left or Definitions.NavigationType.UpRight or Definitions.NavigationType.UpLeft)) {
+                } else if (Velocity.magnitude > .1f && (_navigationDirection is Definitions.NavigationType.Right or Definitions.NavigationType.Left or Definitions.NavigationType.UpRight or Definitions.NavigationType.UpLeft)) {
                     SetState(Definitions.ObjectState.Running);
                     return;
                 } else if (_wasGrounded && _isGrounded /*&& _currentState == Definitions.CharacterState.Landed*/) {

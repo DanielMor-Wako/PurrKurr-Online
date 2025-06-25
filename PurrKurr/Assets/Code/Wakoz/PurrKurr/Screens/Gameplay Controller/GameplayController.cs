@@ -1650,7 +1650,7 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
                         ApplyGrabOnFoe(foe, attacker, endPosition);
                         attackerAsInteractable.SetAsGrabbing(foe);
 
-                        ApplyGrabThrowWhenGrounded(foe, attacker, grabActionStats);
+                        _ = ApplyGrabThrowWhenGrounded(foe, attacker, grabActionStats);
 
                     } else if (properties.Contains(AttackProperty.GrabAndPickUp)) {
 
@@ -2115,13 +2115,13 @@ namespace Code.Wakoz.PurrKurr.Screens.Gameplay_Controller
             grabbed.SetAsGrabbed(grabber, position);
         }
 
-        private async void ApplyGrabThrowWhenGrounded(IInteractableBody grabbed, IInteractableBody grabber, AttackData attackStats) {
+        private async Task ApplyGrabThrowWhenGrounded(IInteractableBody grabbed, IInteractableBody grabber, AttackData attackStats) {
 
             //await Task.Delay(150);
 
             while (grabber.GetCurrentState() is not (ObjectState.Grounded or ObjectState.Running or ObjectState.Crouching or ObjectState.StandingUp)) {
 
-                await Task.Delay(TimeSpan.FromMilliseconds(100));
+                await Task.Delay(TimeSpan.FromMilliseconds(20));
             }
                 
             if (grabbed == null || !grabber.IsGrabbing()) {

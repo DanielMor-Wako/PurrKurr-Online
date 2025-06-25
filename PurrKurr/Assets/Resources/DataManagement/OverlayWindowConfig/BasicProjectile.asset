@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlayWindowData:
   - Title: 
-    BodyContent: Swipe in any direction to aim and release to Puke Hairballs
-    BodyPicture: {fileID: 21300000, guid: 83815fbd404b739479e6d88062745a91, type: 3}
+    BodyContent: Swipe in any direction to aim <br>Release to Puke Hairballs
+    BodyPicture: {fileID: 21300000, guid: a1a2889af3ac3004b8568509165653d9, type: 3}
     ButtonsRawData: []
     PageCount: 1/3

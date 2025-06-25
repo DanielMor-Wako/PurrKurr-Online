@@ -7,6 +7,8 @@ namespace Code.Wakoz.Utils.GraphicUtils.TransformUtils {
 
     public class TransformMover : MonoBehaviour {
 
+        private IEnumerator _moveAction;
+
         private bool _isAnimating;
         private bool _endBeforeTimeEnd;
 
@@ -14,16 +16,17 @@ namespace Code.Wakoz.Utils.GraphicUtils.TransformUtils {
 
         public void MoveToPosition(Transform theTransform, Vector3 targetPosition, float duration, Func<Task> actionOnEnd = null) {
 
-            if (_isAnimating) {
-                //Debug.Log("is already animating, returned.... maybe just override instead?");
-                return;
+            if (_moveAction != null) {
+                StopCoroutine(_moveAction);
             }
 
             _isAnimating = true;
             float startTime = Time.time;
             Vector3 startPosition = transform.position;
 
-            StartCoroutine(MoveCoroutine(theTransform, startPosition, targetPosition, startTime, duration, actionOnEnd));
+            _moveAction = MoveCoroutine(theTransform, startPosition, targetPosition, startTime, duration, actionOnEnd);
+
+            StartCoroutine(_moveAction);
         }
 
         public IEnumerator MoveCoroutine(Transform theTransform, Vector3 startPosition, Vector3 targetPosition, float startTime, float duration, Func<Task> actionOnEnd) {
@@ -43,7 +46,6 @@ namespace Code.Wakoz.Utils.GraphicUtils.TransformUtils {
             }
 
             if (!_endBeforeTimeEnd) {
-                // Ensure the transform reaches the final position exactly
                 theTransform.position = targetPosition;
             }
             
