@@ -141,6 +141,7 @@
     <Compile Include="Assets\Code\Wakoz\PurrKurr\DataClasses\ServerData\MainCharacter_SerializeableData.cs" />
     <Compile Include="Assets\Code\Wakoz\PurrKurr\DataClasses\Objectives\CharacterStatsHandler.cs" />
     <Compile Include="Assets\Code\Wakoz\PurrKurr\Screens\Gameplay Controller\AttackData.cs" />
+    <Compile Include="Assets\Code\Core\CharacterStateHandler.cs" />
     <Compile Include="Assets\Code\Wakoz\PurrKurr\Screens\UI Controller\InputDisplay\UiPadData.cs" />
     <Compile Include="Assets\Code\Wakoz\PurrKurr\Screens\UI Controller\InputDetection\ScreenInputEventTriggers.cs" />
     <Compile Include="Assets\Code\Wakoz\PurrKurr\Views\ImageFillerView.cs" />
@@ -152,6 +153,7 @@
     <Compile Include="Assets\Code\Wakoz\PurrKurr\DataClasses\GameCore\TaggedItems\ITaggable.cs" />
     <Compile Include="Assets\Code\Wakoz\PurrKurr\UI\Instructions\OverlayInstructionView.cs" />
     <Compile Include="Assets\Code\Wakoz\PurrKurr\Screens\Shaker\BaseShake.cs" />
+    <Compile Include="Assets\Code\Wakoz\PurrKurr\Screens\UI Controller\Bars\CurrencyItemView.cs" />
     <Compile Include="Assets\Code\Wakoz\PurrKurr\DataClasses\GameCore\Interactable.cs" />
     <Compile Include="Assets\Code\Wakoz\PurrKurr\DataClasses\Characters\DisplayedableStatData.cs" />
     <Compile Include="Assets\Code\Wakoz\PurrKurr\View.cs" />
@@ -160,6 +162,7 @@
     <Compile Include="Assets\Code\Wakoz\PurrKurr\Popups\OverlayWindow\GenericButtonModel.cs" />
     <Compile Include="Assets\Code\Wakoz\PurrKurr\Agents\AgentController.cs" />
     <Compile Include="Assets\Code\Wakoz\PurrKurr\DataClasses\ScriptableObjectData\SmashObjectiveSO.cs" />
+    <Compile Include="Assets\Code\Wakoz\PurrKurr\Screens\UI Controller\Bars\UICurrenciesView.cs" />
     <Compile Include="Assets\Code\Wakoz\PurrKurr\Popups\OverlayWindow\GenericButtonData.cs" />
     <Compile Include="Assets\Code\Wakoz\PurrKurr\Screens\Notifications\NotificationsView.cs" />
     <Compile Include="Assets\Code\Wakoz\PurrKurr\DataClasses\ScriptableObjectData\CharacterAbilitiesData.cs" />
@@ -1245,12 +1248,20 @@
       <HintPath>Library\ScriptAssemblies\Unity.Services.Core.Analytics.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Unity.Toolchain.Win-x86_64-Linux-x86_64">
+      <HintPath>Library\ScriptAssemblies\Unity.Toolchain.Win-x86_64-Linux-x86_64.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.RenderPipelines.Universal.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
       <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Sysroot.Linux_x86_64">
+      <HintPath>Library\ScriptAssemblies\Unity.Sysroot.Linux_x86_64.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PsdPlugin">
@@ -1323,6 +1334,10 @@
     </Reference>
     <Reference Include="Unity.Services.Core.Components">
       <HintPath>Library\ScriptAssemblies\Unity.Services.Core.Components.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.SysrootPackage.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.SysrootPackage.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.InternalAPIEditorBridge.001">
