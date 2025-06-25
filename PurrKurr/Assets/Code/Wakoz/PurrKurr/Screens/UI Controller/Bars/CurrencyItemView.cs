@@ -12,14 +12,14 @@ namespace Code.Wakoz.PurrKurr.Screens.Ui_Controller.Bars
         [SerializeField] private TextMeshProUGUI _text;
         [SerializeField] private Image _image;
 
-        public void UpdateAmount(int amount) {
+        public void UpdateAmount(int amount, bool hideWhenZeroAmount = true) {
 
             _container = _container ?? throw new ArgumentNullException("Missing _container ref");
             _text = _text ?? throw new ArgumentNullException("Missing _healthText ref");
 
-            _container.gameObject.SetActive(amount > 0);
-            if (amount <= 0) return;
-
+            _container.gameObject.SetActive(hideWhenZeroAmount! || hideWhenZeroAmount && amount > 0);
+            if (hideWhenZeroAmount && amount <= 0) return;
+            
             var amountText = amount.ToString();
             if (_text.text == amountText) {
                 return;
