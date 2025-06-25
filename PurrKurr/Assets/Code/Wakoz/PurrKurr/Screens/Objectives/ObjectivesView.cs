@@ -281,16 +281,10 @@ namespace Code.Wakoz.PurrKurr.Screens.Objectives
 
                 // todo: use dictionary for faster lookup table
                 var model = _models.FirstOrDefault(o => o != null && o.InterfaceData.GetUniqueId() == objectiveModel.InterfaceData.GetUniqueId());
-                if (model == null)
-                {
-                    continue;
-                }
+                if (model == null) continue;
 
                 var viewItem = _objectiveViews.FirstOrDefault(o => o != null && o.IsViewOf(model));
-                if (viewItem == null)
-                {
-                    continue;
-                }
+                if (viewItem == null) continue;
 
                 Action siblingAction = null;
 
